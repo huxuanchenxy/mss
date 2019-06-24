@@ -1,0 +1,190 @@
+﻿using MSS.API.Dao.Interface;
+using MSS.API.Model.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MSS.API.Model.DTO;
+using static MSS.API.Common.Const;
+using MSS.API.Dao.Implement;
+
+namespace MSS.API.Core.V1.Business
+{
+    public class RoleService: IRoleService
+    {
+        //private readonly ILogger<RoleService> _logger;
+        private readonly IRoleRepo<Role> _RoleRepo;
+        private readonly IUserRepo<User> _UserRepo;
+        private readonly IActionRepo<ActionInfo> _ActionRepo;
+
+        public RoleService(IRoleRepo<Role> roleRepo, IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo)
+        {
+            //_logger = logger;
+            _RoleRepo = roleRepo;
+            _UserRepo = userRepo;
+            _ActionRepo = actionRepo;
+        }
+        public async Task<MSSResult<RoleView>> GetPageByParm(RoleQueryParm parm)
+        {
+            MSSResult<RoleView> mRet = new MSSResult<RoleView>();
+            try
+            {
+                parm.page = parm.page == 0 ? 1 : parm.page;
+                parm.rows= parm.rows == 0 ? PAGESIZE : parm.rows;
+                parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
+                parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
+                mRet = await _RoleRepo.GetPageByParm(parm);
+                int[] arrRoleID = mRet.data.Select(a => a.id).ToArray();
+                List<RoleActions> lra =await _ActionRepo.GetActionByRoles(arrRoleID);
+                foreach (var item in mRet.data)
+                {
+                    List<ActionAll> actionAll = lra.Where(a => a.roleID == item.id).ToList<ActionAll>();
+                    item.action_trees = ActionHelper.GetActionTree(actionAll);
+                }
+                mRet.code = (int)ErrType.OK;
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+        public async Task<MSSResult<ActionTree>> GetByID(int id)
+        {
+            MSSResult<ActionTree> mRet = new MSSResult<ActionTree>();
+            try
+            {
+                if (id==0)
+                {
+                    mRet.code = (int)ErrType.ErrParm;
+                    mRet.msg = "参数不正确，id不可为0";
+                    return mRet;
+                }
+                mRet.relatedData = await _RoleRepo.GetByID(id);
+                List<ActionAll> laa = await _ActionRepo.GetActionAll();
+                List<int> actions = await _ActionRepo.GetActionIDByRoleID(id);
+                mRet.data = ActionHelper.GetCheckedActionTree(laa, actions);
+                mRet.code = (int)ErrType.OK;
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
+        public async Task<MSSResult> Add(RoleStrActions roleStrActions)
+        {
+            MSSResult mRet = new MSSResult();
+            try
+            { 
+                DateTime dt = DateTime.Now;
+                roleStrActions.updated_time = dt;
+                roleStrActions.created_time = dt;
+                bool isRepeat= await _RoleRepo.IsNameRepeat(roleStrActions.role_name);
+                if (isRepeat)
+                {
+                    mRet.code = (int)ErrType.Repeat;
+                    mRet.msg = "角色名称重复";
+                }
+                else
+                {
+                    mRet.data = await _RoleRepo.Add(roleStrActions);
+                    mRet.code = (int)ErrType.OK;
+                }
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
+        public async Task<MSSResult> Update(RoleStrActions roleStrActions)
+        {
+            MSSResult mRet = new MSSResult();
+            try
+            {
+                roleStrActions.updated_time = DateTime.Now;
+                var role=await _RoleRepo.GetByID(roleStrActions.id);
+                if (role==null)
+                {
+                    mRet.code = (int)ErrType.NoRecord;
+                    mRet.msg = "此角色已不存在";
+                }
+                else
+                {
+                    if (role.role_name!= roleStrActions.role_name)
+                    {
+                        bool isRepeat = await _RoleRepo.IsNameRepeat(roleStrActions.role_name);
+                        if (isRepeat)
+                        {
+                            mRet.code = (int)ErrType.Repeat;
+                            mRet.msg = "角色名称重复";
+                            return mRet;
+                        }
+                    }
+                    mRet.data = await _RoleRepo.Update(roleStrActions);
+                    mRet.code = (int)ErrType.OK;
+                }
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
+        public async Task<MSSResult> Delete(string ids)
+        {
+            MSSResult mRet = new MSSResult();
+            try
+            {
+                string[] arrIds = ids.Split(',');
+                int hasUser = await _UserRepo.GetUserCountByRole(arrIds);
+                if (hasUser>0)
+                {
+                    mRet.code = (int)ErrType.Associated;
+                    mRet.msg = "此角色下有用户，不可删除";
+                }
+                else
+                {
+                    mRet.data = await _RoleRepo.Delete(arrIds);
+                    mRet.code = (int)ErrType.OK;
+                }
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
+        public async Task<MSSResult> GetAll()
+        {
+            MSSResult mRet = new MSSResult();
+            try
+            {
+                mRet.data = await _RoleRepo.GetAll();
+                mRet.code = (int)ErrType.OK;
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+    }
+}

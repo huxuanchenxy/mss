@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="37px" height="44px" viewBox="0 0 37 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>用户</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="267.177734%" x2="50%" y2="1.56024205%" id="linearGradient-1">
+            <stop stop-color="#43434B" offset="0%"></stop>
+            <stop stop-color="#D8D8D8" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="101.999998%" y1="100.999999%" x2="6.24500451e-15%" y2="0%" id="linearGradient-2">
+            <stop stop-color="#087CFE" offset="0%"></stop>
+            <stop stop-color="#2EBBFC" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="主界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="主界面-确认" transform="translate(-1219.000000, -28.000000)">
+            <g id="bg">
+                <g id="边栏">
+                    <g id="位置与用户" transform="translate(0.000000, 30.000000)">
+                        <g id="03-用户" transform="translate(1220.000000, 0.000000)">
+                            <g id="用户">
+                                <polygon id="Polygon" stroke="#CFD0D2" stroke-width="2" fill="url(#linearGradient-1)" points="17.5 0 35 10 35 30 17.5 40 7.94919686e-14 30 6.83897383e-14 10"></polygon>
+                                <path d="M15.8960841,19.4937172 C14.328377,18.6761221 13.250398,16.973302 13.250398,15.0051594 C13.250398,12.2408862 15.3768673,10 18,10 C20.6231327,10 22.749602,12.2408862 22.749602,15.0051594 C22.749602,17.0039882 21.6377464,18.7291564 20.0302325,19.5313117 C24.7686074,20.5683889 26.9714704,24.8743095 26.9714704,26.6838647 C26.9714704,28.9303753 27.980297,30 18,30 C8.01970299,30 9.02852958,29.0441536 9.02852958,26.6838647 C9.02852958,24.8122868 11.0841203,20.4551717 15.8960841,19.4937172 Z" id="Combined-Shape" fill="url(#linearGradient-2)"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

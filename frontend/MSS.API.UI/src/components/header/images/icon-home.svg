@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="37px" height="44px" viewBox="0 0 37 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>首页</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="267.177734%" x2="50%" y2="1.56024205%" id="linearGradient-1">
+            <stop stop-color="#43434B" offset="0%"></stop>
+            <stop stop-color="#D8D8D8" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="29.937066%" y1="4.87738715%" x2="77.742513%" y2="90.5490451%" id="linearGradient-2">
+            <stop stop-color="#07E0AE" offset="0%"></stop>
+            <stop stop-color="#21E47F" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="主界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="主界面-确认" transform="translate(-1053.000000, -28.000000)">
+            <g id="bg">
+                <g id="边栏">
+                    <g id="位置与用户" transform="translate(0.000000, 30.000000)">
+                        <g id="02-首页" transform="translate(1054.000000, 0.000000)">
+                            <g id="首页">
+                                <polygon id="Polygon" stroke="#CFD0D2" stroke-width="2" fill="url(#linearGradient-1)" points="17.5 0 35 10 35 30 17.5 40 7.94919686e-14 30 6.83897383e-14 10"></polygon>
+                                <path d="M20,29 L20,24.5 C20,23.9477153 19.5522847,23.5 19,23.5 L17,23.5 C16.4477153,23.5 16,23.9477153 16,24.5 L16,29 L11.5974806,29 C10.5402102,29 9.33239005,28.1443459 9.33239005,27.0022823 L9.33239005,16.9362406 L9.07076162,17.1510532 C8.78044119,17.3765888 8.36826307,17.3264821 8.14248298,17.0400726 C7.9167029,16.7536632 7.96328573,16.3347829 8.25358394,16.1056509 L16.7011018,10.4322949 C17.4286475,9.8559017 18.5683491,9.8559017 19.2959171,10.4322949 L27.7470797,16.1056509 C28.0374002,16.3347829 28.083983,16.7536632 27.8546025,17.0400726 C27.7219881,17.2083529 27.5248778,17.2942691 27.3277453,17.2942691 C27.180796,17.2942691 27.0302685,17.2477145 26.9084108,17.1510532 L26.6646955,16.9648793 L26.6646955,27.0022823 C26.6646955,28.1980491 25.976554,29 24.9300181,29 L20,29 Z" id="Shape" fill="url(#linearGradient-2)" fill-rule="nonzero"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

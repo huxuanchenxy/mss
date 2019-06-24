@@ -1,0 +1,108 @@
+// 文字选中颜色
+$color-highlight-text: #1b7ec9;
+
+// 副文字颜色
+$color-sub-text: #cdcecf;
+
+// 内容区时间文字颜色
+$color-content-text: #ccc;
+
+$color-white: #fff;
+$color-main-btn: #2480C6;
+$color-main-btn-border: #979797;
+$color-warning: #f91333;
+$color-footer-text: #5E5D61;
+$color-main-background: rgba(49,48,53,.5);
+$color-content-table-header: rgba(36,128,198,.5);
+$color-content-table-sub: rgba(186,186,186,.5);
+
+$font-size-small: 12px;
+$font-size-base: 14px;
+$font-size-large: 16px;
+$font-size-large-18: 18px;
+
+// 大屏管理行数
+$big-screen-management-row: calc(100% / 3) calc(100% / 3) calc(100% / 3);
+
+// 大屏管理列数
+$big-screen-management-column: repeat(4, 1fr);
+
+// 侧边栏警告提示的指示灯
+$color-dot-warning: #f61a3a;
+$color-dot-success: #3cece5;
+
+$main-width: 1440;
+$mian-height: 780;
+
+$content-width: 960;
+$content-height: 550;
+
+// 按钮大小
+$btn-width-base: 70px;
+$btn-height-base: 30px;
+$btn-width-small: 40px;
+$btn-height-small: 24px;
+$btn-margin-left: 20px;
+
+// 圆角
+$border-radius: 4px;
+
+// 透明兼容写法
+@mixin opacity($number: 0.5) {
+  opacity: $number;
+  filter: alpha(opacity=#{$number * 100});
+}
+
+// 修改input placeholder颜色
+@mixin placeholderColor($color: #fff) {
+  &::-webkit-input-placeholder {
+    color: $color;
+  }
+
+  &::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: $color;
+  }
+
+  &:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: $color;
+  }
+
+  &:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: $color;
+  }
+}
+
+// 百分比换算
+@function percent($num, $total) {
+  @return ($num / $total * 100) + % ;
+}
+
+@function PXtoEm($px) {
+  @return ($px / 16) + em;
+}
+
+%navJustify {
+  text-align: justify;
+
+  &:after {
+    content: "";
+    display: inline-block;
+    width: 100%;
+  }
+}
+
+%ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.con-padding-horizontal{
+  padding: {
+    left: PXtoEm(24);
+    right: PXtoEm(24);
+  }
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>Oval 7</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="100%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#41A2FF" offset="0%"></stop>
+            <stop stop-color="#0061A0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="主界面" transform="translate(-1121.000000, -695.000000)" fill="url(#linearGradient-1)">
+            <g id="bg">
+                <g id="Group-15" transform="translate(241.000000, 695.000000)">
+                    <g id="Group-9" transform="translate(40.000000, 0.000000)">
+                        <g id="01系统管理-copy-14" transform="translate(840.000000, 0.000000)">
+                            <circle id="Oval-7" cx="20" cy="20" r="20"></circle>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

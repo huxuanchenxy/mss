@@ -1,0 +1,54 @@
+一、安装nodejs
+二、安装npm淘宝镜像
+    npm install -g cnpm --registry=https://registry.npm.taobao.org
+三、安装vue-cli
+    cnpm install --global vue-cli
+四、运行项目
+    1. 进入项目根目录运行 cnpm install
+    2. npm run dev
+
+以新增一个系统设置模块为例 操作步骤如下：
+一、在src/views下新建目录，起名systemsetting，copy nav1下nva1.vue到此目录改名systemsetting.vue。
+    内容不用修改
+二、在系统设置模块中有二级菜单，比如用户管理，新建文件夹UserManager,新建文件User.vue, 内容自己编写用户定义的界面
+三、设置路由，在src/router 下新建SystemSetting.js,内容仿照nav1.js写。 注意，其中路由meta中的navName为导航条显示的名称。
+    在router/index.js 导入此模块路由
+    import system from './SystemSetting.js'
+
+    main.children.push(system)
+
+四、api接口
+    比如要User.vue页面要获取调用服务器接口/user/getuserlist.
+    1.在src/api下新建SystemSettingApi.js文件仿照nav1Api.js写接口.
+        其中base的值可以是api或mock，为api时调用的是server的接口，为mock时调用模拟数据。
+    2.注意mock中url区分大小写，写mock接口时注意。
+五、mock数据
+    在mock目录下 data下的js为模拟数据，可以根据需求新建数据文件。在mock.js中导入
+    1. 在data下新建SystemSettingData.js. 可以仿照menuData.js
+    2. 在mock.js导入且编写接口使用
+        import { Users } from './data/SystemSettingData'
+
+        // 获取用户列表
+        mock.onAny('/mock/user/getuserlist').reply(config => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve([200, {
+                        code: 'SUCESS',
+                        data: _Users
+                    }])
+                }, 1000)
+            })
+        })
+六、User.vue中使用此接口
+    import api from '@/api/SystemSettingApi'        
+    api.getUserList().then((res) => {
+        this.tableData = res.data
+    })
+七、添加菜单
+   在开发过程中菜单使用模拟数据，最终会替换为服务端数据
+   在mock/data/menuData.js中仿照nav1添加菜单
+八、修改代理指向自己server端
+    如果使用server端数据，修改config/index.js文件中 api配置中的target 指向自己的server端
+
+九、配置vs code 使其支持elint语法。
+   参考网站 https://www.cnblogs.com/why-not-try/p/8067559.html
