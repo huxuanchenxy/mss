@@ -20,10 +20,11 @@ namespace MSS.API.Dao.Implement
             {
                 MSSResult<ActionView> mRet = new MSSResult<ActionView>();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,u1.user_name as created_name,u2.user_name as updated_name,ag.group_name ")
-                .Append(" FROM Action_Info a ")
+                sql.Append("SELECT a.*,u1.user_name as created_name,u2.user_name as updated_name,ag.group_name, ")
+                .Append(" ai.action_name as parent_name FROM Action_Info a ")
                 .Append(" left join user u1 on a.created_by=u1.id left join user u2 on a.updated_by=u2.id ")
                 .Append(" left join Action_Group ag on ag.id=a.group_id ")
+                .Append(" left join Action_Info ai on ai.id=a.parent_menu ")
                 .Append(" where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
                 if (!string.IsNullOrWhiteSpace(parm.searchName))
@@ -39,11 +40,11 @@ namespace MSS.API.Dao.Implement
                     whereSql.Append(" and a.parent_menu=" + parm.searchParent);
                 }
                 sql.Append(whereSql)
-                .Append("order by a." + parm.sort + " " + parm.order)
+                .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 mRet.data = (await c.QueryAsync<ActionView>(sql.ToString())).ToList();
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from Action_Info where 1=1 "+whereSql.ToString());
+                    "select count(*) from Action_Info a where 1=1 "+whereSql.ToString());
                 return mRet;
             });
         }
@@ -99,6 +100,15 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<ActionInfo>> GetMenu()
+        {
+            return await WithConnection(async c =>
+            {
+                var result = (await c.QueryAsync<ActionInfo>("select * from Action_Info where group_id>0")).ToList();
+                return result;
+            });
+        }
+
         public async Task<List<ActionInfo>> GetByActionGroup(string[] groupIDs)
         {
             return await WithConnection(async c =>
@@ -116,7 +126,7 @@ namespace MSS.API.Dao.Implement
                 StringBuilder sql = new StringBuilder();
                 sql.Append(" SELECT a.id as ActionID,a.action_name as ActionName,a.request_url as ActionURL,a.Action_Order as ActionOrder,a.Icon as ActionIcon,")
                   .Append(" a.parent_menu as ParentMenu,a.group_id as GroupID, ag.Group_Name as GroupName, ag.Request_Url as GroupURL, ag.Icon as GroupIcon,")
-                  .Append(" a.level as Level FROM Action_Info a")
+                  .Append(" ag.active_icon as GroupActiveIcon, a.level as Level FROM Action_Info a")
                   .Append(" left join Action_Group ag on a.group_id = ag.id")
                   //.Append(" where a.level in ("+ACTION_LEVEL.AllowSelection+","+ACTION_LEVEL.NotAllowAll)
                   .Append(" order by ag.Group_Order");

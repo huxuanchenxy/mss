@@ -14,7 +14,7 @@ using static MSS.API.Common.Const;
 
 namespace MSS.API.Core.V1.Controllers
 {
-    [Route("api/v1/[controller]/[action]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class RoleController : ControllerBase
     {
@@ -28,8 +28,8 @@ namespace MSS.API.Core.V1.Controllers
             _RoleService = RoleService;
 
         }
-        [HttpPost]
-        public ActionResult GetPageByParm([FromBody] RoleQueryParm parm)
+        [HttpGet("QueryList")]
+        public ActionResult GetPageByParm([FromQuery] RoleQueryParm parm)
         {
             var ret = _RoleService.GetPageByParm(parm).Result;
             if (ret.code==(int)ErrType.OK)
@@ -44,14 +44,14 @@ namespace MSS.API.Core.V1.Controllers
                 return Ok(resp);
             }
         }
-        [HttpPost]
+        [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
             var resp = _RoleService.GetByID(id);
             return Ok(resp.Result);
         }
-        [HttpPost]
-        public ActionResult Add([FromBody] RoleStrActions roleStrActions)
+        [HttpPost("Add")]
+        public ActionResult Add(RoleStrActions roleStrActions)
         {
             int userID = (int)HttpContext.Session.GetInt32("UserID");
             roleStrActions.created_by = userID;
@@ -59,21 +59,21 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _RoleService.Add(roleStrActions);
             return Ok(resp.Result);
         }
-        [HttpPost]
-        public ActionResult Update([FromBody] RoleStrActions roleStrActions)
+        [HttpPut("Update")]
+        public ActionResult Update(RoleStrActions roleStrActions)
         {
             int userID = (int)HttpContext.Session.GetInt32("UserID");
             roleStrActions.updated_by = userID;
             var resp = _RoleService.Update(roleStrActions);
             return Ok(resp.Result);
         }
-        [HttpPost]
+        [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
             var resp = _RoleService.Delete(ids);
             return Ok(resp.Result);
         }
-        [HttpPost]
+        [HttpGet("All")]
         public ActionResult GetAll()
         {
             var resp = _RoleService.GetAll();

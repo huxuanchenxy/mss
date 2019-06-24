@@ -14,7 +14,7 @@ using static MSS.API.Common.Const;
 
 namespace MSS.API.Core.V1.Controllers
 {
-    [Route("api/v1/[controller]/[action]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ActionController : ControllerBase
     {
@@ -28,9 +28,11 @@ namespace MSS.API.Core.V1.Controllers
             _ActionService = ActionService;
 
         }
-        [HttpPost]
-        public ActionResult GetPageByParm([FromBody] ActionQueryParm parm)
+        [HttpGet("QueryList")]
+        public ActionResult GetPageByParm([FromQuery] ActionQueryParm parm)
         {
+            //ActionQueryParm parm = new ActionQueryParm();
+
             var ret = _ActionService.GetPageByParm(parm).Result;
             if (ret.code==(int)ErrType.OK)
             {
@@ -44,14 +46,14 @@ namespace MSS.API.Core.V1.Controllers
                 return Ok(resp);
             }
         }
-        [HttpPost]
+        [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
             var resp = _ActionService.GetByID(id);
             return Ok(resp.Result);
         }
-        [HttpPost]
-        public ActionResult Add([FromBody] ActionInfo action)
+        [HttpPost("Add")]
+        public ActionResult Add(ActionInfo action)
         {
             int userID = (int)HttpContext.Session.GetInt32("UserID");
             action.created_by = userID;
@@ -59,27 +61,35 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _ActionService.Add(action);
             return Ok(resp.Result);
         }
-        [HttpPost]
-        public ActionResult Update([FromBody] ActionInfo action)
+        [HttpPut("Update")]
+        public ActionResult Update(ActionInfo action)
         {
             int userID = (int)HttpContext.Session.GetInt32("UserID");
             action.updated_by = userID;
             var resp = _ActionService.Update(action);
             return Ok(resp.Result);
         }
-        [HttpPost]
+        [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
             var resp = _ActionService.Delete(ids);
             return Ok(resp.Result);
         }
-        [HttpPost]
+        [HttpGet("All")]
         public ActionResult GetAll()
         {
             var resp = _ActionService.GetAll();
             return Ok(resp.Result);
         }
-        [HttpPost]
+
+        [HttpGet("Menu")]
+        public ActionResult GetMenu()
+        {
+            var resp = _ActionService.GetMenu();
+            return Ok(resp.Result);
+        }
+
+        [HttpGet("ActionTree")]
         public ActionResult GetActionTree()
         {
             var resp = _ActionService.GetActionTree();

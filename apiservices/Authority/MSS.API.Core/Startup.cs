@@ -47,21 +47,22 @@ namespace MSS.API.Core
             services.AddDapper(Configuration);
             services.AddEssentialService();
 
-            services.AddAuthentication("Bearer")//添加授权模式
-            .AddIdentityServerAuthentication(Options =>
-            {
-                Options.Authority = "http://localhost:5000";//授权服务器地址
-                Options.RequireHttpsMetadata = false;//是否是https
-                //Options.JwtValidationClockSkew = TimeSpan.FromSeconds(0);//设置时间偏移
-                Options.ApiName = "MSS_WEBAPI";
-            });
+            //services.AddAuthentication("Bearer")//添加授权模式
+            //.AddIdentityServerAuthentication(Options =>
+            //{
+            //    Options.Authority = "http://localhost:5000";//授权服务器地址
+            //    Options.RequireHttpsMetadata = false;//是否是https
+            //    //Options.JwtValidationClockSkew = TimeSpan.FromSeconds(0);//设置时间偏移
+            //    Options.ApiName = "MSS_WEBAPI";
+            //});
             //跨域 Cors
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+                //options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+                options.AddPolicy("AllowAll", p => p.WithOrigins("http://localhost:8080").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
 
-
+            services.AddDistributedMemoryCache();
             services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -70,14 +71,14 @@ namespace MSS.API.Core
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info{ Title = "MyAuthor API", Version = "v1" });
                 //注入WebAPI注释文件给Swagger  
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, "MyAuthor.xml");
-                c.IncludeXmlComments(xmlPath);
+                //var xmlPath = Path.Combine(AppContext.BaseDirectory, "MyAuthor.xml");
+                //c.IncludeXmlComments(xmlPath);
 
-                c.IgnoreObsoleteActions();
-                ////options.IgnoreObsoleteControllers();
-                //// 类、方法标记 [Obsolete]，可以阻止【Swagger文档】生成
-                c.DescribeAllEnumsAsStrings();
-                //c.OperationFilter<FormDataOperationFilter>();
+                //c.IgnoreObsoleteActions();
+                //////options.IgnoreObsoleteControllers();
+                ////// 类、方法标记 [Obsolete]，可以阻止【Swagger文档】生成
+                //c.DescribeAllEnumsAsStrings();
+                ////c.OperationFilter<FormDataOperationFilter>();
 
             });
 
@@ -99,6 +100,7 @@ namespace MSS.API.Core
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
             app.UseSession();
+            app.UseCors("AllowAll");
             app.UseMvc();
         }
 

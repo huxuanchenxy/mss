@@ -52,7 +52,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<User>(
-                    " SELECT * FROM User WHERE id = @id and is_del=" + (int)IsDeleted.no + " and is_super=" + (int)IsSuper.no, new { id = id });
+                    " SELECT * FROM User WHERE id = @id and is_del=" + (int)IsDeleted.no, new { id = id });
                 return result;
             });
         }

@@ -18,6 +18,9 @@ namespace MSS.API.Dao.Interface
         Task<int> Delete(string[] ids);
 
         Task<List<ActionInfo>> GetAll();
+
+        Task<List<ActionInfo>> GetMenu();
+
         Task<List<ActionInfo>> GetByActionGroup(string[] groupIDs);
         Task<List<ActionAll>> GetActionAll();
         Task<List<ActionAll>> GetActionByUser(int userID);
