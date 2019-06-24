@@ -6,7 +6,7 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].TitleIcon" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].GroupName }} {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
       <x-button class="active">
         <router-link :to="{name:'SeeActionList'}">返回</router-link>
@@ -42,14 +42,23 @@
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">权限组<em class="validate-mark">*</em></span>
+            <span class="text">权限组</span>
             <div class="inp">
-              <el-select v-model="actionGroup.text" placeholder="请选择" @change="validateSelect(actionGroup)">
-                <el-option v-for="item in actionGroupList" :key="item.key" :value="item.ActionGroupID" :label="item.GroupName"></el-option>
+              <el-select v-model="actionGroup" clearable placeholder="请选择">
+                <el-option v-for="item in actionGroupList" :key="item.key" :value="item.id" :label="item.group_name"></el-option>
               </el-select>
             </div>
           </div>
-          <p class="validate-tips">{{ actionGroup.tips }}</p>
+        </li>
+        <li class="list" >
+          <div class="inp-wrap">
+            <span class="text">所属菜单</span>
+            <div class="inp">
+              <el-select v-model="parentMenu" clearable placeholder="请选择">
+                <el-option v-for="item in parentMenuList" :key="item.key" :value="item.id" :label="item.action_name"></el-option>
+              </el-select>
+            </div>
+          </div>
         </li>
         <li class="list">
           <div class="inp-wrap">
@@ -59,17 +68,6 @@
             </div>
           </div>
           <p class="validate-tips">{{ menuOrder.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">是否是菜单<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-select v-model="isMenu.text" placeholder="请选择" @change="validateSelect(isMenu)">
-                <el-option v-for="item in isMenuList" :key="item.key" :value="item.value" :label="item.label"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ isMenu.tips }}</p>
         </li>
         <li class="list"></li>
       </ul>
@@ -85,6 +83,7 @@
 <script>
 import { validateInputCommon, validateNumberCommon } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'AddActionGroup',
   components: {
@@ -106,29 +105,14 @@ export default {
         text: '',
         tips: ''
       },
-      actionGroup: {
-        text: '',
-        tips: ''
-      },
+      actionGroup: '',
       actionGroupList: [],
       menuOrder: {
         text: '',
         tips: ''
       },
-      isMenu: {
-        text: '',
-        tips: ''
-      },
-      isMenuList: [
-        {
-          value: 0,
-          label: '否'
-        },
-        {
-          value: 1,
-          label: '是'
-        }
-      ]
+      parentMenu: '',
+      parentMenuList: []
     }
   },
   created () {
@@ -136,17 +120,21 @@ export default {
       this.loading = false
       this.title = '| 添加权限'
       // this.$emit('title', '| 添加权限')
-      this.btnText = '确认'
+      // this.btnText = '确认'
     } else if (this.isShow === 'edit') {
       this.loading = true
       this.title = '| 修改权限'
       // this.$emit('title', '| 修改权限')
-      this.btnText = '保存'
+      // this.btnText = '保存'
       this.getAction()
     }
     // 权限组列表
-    window.axios.post('/ActionGroup/GetAll').then(res => {
+    api.getActionGroupAll().then(res => {
       this.actionGroupList = res.data
+    }).catch(err => console.log(err))
+    // 菜单组列表
+    api.getActionMenu().then(res => {
+      this.parentMenuList = res.data
     }).catch(err => console.log(err))
   },
   methods: {
@@ -159,16 +147,17 @@ export default {
         })
         return
       }
+      let action = {
+        action_name: this.actionName.text,
+        group_id: this.actionGroup,
+        action_order: this.menuOrder.text,
+        request_url: this.actionUrl.text,
+        parent_menu: this.parentMenu
+      }
       if (this.isShow === 'add') {
         // 添加权限
-        window.axios.post('/ActionInfo/AddActionInfo', {
-          ActionName: this.actionName.text,
-          ActionGroupID: this.actionGroup.text,
-          MenuOrder: this.menuOrder.text,
-          RequestUrl: this.actionUrl.text,
-          IsMenu: this.isMenu.text
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.addAction(action).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '添加成功',
               type: 'success',
@@ -178,29 +167,19 @@ export default {
                 })
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '添加失败',
-              type: 'error'
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
+        action.id = this.actionID
+        debugger
         // 修改权限
-        window.axios.post('/ActionInfo/UpdateActionInfo', {
-          ActionID: this.actionID,
-          ActionName: this.actionName.text,
-          ActionGroupID: this.actionGroup.text,
-          MenuOrder: this.menuOrder.text,
-          RequestUrl: this.actionUrl.text,
-          IsMenu: this.isMenu.text
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.updateAction(action).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '修改成功',
               type: 'success',
@@ -210,19 +189,9 @@ export default {
                 })
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '修改失败',
-              type: 'error',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeActionList'
-                })
-              }
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
@@ -231,17 +200,15 @@ export default {
     },
     // 修改权限时获取权限资料
     getAction () {
-      window.axios.post('/ActionInfo/BindActionInfo', {
-        ID: this.editActionID
-      }).then(res => {
+      api.getActionByID(this.editActionID).then(res => {
         this.loading = false
         let _res = res.data
-        this.actionID = _res.ActionID
-        this.actionName.text = _res.ActionName
-        this.actionGroup.text = _res.ActionGroupID
-        this.menuOrder.text = _res.MenuOrder.toString()
-        this.actionUrl.text = _res.RequestUrl
-        this.isMenu.text = _res.IsMenu
+        this.actionID = _res.id
+        this.actionName.text = _res.action_name
+        this.actionGroup = _res.group_id
+        this.menuOrder.text = _res.action_order.toString()
+        this.actionUrl.text = _res.request_url
+        this.parentMenu = _res.parent_menu
       }).catch(err => console.log(err))
     },
     // 验证
@@ -267,8 +234,6 @@ export default {
       if (!validateInputCommon(this.actionName)) return false
       if (!validateInputCommon(this.actionUrl)) return false
       if (!validateNumberCommon(this.menuOrder)) return false
-      if (!this.validateSelect(this.actionGroup)) return false
-      if (!this.validateSelect(this.isMenu)) return false
       return true
     }
   }

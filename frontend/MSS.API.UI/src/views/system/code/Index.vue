@@ -2,9 +2,9 @@
   <div class="wrap height-full">
     <div class="con-padding-horizontal header right">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].TitleIcon" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].GroupName }} {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active" v-show="title !== '| 代码定义'">
+      <x-button class="active" v-show="title !== '| 代码管理'">
         <router-link :to="{name:'SeeCodeList'}">返回</router-link>
       </x-button>
     </div>
@@ -17,7 +17,7 @@ export default {
   name: 'division',
   data () {
     return {
-      title: '| 代码定义'
+      title: '| 代码管理'
     }
   },
   components: {

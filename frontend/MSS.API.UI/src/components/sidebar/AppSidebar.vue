@@ -6,11 +6,11 @@
       <div class="nav-wrap" :style="`height: ${navHeight}px`">
         <el-scrollbar :style="`height: ${navHeight}px`">
           <ul id="nav-move-wrap" class="nav-move-wrap" ref="navMoveWrap">
-            <router-link v-for="(item, index) in navList" :key="item.key" :to="{ path: item.RequestUrl }" class="list" ref="nav" tag="li" @mouseenter.native="showSubNav(index)">
+            <router-link v-for="(item, index) in navList" :key="item.key" :to="{ path: item.path }" class="list" ref="nav" tag="li" @mouseenter.native="showSubNav(index)">
               <a class="nav-link">
-                <img :src="item.Icon" width="18" height="18" class="icon icon-info vertical-middle" alt="">
-                <img :src="item.TitleIcon" width="18" height="18" class="hide icon icon-active vertical-middle" alt="">
-                <span class="text vertical-middle">{{ item.GroupName }}</span>
+                <img :src="item.iconCls" width="18" height="18" class="icon icon-info vertical-middle" alt="">
+                <img :src="item.iconClsActive" width="18" height="18" class="hide icon icon-active vertical-middle" alt="">
+                <span class="text vertical-middle">{{ item.name }}</span>
               </a>
             </router-link>
           </ul>
@@ -21,8 +21,8 @@
         <div class="sub-nav-wrap height-full">
           <el-scrollbar>
             <ul class="sub-nav" v-if="item.isShowSubNav" v-for="item in navList" :key="item.key" :class="{ active: item.isShowSubNav }">
-              <li class="sub-nav-list" v-for="child in item.MenuItems" :key="child.key">
-                <router-link class="block" :to="child.RequestUrl">{{ child.ActionName }}</router-link>
+              <li class="sub-nav-list" v-for="child in item.children" :key="child.key">
+                <router-link class="block" :to="child.path">{{ child.name }}</router-link>
               </li>
             </ul>
           </el-scrollbar>
@@ -58,8 +58,9 @@
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
+// import { transformDate } from '@/common/js/utils.js'
 import Bus from '@/components/Bus'
+import api from '@/api/authApi'
 export default {
   name: 'sidebar',
   data () {
@@ -86,15 +87,15 @@ export default {
   },
   methods: {
     gotoAlarmHandle (index) {
-      this.$router.push({
-        name: 'Handle'
-      })
-      let obj = this.warningMsg[index]
-      sessionStorage.setItem('alarm_goToHandle', JSON.stringify({
-        AlarmPID: obj.PID,
-        OriginTime: obj.OriginTime,
-        OriginTime_MS: obj.OriginTime_MS
-      }))
+      // this.$router.push({
+      //   name: 'Handle'
+      // })
+      // let obj = this.warningMsg[index]
+      // sessionStorage.setItem('alarm_goToHandle', JSON.stringify({
+      //   AlarmPID: obj.PID,
+      //   OriginTime: obj.OriginTime,
+      //   OriginTime_MS: obj.OriginTime_MS
+      // }))
     },
 
     gotoAlarmList () {
@@ -104,25 +105,25 @@ export default {
     },
 
     getAlarms () {
-      window.axios.get('/Alarm/GetIndexAlarm').then(res => {
-        res.data.rows.map((item, index) => {
-          this.warningMsg.push({
-            title: item.TunnelName,
-            region: item.RoadName,
-            PID: item.PID,
-            index: index,
-            OriginTime: transformDate(item.OriginTime),
-            OriginTime_MS: item.OriginTime_MS,
-            state: 'warning'
-          })
-        })
-      }).catch(err => console.log(err))
+      // window.axios.get('/Alarm/GetIndexAlarm').then(res => {
+      //   res.data.rows.map((item, index) => {
+      //     this.warningMsg.push({
+      //       title: item.TunnelName,
+      //       region: item.RoadName,
+      //       PID: item.PID,
+      //       index: index,
+      //       OriginTime: transformDate(item.OriginTime),
+      //       OriginTime_MS: item.OriginTime_MS,
+      //       state: 'warning'
+      //     })
+      //   })
+      // }).catch(err => console.log(err))
     },
 
     // 获取菜单
     getMenu () {
-      window.axios.get('/Home/GetMenu').then(res => {
-        let _data = res.data
+      api.getMenu().then(res => {
+        let _data = res
         for (let [, value] of Object.entries(_data)) {
           value.isShowSubNav = false
         }
@@ -138,7 +139,7 @@ export default {
         value.isShowSubNav = false
       }
       // 显示二级菜单容器，同时需要满足是否有子级
-      this.bShowSubNav = true && this.navList[index].MenuItems
+      this.bShowSubNav = true && this.navList[index].children
       this.navList[index].isShowSubNav = true
     },
 

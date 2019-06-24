@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Axios from './service/http'
+// import Axios from './service/http'
 import ElementUI from 'element-ui'
 import './common/scss/global.scss'
 import '../theme/index.css'
@@ -38,8 +38,7 @@ import '../theme/index.css'
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 // Vue.prototype.$echarts = echarts
-
-window.axios = Axios
+// window.axios = Axios
 
 /* eslint-disable no-new */
 new Vue({

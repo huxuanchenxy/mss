@@ -5,7 +5,7 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].TitleIcon" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].GroupName }} {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
     <div class="box">
@@ -21,13 +21,12 @@
           <div class="input-group">
             <label for="">权限组类型</label>
             <div class="inp">
-              <el-select v-model="actionType" filterable placeholder="请选择">
-                <el-option value="" label="所有"></el-option>
+              <el-select v-model="actionType" clearable filterable placeholder="请选择">
                 <el-option
                   v-for="item in actionTypeList"
                   :key="item.key"
-                  :label="item.SubTypeName"
-                  :value="item.SubTypeValue">
+                  :label="item.sub_code_name"
+                  :value="item.sub_code">
                 </el-option>
               </el-select>
             </div>
@@ -51,32 +50,32 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('ActionGroupID')">
+        <li class="list number c-pointer" @click="changeOrder('id')">
           权限组编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.ActionGroupID === 0 }, { 'el-icon-caret-top': headOrder.ActionGroupID === 1 }, { 'el-icon-caret-bottom': headOrder.ActionGroupID === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('GroupName')">
+        <li class="list name c-pointer" @click="changeOrder('group_name')">
           权限组名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.GroupName === 0 }, { 'el-icon-caret-top': headOrder.GroupName === 1 }, { 'el-icon-caret-bottom': headOrder.GroupName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.group_name === 0 }, { 'el-icon-caret-top': headOrder.group_name === 1 }, { 'el-icon-caret-bottom': headOrder.group_name === 2 }]"></i>
         </li>
         <li class="list number">权限组URL</li>
-        <li class="list number c-pointer" @click="changeOrder('GroupType')">
+        <li class="list number c-pointer" @click="changeOrder('group_type')">
           权限组类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.GroupType === 0 }, { 'el-icon-caret-top': headOrder.GroupType === 1 }, { 'el-icon-caret-bottom': headOrder.GroupType === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.group_type === 0 }, { 'el-icon-caret-top': headOrder.group_type === 1 }, { 'el-icon-caret-bottom': headOrder.group_type === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('GroupOrder')">
+        <li class="list number c-pointer" @click="changeOrder('group_order')">
           权限组顺序
-          <i :class="[{ 'el-icon-d-caret': headOrder.GroupOrder === 0 }, { 'el-icon-caret-top': headOrder.GroupOrder === 1 }, { 'el-icon-caret-bottom': headOrder.GroupOrder === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.group_order === 0 }, { 'el-icon-caret-top': headOrder.group_order === 1 }, { 'el-icon-caret-bottom': headOrder.group_order === 2 }]"></i>
         </li>
-        <li class="list number">权限组图标</li>
-        <li class="list number">标题图标</li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('LmTime')">
+        <li class="list number">默认图标</li>
+        <li class="list number">激活图标</li>
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmTime === 0 }, { 'el-icon-caret-top': headOrder.LmTime === 1 }, { 'el-icon-caret-bottom': headOrder.LmTime === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('LmName')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmName === 0 }, { 'el-icon-caret-top': headOrder.LmName === 1 }, { 'el-icon-caret-bottom': headOrder.LmName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
@@ -85,19 +84,19 @@
             <li class="list" v-for="(item) in ActionGroupList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editActionGroupID" :value="item.ActionGroupID" @change="emitEditID">
+                  <input type="checkbox" v-model="editActionGroupID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.ActionGroupID }}</div>
+                <div class="number">{{ item.id }}</div>
                 <div class="name">
-                  <router-link :to="{ name: 'SeeActionList', params: { id: item.ActionGroupID } }">{{ item.GroupName }}</router-link>
+                  <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.group_name }}</router-link>
                 </div>
-                <div class="number">{{ item.RequestUrl }}</div>
-                <div class="number">{{ item.GroupType }}</div>
-                <div class="number">{{ item.GroupOrder }}</div>
-                <div class="number">{{ item.Icon }}</div>
-                <div class="number">{{ item.TitleIcon }}</div>
-                <div class="last-update-time color-white">{{ item.LmTime }}</div>
-                <div class="last-maintainer">{{ item.LmName }}</div>
+                <div class="number">{{ item.request_url }}</div>
+                <div class="number">{{ item.group_type_name }}</div>
+                <div class="number">{{ item.group_order }}</div>
+                <div class="number">{{ item.icon }}</div>
+                <div class="number">{{ item.active_icon }}</div>
+                <div class="last-update-time color-white">{{ item.updated_time }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
@@ -135,6 +134,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'SeeActionGroupList',
   components: {
@@ -153,7 +153,7 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'ActionGroupID',
+        sort: 'id',
         order: 'asc'
       },
       dialogVisible: {
@@ -163,12 +163,12 @@ export default {
         btn: true
       },
       headOrder: {
-        ActionGroupID: 1,
-        GroupName: 0,
-        GroupType: 0,
-        GroupOrder: 0,
-        LmTime: 0,
-        LmName: 0
+        id: 1,
+        group_name: 0,
+        group_type: 0,
+        group_order: 0,
+        updated_time: 0,
+        updated_by: 0
       }
     }
   },
@@ -177,9 +177,7 @@ export default {
     this.init()
 
     // 权限组类型列表
-    window.axios.post('/Division/GetSubTypeValueByTypeValue', {
-      typeValue: 'ActionType'
-    }).then(res => {
+    api.getSubCode('group_type').then(res => {
       this.actionTypeList = res.data
     }).catch(err => console.log(err))
   },
@@ -196,12 +194,12 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.ActionGroupID = 0
-        this.headOrder.GroupName = 0
-        this.headOrder.GroupType = 0
-        this.headOrder.GroupOrder = 0
-        this.headOrder.LmName = 0
-        this.headOrder.LmTime = 0
+        this.headOrder.id = 0
+        this.headOrder.group_name = 0
+        this.headOrder.group_type = 0
+        this.headOrder.group_order = 0
+        this.headOrder.updated_by = 0
+        this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -220,17 +218,18 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
-      window.axios.post('/ActionGroup/GetActionGroup', {
+      let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchName: this.actionGroupName,
-        SearchType: this.actionType
-      }).then(res => {
+        searchName: this.actionGroupName,
+        searchType: this.actionType
+      }
+      api.getActionGroup(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.LmTime = transformDate(item.LmTime)
+          item.updated_time = transformDate(item.updated_time)
         })
         this.ActionGroupList = res.data.rows
         this.total = res.data.total
@@ -275,10 +274,8 @@ export default {
     },
     // 弹框确认是否删除
     dialogEnter () {
-      window.axios.post('/ActionGroup/DeleteActionGroup', {
-        ids: this.editActionGroupID.join(',')
-      }).then(res => {
-        if (res.data === 'OK') {
+      api.delActionGroup(this.editActionGroupID.join(',')).then(res => {
+        if (res.code === 0) {
           this.editActionGroupID = []
           this.$message({
             message: '删除成功',
@@ -286,16 +283,9 @@ export default {
           })
           this.currentPage = 1
           this.searchResult(1)
-        } else if (res.data === 'Fail') {
-          this.$message({
-            message: '删除失败',
-            type: 'error'
-          })
-          this.currentPage = 1
-          this.searchResult(1)
         } else {
           this.$message({
-            message: res.data,
+            message: res.msg,
             type: 'error'
           })
         }
@@ -318,7 +308,7 @@ export default {
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.ActionGroupList.map(val => this.editActionGroupID.push(val.ActionGroupID)) : this.editActionGroupID = []
+      this.bCheckAll ? this.ActionGroupList.map(val => this.editActionGroupID.push(val.id)) : this.editActionGroupID = []
       this.emitEditID()
     },
 

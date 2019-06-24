@@ -1,4 +1,4 @@
-/node_modules/
+﻿/node_modules/
 /dist/
 /设计稿/
 npm-debug.log*
@@ -7,7 +7,6 @@ yarn-error.log*
 .DS_Store
 test.json
 template*.json
-yarn.lock
 
 # Editor directories and files
 .idea

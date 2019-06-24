@@ -1,9 +1,13 @@
 <template>
-  <div
-    class="wrap"
+  <div class="wrap height-full"
     v-loading="loading"
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
+    <div class="con-padding-horizontal header">
+      <h2 class="title">
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
+      </h2>
+    </div>
     <div class="box">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
@@ -11,153 +15,115 @@
           <div class="input-group">
             <label for="name">用户名称</label>
             <div class="inp">
-              <el-input placeholder="请输入用户名称" v-model.trim="userName"></el-input>
+              <el-input v-model.trim="userName" placeholder="请输入用户名称"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="">使用权限</label>
+            <label for="">角色</label>
             <div class="inp">
-              <el-cascader
-                :options="actionInfo"
-                v-model="authority">
-              </el-cascader>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="">所属管廊</label>
-            <div class="inp">
-              <el-select v-model="tunnel" filterable placeholder="请选择">
-                <el-option value="" label="所有"></el-option>
+              <el-select v-model="role" clearable filterable placeholder="请选择">
                 <el-option
-                  v-for="item in tunnelList"
+                  v-for="item in roleList"
                   :key="item.key"
-                  :label="item.TunnelName"
-                  :value="item.TunnelID">
+                  :label="item.role_name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
           </div>
-          <div class="input-group">
-            <label for="">是否有效</label>
-            <div class="inp">
-              <el-select v-model="isDelete" placeholder="请选择">
-                <el-option value="" label="所有"></el-option>
-                <el-option value="0" label="有效"></el-option>
-                <el-option value="1" label="无效"></el-option>
-              </el-select>
-            </div>
-          </div>
         </div>
-        <div class="search-btn" @click="search">
+        <div class="search-btn" @click="searchRes">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button>添加</x-button></li>
+        <li class="list">
+          <x-button>
+            <router-link :to="{ name: 'AddUser', params: { mark: 'add' } }">添加</router-link>
+          </x-button>
+        </li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
-        <li class="list" @click="deleteRecovery"><x-button>删除恢复</x-button></li>
-        <li class="list" @click="setPassword"><x-button>密码重置</x-button></li>
-        <li class="list" @click="shrinkAllSubContent"><x-button>{{ shrinkAll.text }}</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
-      <div id="use-scroll" class="scroll">
+      <ul class="content-header">
+        <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
+        <li class="list number c-pointer" @click="changeOrder('id')">
+          用户编号
+          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('acc_name')">
+          登录账号
+          <i :class="[{ 'el-icon-d-caret': headOrder.acc_name === 0 }, { 'el-icon-caret-top': headOrder.acc_name === 1 }, { 'el-icon-caret-bottom': headOrder.acc_name === 2 }]"></i>
+        </li>
+        <li class="list name c-pointer" @click="changeOrder('user_name')">
+          姓名
+          <i :class="[{ 'el-icon-d-caret': headOrder.user_name === 0 }, { 'el-icon-caret-top': headOrder.user_name === 1 }, { 'el-icon-caret-bottom': headOrder.user_name === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('role_id')">
+          角色
+          <i :class="[{ 'el-icon-d-caret': headOrder.role_id === 0 }, { 'el-icon-caret-top': headOrder.role_id === 1 }, { 'el-icon-caret-bottom': headOrder.role_id === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('job_number')">
+          工号
+          <i :class="[{ 'el-icon-d-caret': headOrder.job_number === 0 }, { 'el-icon-caret-top': headOrder.job_number === 1 }, { 'el-icon-caret-bottom': headOrder.job_number === 2 }]"></i>
+        </li>
+        <li class="list number">职位</li>
+        <li class="list number">手机</li>
+        <li class="list number">邮件</li>
+        <!--<li class="list number">身份证</li>
+        <li class="list number">生日</li>
+        <li class="list number">性别</li>-->
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
+          最后更新时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
+        </li>
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
+          最后更新人
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
+        </li>
+      </ul>
+      <div class="scroll">
         <el-scrollbar>
-          <!--  :style="{ 'width': tableHeaderWidth }" -->
-          <ul class="content-header">
-            <li class="btn-wrap"></li>
-            <li class="list">
-              <input type="checkbox" v-model="bCheckAll" @change="checkAll">
-            </li>
-            <li class="list number c-pointer" @click="changeOrder('UserID')">
-              用户编号
-              <i :class="[{ 'el-icon-d-caret': headOrder.UserID === 0 }, { 'el-icon-caret-top': headOrder.UserID === 1 }, { 'el-icon-caret-bottom': headOrder.UserID === 2 }]"></i>
-            </li>
-            <li class="list name c-pointer" @click="changeOrder('UserName')">
-              用户名称
-              <i :class="[{ 'el-icon-d-caret': headOrder.UserName === 0 }, { 'el-icon-caret-top': headOrder.UserName === 1 }, { 'el-icon-caret-bottom': headOrder.UserName === 2 }]"></i>
-            </li>
-            <li class="list phone">手机号码</li>
-            <li class="list email">电子邮箱</li>
-            <li class="list last-update-time color-white c-pointer" @click="changeOrder('LmTime')">
-              最后更新时间
-              <i :class="[{ 'el-icon-d-caret': headOrder.LmTime === 0 }, { 'el-icon-caret-top': headOrder.LmTime === 1 }, { 'el-icon-caret-bottom': headOrder.LmTime === 2 }]"></i>
-            </li>
-            <li class="list last-maintainer c-pointer" @click="changeOrder('LmName')">
-              最后更新人
-              <i :class="[{ 'el-icon-d-caret': headOrder.LmName === 0 }, { 'el-icon-caret-top': headOrder.LmName === 1 }, { 'el-icon-caret-bottom': headOrder.LmName === 2 }]"></i>
-            </li>
-            <li class="list state c-pointer" @click="changeOrder('IsDelete')">
-              状态
-              <i :class="[{ 'el-icon-d-caret': headOrder.IsDelete === 0 }, { 'el-icon-caret-top': headOrder.IsDelete === 1 }, { 'el-icon-caret-bottom': headOrder.IsDelete === 2 }]"></i>
-            </li>
-            <li class="list branch c-pointer" @click="changeOrder('Department')">
-              所属部门
-              <i :class="[{ 'el-icon-d-caret': headOrder.Department === 0 }, { 'el-icon-caret-top': headOrder.Department === 1 }, { 'el-icon-caret-bottom': headOrder.Department === 2 }]"></i>
-            </li>
-            <li class="list gallery" :style="{ width: galleryWidth }">
-              <p>所属管廊</p>
-              <ul class="gallery-list-wrap">
-                <li class="gallery-list" v-for="item in galleryList" :key="item.key">
-                  <el-tooltip :content="item" placement="top"><div class="con">{{ item }}</div></el-tooltip>
-                </li>
-              </ul>
+          <ul class="list-wrap">
+            <li class="list" v-for="(item) in UserList" :key="item.key">
+              <div class="list-content">
+                <div class="checkbox">
+                  <input type="checkbox" v-model="editUserID" :value="item.id" @change="emitEditID">
+                </div>
+                <div class="number">{{ item.id }}</div>
+                <div class="number">{{ item.acc_name }}</div>
+                <!--<div class="name">
+                  <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.user_name }}</router-link>
+                </div>-->
+                <div class="number">{{ item.user_name }}</div>
+                <div class="number">{{ item.role_name }}</div>
+                <div class="number">{{ item.job_number }}</div>
+                <div class="number">{{ item.position }}</div>
+                <div class="number">{{ item.mobile }}</div>
+                <div class="number">{{ item.email }}</div>
+                <!--<div class="number">{{ item.id_card }}</div>
+                <div class="number">{{ item.birth }}</div>
+                <div class="number">{{ item.sex }}</div>-->
+                <div class="last-update-time color-white">{{ item.updated_time }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
+              </div>
             </li>
           </ul>
-          <div class="scroll-1">
-            <el-scrollbar>
-              <ul class="list-wrap">
-                <li class="list" v-for="(item, index) in userList" :key="item.key">
-                  <div class="list-content">
-                    <div class="btn-wrap" title="展开" @click="shrinkSubContent(index, item.UserID, item.MyAction.length)">
-                      <i class="iconfont icon-arrow-top-f" :class="{ active: item.isShowSubCon }"></i>
-                    </div>
-                    <div class="checkbox">
-                      <input type="checkbox" v-model="editUserID" :value="item.UserID" @change="emitEditID">
-                    </div>
-                    <div class="number">{{ item.UserID }}</div>
-                    <div class="name">{{ item.UserName }}</div>
-                    <div class="phone">{{ item.Mobile === null ? '--' : item.Mobile }}</div>
-                    <div class="email">{{ item.Email === null ? '--' : item.Email }}</div>
-                    <div class="last-update-time color-white">{{ item.LmTime }}</div>
-                    <div class="last-maintainer">{{ item.LmName }}</div>
-                    <div class="state">{{ item.IsDelete === 0 ? '有效' : '无效' }}</div>
-                    <div class="branch">{{ item.Department === null ? '--' : item.Department }}</div>
-                    <div class="gallery" :style="{ width: galleryWidth }">
-                      <ul class="gallery-list-wrap">
-                        <li class="gallery-list" v-for="gallery in item.Tunnels" :key="gallery.key">
-                          <i v-if="gallery" class="el-icon-star-on"></i>
-                          <span v-else>--</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <ul class="sub-content" :class="{ active: item.isShowSubCon }">
-                    <li class="sub-con-list" v-for="sub in item.MyAction" :key="sub.key">
-                      <div class="left-title">{{ sub.text }}</div>
-                      <ul class="right-wrap">
-                        <li class="list" v-for="three in sub.children" :key="three.key">{{ three.text }}</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-              <!-- 分页 -->
-              <el-pagination
-                :current-page.sync="currentPage"
-                @current-change="handleCurrentChange"
-                @prev-click="prevPage"
-                @next-click="nextPage"
-                layout="slot, jumper, prev, pager, next"
-                prev-text="上一页"
-                next-text="下一页"
-                :total="total">
-                <span>总共 {{ total }} 条记录</span>
-              </el-pagination>
-            </el-scrollbar>
-          </div>
+        <!-- 分页 -->
+          <el-pagination
+            :current-page.sync="currentPage"
+            @current-change="handleCurrentChange"
+            @prev-click="prevPage"
+            @next-click="nextPage"
+            layout="slot, jumper, prev, pager, next"
+            prev-text="上一页"
+            next-text="下一页"
+            :total="total">
+            <span>总共 {{ total }} 条记录</span>
+          </el-pagination>
         </el-scrollbar>
       </div>
     </div>
@@ -165,7 +131,6 @@
     <el-dialog
       :visible.sync="dialogVisible.isShow"
       :modal-append-to-body="false"
-      :close-on-click-modal="false"
       :show-close="false">
       {{ dialogVisible.text }}
       <template slot="footer" class="dialog-footer">
@@ -181,6 +146,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'SeeUserList',
   components: {
@@ -188,25 +154,18 @@ export default {
   },
   data () {
     return {
-      tableHeaderWidth: '100%',
-      userList: [],
+      title: ' | 用户管理',
       userName: '',
-      authority: [],
-      actionInfo: [],
-      tunnel: '',
-      tunnelList: [],
-      getEditUserID: '',
-      isDelete: '',
+      role: '',
+      roleList: [],
+      UserList: [],
       editUserID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
       loading: false,
-      // 所属管廊宽度
-      galleryWidth: '40%',
-      galleryList: [],
       currentSort: {
-        sort: 'UserID',
+        sort: 'id',
         order: 'asc'
       },
       dialogVisible: {
@@ -215,203 +174,46 @@ export default {
         // true 为两个按钮，false 为一个按钮
         btn: true
       },
-      shrinkAll: {
-        text: '全部展开',
-        mark: true
-      },
       headOrder: {
-        UserID: 1,
-        UserName: 0,
-        LmTime: 0,
-        LmName: 0,
-        IsDelete: 0,
-        Department: 0
-      } // 默认UserID升序asc，箭头朝上，同时只可能按照一个字段排序，不排序的字段不出现箭头,0不排序、1升序、2降序，切换时默认升序
+        id: 1,
+        acc_name: 0,
+        user_name: 0,
+        role_id: 0,
+        job_number: 0,
+        updated_time: 0,
+        updated_by: 0
+      }
     }
   },
   created () {
+    this.$emit('title', '| 用户')
     this.init()
-    // 权限列表
-    window.axios.get('/ActionInfo/GetActionInfoForElCascader').then(res => {
-      this.actionInfo = res.data
-      this.actionInfo.unshift({value: '', label: '所有'})
+
+    // 角色列表
+    api.getRoleAll().then(res => {
+      this.roleList = res.data
     }).catch(err => console.log(err))
-    // 管廊列表
-    window.axios.get('/UtilityTunnel/GetUtilityTunnel').then(res => (this.tunnelList = res.data)).catch(err => console.log(err))
   },
-  watch: {
-    galleryWidth () {
-      let oScrollView = document.querySelector('#use-scroll .el-scrollbar__view')
-      oScrollView.style.width = `${oScrollView.offsetWidth + parseFloat(this.galleryWidth)}px`
-    }
+  activated () {
+    this.searchResult(this.currentPage)
   },
   methods: {
     init () {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      this.searchResult(1)
-    },
-
-    // 添加用户
-    add () {
-      this.$router.push({
-        name: 'AddUser',
-        query: { t: 'add' }
-      })
-    },
-
-    // 修改用户
-    edit () {
-      if (!this.editUserID.length) {
-        this.$message({
-          message: '请选择需要修改的用户',
-          duration: 2000,
-          type: 'warning'
-        })
-      } else if (this.editUserID.length > 1) {
-        this.$message({
-          message: '修改的用户不能超过1个',
-          duration: 2000,
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'AddUser',
-          query: { t: 'edit', id: this.editUserID }
-        })
-      }
-    },
-
-    // 删除用户
-    remove () {
-      if (!this.editUserID.length) {
-        this.$message({
-          message: '请选择需要删除的用户',
-          type: 'warning'
-        })
-      } else if (!this.editUserID.length) { // 需要切换到界面模式，获取对象数据，根据对象数据中是否含有失效用户进行判断
-        this.$message({
-          message: '失效用户无需删除',
-          type: 'warning'
-        })
-      } else {
-        this.dialogVisible.isShow = true
-        this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条用户信息?'
-        this.dialogWhich = 1
-      }
-    },
-
-    // 弹框确认是否删除
-    dialogEnter () {
-      if (this.dialogWhich === 1) {
-        window.axios.post('/UserInfo/DeleteUserInfo', {
-          ids: this.editUserID.join(',')
-        }).then(res => {
-          if (res.data === 'OK') {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.init()
-          } else {
-            this.$message({
-              message: '删除失败',
-              type: 'error'
-            })
-          }
-          // 隐藏dialog
-          this.dialogVisible.isShow = false
-        }).catch(err => console.log(err))
-      } else if (this.dialogWhich === 2) {
-        window.axios.post('/UserInfo/ReDeleteUserInfo', {
-          ids: this.editUserID.join(',')
-        }).then(res => {
-          if (res.data === 'OK') {
-            this.$message({
-              message: '恢复成功',
-              type: 'success'
-            })
-            this.init()
-          } else {
-            this.$message({
-              message: '恢复失败',
-              type: 'error'
-            })
-          }
-          // this.dialogVisible.isShow = true
-          // this.dialogVisible.btn = false
-          // this.dialogVisible.text = '您所选择的删除用户信息已恢复'
-          // 隐藏dialog
-          this.dialogVisible.isShow = false
-        }).catch(err => console.log(err))
-      } else if (this.dialogWhich === 3) {
-        window.axios.post('/UserInfo/UserInfoSet', {
-          ids: this.editUserID.join(',')
-        }).then(res => {
-          if (res.data === 'OK') {
-            this.$message({
-              message: '密码重置成功',
-              type: 'success'
-            })
-            this.init()
-          } else {
-            this.$message({
-              message: '密码重置失败',
-              type: 'error'
-            })
-          }
-          // 隐藏dialog
-          this.dialogVisible.isShow = false
-        }).catch(err => console.log(err))
-      }
-    },
-
-    // 删除恢复
-    deleteRecovery () {
-      if (!this.editUserID.length) {
-        this.$message({
-          message: '请选择需要恢复的用户',
-          type: 'warning'
-        })
-      } else if (!this.editUserID.length) { // 需要切换到界面模式，获取对象数据，根据对象数据中是否含有有效用户进行判断
-        this.$message({
-          message: '有效用户无需恢复',
-          type: 'warning'
-        })
-      } else {
-        this.dialogVisible.isShow = true
-        this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定恢复该条用户信息?'
-        this.dialogWhich = 2
-      }
-    },
-
-    // 密码重置
-    setPassword () {
-      if (!this.editUserID.length) {
-        this.$message({
-          message: '请选择需要密码重置的用户',
-          type: 'warning'
-        })
-      } else {
-        this.dialogVisible.isShow = true
-        this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定该用户密码重置?'
-        this.dialogWhich = 3
-      }
+      // this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
-      // console.log(this.headOrder[sort])
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.UserID = 0
-        this.headOrder.UserName = 0
-        this.headOrder.LmTime = 0
-        this.headOrder.LmName = 0
-        this.headOrder.IsDelete = 0
-        this.headOrder.Department = 0
+        this.headOrder.id = 0
+        this.headOrder.acc_name = 0
+        this.headOrder.user_name = 0
+        this.headOrder.role_id = 0
+        this.headOrder.job_number = 0
+        this.headOrder.updated_by = 0
+        this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -426,61 +228,91 @@ export default {
       this.checkAll()
       this.searchResult(this.currentPage)
     },
-
-    // 按钮搜索
-    search () {
-      this.searchResult(1)
-    },
-
     // 搜索
     searchResult (page) {
-      this.$emit('title', '| 用户定义')
       this.currentPage = page
       this.loading = true
-      window.axios.post('/UserInfo/GetUserInfo', {
+      let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchName: this.userName,
-        SearchRole: this.authority[1],
-        searchIsDelete: this.isDelete,
-        SearchTunnel: this.tunnel
-      }).then(res => {
+        searchName: this.userName,
+        searchRole: this.role
+      }
+      api.getUser(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.isShowSubCon = false
-          item.LmTime = transformDate(item.LmTime)
+          item.updated_time = transformDate(item.updated_time)
         })
+        this.UserList = res.data.rows
         this.total = res.data.total
-        this.userList = res.data.rows
-        this.galleryWidth = `${res.data.tunnels.length * 80}px`
-        this.galleryList = res.data.tunnels
       }).catch(err => console.log(err))
     },
 
-    // 收起展开权限列表
-    shrinkSubContent (index, id, length) {
-      this.userList[index].isShowSubCon ? this.userList[index].isShowSubCon = true : this.userList[index].isShowSubCon = false
-      this.userList[index].isShowSubCon = !this.userList[index].isShowSubCon
-    },
-
-    // 全部展开、收起
-    shrinkAllSubContent () {
-      if (this.shrinkAll.mark) {
-        this.shrinkAll.text = '全部收起'
-        this.userList.map(item => {
-          item.isShowSubCon = true
-          item.height = `${item.MyAction.length * 41}px`
+    // 修改用户
+    edit () {
+      if (!this.editUserID.length) {
+        this.$message({
+          message: '请选择需要修改的用户',
+          type: 'warning'
+        })
+      } else if (this.editUserID.length > 1) {
+        this.$message({
+          message: '修改的用户不能超过1个',
+          type: 'warning'
         })
       } else {
-        this.shrinkAll.text = '全部展开'
-        this.userList.map(item => {
-          item.isShowSubCon = false
-          item.height = '0px'
+        this.$router.push({
+          name: 'AddUser',
+          params: {
+            id: this.editUserID[0],
+            mark: 'edit'
+          }
         })
       }
-      this.shrinkAll.mark = !this.shrinkAll.mark
+    },
+
+    // 删除用户
+    remove () {
+      if (!this.editUserID.length) {
+        this.$message({
+          message: '请选择需要删除的用户',
+          type: 'warning'
+        })
+      } else {
+        this.dialogVisible.isShow = true
+        this.dialogVisible.btn = true
+        this.dialogVisible.text = '确定删除该条用户信息?'
+      }
+    },
+    // 弹框确认是否删除
+    dialogEnter () {
+      api.delUser(this.editUserID.join(',')).then(res => {
+        if (res.code === 0) {
+          this.editUserID = []
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.currentPage = 1
+          this.searchResult(1)
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        // 隐藏dialog
+        this.dialogVisible.isShow = false
+      }).catch(err => console.log(err))
+    },
+    // 搜索功能
+    searchRes () {
+      this.$emit('title', '| 用户管理')
+      this.loading = true
+      this.init()
+      this.searchResult(1)
     },
 
     // 获取修改用户id
@@ -490,7 +322,7 @@ export default {
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.userList.map(val => this.editUserID.push(val.UserID)) : this.editUserID = []
+      this.bCheckAll ? this.UserList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
       this.emitEditID()
     },
 
@@ -521,145 +353,27 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-// 当前内容页面总高度
-$height: $content-height - 56;
-.wrap{
-  height: percent($height, $content-height);
-}
-
-.box{
-  height: percent(145, $height);
-}
-
-// 搜索组
-.search-wrap{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: percent(80, 145);
-  background: rgba(128, 128, 128, 0.1);
-  color: $color-white;
-
-  .wrap{
-    display: flex;
-  }
-
-  .input-group{
-    display: inherit;
-    align-items: center;
-    margin-right: PXtoEm(24);
-  }
-
-  label{
-    width: PXtoEm(32);
-  }
-
-  .inp{
-    width: PXtoEm(160);
-    margin-left: PXtoEm(10);
-  }
-
-  .btn{
-    border: 0;
-    background: $color-main-btn;
-  }
-}
-
-.btn-group{
-  display: flex;
-  align-items: center;
-  height: percent(65, 145);
-
-  .list{
-    margin-right: PXtoEm(10);
-  }
-
-  .btn{
-    &:hover{
-      border-color: $color-main-btn;
-      background: $color-main-btn;
-    }
-  }
-}
+$con-height: $content-height - 145 - 56;
 // 内容区
 .content-wrap{
-  height: percent($height - 145, $height);
   overflow: hidden;
+  height: percent($con-height, $content-height);
   text-align: center;
-
   .content-header{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: percent(50, $height - 145);
+    height: percent(50, $con-height);
     padding: 0 PXtoEm(24);
     background: rgba(36,128,198,.5);
 
-    .gallery{
-      p{
-        margin-left: 10px;
-      }
-    }
-
-    .gallery-list{
-      height: 20px;
-      font-size: $font-size-small;
+    .last-update-time{
+      color: $color-white;
     }
   }
 
   .scroll{
-    overflow-y: hidden;
-    height: 100%;
-
-    /deep/ .el-scrollbar__view{
-      overflow-y: hidden;
-      width: 100%;
-      height: 100%;
-
-      .el-scrollbar__view{
-        height: auto;
-      }
-
-      .el-scrollbar__bar{
-        &.is-vertical{
-          display: block;
-          position: fixed;
-          bottom: 0 !important;
-          top: initial;
-          height: 54.5%;
-        }
-      }
-    }
-
-    /deep/ .el-scrollbar__bar{
-      &.is-horizontal{
-        display: block !important;
-      }
-
-      &.is-vertical{
-        display: none;
-      }
-    }
-  }
-
-  // 列表滚动区域
-  .scroll-1{
-    height: percent($height - 50, $height);
-  }
-
-  // 所属管廊
-  .gallery-list-wrap{
-    display: flex;
-    justify-content: space-between;
-    margin-left: 10px;
-
-    .gallery-list{
-      width: 50px;
-      .con{
-        width: 100%;
-        @extend %ellipsis;
-      }
-    }
+    height: percent($con-height - 50, $con-height);
   }
 
   .list-wrap{
@@ -676,11 +390,14 @@ $height: $content-height - 56;
       justify-content: space-between;
       align-items: center;
       padding: PXtoEm(15) PXtoEm(24);
+
+      div{
+        word-break: break-all;
+      }
     }
 
     .left-title{
-      width: 100px;
-      margin-left: 5%;
+      margin-right: 10px;
       font-weight: bold;
     }
 
@@ -695,59 +412,50 @@ $height: $content-height - 56;
       &.active{
         overflow: inherit;
         height: auto;
+        transition: .7s .2s;
       }
     }
 
     .sub-con-list{
       display: flex;
-      padding: 0 PXtoEm(24);
+      padding: PXtoEm(15) PXtoEm(24);
       border-top: 1px solid $color-main-background;
       background: rgba(0,0,0,.2);
-      line-height: 40px;
 
       .right-wrap{
         display: flex;
         flex-wrap: wrap;
-        width: 80%;
       }
 
       .list{
-        width: 130px;
-        margin-left: 10px;
-      }
-    }
-  }
-
-  .btn-wrap{
-    width: 40px;
-    font-size: 18px;
-    text-align: left;
-
-    .icon-arrow-top-f{
-      display: inline-block;
-      transition: .5s;
-      cursor: pointer;
-
-      &.active{
-        transform: rotateZ(180deg);
+        margin-right: 10px;
       }
     }
   }
 
   .number,
   .name,
-  .branch,
-  .state,
-  .phone,
-  .email,
-  .last-maintainer{
-    width: 100px;
-    word-break: break-all;
+  .btn-wrap{
+    width: 10%;
+  }
+
+  .name{
+    a{
+      color: #42abfd;
+    }
   }
 
   .last-update-time{
-    width: 200px;
+    width: 18%;
     color: $color-content-text;
+  }
+
+  .last-maintainer{
+    width: 10%;
+  }
+
+  .state{
+    width: 5%;
   }
 }
 </style>

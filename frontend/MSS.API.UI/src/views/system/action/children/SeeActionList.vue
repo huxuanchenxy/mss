@@ -5,7 +5,7 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].TitleIcon" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].GroupName }} {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
     <div class="box">
@@ -21,13 +21,25 @@
           <div class="input-group">
             <label for="">权限组</label>
             <div class="inp">
-              <el-select v-model="searchActionGroup" filterable placeholder="请选择">
-                <el-option value="" label="所有"></el-option>
+              <el-select v-model="searchActionGroup" clearable filterable placeholder="请选择">
                 <el-option
                   v-for="item in actionGroupList"
                   :key="item.key"
-                  :label="item.GroupName"
-                  :value="item.ActionGroupID">
+                  :label="item.group_name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">所属菜单</label>
+            <div class="inp">
+              <el-select v-model="searchMenu" clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in parentMenuList"
+                  :key="item.key"
+                  :label="item.action_name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
@@ -49,30 +61,34 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('ActionID')">
+        <li class="list number c-pointer" @click="changeOrder('id')">
           权限编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.ActionID === 0 }, { 'el-icon-caret-top': headOrder.ActionID === 1 }, { 'el-icon-caret-bottom': headOrder.ActionID === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('ActionName')">
+        <li class="list name c-pointer" @click="changeOrder('action_name')">
           权限名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.ActionName === 0 }, { 'el-icon-caret-top': headOrder.ActionName === 1 }, { 'el-icon-caret-bottom': headOrder.ActionName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.action_name === 0 }, { 'el-icon-caret-top': headOrder.action_name === 1 }, { 'el-icon-caret-bottom': headOrder.action_name === 2 }]"></i>
         </li>
         <li class="list url">权限URL</li>
-        <li class="list name c-pointer" @click="changeOrder('GroupName')">
+        <li class="list name c-pointer" @click="changeOrder('group_id')">
           权限组
-          <i :class="[{ 'el-icon-d-caret': headOrder.GroupName === 0 }, { 'el-icon-caret-top': headOrder.GroupName === 1 }, { 'el-icon-caret-bottom': headOrder.GroupName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.group_id === 0 }, { 'el-icon-caret-top': headOrder.group_id === 1 }, { 'el-icon-caret-bottom': headOrder.group_id === 2 }]"></i>
         </li>
-        <li class="list menuOrder c-pointer" @click="changeOrder('MenuOrder')">
+        <li class="list name c-pointer" @click="changeOrder('parent_menu')">
+          所属菜单
+          <i :class="[{ 'el-icon-d-caret': headOrder.parent_menu === 0 }, { 'el-icon-caret-top': headOrder.parent_menu === 1 }, { 'el-icon-caret-bottom': headOrder.parent_menu === 2 }]"></i>
+        </li>
+        <li class="list menuOrder c-pointer" @click="changeOrder('action_order')">
           权限顺序
-          <i :class="[{ 'el-icon-d-caret': headOrder.MenuOrder === 0 }, { 'el-icon-caret-top': headOrder.MenuOrder === 1 }, { 'el-icon-caret-bottom': headOrder.MenuOrder === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.action_order === 0 }, { 'el-icon-caret-top': headOrder.action_order === 1 }, { 'el-icon-caret-bottom': headOrder.action_order === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('LmTime')">
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmTime === 0 }, { 'el-icon-caret-top': headOrder.LmTime === 1 }, { 'el-icon-caret-bottom': headOrder.LmTime === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('LmName')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmName === 0 }, { 'el-icon-caret-top': headOrder.LmName === 1 }, { 'el-icon-caret-bottom': headOrder.LmName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
@@ -81,15 +97,16 @@
             <li class="list" v-for="item in ActionGroupList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editActionID" :value="item.ActionID" @change="emitEditID">
+                  <input type="checkbox" v-model="editActionID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.ActionID }}</div>
-                <div class="name word-break">{{ item.ActionName }}</div>
-                <div class="url word-break">{{ item.RequestUrl }}</div>
-                <div class="name word-break">{{ item.GroupName }}</div>
-                <div class="menuOrder word-break">{{ item.MenuOrder }}</div>
-                <div class="last-update-time color-white word-break">{{ item.LmTime }}</div>
-                <div class="last-maintainer word-break">{{ item.LmName }}</div>
+                <div class="number">{{ item.id }}</div>
+                <div class="name word-break">{{ item.action_name }}</div>
+                <div class="url word-break">{{ item.request_url }}</div>
+                <div class="name word-break">{{ item.group_name }}</div>
+                <div class="name word-break">{{ item.parent_name }}</div>
+                <div class="menuOrder word-break">{{ item.action_order }}</div>
+                <div class="last-update-time color-white word-break">{{ item.updated_time }}</div>
+                <div class="last-maintainer word-break">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
@@ -127,6 +144,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'SeeActionList',
   components: {
@@ -137,6 +155,8 @@ export default {
       title: ' | 权限定义',
       actionName: '',
       searchActionGroup: '',
+      searchMenu: '',
+      parentMenuList: [],
       actionGroupList: [],
       ActionGroupList: [],
       editActionID: [],
@@ -145,7 +165,7 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'ActionID',
+        sort: 'id',
         order: 'asc'
       },
       dialogVisible: {
@@ -155,12 +175,13 @@ export default {
         btn: true
       },
       headOrder: {
-        ActionID: 1,
-        ActionName: 0,
-        GroupName: 0,
-        MenuOrder: 0,
-        LmTime: 0,
-        LmName: 0
+        id: 1,
+        action_name: 0,
+        group_id: 0,
+        parent_menu: 0,
+        action_order: 0,
+        updated_time: 0,
+        updated_by: 0
       }
     }
   },
@@ -171,8 +192,12 @@ export default {
     }
     this.init()
     // 权限组列表
-    window.axios.post('/ActionGroup/GetAll').then(res => {
+    api.getActionGroupAll().then(res => {
       this.actionGroupList = res.data
+    }).catch(err => console.log(err))
+    // 菜单组列表
+    api.getActionMenu().then(res => {
+      this.parentMenuList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
@@ -188,12 +213,12 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.ActionID = 0
-        this.headOrder.ActionName = 0
-        this.headOrder.GroupName = 0
-        this.headOrder.MenuOrder = 0
-        this.headOrder.LmName = 0
-        this.headOrder.LmTime = 0
+        this.headOrder.id = 0
+        this.headOrder.action_name = 0
+        this.headOrder.group_id = 0
+        this.headOrder.action_order = 0
+        this.headOrder.updated_by = 0
+        this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -212,19 +237,24 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
-      window.axios.post('/ActionInfo/GetActionInfo', {
+      api.getAction({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchName: this.actionName,
-        SearchActionGroup: this.searchActionGroup
+        searchName: this.actionName,
+        searchGroup: this.searchActionGroup,
+        searchParent: this.searchMenu
       }).then(res => {
         this.loading = false
-        res.data.rows.map(item => {
-          item.LmTime = transformDate(item.LmTime)
-        })
-        this.ActionGroupList = res.data.rows
+        if (res.data.total === 0) {
+          this.ActionGroupList = []
+        } else {
+          res.data.rows.map(item => {
+            item.updated_time = transformDate(item.updated_time)
+          })
+          this.ActionGroupList = res.data.rows
+        }
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
@@ -276,10 +306,8 @@ export default {
 
     // 弹框确认是否删除
     dialogEnter () {
-      window.axios.post('/ActionInfo/DeleteActionInfo', {
-        ids: this.editActionID.join(',')
-      }).then(res => {
-        if (res.data === 'OK') {
+      api.delAction(this.editActionID.join(',')).then(res => {
+        if (res.code === 0) {
           this.editActionID = []
           this.$message({
             message: '删除成功',
@@ -305,7 +333,7 @@ export default {
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.ActionGroupList.map(val => this.editActionID.push(val.ActionID)) : this.editActionID = []
+      this.bCheckAll ? this.ActionGroupList.map(val => this.editActionID.push(val.id)) : this.editActionID = []
       this.emitEditID()
     },
 

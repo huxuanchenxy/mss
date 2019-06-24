@@ -6,7 +6,7 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].TitleIcon" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].GroupName }} {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
       <x-button class="active">
         <router-link :to="{name:'SeeActionGroupList'}">返回</router-link>
@@ -44,9 +44,9 @@
           <div class="inp-wrap">
             <span class="text">权限组类型<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-select v-model="groupType.text" placeholder="请选择" @change="validateSelect()">
+              <el-select v-model="groupType.text" clearable placeholder="请选择" @change="validateSelect()">
                 <el-option value="" label="请选择"></el-option>
-                <el-option v-for="item in groupTypeList" :key="item.key" :value="item.SubTypeValue" :label="item.SubTypeName"></el-option>
+                <el-option v-for="item in groupTypeList" :key="item.key" :value="item.sub_code" :label="item.sub_code_name"></el-option>
               </el-select>
             </div>
           </div>
@@ -92,6 +92,7 @@
 <script>
 import { validateInputCommon, validateNumberCommon, vInput } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'AddActionGroup',
   components: {
@@ -135,18 +136,16 @@ export default {
       this.loading = false
       this.title = '| 添加权限组'
       // this.$emit('title', '| 添加权限组')
-      this.btnText = '确认'
+      // this.btnText = '确认'
     } else if (this.isShow === 'edit') {
       this.loading = true
       this.title = '| 修改权限组'
       // this.$emit('title', '| 修改权限组')
-      this.btnText = '保存'
+      // this.btnText = '保存'
       this.getActionGroup()
     }
-    // 权限组类型
-    window.axios.post('/Division/GetSubTypeValueByTypeValue', {
-      typeValue: 'ActionType'
-    }).then(res => {
+    // 权限组类型列表
+    api.getSubCode('group_type').then(res => {
       this.groupTypeList = res.data
     }).catch(err => console.log(err))
   },
@@ -160,17 +159,18 @@ export default {
         })
         return
       }
+      let actionGroup = {
+        group_name: this.groupName.text,
+        group_type: this.groupType.text,
+        group_order: this.groupOrder.text,
+        request_url: this.groupUrl.text,
+        icon: this.groupIcon.text,
+        active_icon: this.titleIcon.text
+      }
       if (this.isShow === 'add') {
         // 添加权限组
-        window.axios.post('/ActionGroup/AddActionGroup', {
-          GroupName: this.groupName.text,
-          GroupType: this.groupType.text,
-          GroupOrder: this.groupOrder.text,
-          RequestUrl: this.groupUrl.text,
-          Icon: this.groupIcon.text,
-          TitleIcon: this.titleIcon.text
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.addActionGroup(actionGroup).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '添加成功',
               type: 'success',
@@ -180,35 +180,18 @@ export default {
                 })
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '添加失败',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeActionGroupList'
-                })
-              }
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
+        actionGroup.id = this.actionGroupID
         // 修改权限组
-        window.axios.post('/ActionGroup/UpdateActionGroup', {
-          ActionGroupID: this.actionGroupID,
-          GroupName: this.groupName.text,
-          GroupType: this.groupType.text,
-          GroupOrder: this.groupOrder.text,
-          RequestUrl: this.groupUrl.text,
-          Icon: this.groupIcon.text,
-          TitleIcon: this.titleIcon.text
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.updateActionGroup(actionGroup).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '修改成功',
               type: 'success',
@@ -218,19 +201,9 @@ export default {
                 })
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '修改失败',
-              type: 'error',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeActionGroupList'
-                })
-              }
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
@@ -239,18 +212,16 @@ export default {
     },
     // 修改权限组时获取权限组资料
     getActionGroup () {
-      window.axios.post('/ActionGroup/BindActionGroup', {
-        ID: this.editActionGroupID
-      }).then(res => {
+      api.getActionGroupByID(this.editActionGroupID).then(res => {
         this.loading = false
         let _res = res.data
-        this.actionGroupID = _res.ActionGroupID
-        this.groupName.text = _res.GroupName
-        this.groupType.text = _res.GroupType
-        this.groupOrder.text = _res.GroupOrder.toString()
-        this.groupUrl.text = _res.RequestUrl
-        this.groupIcon.text = _res.Icon
-        this.titleIcon.text = _res.TitleIcon
+        this.actionGroupID = _res.id
+        this.groupName.text = _res.group_name
+        this.groupType.text = _res.group_type.toString()
+        this.groupOrder.text = _res.group_order.toString()
+        this.groupUrl.text = _res.request_url
+        this.groupIcon.text = _res.icon
+        this.titleIcon.text = _res.active_icon
       }).catch(err => console.log(err))
     },
     // 验证

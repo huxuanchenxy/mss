@@ -47,24 +47,24 @@ export const getDate = (type = 'week') => {
 
 // 转换内容区域中间的时间 "/Date(1523845477000)/" 无时分秒
 export const transformDate = str => {
-  let result = ''
-  str.replace(/\/\w+\((\d+)\)\//, ($1, $2) => {
-    let date = new Date(+$2)
-    // result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
-    result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-  })
-  return result
+  // let result = ''
+  // str.replace(/\/\w+\((\d+)\)\//, ($1, $2) => {
+  //   let date = new Date(+$2)
+  //   // result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
+  //   result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  // })
+  return str.replace('T', ' ')
 }
 
 // 转换内容区域中间的时间 "/Date(1523845477000)/" 有时分秒
-export const transformTime = str => {
-  let result = ''
-  str.replace(/\/\w+\((\d+)\)\//, ($1, $2) => {
-    let date = new Date(+$2)
-    result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
-  })
-  return result
-}
+// export const transformTime = str => {
+//   let result = ''
+//   str.replace(/\/\w+\((\d+)\)\//, ($1, $2) => {
+//     let date = new Date(+$2)
+//     result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
+//   })
+//   return result
+// }
 
 export const addDate = (date, days) => {
   var d = new Date(date)

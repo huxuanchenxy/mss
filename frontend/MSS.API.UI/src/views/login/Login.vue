@@ -59,17 +59,18 @@
 </template>
 <script>
 import canvasDraw from './js/canvas'
+import api from '@/api/loginApi'
 export default {
   name: 'Login',
   data () {
     return {
       userName: {
-        str: '',
+        str: 'seari',
         active: false,
         isShowIcon: 'hide'
       },
       userPassword: {
-        str: '',
+        str: '123456',
         active: false,
         isShowIcon: 'hide'
       },
@@ -101,29 +102,21 @@ export default {
         this.userPassword.isShowIcon = 'error'
         return
       }
-      window.axios.post('/Login/CheckUserLogin', {
-        UserID: this.userName.str,
-        Password: this.userPassword.str
-      }).then(res => {
-        let ret = res.data.result
-        if (ret === 'OK') {
+      let param = {
+        username: this.userName.str,
+        password: this.userPassword.str
+      }
+      api.Login(param).then((res) => {
+        if (res.code === 0) {
           this.userName.isShowIcon = 'success'
           this.userPassword.isShowIcon = 'success'
-          window.sessionStorage.setItem('UserName', res.data.userName)
-          window.sessionStorage.setItem('UserID', this.userName.str)
-          window.sessionStorage.setItem('isSuper', res.data.isSuper)
-          window.sessionStorage.setItem('sessionID', res.data.sessionID)
+          window.sessionStorage.setItem('token', res.access_token)
           this.$router.push('/')
-          this.isLoginIn = true
-        } else if (ret === 'Error_User') {
-          this.userName.isShowIcon = 'error'
-        } else if (ret === 'Error_Pwd') {
-          this.userName.isShowIcon = 'success'
-          this.userPassword.isShowIcon = 'error'
         } else {
-          // 登录失败
+          this.$message.error('登录失败')
         }
-      }).catch(err => console.log(err))
+        this.isLoginIn = true
+      })
     }
   },
   mounted () {

@@ -34,27 +34,27 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('ID')">
+        <li class="list number c-pointer" @click="changeOrder('id')">
           代码编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.ID === 0 }, { 'el-icon-caret-top': headOrder.ID === 1 }, { 'el-icon-caret-bottom': headOrder.ID === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('TypeName')">
+        <li class="list name c-pointer" @click="changeOrder('code_name')">
           代码名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.TypeName === 0 }, { 'el-icon-caret-top': headOrder.TypeName === 1 }, { 'el-icon-caret-bottom': headOrder.TypeName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.code_name === 0 }, { 'el-icon-caret-top': headOrder.code_name === 1 }, { 'el-icon-caret-bottom': headOrder.code_name === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('TypeValue')">
+        <li class="list name c-pointer" @click="changeOrder('code')">
           代码值
-          <i :class="[{ 'el-icon-d-caret': headOrder.TypeValue === 0 }, { 'el-icon-caret-top': headOrder.TypeValue === 1 }, { 'el-icon-caret-bottom': headOrder.TypeValue === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.code === 0 }, { 'el-icon-caret-top': headOrder.code === 1 }, { 'el-icon-caret-bottom': headOrder.code === 2 }]"></i>
         </li>
         <li class="list name">子代码名称</li>
         <li class="list name">子代码值</li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('LmTime')">
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmTime === 0 }, { 'el-icon-caret-top': headOrder.LmTime === 1 }, { 'el-icon-caret-bottom': headOrder.LmTime === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('LmName')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmName === 0 }, { 'el-icon-caret-top': headOrder.LmName === 1 }, { 'el-icon-caret-bottom': headOrder.LmName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
@@ -63,15 +63,15 @@
             <li class="list" v-for="(item) in codeList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editCodeID" :value="item.ID" @change="emitEditID">
+                  <input type="checkbox" v-model="editCodeID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.ID }}</div>
-                <div class="name">{{ item.TypeName }}</div>
-                <div class="name">{{ item.TypeValue }}</div>
-                <div class="name">{{ item.SubTypeName }}</div>
-                <div class="name">{{ item.SubTypeValue }}</div>
-                <div class="last-update-time color-white">{{ item.LmTime }}</div>
-                <div class="last-maintainer">{{ item.LmName }}</div>
+                <div class="number">{{ item.id }}</div>
+                <div class="name">{{ item.code_name }}</div>
+                <div class="name">{{ item.code }}</div>
+                <div class="name">{{ item.sub_code_name }}</div>
+                <div class="name">{{ item.sub_code }}</div>
+                <div class="last-update-time color-white">{{ item.updated_time }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
@@ -108,6 +108,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'SeeCodeList',
   components: {
@@ -125,15 +126,15 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'ID',
+        sort: 'id',
         order: 'asc'
       },
       headOrder: {
-        ID: 1,
-        TypeName: 0,
-        TypeValue: 0,
-        LmTime: 0,
-        LmName: 0
+        id: 1,
+        code_name: 0,
+        code: 0,
+        updated_time: 0,
+        updated_by: 0
       },
       dialogVisible: {
         isShow: false,
@@ -207,10 +208,8 @@ export default {
 
     // 弹框确认是否删除
     dialogEnter () {
-      window.axios.post('/Division/DeleteDivision', {
-        ids: this.editCodeID.join(',')
-      }).then(res => {
-        if (res.data === 'OK') {
+      api.delDictionary(this.editCodeID.join(',')).then(res => {
+        if (res.code === 0) {
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -231,11 +230,11 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.ID = 0
-        this.headOrder.TypeName = 0
-        this.headOrder.TypeValue = 0
-        this.headOrder.LmName = 0
-        this.headOrder.LmTime = 0
+        this.headOrder.id = 0
+        this.headOrder.code_name = 0
+        this.headOrder.code_value = 0
+        this.headOrder.updated_by = 0
+        this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -253,20 +252,20 @@ export default {
 
     // 搜索
     searchResult (page) {
-      this.$emit('title', '| 代码定义')
+      this.$emit('title', '| 代码管理')
       this.currentPage = page
       this.loading = true
-      window.axios.post('/Division/GetDivision', {
+      api.getDictionary({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchName: this.codeName,
-        SearchSubName: this.subCodeName
+        searchName: this.codeName,
+        searchSubName: this.subCodeName
       }).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.LmTime = transformDate(item.LmTime)
+          item.updated_time = transformDate(item.updated_time)
         })
         this.codeList = res.data.rows
         this.total = res.data.total

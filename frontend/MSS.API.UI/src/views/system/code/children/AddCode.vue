@@ -41,7 +41,7 @@
           <div class="inp-wrap">
             <span class="text">子代码值<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input v-model="subTypeValue.text" placeholder="请输入子代码值" @keyup.native="validateInput(subTypeValue)"></el-input>
+              <el-input v-model="subTypeValue.text" placeholder="请输入子代码值" @keyup.native="validateNumber(subTypeValue)"></el-input>
             </div>
           </div>
           <p class="validate-tips">{{ subTypeValue.tips }}</p>
@@ -56,8 +56,9 @@
   </div>
 </template>
 <script>
-import { validateInputCommon } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'AddCode',
   components: {
@@ -107,16 +108,17 @@ export default {
         })
         return
       }
+      let code = {
+        code_name: this.typeName.text,
+        code: this.typeValue.text,
+        sub_code_name: this.subTypeName.text,
+        sub_code: this.subTypeValue.text
+      }
       // this.$emit('reload', Math.random())
       if (this.isShow === 'add') {
         // 添加代码
-        window.axios.post('/Division/AddDivision', {
-          TypeName: this.typeName.text,
-          TypeValue: this.typeValue.text,
-          SubTypeName: this.subTypeName.text,
-          SubTypeValue: this.subTypeValue.text
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.addDictionary(code).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '添加成功',
               type: 'success',
@@ -126,28 +128,18 @@ export default {
                 })
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '添加失败',
-              type: 'error'
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
+        code.id = this.codeID
         // 修改代码
-        window.axios.post('/Division/UpdateDivision', {
-          ID: this.codeID,
-          TypeName: this.typeName.text,
-          TypeValue: this.typeValue.text,
-          SubTypeName: this.subTypeName.text,
-          SubTypeValue: this.subTypeValue.text
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.updateDictionary(code).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '修改成功',
               type: 'success',
@@ -157,14 +149,9 @@ export default {
                 })
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '修改失败',
-              type: 'error'
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
@@ -174,33 +161,34 @@ export default {
 
     // 修改代码时获取代码资料
     getCode () {
-      window.axios.post('/Division/BindDivision', {
-        ID: this.editCodeID
-      }).then(res => {
+      api.getDictionaryByID(this.editCodeID).then(res => {
         let _res = res.data
-        this.codeID = _res.ID
-        this.typeName.text = _res.TypeName
-        this.typeValue.text = _res.TypeValue
-        this.subTypeName.text = _res.SubTypeName
-        this.subTypeValue.text = _res.SubTypeValue
+        this.codeID = _res.id
+        this.typeName.text = _res.code_name
+        this.typeValue.text = _res.code
+        this.subTypeName.text = _res.sub_code_name
+        this.subTypeValue.text = _res.sub_code
       }).catch(err => console.log(err))
     },
 
     // 关闭页面
     close () {
       this.$router.push({ name: 'SeeCodeList' })
-      this.$emit('title', '| 角色定义')
+      // this.$emit('title', '| 角色定义')
     },
 
     validateInput (val) {
       validateInputCommon(val)
     },
 
+    validateNumber () {
+      validateNumberCommon(this.subTypeValue)
+    },
     validateAll () {
       if (!validateInputCommon(this.typeName)) return false
       if (!validateInputCommon(this.typeValue)) return false
       if (!validateInputCommon(this.subTypeName)) return false
-      if (!validateInputCommon(this.subTypeValue)) return false
+      if (!validateNumberCommon(this.subTypeValue)) return false
       return true
     }
   }

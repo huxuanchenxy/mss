@@ -2,9 +2,9 @@
   <div class="footer">
     <div class="footer-nav-wrap">
       <div class="box">
-        <router-link v-for="(item, key, index) in navList" :key="item.key" :to="{ path: item.RequestUrl }" @click.native="moveNav(index)">
-          <el-tooltip class="item" effect="dark" :content="item.GroupName" placement="top">
-            <img :src="item.Icon" width="24" height="24" alt="">
+        <router-link v-for="(item, key, index) in navList" :key="item.key" :to="{ path: item.path }" @click.native="moveNav(index)">
+          <el-tooltip class="item" effect="dark" :content="item.name" placement="top">
+            <img :src="item.iconCls" width="24" height="24" alt="">
           </el-tooltip>
         </router-link>
       </div>
