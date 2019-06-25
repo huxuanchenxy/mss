@@ -17,6 +17,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IActionGroupService, ActionGroupService>();
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IActionService, ActionService>();
+            services.AddTransient<IDictionaryService, DictionaryService>();
             return services;
         }
     }

@@ -14,5 +14,7 @@ namespace MSS.API.Model.Data
         public int group_order { get; set; }
 
         public string icon { get; set; }
+
+        public string active_icon { get; set; }
     }
 }

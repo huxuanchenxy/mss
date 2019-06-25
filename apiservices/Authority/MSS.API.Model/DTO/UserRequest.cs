@@ -16,16 +16,4 @@ namespace MSS.API.Model.DTO
         /// </summary>
         public int? searchRole { get; set; }
     }
-
-    public class ChangePwdParm
-    {
-        /// <summary>
-        /// 旧密码
-        /// </summary>
-        public string oldPwd { get; set; }
-        /// <summary>
-        /// 新密码
-        /// </summary>
-        public string newPwd { get; set; }
-    }
 }

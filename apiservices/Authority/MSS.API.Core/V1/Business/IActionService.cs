@@ -14,6 +14,7 @@ namespace MSS.API.Core.V1.Business
         Task<MSSResult> Update(ActionInfo action);
         Task<MSSResult> Delete(string ids);
         Task<MSSResult> GetAll();
+        Task<MSSResult> GetMenu();
         Task<MSSResult<ActionTree>> GetActionTree();
     }
 }

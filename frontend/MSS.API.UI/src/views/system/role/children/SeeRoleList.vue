@@ -45,9 +45,9 @@
           <i class="hide iconfont icon-arrow-top-f"></i>
           <input type="checkbox" v-model="bCheckAll" @change="checkAll">
         </li>
-        <li class="list number c-pointer" @click="changeOrder('RoleID')">
+        <li class="list number c-pointer" @click="changeOrder('id')">
           角色编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.RoleID === 0 }, { 'el-icon-caret-top': headOrder.RoleID === 1 }, { 'el-icon-caret-bottom': headOrder.RoleID === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('RoleName')">
           角色名称

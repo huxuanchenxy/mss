@@ -24,7 +24,7 @@
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">登录账号<em class="validate-mark">*</em></span>
+            <span class="text">用户登录账号<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-input placeholder="请输入用户名称" v-model.trim="accName.text" @keyup.native="validateInput(accName)"></el-input>
             </div>
@@ -33,7 +33,7 @@
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">姓名<em class="validate-mark">*</em></span>
+            <span class="text">用户姓名<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-input placeholder="请输入姓名" v-model.trim="userName.text" @keyup.native="validateInput(userName)"></el-input>
             </div>
@@ -42,9 +42,9 @@
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">角色</span>
+            <span class="text">用户所属角色</span>
             <div class="inp">
-              <el-select v-model="role.text" clearable placeholder="请选择">
+              <el-select v-model="role" clearable placeholder="请选择">
                 <el-option value="" label="请选择"></el-option>
                 <el-option v-for="item in roleList" :key="item.key" :value="item.id" :label="item.role_name"></el-option>
               </el-select>
@@ -53,7 +53,7 @@
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">工号<em class="validate-mark">*</em></span>
+            <span class="text">用户工号<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-input placeholder="请输入工号" v-model.trim="jobNumber.text" @keyup.native="validateInput(jobNumber)"></el-input>
             </div>
@@ -62,7 +62,7 @@
         </li>
         <li class="list">
           <div class="inp-wrap">
-            <span class="text">职位</span>
+            <span class="text">用户职位</span>
             <div class="inp">
               <el-input placeholder="请输入职位" v-model.trim="position.text" @keyup.native="validateInputNull(position)"></el-input>
             </div>
@@ -71,7 +71,7 @@
         </li>
         <li class="list">
           <div class="inp-wrap">
-            <span class="text">手机号</span>
+            <span class="text">用户手机号</span>
             <div class="inp">
               <el-input placeholder="请输入手机号码" v-model.trim="mobile.text" @keyup.native="validateInputPhone(mobile)"></el-input>
             </div>
@@ -80,7 +80,7 @@
         </li>
         <li class="list">
           <div class="inp-wrap">
-            <span class="text">邮箱</span>
+            <span class="text">用户邮箱</span>
             <div class="inp">
               <el-input placeholder="请输入邮箱" v-model.trim="email.text" @keyup.native="validateInputEMail(email)"></el-input>
             </div>
@@ -100,7 +100,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, validateNumberCommon, vInput, vEmail, vPhone } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, vEmail, vPhone } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/authApi'
 export default {
@@ -228,9 +228,9 @@ export default {
         this.loading = false
         let _res = res.data
         this.userID = _res.id
-        this.accName = _res.acc_name
+        this.accName.text = _res.acc_name
         this.userName.text = _res.user_name
-        this.role = _res.role_id.toString()
+        this.role = _res.role_id === null ? '' : _res.role_id.toString()
         this.jobNumber.text = _res.job_number
         this.position.text = _res.position
         this.mobile.text = _res.mobile
@@ -279,15 +279,17 @@ export default {
       }
     },
 
-    validateNumber () {
-      validateNumberCommon(this.groupOrder)
-    },
+    // validateNumber () {
+    //   validateNumberCommon(this.groupOrder)
+    // },
 
     validateAll () {
       if (!validateInputCommon(this.accName)) return false
       if (!validateInputCommon(this.userName)) return false
-      if (!validateNumberCommon(this.groupOrder)) return false
+      if (!validateInputCommon(this.jobNumber)) return false
       if (!this.validateInputNull(this.position)) return false
+      if (!this.validateInputEMail(this.email)) return false
+      if (!this.validateInputPhone(this.mobile)) return false
       // if (!this.validateSelect()) return false
       return true
     }

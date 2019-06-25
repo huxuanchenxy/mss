@@ -8,6 +8,7 @@ namespace MSS.API.Model.DTO
         public string created_name { get; set; }
         public string updated_name { get; set; }
         public string group_name { get; set; }
+        public string parent_name { get; set; }
     }
 
     public class MenuTree
@@ -28,6 +29,10 @@ namespace MSS.API.Model.DTO
         /// 前端相对应的图标
         /// </summary>
         public string iconCls { get; set; }
+        /// <summary>
+        /// 前端相对应的选中图标
+        /// </summary>
+        public string iconClsActive { get; set; }
         /// <summary>
         /// 父节点ID
         /// </summary>
@@ -81,6 +86,10 @@ namespace MSS.API.Model.DTO
         /// 一级菜单图标
         /// </summary>
         public string GroupIcon { get; set; }
+        /// <summary>
+        /// 一级菜单激活时图标
+        /// </summary>
+        public string GroupActiveIcon { get; set; }
     }
 
     /// <summary>

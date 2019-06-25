@@ -36,11 +36,11 @@ namespace MSS.API.Dao.Implement
                     whereSql.Append(" and a.group_type="+ parm.searchType);
                 }
                 sql.Append(whereSql)
-                .Append("order by a." + parm.sort + " " + parm.order)
+                .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 mRet.data = (await c.QueryAsync<ActionGroupView>(sql.ToString())).ToList();
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from Action_Group where 1=1 "+whereSql.ToString());
+                    "select count(*) from Action_Group a where 1=1 "+whereSql.ToString());
                 return mRet;
             });
         }
@@ -60,7 +60,7 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.ExecuteAsync(" insert into Action_Group " +
                     " values (0,@group_name,@request_url,@group_type,@group_order,@icon, " +
-                    " @created_time,@created_by,@updated_time,@updated_by) ", actionGroup);
+                    " @active_icon,@created_time,@created_by,@updated_time,@updated_by) ", actionGroup);
                 return result;
             });
         }
@@ -71,7 +71,7 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.ExecuteAsync(" update Action_Group " +
                     " set group_name=@group_name,request_url=@request_url,group_type=@group_type,group_order=@group_order,icon=@icon, " +
-                    " updated_time=@updated_time,updated_by=@updated_by) where id=@id", actionGroup);
+                    " active_icon=@active_icon,updated_time=@updated_time,updated_by=@updated_by where id=@id", actionGroup);
                 return result;
             });
         }

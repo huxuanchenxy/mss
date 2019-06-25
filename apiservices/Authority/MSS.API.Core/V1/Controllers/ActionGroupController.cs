@@ -14,7 +14,7 @@ using static MSS.API.Common.Const;
 
 namespace MSS.API.Core.V1.Controllers
 {
-    [Route("api/v1/[controller]/[action]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ActionGroupController : ControllerBase
     {
@@ -28,8 +28,8 @@ namespace MSS.API.Core.V1.Controllers
             _ActionGroupService = ActionGroupService;
 
         }
-        [HttpPost]
-        public ActionResult GetPageByParm([FromBody] ActionGroupQueryParm parm)
+        [HttpGet("QueryList")]
+        public ActionResult GetPageByParm([FromQuery] ActionGroupQueryParm parm)
         {
             var ret = _ActionGroupService.GetPageByParm(parm).Result;
             if (ret.code==(int)ErrType.OK)
@@ -44,14 +44,14 @@ namespace MSS.API.Core.V1.Controllers
                 return Ok(resp);
             }
         }
-        [HttpPost]
+        [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
             var resp = _ActionGroupService.GetByID(id);
             return Ok(resp.Result);
         }
-        [HttpPost]
-        public ActionResult Add([FromBody] ActionGroup actionGroup)
+        [HttpPost("Add")]
+        public ActionResult Add(ActionGroup actionGroup)
         {
             int userID = (int)HttpContext.Session.GetInt32("UserID");
             actionGroup.created_by = userID;
@@ -59,21 +59,21 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _ActionGroupService.Add(actionGroup);
             return Ok(resp.Result);
         }
-        [HttpPost]
-        public ActionResult Update([FromBody] ActionGroup actionGroup)
+        [HttpPut("Update")]
+        public ActionResult Update(ActionGroup actionGroup)
         {
             int userID = (int)HttpContext.Session.GetInt32("UserID");
             actionGroup.updated_by = userID;
             var resp = _ActionGroupService.Update(actionGroup);
             return Ok(resp.Result);
         }
-        [HttpPost]
+        [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
             var resp = _ActionGroupService.Delete(ids);
             return Ok(resp.Result);
         }
-        [HttpPost]
+        [HttpGet("All")]
         public ActionResult GetAll()
         {
             var resp = _ActionGroupService.GetAll();

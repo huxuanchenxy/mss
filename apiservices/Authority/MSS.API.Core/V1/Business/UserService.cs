@@ -205,17 +205,17 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<MSSResult<MenuTree>> CheckUserLogin(User user)
+        public async Task<MSSResult<MenuTree>> CheckUserLogin(string acc, string pwd)
         {
             MSSResult<MenuTree> mRet = new MSSResult<MenuTree>();
             try
             {
-                User ui = await _UserRepo.GetByAcc(user.acc_name);
+                User ui = await _UserRepo.GetByAcc(acc);
                 if (ui != null)
                 {
                     Encrypt encrypt = new Encrypt();
-                    user.password = encrypt.DoEncrypt(user.password, ui.random_num);
-                    if (ui.password != user.password)
+                    string strPwd = encrypt.DoEncrypt(pwd, ui.random_num);
+                    if (ui.password != strPwd)
                     {
                         mRet.code = (int)ErrType.ErrPwd;
                         mRet.msg = "密码错误";
