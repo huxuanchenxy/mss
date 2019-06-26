@@ -14,7 +14,7 @@
           <div class="inp-wrap">
             <span class="text">角色名称<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input v-model="roleName.text" @keyup.native="validateInput(roleName)" placeholder="请输入角色名称"></el-input>
+              <el-input v-model.trim="roleName.text" @keyup.native="validateInput(roleName)" placeholder="请输入角色名称"></el-input>
             </div>
           </div>
           <p class="validate-tips">{{ roleName.tips }}</p>
@@ -24,7 +24,7 @@
     </div>
     <div class="content">
       <div class="con-padding-horizontal header">
-        菜单名称<span @click="checkAll"><x-button class="small">全选</x-button></span>
+        菜单名称<!--<span @click="checkAll"><x-button class="small">全选</x-button></span>-->{{roleActionInfo}}
       </div>
       <div class="scroll">
         <el-scrollbar>
@@ -32,11 +32,14 @@
             <li class="list" v-for="(item, index) in authority" :key="item.key">
               <div class="list-con" @click="shrinkChildren(index)">
                 <div class="left">{{ item.text }} <i class="el-icon-arrow-down c-pointer" :class="{ active: item.shrink }"></i></div>
-                <el-checkbox v-model="item.checked" @change="listCheckAll($event, item)"></el-checkbox>
+                <!--<el-checkbox v-model="item.checked" @change="listCheckAll($event, item)"></el-checkbox>-->
               </div>
               <div class="list-sub-con" v-for="children in item.children" :key="children.key" v-show="item.shrink">
                 <el-checkbox-group v-model="roleActionInfo">
                   <el-checkbox :label="children.id">{{ children.text }}</el-checkbox>
+                  <el-checkbox-group class="chk-list" v-model="roleActionInfo" v-for="operation in children.children" :key="operation.key">
+                    <el-checkbox :label="operation.id">{{ operation.text }}</el-checkbox>
+                  </el-checkbox-group>
                 </el-checkbox-group>
               </div>
             </li>
@@ -55,6 +58,7 @@
 <script>
 import { validateInputCommon } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import api from '@/api/authApi'
 export default {
   name: 'AddRole',
   components: {
@@ -69,7 +73,7 @@ export default {
       roleID: '',
       roleActionInfo: [],
       authority: [],
-      authorityIdList: [],
+      // authorityIdList: [],
       listCheck: [],
       bCheckAll: false,
       isShow: ''
@@ -103,13 +107,14 @@ export default {
         })
         return
       }
+      let role = {
+        role_name: this.roleName.text,
+        actions: this.roleActionInfo.join(',')
+      }
       if (this.isShow === 'add') {
         // 添加角色
-        window.axios.post('/Role/AddRole', {
-          RoleName: this.roleName.text,
-          ActionInfos: this.roleActionInfo.join(',')
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.addRole(role).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '添加成功',
               type: 'success',
@@ -119,26 +124,18 @@ export default {
                 })
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '添加失败',
-              type: 'error'
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
+        role.id = this.roleID
         // 修改角色
-        window.axios.post('/Role/UpdateRole', {
-          RoleID: this.roleID,
-          RoleName: this.roleName.text,
-          ActionInfos: this.roleActionInfo.join(',')
-        }).then(res => {
-          if (res.data === 'OK') {
+        api.updateRole(role).then(res => {
+          if (res.code === 0) {
             this.$message({
               message: '修改成功',
               type: 'success',
@@ -146,14 +143,9 @@ export default {
                 this.$emit('showChildrenEvent', 'roleList')
               }
             })
-          } else if (res.data === 'Fail') {
-            this.$message({
-              message: '修改失败',
-              type: 'error'
-            })
           } else {
             this.$message({
-              message: res.data,
+              message: res.msg,
               type: 'error'
             })
           }
@@ -168,47 +160,45 @@ export default {
 
     // 修改角色时获取角色资料
     getRole () {
-      window.axios.post('/Role/BindRole', {
-        RoleID: this.editRoleID
-      }).then(res => {
-        let _res = res.data.role
-        this.roleID = _res.RoleID
-        this.roleName.text = _res.RoleName
-        this.roleActionInfo = res.data.actions.split(',')
+      api.getRoleByID(this.editRoleID).then(res => {
+        let _res = res.data
+        this.roleID = _res.role.id
+        this.roleName.text = _res.role.role_name
+        this.roleActionInfo = _res.selectedAction
       }).catch(err => console.log(err))
     },
 
     // 全选
-    checkAll () {
-      if (this.bCheckAll) {
-        this.authority.map(item => (item.checked = false))
-        this.roleActionInfo = []
-      } else {
-        // 每次赋值前先清空数组
-        this.roleActionInfo = []
-        this.authority.map(item => {
-          item.checked = true
-          item.children.map(child => {
-            this.roleActionInfo.push(child.id)
-          })
-        })
-      }
-      this.bCheckAll = !this.bCheckAll
-    },
+    // checkAll () {
+    //   if (this.bCheckAll) {
+    //     this.authority.map(item => (item.checked = false))
+    //     this.roleActionInfo = []
+    //   } else {
+    //     // 每次赋值前先清空数组
+    //     this.roleActionInfo = []
+    //     this.authority.map(item => {
+    //       item.checked = true
+    //       item.children.map(child => {
+    //         this.roleActionInfo.push(child.id)
+    //       })
+    //     })
+    //   }
+    //   this.bCheckAll = !this.bCheckAll
+    // },
 
-    // 列表全选功能
-    listCheckAll (...arr) {
-      let aIdList = arr[1].subids.split(',')
-      if (arr[0]) {
-        this.roleActionInfo = [...this.roleActionInfo, ...aIdList]
-      } else {
-        aIdList.forEach((item, i) => {
-          this.roleActionInfo.forEach((val, index) => {
-            item === val && this.roleActionInfo.splice(index, 1)
-          })
-        })
-      }
-    },
+    // // 列表全选功能
+    // listCheckAll (...arr) {
+    //   let aIdList = arr[1].subids.split(',')
+    //   if (arr[0]) {
+    //     this.roleActionInfo = [...this.roleActionInfo, ...aIdList]
+    //   } else {
+    //     aIdList.forEach((item, i) => {
+    //       this.roleActionInfo.forEach((val, index) => {
+    //         item === val && this.roleActionInfo.splice(index, 1)
+    //       })
+    //     })
+    //   }
+    // },
     // 验证
     validateInput (val) {
       validateInputCommon(val)
@@ -216,13 +206,13 @@ export default {
   },
   mounted () {
     // 获取菜单列表
-    window.axios.post('/ActionInfo/GetAuthority').then(res => {
-      res.data.Authority.map(item => {
+    api.getActionTree().then(res => {
+      res.data.map(item => {
         item.shrink = false
         item.checked = false
       })
-      this.authority = res.data.Authority
-      this.authorityIdList = res.data.actions.split(',')
+      this.authority = res.data
+      // this.authorityIdList = res.data.actions.split(',')
     }).catch(err => console.log(err))
   }
 }
@@ -322,6 +312,11 @@ $height: $content-height - 56;
       &:first-of-type{
         border-top: 0;
       }
+    }
+
+    .chk-list{
+      display: inline;
+      margin-left: 5%;
     }
   }
 
