@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Model", "MSS.API.Mo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Dao", "MSS.API.Dao\MSS.API.Dao.csproj", "{0CF1EEC1-1762-4276-AAF4-F8C7B953EE50}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSS.API.Common", "..\..\commons\MSS.API.Common\MSS.API.Common.csproj", "{F3E9C703-C869-46F4-A01C-D190CAFD7191}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{0CF1EEC1-1762-4276-AAF4-F8C7B953EE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CF1EEC1-1762-4276-AAF4-F8C7B953EE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CF1EEC1-1762-4276-AAF4-F8C7B953EE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3E9C703-C869-46F4-A01C-D190CAFD7191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3E9C703-C869-46F4-A01C-D190CAFD7191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3E9C703-C869-46F4-A01C-D190CAFD7191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3E9C703-C869-46F4-A01C-D190CAFD7191}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

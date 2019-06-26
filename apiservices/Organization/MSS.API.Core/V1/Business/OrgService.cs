@@ -10,6 +10,7 @@ using MSS.API.Model.DTO;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using MSS.API.Common;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -120,7 +121,7 @@ namespace MSS.API.Core.V1.Business
                         var data = await _orgRepo.SaveOrgNode(node);
 
                         //保存扩展属性
-                        if (node.PropEx.Count > 0)
+                        if (node.PropEx != null && node.PropEx.Count > 0)
                         {
                             bool propSavedOk = await _saveNodeProperty(data);
                             if (!propSavedOk)

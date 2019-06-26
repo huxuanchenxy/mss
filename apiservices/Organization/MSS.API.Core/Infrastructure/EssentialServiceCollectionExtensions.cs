@@ -14,6 +14,7 @@ namespace MSS.API.Core.Infrastructure
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             services.AddTransient<IOrgService, OrgService>();
+            services.AddTransient<IWarnningSettingService, WarnningSettingService>();
             return services;
         }
     }

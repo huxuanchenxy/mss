@@ -21,6 +21,7 @@ namespace MSS.API.Dao
             optionsSection.Bind(options);
             services.AddSingleton<DapperOptions>(options);
             services.AddTransient<IOrgRepo<OrgTree>, OrgRepo>();
+            services.AddTransient<IWarnningSettingRepo<EarlyWarnningSetting>, WarnningSettingRepo>();
 
             // 配置列名映射
             FluentMapper.Initialize(config =>
