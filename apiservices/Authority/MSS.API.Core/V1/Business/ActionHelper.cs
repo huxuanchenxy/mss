@@ -28,6 +28,7 @@ namespace MSS.API.Core.V1.Business
                 at.path = tmp.GroupURL;
                 at.iconCls = tmp.GroupIcon;
                 at.iconClsActive = tmp.GroupActiveIcon;
+                at.order = tmp.GroupOrder;
                 foreach (ActionAll a in group.OrderBy(g => g.ActionOrder))
                 {
                     MenuTree at1 = new MenuTree();

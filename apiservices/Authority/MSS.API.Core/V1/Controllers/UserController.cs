@@ -146,7 +146,8 @@ namespace MSS.API.Core.V1.Controllers
             foreach (var item in ret.data)
             {
                 i++;
-                strJson.Append("\"" + item.path + "\": " + JsonConvert.SerializeObject(item));
+                //strJson.Append("\"" + item.path + "\": " + JsonConvert.SerializeObject(item));
+                strJson.Append("\"" + item.order + "\": " + JsonConvert.SerializeObject(item));
                 if (i < ret.data.Count()) strJson.Append(",");
             }
             strJson.Append("}");

@@ -24,7 +24,7 @@
     </div>
     <div class="content">
       <div class="con-padding-horizontal header">
-        菜单名称<!--<span @click="checkAll"><x-button class="small">全选</x-button></span>-->{{roleActionInfo}}
+        菜单名称<!--<span @click="checkAll"><x-button class="small">全选</x-button></span>-->
       </div>
       <div class="scroll">
         <el-scrollbar>
@@ -140,7 +140,9 @@ export default {
               message: '修改成功',
               type: 'success',
               onClose: () => {
-                this.$emit('showChildrenEvent', 'roleList')
+                this.$router.push({
+                  name: 'SeeRoleList'
+                })
               }
             })
           } else {

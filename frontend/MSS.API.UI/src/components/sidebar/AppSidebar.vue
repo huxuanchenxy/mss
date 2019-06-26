@@ -123,11 +123,13 @@ export default {
     // 获取菜单
     getMenu () {
       api.getMenu().then(res => {
-        let _data = res
-        for (let [, value] of Object.entries(_data)) {
+        let _data = {}
+        for (let [, value] of Object.entries(res)) {
           value.isShowSubNav = false
+          _data[value.path] = value
         }
-        this.navList = _data
+        console.log(_data)
+        this.navList = res
         this.$router.navList = _data
         Bus.$emit('navList', _data)
       }).catch(err => console.log(err))

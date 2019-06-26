@@ -12,15 +12,16 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "swagger",//"api/values",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "MSS.API.Core": {
       "commandName": "Project",
+      "commandLineArgs": "3851",
       "launchBrowser": true,
-      "launchUrl": "swagger",//"api/v1/actiongroup",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
