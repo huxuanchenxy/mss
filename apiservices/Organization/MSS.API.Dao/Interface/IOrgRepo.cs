@@ -24,5 +24,6 @@ namespace MSS.API.Dao.Interface
         Task<int> BindOrgNodeUsers(List<OrgUser> users);
         Task<int> UnbindOrgNodeUsers(OrgTree node);
         Task<List<OrgNodeType>> ListNodeType();
+        Task<OrgUser> GetOrgUserByUserID(int userId);
     }
 }

@@ -10,5 +10,9 @@ namespace MSS.API.Core.V1.Business
     public interface IWarnningSettingService
     {
         Task<ApiResult> SaveWarnningSetting(EarlyWarnningSetting setting);
+        Task<ApiResult> UpdateWarnningSetting(EarlyWarnningSetting setting);
+
+        Task<ApiResult> DeleteWarnningSetting(EarlyWarnningSetting setting);
+        Task<ApiResult> ListWarnningSettingByPage(int page, int size, string sort, string order);
     }
 }

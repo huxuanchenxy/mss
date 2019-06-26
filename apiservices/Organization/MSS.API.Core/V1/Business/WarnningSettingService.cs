@@ -67,10 +67,94 @@ namespace MSS.API.Core.V1.Business
         {
             foreach (EarlyWarnningSettingEx prop in setting.SettingEx)
             {
-                prop.ParamID = setting.ID;
+                prop.EarlyWarnningID = setting.ID;
             }
             await _warnRepo.SaveWarnningSettingEx(setting.SettingEx);
             return true;
+        }
+
+        public async Task<ApiResult> UpdateWarnningSetting(EarlyWarnningSetting setting)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    bool isExist = await _warnRepo.CheckWarnExist(setting);
+                    if (isExist)
+                    {
+                        var data = await _warnRepo.UpdateWarnningSetting(setting);
+                        //删除已有属性
+                        await _warnRepo.DeleteWarnningSettingEx(setting);
+                        //保存扩展属性
+                        if (setting.SettingEx != null && setting.SettingEx.Count > 0)
+                        {
+                            bool propSavedOk = await _saveSettingEx(data);
+                            if (!propSavedOk)
+                            {
+                                throw new Exception("存储节点属性失败");
+                            }
+                        }
+                        ret.code = Code.Success;
+                        ret.data = data;
+                    }
+                    else
+                    {
+                        ret.code = Code.DataIsnotExist;
+                    }
+                    scope.Complete();
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> DeleteWarnningSetting(EarlyWarnningSetting setting)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                await _warnRepo.DeleteWarnningSetting(setting);
+                ret.code = Code.Success;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> ListWarnningSettingByPage(int page, int size, string sort, string order)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    int count = await _warnRepo.Count();
+                    var list = await _warnRepo.ListWarnningSettingByPage(page, size, sort, order);
+                    ret.code = Code.Success;
+                    ret.data = new {
+                        total = count,
+                        list = list
+                    };
+                    scope.Complete();
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
         }
     }
 }

@@ -7,6 +7,7 @@ using MSS.API.Model.Data;
 using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
+using Dapper.FastCrud;
 
 namespace MSS.API.Dao.Implement
 {
@@ -18,8 +19,8 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "INSERT INTO early_warnning_setting (equipment_type_id, param_id, param_name, param_unit, param_limit_upper, param_limit_lower, created_time, created_by, is_del)"
-                            +" Values (@EquipmentTypeID, @ParamID, @ParamName, @ParamUnit, @ParamLimitUpper, @ParamLimitLower, @CreatedTime, @CreatedBy, @IsDel);";
+                string sql = "INSERT INTO early_warnning_setting (equipment_type_id, param_id, param_name, param_unit, param_limit_upper, param_limit_lower, is_actived, created_time, created_by, is_del)"
+                            +" Values (@EquipmentTypeID, @ParamID, @ParamName, @ParamUnit, @ParamLimitUpper, @ParamLimitLower, @IsActived, @CreatedTime, @CreatedBy, @IsDel);";
                 sql += "SELECT LAST_INSERT_ID()";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql,
                     setting);
@@ -54,24 +55,73 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<EarlyWarnningSetting> UpdateWarnningSetting(EarlyWarnningSetting warnSet)
+        public async Task<EarlyWarnningSetting> UpdateWarnningSetting(EarlyWarnningSetting setting)
         {
             return await WithConnection(async c =>
             {
-                string sql = "UPDATE early_warnning_setting SET parent_id = @ParentID, name = @Name, node_type = @NodeType,"
-                            + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE ID = @ID;";
-                await c.ExecuteAsync(sql,
-                new
-                {
-                    // ID = node.ID,
-                    // ParentID = node.ParentID,
-                    // Name = node.Name,
-                    // NodeType = node.NodeType,
-                    // UpdatedBy = node.UpdatedBy,
-                    // UpdatedTime = node.UpdatedTime
-                });
-                return warnSet;
+                string sql = "UPDATE early_warnning_setting SET param_limit_upper = @ParamLimitUpper, param_limit_lower = @ParamLimitLower, is_actived = @IsActived"
+                            + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE equipment_type_id=@EquipmentTypeID and param_id=@ParamID;";
+                await c.ExecuteAsync(sql, setting);
+                return setting;
             });
         }
+
+        public async Task<int> DeleteWarnningSettingEx(EarlyWarnningSetting setting)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "UPDATE early_warnning_setting_ex SET is_del = 1,"
+                                + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE early_warnning_id = @EarlyWarnningID and is_del != 1;";
+                int affectedRows = await c.ExecuteAsync(sql,
+                new
+                {
+                    EarlyWarnningID = setting.ID,
+                    UpdatedBy = setting.UpdatedBy,
+                    UpdatedTime = setting.UpdatedTime
+                });
+                return affectedRows;
+            });
+        }
+
+        public async Task<bool> DeleteWarnningSetting(EarlyWarnningSetting setting)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "UPDATE early_warnning_setting SET is_del = 1,"
+                                + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE ID = @ID;";
+                await c.ExecuteAsync(sql, setting);
+                return true;
+            });
+        }
+
+        public async Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int page, int size, string sort, string order)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT * FROM early_warnning_setting");
+                if(!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order))
+                {
+                    sql.Append(" order by " + sort + " " + order);
+                }
+                sql.Append(" limit " + (page - 1) * size + "," + size);
+
+                var list = await c.QueryAsync<EarlyWarnningSetting>(sql.ToString());
+                return list.ToList();
+            });
+        }
+
+        public async Task<int> Count()
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT count(*) FROM early_warnning_setting");
+
+                var count = await c.QueryFirstAsync<int>(sql.ToString());
+                return count;
+            });
+        }
+
     }    
 }

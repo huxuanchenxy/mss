@@ -267,12 +267,26 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<List<OrgNodeType>> ListNodeType() {
+        public async Task<List<OrgNodeType>> ListNodeType()
+        {
             return await WithConnection(async c =>
             {
                 string sql = "SELECT * FROM org_node_type";
                 var data = await c.QueryAsync<OrgNodeType>(sql);
                 return data.ToList();
+            });
+        }
+        public async Task<OrgUser> GetOrgUserByUserID(int userId)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM org_user WHERE user_id = @UserID";
+                OrgUser orguser = await c.QueryFirstOrDefaultAsync<OrgUser>(sql,
+                new
+                {
+                    UserID = userId
+                });
+                return orguser;
             });
         }
     }
