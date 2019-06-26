@@ -260,11 +260,6 @@ export default {
       url: 'OrgList'
     })
   },
-  watch: {
-    $route () { // 监听路由是否变化
-      debugger
-    }
-  },
   methods: {
     validateNumber () {
       validateNumberCommon(this.menuOrder)
