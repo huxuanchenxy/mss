@@ -1,33 +1,4 @@
 <template>
-  <!-- <div class="wrap height-full">
-    <div class="content-wrap height-full">
-      <div id="use-scroll" class="scroll">
-        <el-scrollbar>
-          <ul class="content-header con-padding-horizontal">
-            <li class="list checkbox"><el-checkbox v-model="bCheckAll" @change="checkAll"></el-checkbox></li>
-            <li class="list">
-              用户名
-            </li>
-          </ul>
-          <div class="scroll-1">
-            <el-scrollbar>
-              <ul class="list-wrap">
-                <li class="list-con con-padding-horizontal" v-for="item in Users" :key="item.key">
-                  <div class="list checkbox">
-                    <el-checkbox v-model="checkedID" :label="item.id"></el-checkbox>
-                  </div>
-                  <div class="list">{{ item.userName }}</div>
-                </li>
-              </ul>
-            </el-scrollbar>
-          </div>
-        </el-scrollbar>
-      </div>
-    </div>
-    <div class="btn-group">
-      <x-button class="active" @click.native="onSaveBindClick">保存</x-button>
-    </div>
-  </div> -->
   <div class="wrap height-full">
     <!-- 搜索框 -->
     <div class="con-padding-horizontal middle">
@@ -124,24 +95,11 @@ export default {
       })
     },
     getAllUsers () {
-      this.Users = [{
-        id: 1,
-        acc_name: 'test1',
-        user_name: 'test1'
-      }, {
-        id: 3,
-        acc_name: 'test2',
-        user_name: 'test2'
-      }, {
-        id: 4,
-        acc_name: 'test2',
-        user_name: 'test3'
-      }]
-      this.getOrgUser(this.$route.params.id)
+      // this.getOrgUser(this.$route.params.id)
       api.getAllUsers().then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === 0) {
           this.Users = res.data
-          // this.getOrgUser(id)
+          this.getOrgUser(this.$route.params.id)
         } else {
           this.$message.error('获取人员信息失败')
         }
