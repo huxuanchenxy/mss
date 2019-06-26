@@ -3,7 +3,7 @@
     <div class="con-padding-horizontal header">
       <h2 class="title">
         <span class="left">
-          <img :src="$router.navList[$route.matched[0].path].TitleIcon" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].GroupName }}
+          <!-- <img :src="$router.navList[$route.matched[0].path].TitleIcon" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].GroupName }} -->
            {{ pageInfo.title ? pageInfo.title : '' }}
         </span>
       </h2>
