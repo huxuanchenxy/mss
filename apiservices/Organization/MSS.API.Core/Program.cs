@@ -18,16 +18,17 @@ namespace MSS.API.Core
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-
-              WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            int port = int.Parse(args[0]);//3861
+            return WebHost.CreateDefaultBuilder(args)
 
                 .UseContentRoot(Directory.GetCurrentDirectory())
                  .UseIISIntegration()
 
                 .UseKestrel(options =>
                 {
-                    options.Listen(IPAddress.Any, 3851);
+                    options.Listen(IPAddress.Any, port);
                     //options.Listen(IPAddress.Any, 443, listenOptions =>
                     //{
                     //    listenOptions.UseHttps("server.pfx", "password");
@@ -35,5 +36,6 @@ namespace MSS.API.Core
                 })
               .UseStartup<Startup>()
                 .Build();
+        }
     }
 }
