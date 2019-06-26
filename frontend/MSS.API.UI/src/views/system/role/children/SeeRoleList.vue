@@ -16,7 +16,9 @@
           <div class="input-group">
             <label for="">使用权限</label>
             <div class="inp">
-              <el-cascader
+              <el-cascader clearable
+                :props="defaultParams"
+                :show-all-levels="false"
                 :options="actionInfo"
                 v-model="authority">
               </el-cascader>
@@ -49,17 +51,17 @@
           角色编号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('RoleName')">
+        <li class="list name c-pointer" @click="changeOrder('role_name')">
           角色名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.RoleName === 0 }, { 'el-icon-caret-top': headOrder.RoleName === 1 }, { 'el-icon-caret-bottom': headOrder.RoleName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.role_name === 0 }, { 'el-icon-caret-top': headOrder.role_name === 1 }, { 'el-icon-caret-bottom': headOrder.role_name === 2 }]"></i>
         </li>
-        <li class="list last-update-time color-white c-pointer" @click="changeOrder('LmTime')">
+        <li class="list last-update-time color-white c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmTime === 0 }, { 'el-icon-caret-top': headOrder.LmTime === 1 }, { 'el-icon-caret-bottom': headOrder.LmTime === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('LmName')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.LmName === 0 }, { 'el-icon-caret-top': headOrder.LmName === 1 }, { 'el-icon-caret-bottom': headOrder.LmName === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
@@ -68,19 +70,29 @@
             <li class="list" v-for="(item, index) in RoleList" :key="item.key">
               <div class="list-content">
                 <div class="btn-wrap">
-                  <i title="展开" @click="shrinkSubContent(index, item.RoleID, item.RoleAction.length)" class="iconfont icon-arrow-top-f" :class="{ active: item.isShowSubCon }"></i>
-                  <input type="checkbox" v-model="editRoleID" :value="item.RoleID" @change="emitEditID">
+                  <i title="展开" @click="shrinkSubContent(index, item.id, item.action_trees.length)" class="iconfont icon-arrow-top-f" :class="{ active: item.isShowSubCon }"></i>
+                  <input type="checkbox" v-model="editRoleID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.RoleID }}</div>
-                <div class="name">{{ item.RoleName }}</div>
-                <div class="last-update-time color-white">{{ item.LmTime }}</div>
-                <div class="last-maintainer">{{ item.LmName }}</div>
+                <div class="number">{{ item.id }}</div>
+                <div class="name">{{ item.role_name }}</div>
+                <div class="last-update-time color-white">{{ item.updated_time }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
               <ul class="sub-content" :class="{ active: item.isShowSubCon }">
-                <li class="sub-con-list" v-for="sub in item.RoleAction" :key="sub.key">
+                <!--<li class="sub-con-list" v-for="sub in item.action_trees" :key="sub.key">
                   <div class="left-title">{{ sub.text }}</div>
                   <ul class="right-wrap">
                     <li class="list" v-for="three in sub.children" :key="three.key">{{ three.text }}</li>
+                  </ul>
+                </li>-->
+                <li class="sub-con-list" v-for="sub in item.action_trees" :key="sub.key">
+                  <div class="left-title">{{ sub.text }}</div>
+                  <ul>
+                    <li v-for="three in sub.children" :key="three.key">
+                      <ul class="right-wrap">{{ three.text }}
+                        <li class="list" v-for="four in three.children" :key="four.key">{{ four.text }}</li>
+                      </ul>
+                    </li>
                   </ul>
                 </li>
               </ul>
@@ -120,6 +132,7 @@
 <script>
 import XButton from '@/components/button'
 import { transformDate } from '@/common/js/utils.js'
+import api from '@/api/authApi'
 export default {
   name: 'Role',
   components: {
@@ -127,6 +140,11 @@ export default {
   },
   data () {
     return {
+      defaultParams: {
+        label: 'text',
+        value: 'id',
+        children: 'children'
+      },
       roleName: '',
       actionInfo: [],
       authority: [],
@@ -144,14 +162,14 @@ export default {
         btn: true
       },
       currentSort: {
-        sort: 'RoleID',
+        sort: 'id',
         order: 'asc'
       },
       headOrder: {
-        RoleID: 1,
-        RoleName: 0,
-        LmTime: 0,
-        LmName: 0
+        id: 1,
+        role_name: 0,
+        updated_time: 0,
+        updated_by: 0
       },
       shrinkAll: {
         text: '全部展开',
@@ -166,9 +184,8 @@ export default {
     this.init()
     // this.$emit('title', '| 角色定义')
     // 权限列表
-    window.axios.get('/ActionInfo/GetActionInfoForElCascader').then(res => {
+    api.getActionTree().then(res => {
       this.actionInfo = res.data
-      this.actionInfo.unshift({value: '', label: '所有'})
     }).catch(err => console.log(err))
   },
   watch: {
@@ -219,10 +236,8 @@ export default {
 
     // 弹框确认是否删除
     dialogEnter () {
-      window.axios.post('/Role/DeleteRole', {
-        ids: this.editRoleID.join(',')
-      }).then(res => {
-        if (res.data === 'OK') {
+      api.delRole(this.editRoleID.join(',')).then(res => {
+        if (res.code === 0) {
           this.editRoleID = []
           this.$message({
             message: '删除成功',
@@ -243,10 +258,10 @@ export default {
     changeOrder (sort) {
       // console.log(this.headOrder[sort])
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.RoleID = 0
-        this.headOrder.RoleName = 0
-        this.headOrder.LmTime = 0
-        this.headOrder.LmName = 0
+        this.headOrder.id = 0
+        this.headOrder.role_name = 0
+        this.headOrder.updated_time = 0
+        this.headOrder.updated_by = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -266,21 +281,21 @@ export default {
     },
     // 搜索
     searchResult (page) {
-      this.$emit('title', '| 角色定义')
+      this.$emit('title', '| 角色管理')
       this.currentPage = page
       this.loading = true
-      window.axios.post('/Role/GetRole', {
+      api.getRole({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchName: this.roleName,
-        SearchAction: this.authority[1]
+        searchName: this.roleName,
+        searchAction: this.authority[1]
       }).then(res => {
         this.loading = false
         res.data.rows.map(val => {
           val.isShowSubCon = false
-          val.LmTime = transformDate(val.LmTime)
+          val.updated_time = transformDate(val.updated_time)
         })
         this.total = res.data.total
         this.RoleList = res.data.rows
@@ -297,7 +312,7 @@ export default {
       if (this.shrinkAll.mark) {
         this.RoleList.map(item => {
           item.isShowSubCon = true
-          item.height = `${item.RoleAction.length * 41}px`
+          item.height = `${item.action_trees.length * 41}px`
         })
         this.shrinkAll.text = '全部收起'
       } else {
@@ -316,7 +331,7 @@ export default {
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.RoleList.map(val => this.editRoleID.push(val.RoleID)) : this.editRoleID = []
+      this.bCheckAll ? this.RoleList.map(val => this.editRoleID.push(val.id)) : this.editRoleID = []
       this.emitEditID()
     },
     // 序号、指定页翻页
@@ -490,14 +505,14 @@ $height: $content-height - 56;
       line-height: 40px;
 
       .right-wrap{
-        display: flex;
+        display: -webkit-box;
         flex-wrap: wrap;
         width: 80%;
       }
 
       .list{
         width: 130px;
-        margin-left: 10px;
+        margin-left: 100px;
       }
     }
   }

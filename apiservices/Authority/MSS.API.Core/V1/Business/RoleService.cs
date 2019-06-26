@@ -51,9 +51,9 @@ namespace MSS.API.Core.V1.Business
                 return mRet;
             }
         }
-        public async Task<MSSResult<ActionTree>> GetByID(int id)
+        public async Task<MSSResult<int>> GetByID(int id)
         {
-            MSSResult<ActionTree> mRet = new MSSResult<ActionTree>();
+            MSSResult<int> mRet = new MSSResult<int>();
             try
             {
                 if (id==0)
@@ -63,9 +63,10 @@ namespace MSS.API.Core.V1.Business
                     return mRet;
                 }
                 mRet.relatedData = await _RoleRepo.GetByID(id);
-                List<ActionAll> laa = await _ActionRepo.GetActionAll();
-                List<int> actions = await _ActionRepo.GetActionIDByRoleID(id);
-                mRet.data = ActionHelper.GetCheckedActionTree(laa, actions);
+                //List<ActionAll> laa = await _ActionRepo.GetActionAll();
+                //List<int> actions = await _ActionRepo.GetActionIDByRoleID(id);
+                //mRet.data = ActionHelper.GetCheckedActionTree(laa, actions);
+                mRet.data =(await _ActionRepo.GetActionIDByRoleID(id)).ToList();
                 mRet.code = (int)ErrType.OK;
                 return mRet;
             }

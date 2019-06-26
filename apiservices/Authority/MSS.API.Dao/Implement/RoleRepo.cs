@@ -38,7 +38,7 @@ namespace MSS.API.Dao.Implement
                     whereSql.Append(" and ra.action_id=" + parm.searchAction);
                 }
                 sql.Append(whereSql)
-                .Append("order by a." + parm.sort + " " + parm.order)
+                .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 mRet.data = (await c.QueryAsync<RoleView>(sql.ToString())).ToList();
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(

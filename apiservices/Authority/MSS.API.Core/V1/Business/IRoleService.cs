@@ -11,7 +11,7 @@ namespace MSS.API.Core.V1.Business
     public interface IRoleService
     {
         Task<MSSResult<RoleView>> GetPageByParm(RoleQueryParm parm);
-        Task<MSSResult<ActionTree>> GetByID(int id);
+        Task<MSSResult<int>> GetByID(int id);
 
         Task<MSSResult> Add(RoleStrActions roleStrActions);
         Task<MSSResult> Update(RoleStrActions roleStrActions);
