@@ -19,7 +19,7 @@ const routes = [
             name: 'User',
             redirect: 'list'
           }, {
-            path: 'list',
+            path: 'list/:roleID?',
             name: 'SeeUserList',
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/user/children/SeeUserList.vue')
           }, {

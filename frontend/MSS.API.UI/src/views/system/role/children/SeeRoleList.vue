@@ -74,7 +74,7 @@
                   <input type="checkbox" v-model="editRoleID" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
-                <div class="name">{{ item.role_name }}</div>
+                <div class="name"><router-link :to="{ name: 'SeeUserList', params: { roleID: item.id } }">{{ item.role_name }}</router-link></div>
                 <div class="last-update-time color-white">{{ item.updated_time }}</div>
                 <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
@@ -246,7 +246,7 @@ export default {
           this.init()
         } else {
           this.$message({
-            message: '删除失败',
+            message: res.msg,
             type: 'error'
           })
         }
@@ -507,7 +507,7 @@ $height: $content-height - 56;
       .right-wrap{
         display: -webkit-box;
         flex-wrap: wrap;
-        width: 80%;
+        // width: 80%;
       }
 
       .list{
@@ -548,6 +548,11 @@ $height: $content-height - 56;
     word-break: break-word;
   }
 
+  .name{
+    a{
+      color: #42abfd;
+    }
+  }
   .last-update-time{
     width: 200px;
     color: $color-content-text;

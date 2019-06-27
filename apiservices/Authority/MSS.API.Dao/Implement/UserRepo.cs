@@ -101,11 +101,13 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<int> Delete(string[] ids)
+        public async Task<int> Delete(string[] ids,int userID)
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" Update User set is_del="+(int)IsDeleted.yes+" WHERE id in @ids ", new { ids = ids });
+                var result = await c.ExecuteAsync(" Update User set is_del="+(int)IsDeleted.yes+
+                    ",updated_time=@updated_time,updated_by=@updated_by" +
+                    " WHERE id in @ids ", new { ids = ids, updated_time=DateTime.Now, updated_by=userID });
                 return result;
             });
         }

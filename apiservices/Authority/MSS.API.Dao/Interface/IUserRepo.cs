@@ -20,7 +20,7 @@ namespace MSS.API.Dao.Interface
 
         Task<int> Update(User user);
 
-        Task<int> Delete(string[] ids);
+        Task<int> Delete(string[] ids,int userID);
 
         Task<List<User>> GetAll();
         Task<int> ChangePwd(User user);

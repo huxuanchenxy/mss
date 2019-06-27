@@ -37,6 +37,8 @@ namespace MSS.API.Model.DTO
         /// 父节点ID
         /// </summary>
         public int parentID { get; set; }
+
+        public int order { get; set; }
         /// <summary>
         /// 菜单树结构
         /// </summary>
@@ -90,6 +92,8 @@ namespace MSS.API.Model.DTO
         /// 一级菜单激活时图标
         /// </summary>
         public string GroupActiveIcon { get; set; }
+
+        public int GroupOrder { get; set; }
     }
 
     /// <summary>
