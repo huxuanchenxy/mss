@@ -40,7 +40,7 @@
         <li class="list">
           <x-button>
             <router-link :to="{ name: 'AddSmallArea', params: { mark: 'add' } }">添加</router-link>
-          </x-button> 
+          </x-button>
         </li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
@@ -57,11 +57,11 @@
         <li class="list name c-pointer" @click="changeOrder('areaName')">
           位置名称
           <i :class="[{ 'el-icon-d-caret': headOrder.areaName === 0 }, { 'el-icon-caret-top': headOrder.areaName === 1 }, { 'el-icon-caret-bottom': headOrder.areaName === 2 }]"></i>
-        </li> 
+        </li>
         <li class="list number c-pointer" @click="changeOrder('Pid')">
           车站名称
           <i :class="[{ 'el-icon-d-caret': headOrder.Pid === 0 }, { 'el-icon-caret-top': headOrder.Pid === 1 }, { 'el-icon-caret-bottom': headOrder.Pid === 2 }]"></i>
-        </li> 
+        </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -82,8 +82,8 @@
                 <div class="number">{{ item.id }}</div>
                 <div class="name">
                   <router-link :to="{ name: 'SmallAreaList', params: { id: item.id } }">{{ item.areaName }}</router-link>
-                </div> 
-                <div class="number">{{ item.pName }}</div> 
+                </div>
+                <div class="number">{{ item.pName }}</div>
                 <div class="last-update-time color-white">{{ item.created_Time }}</div>
                 <div class="last-maintainer">{{ item.created_By }}</div>
               </div>
@@ -121,8 +121,7 @@
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
-import XButton from '@/components/button' 
+import XButton from '@/components/button'
 import api from '@/api/AreaApi.js'
 export default {
   name: 'SmallAreaList',
@@ -133,8 +132,8 @@ export default {
     return {
       title: ' | 位置配置',
       AreaName: '',
-      PType: '', 
-      PTypeList:[],
+      PType: '',
+      PTypeList: [],
       ConfigMidAreaList: [],
       editAreaIDList: [],
       bCheckAll: false,
@@ -163,9 +162,9 @@ export default {
   },
   created () {
     this.$emit('title', '| 位置配置')
-    this.init() 
+    this.init()
     // 站区配置类型列表
-     api.GetChezhanData().then(res => {
+    api.GetChezhanData().then(res => {
       this.PTypeList = res.data
     }).catch(err => console.log(err))
   },
@@ -219,7 +218,7 @@ export default {
         // res.Content.rows.map(item => {
         //   item.updated_time = transformDate(item.updated_time)
         // })
-         this.ConfigMidAreaList = res.data
+        this.ConfigMidAreaList = res.data
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
@@ -227,7 +226,7 @@ export default {
     // 修改站区
     edit () {
       if (!this.editAreaIDList.length) {
-         alert(this.editAreaIDList.length)
+        alert(this.editAreaIDList.length)
         this.$message({
           message: '请选择需要修改的位置',
           type: 'warning'
