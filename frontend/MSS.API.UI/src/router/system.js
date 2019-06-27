@@ -123,6 +123,23 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/action/children/AddAction.vue')
           }
         ]
+      }, {
+        path: 'warnsetting',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'WarnSettingList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/List.vue')
+          }, {
+            path: 'setting/:id?',
+            name: 'WarnSetting',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/AddWarnSetting.vue')
+          }
+        ]
       }
     ]
   }
