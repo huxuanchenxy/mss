@@ -10,6 +10,7 @@ using MSS.API.Model.DTO;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using MSS.API.Common;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -84,6 +85,50 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
+        public async Task<DataResult> GetOrgByUserID(int userId)
+        {
+            DataResult ret = new DataResult();
+            try
+            {
+                
+                OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userId);
+                if (orguser != null) {
+                    ret = await GetOrgByIDs(new List<int> { orguser.NodeID });
+                } else {
+                    ret = await GetAllOrg();
+                }
+                // List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
+                // // 找到用户节点属于的顶级节点
+                // OrgTree topNode = _findTopNode(orguser.NodeID, nodes_all);
+                // // 解析单个组织
+                // List<object> orgs = new List<object>();
+                // if (!topNode.IsDel) {
+                //     var obj = _parseOrgTree(topNode, nodes_all);
+                //     orgs.Add(obj);
+                // }
+                // ret.Result = RESULT.OK;
+                // ret.Data = orgs;
+            }
+            catch (Exception ex)
+            {
+                ret.Result = RESULT.FAIL;
+                ret.Message = ex.Message;
+            }
+
+            return ret;
+        }
+
+        private OrgTree _findTopNode(int nodeId, List<OrgTree> nodes)
+        {
+            OrgTree node = nodes.Where(c => c.ID == nodeId).First();
+            if (node.ParentID == null)
+            {
+                return node;
+            } else {
+                return _findTopNode((int)node.ParentID, nodes);
+            }
+        }
+
         private object _parseOrgTree(OrgTree parentNode, List<OrgTree> nodes)
         {
             var node_p = new
@@ -120,7 +165,7 @@ namespace MSS.API.Core.V1.Business
                         var data = await _orgRepo.SaveOrgNode(node);
 
                         //保存扩展属性
-                        if (node.PropEx.Count > 0)
+                        if (node.PropEx != null && node.PropEx.Count > 0)
                         {
                             bool propSavedOk = await _saveNodeProperty(data);
                             if (!propSavedOk)

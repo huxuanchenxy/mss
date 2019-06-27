@@ -47,13 +47,23 @@ namespace MSS.API.Core.V1.Controllers
         [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
-            var resp = _RoleService.GetByID(id);
-            return Ok(resp.Result);
+            var ret = _RoleService.GetByID(id).Result;
+            if (ret.code == (int)ErrType.OK)
+            {
+                var data = new { selectedAction = ret.data, role = ret.relatedData };
+                var resp = new { code = ret.code, data = data };
+                return Ok(resp);
+            }
+            else
+            {
+                var resp = new { code = ret.code, msg = ret.msg };
+                return Ok(resp);
+            }
         }
         [HttpPost("Add")]
         public ActionResult Add(RoleStrActions roleStrActions)
         {
-            int userID = (int)HttpContext.Session.GetInt32("UserID");
+            int userID = 1;
             roleStrActions.created_by = userID;
             roleStrActions.updated_by = userID;
             var resp = _RoleService.Add(roleStrActions);
@@ -62,7 +72,7 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPut("Update")]
         public ActionResult Update(RoleStrActions roleStrActions)
         {
-            int userID = (int)HttpContext.Session.GetInt32("UserID");
+            int userID = 1;
             roleStrActions.updated_by = userID;
             var resp = _RoleService.Update(roleStrActions);
             return Ok(resp.Result);

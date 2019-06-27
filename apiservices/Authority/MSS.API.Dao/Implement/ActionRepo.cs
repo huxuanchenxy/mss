@@ -126,7 +126,7 @@ namespace MSS.API.Dao.Implement
                 StringBuilder sql = new StringBuilder();
                 sql.Append(" SELECT a.id as ActionID,a.action_name as ActionName,a.request_url as ActionURL,a.Action_Order as ActionOrder,a.Icon as ActionIcon,")
                   .Append(" a.parent_menu as ParentMenu,a.group_id as GroupID, ag.Group_Name as GroupName, ag.Request_Url as GroupURL, ag.Icon as GroupIcon,")
-                  .Append(" ag.active_icon as GroupActiveIcon, a.level as Level FROM Action_Info a")
+                  .Append(" ag.active_icon as GroupActiveIcon,ag.Group_Order as GroupOrder, a.level as Level FROM Action_Info a")
                   .Append(" left join Action_Group ag on a.group_id = ag.id")
                   //.Append(" where a.level in ("+ACTION_LEVEL.AllowSelection+","+ACTION_LEVEL.NotAllowAll)
                   .Append(" order by ag.Group_Order");

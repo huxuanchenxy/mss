@@ -81,7 +81,8 @@ namespace MSS.API.Core.V1.Controllers
         [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
-            var resp = _UserService.Delete(ids);
+            int userID = 1;
+            var resp = _UserService.Delete(ids,userID);
             return Ok(resp.Result);
         }
 
@@ -146,7 +147,8 @@ namespace MSS.API.Core.V1.Controllers
             foreach (var item in ret.data)
             {
                 i++;
-                strJson.Append("\"" + item.path + "\": " + JsonConvert.SerializeObject(item));
+                //strJson.Append("\"" + item.path + "\": " + JsonConvert.SerializeObject(item));
+                strJson.Append("\"" + item.order + "\": " + JsonConvert.SerializeObject(item));
                 if (i < ret.data.Count()) strJson.Append(",");
             }
             strJson.Append("}");

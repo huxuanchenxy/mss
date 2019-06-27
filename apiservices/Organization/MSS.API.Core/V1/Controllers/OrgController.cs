@@ -16,28 +16,38 @@ namespace MSS.API.Core.V1.Controllers
     [ApiController]
     public class OrgController : ControllerBase
     {
-        private readonly IOrgService _OrgService;
+        private readonly IOrgService _orgService;
+        private readonly int _userId;
         public OrgController(IOrgService orgService)
 
         {
             //_logger = logger;
             //_mediator = mediator;
             //_cache = cache;
-            _OrgService = orgService;
+            _orgService = orgService;
+            _userId = 1;
 
         }
 
         [HttpGet("all")]
         public async Task<ActionResult<DataResult>> Get()
         {
-            var ret = await _OrgService.GetAllOrg();
+            var ret = await _orgService.GetAllOrg();
+            return ret;
+        }
+
+        [HttpGet("curorg")]
+        public async Task<ActionResult<DataResult>> GetByUserID()
+        {
+            int userId = _userId;
+            var ret = await _orgService.GetOrgByUserID(userId);
             return ret;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<DataResult>> Get(int id)
         {
-            var ret = await _OrgService.GetOrgByIDs(new List<int>{id});
+            var ret = await _orgService.GetOrgByIDs(new List<int>{id});
             return ret;
         }
 
@@ -45,10 +55,10 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<DataResult>> AddOrgNode(OrgTree node)
         {
-            node.CreatedBy = 1;
+            node.CreatedBy = _userId;
             node.CreatedTime = DateTime.Now;
             node.IsDel = false;
-            var ret = await _OrgService.AddOrgNode(node);
+            var ret = await _orgService.AddOrgNode(node);
             return ret;
         }
 
@@ -56,9 +66,9 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<DataResult>> UpdateOrgNode(int id, OrgTree node, [FromHeader]string token)
         {
-            node.UpdatedBy = 1;
+            node.UpdatedBy = _userId;
             node.UpdatedTime = DateTime.Now;
-            var ret = await _OrgService.UpdateOrgNode(node);
+            var ret = await _orgService.UpdateOrgNode(node);
             // return CreatedAtRoute("GetById", new { id = id }, node);
             return ret;
         }
@@ -67,10 +77,10 @@ namespace MSS.API.Core.V1.Controllers
         public async Task<ActionResult<DataResult>> Delete(int id)
         {
             OrgTree node = new OrgTree();
-            node.UpdatedBy = 1;
+            node.UpdatedBy = _userId;
             node.UpdatedTime = DateTime.Now;
             node.ID = id;
-            var ret = await _OrgService.DeleteOrgNode(node);
+            var ret = await _orgService.DeleteOrgNode(node);
 
             return ret;
         }
@@ -79,33 +89,33 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPost("user")]
         public async Task<ActionResult<DataResult>> BindOrgUser(OrgUserView nodeView)
         {
-            nodeView.CreatedBy = 1;
+            nodeView.CreatedBy = _userId;
             nodeView.CreatedTime = DateTime.Now;
-            var ret = await _OrgService.BindOrgNodeUsers(nodeView);
+            var ret = await _orgService.BindOrgNodeUsers(nodeView);
             return ret;
         }
         [HttpGet("user/{id}")]
         public async Task<ActionResult<DataResult>> getOrgUser(int id)
         {
-            var ret = await _OrgService.GetOrgNodeUsers(id);
+            var ret = await _orgService.GetOrgNodeUsers(id);
             return ret;
         }
         [HttpGet("user/all/{id}")]
         public async Task<ActionResult<DataResult>> getCanSelectedUser(int id)
         {
-            var ret = await _OrgService.GetCanSelectedUsers(id);
+            var ret = await _orgService.GetCanSelectedUsers(id);
             return ret;
         }
         [HttpGet("nodetype")]
         public async Task<ActionResult<DataResult>> getNodeType()
         {
-            var ret = await _OrgService.GetNodeType();
+            var ret = await _orgService.GetNodeType();
             return ret;
         }
         [HttpGet("node/{id}")]
         public async Task<ActionResult<DataResult>> getOrgNode(int id)
         {
-            var ret = await _OrgService.GetOrgNode(id);
+            var ret = await _orgService.GetOrgNode(id);
             return ret;
         }
     }

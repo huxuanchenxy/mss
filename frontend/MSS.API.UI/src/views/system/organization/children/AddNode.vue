@@ -210,19 +210,7 @@ export default {
     return {
       title: '',
       loading: true,
-      Users: [{
-        id: 1,
-        acc_name: 'test1',
-        user_name: 'test1'
-      }, {
-        id: 3,
-        acc_name: 'test2',
-        user_name: 'test2'
-      }, {
-        id: 4,
-        acc_name: 'test2',
-        user_name: 'test3'
-      }],
+      Users: [],
       ReadOnly: false,
       ID: '0',
       ParentID: null,
@@ -272,11 +260,6 @@ export default {
       url: 'OrgList'
     })
   },
-  watch: {
-    $route () { // 监听路由是否变化
-      debugger
-    }
-  },
   methods: {
     validateNumber () {
       validateNumberCommon(this.menuOrder)
@@ -297,20 +280,15 @@ export default {
       return true
     },
     getAllUsers () {
-      if ((this.ID + '') !== '0') {
-        this.getOrgNode(this.ID)
-      }
-    //   api.getAllUsers().then((res) => {
-    //     this.Users = res.data
-    //     if ((this.ID + '') !== '0') {
-    //       this.getOrgNode(this.ID)
-    //     }
-    //     if (res.result === RESULT.Success) {
-    //         this.initForm(res.data)
-    //     } else {
-    //         this.$message.error('获取节点信息失败')
-    //     }
-    //   })
+      // if ((this.ID + '') !== '0') {
+      //   this.getOrgNode(this.ID)
+      // }
+      api.getAllUsers().then((res) => {
+        this.Users = res.data
+        if ((this.ID + '') !== '0') {
+          this.getOrgNode(this.ID)
+        }
+      })
     },
     getOrgNode (id) {
       api.getOrgNode(id).then((res) => {

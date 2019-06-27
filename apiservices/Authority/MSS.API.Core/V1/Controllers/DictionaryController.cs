@@ -1,0 +1,84 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MSS.API.Common;
+using MSS.API.Core.Infrastructure;
+using MSS.API.Core.V1.Business;
+using MSS.API.Model.Data;
+using MSS.API.Model.DTO;
+using static MSS.API.Common.Const;
+
+namespace MSS.API.Core.V1.Controllers
+{
+    [Route("api/v1/[controller]")]
+    [ApiController]
+    public class DictionaryController : ControllerBase
+    {
+        private readonly IDictionaryService _DictionaryService;
+        public DictionaryController(IDictionaryService DictionaryService)
+
+        {
+            //_logger = logger;
+            //_mediator = mediator;
+            //_cache = cache;
+            _DictionaryService = DictionaryService;
+
+        }
+        [HttpGet("QueryList")]
+        public ActionResult GetPageByParm([FromQuery] DictionaryQueryParm parm)
+        {
+            var ret = _DictionaryService.GetPageByParm(parm).Result;
+            if (ret.code==(int)ErrType.OK)
+            {
+                var data = new { rows = ret.data, total = ret.relatedData };
+                var resp = new { code = ret.code, data = data };
+                return Ok(resp);
+            }
+            else
+            {
+                var resp = new { code = ret.code, msg = ret.msg };
+                return Ok(resp);
+            }
+        }
+        [HttpGet("{id}")]
+        public ActionResult GetByID(int id)
+        {
+            var resp = _DictionaryService.GetByID(id);
+            return Ok(resp.Result);
+        }
+        [HttpPost("Add")]
+        public ActionResult Add(Dictionary Dictionary)
+        {
+            int userID = 1;
+            Dictionary.created_by = userID;
+            Dictionary.updated_by = userID;
+            var resp = _DictionaryService.Add(Dictionary);
+            return Ok(resp.Result);
+        }
+        [HttpPut("Update")]
+        public ActionResult Update(Dictionary Dictionary)
+        {
+            //int userID = (int)HttpContext.Session.GetInt32("UserID");
+            int userID = 1;
+            Dictionary.updated_by = userID;
+            var resp = _DictionaryService.Update(Dictionary);
+            return Ok(resp.Result);
+        }
+        [HttpDelete("{ids}")]
+        public ActionResult Delete(string ids)
+        {
+            var resp = _DictionaryService.Delete(ids);
+            return Ok(resp.Result);
+        }
+        [HttpGet("SubCode/{code}")]
+        public ActionResult GetSubByCode(string code)
+        {
+            var resp = _DictionaryService.GetSubByCode(code);
+            return Ok(resp.Result);
+        }
+    }
+}

@@ -50,12 +50,13 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult GetByID(int id)
         {
             var resp = _ActionService.GetByID(id);
+            //var resp = _ActionService.GetStrByID(id);
             return Ok(resp.Result);
         }
         [HttpPost("Add")]
         public ActionResult Add(ActionInfo action)
         {
-            int userID = (int)HttpContext.Session.GetInt32("UserID");
+            int userID = 1;
             action.created_by = userID;
             action.updated_by = userID;
             var resp = _ActionService.Add(action);
@@ -64,7 +65,8 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPut("Update")]
         public ActionResult Update(ActionInfo action)
         {
-            int userID = (int)HttpContext.Session.GetInt32("UserID");
+            //int userID = (int)HttpContext.Session.GetInt32("UserID");
+            int userID = 1;
             action.updated_by = userID;
             var resp = _ActionService.Update(action);
             return Ok(resp.Result);

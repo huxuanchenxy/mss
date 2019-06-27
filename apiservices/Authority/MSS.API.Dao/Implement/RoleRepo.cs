@@ -38,7 +38,7 @@ namespace MSS.API.Dao.Implement
                     whereSql.Append(" and ra.action_id=" + parm.searchAction);
                 }
                 sql.Append(whereSql)
-                .Append("order by a." + parm.sort + " " + parm.order)
+                .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 mRet.data = (await c.QueryAsync<RoleView>(sql.ToString())).ToList();
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
@@ -116,7 +116,7 @@ namespace MSS.API.Dao.Implement
                     {
                         sql.Clear()
                         .Append(" insert into Role_Action ")
-                        .Append(" values (0," + result + "," + item + ") ");
+                        .Append(" values (0," + roleStrActions.id + "," + item + ") ");
                         await c.ExecuteAsync(sql.ToString(), trans);
                     }
                     trans.Commit();
