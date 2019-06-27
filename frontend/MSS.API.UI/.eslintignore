@@ -5,3 +5,5 @@
 /src/router/*.js
 /src/screenMangement/*.js
 /src/screenMangement/_SetScreen.vue
+/src/views/system/Area/
+/src/api/AreaApi.js
