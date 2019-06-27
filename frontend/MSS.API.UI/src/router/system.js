@@ -123,7 +123,26 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/action/children/AddAction.vue')
           }
         ]
-      }, {
+      },
+      {
+        path: 'Area',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'MidArea',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'MidAreaList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/MidArea/MidAreaList.vue')
+          }, {
+            path: 'AddMidArea/:mark?/:id?',
+            name: 'AddMidArea',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/MidArea/AddMidArea.vue')
+          }
+        ]}
+        , {
         path: 'warnsetting',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/Index.vue'),
         children: [

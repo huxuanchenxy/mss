@@ -1,0 +1,195 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Service\\System.API.Service.csproj": {}
+  },
+  "projects": {
+    "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.DAO\\System.API.DAO.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.DAO\\System.API.DAO.csproj",
+        "projectName": "System.API.DAO",
+        "projectPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.DAO\\System.API.DAO.csproj",
+        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+        "outputPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.DAO\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\System.API.Model.csproj": {
+                "projectPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\System.API.Model.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[1.60.6, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Binder": {
+              "target": "Package",
+              "version": "[2.2.4, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[8.0.16, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\System.API.Model.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\System.API.Model.csproj",
+        "projectName": "System.API.Model",
+        "projectPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\System.API.Model.csproj",
+        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+        "outputPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Service\\System.API.Service.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Service\\System.API.Service.csproj",
+        "projectName": "System.API.Service",
+        "projectPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Service\\System.API.Service.csproj",
+        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+        "outputPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Service\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.DAO\\System.API.DAO.csproj": {
+                "projectPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.DAO\\System.API.DAO.csproj"
+              },
+              "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\System.API.Model.csproj": {
+                "projectPath": "E:\\Mss地铁项目代码库\\MSS\\apiservices\\System\\System.API.Model\\System.API.Model.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

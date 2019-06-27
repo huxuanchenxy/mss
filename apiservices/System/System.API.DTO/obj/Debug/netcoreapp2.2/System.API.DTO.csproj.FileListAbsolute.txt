@@ -1,0 +1,8 @@
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\bin\Debug\netcoreapp2.2\System.API.DTO.deps.json
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\bin\Debug\netcoreapp2.2\System.API.DTO.dll
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\bin\Debug\netcoreapp2.2\System.API.DTO.pdb
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.csproj.CoreCompileInputs.cache
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.AssemblyInfoInputs.cache
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.AssemblyInfo.cs
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.dll
+E:\Mss地铁项目代码库\MSS\apiservices\System\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.pdb
