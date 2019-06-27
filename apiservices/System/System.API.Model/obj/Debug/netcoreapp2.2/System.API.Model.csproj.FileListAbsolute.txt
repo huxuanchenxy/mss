@@ -1,0 +1,8 @@
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\bin\Debug\netcoreapp2.2\System.API.Model.deps.json
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\bin\Debug\netcoreapp2.2\System.API.Model.dll
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\bin\Debug\netcoreapp2.2\System.API.Model.pdb
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\obj\Debug\netcoreapp2.2\System.API.Model.csproj.CoreCompileInputs.cache
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\obj\Debug\netcoreapp2.2\System.API.Model.AssemblyInfoInputs.cache
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\obj\Debug\netcoreapp2.2\System.API.Model.AssemblyInfo.cs
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\obj\Debug\netcoreapp2.2\System.API.Model.dll
+E:\代码库\mss\apiservices\System\System.API\System.API.Model\obj\Debug\netcoreapp2.2\System.API.Model.pdb

@@ -1,0 +1,417 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.API.Core</name>
+    </assembly>
+    <members>
+        <member name="T:System.API.Core.Controllers.SystemController">
+            <summary>
+            工作流模块
+            </summary>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.#ctor(System.API.Service.IService)">
+            <summary>
+            构造函数注入
+            </summary>
+            <param name="SystemService"></param>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.SaveConfigBigArea(System.API.DTO.TB_Config_BigAreaDTO)">
+            <summary>
+            保存大区域
+            </summary>
+            <param name="req"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.UpdateConfigBigAre(System.API.Core.Request.RequestContext{System.API.DTO.TB_Config_BigAreaDTO})">
+            <summary>
+            保存大区域
+            </summary>
+            <param name="req"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.GetBigAreaQueryPageByParm(System.API.DTO.BigAreaQueryParm)">
+            <summary>
+            获取站区数据
+            </summary>
+            <param name="paras"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.GetConfigBigAreaId(System.String)">
+            <summary>
+            获取单个实体类
+            </summary>
+            <param name="id">查询参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.DelConfigBigAreaId(System.String)">
+            <summary>
+            删除单个实体类
+            </summary>
+            <param name="id">单个对象的ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.MutilDelConfigBigAreaId(System.String)">
+            <summary>
+            删除多个实体类
+            </summary>
+            <param name="Ids">多个对象的ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.GetChezhanData">
+            <summary>
+            获取车站数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.SaveConfigMidArea(System.API.DTO.TB_Config_MidAreaDTO)">
+            <summary>
+            保存二级区域
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.GetConfigMidAreaId(System.String)">
+            <summary>
+            获取单个实体类
+            </summary>
+            <param name="id">查询参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.SelectConfigMidArea">
+            <summary>
+            查询二级区域
+            </summary>
+            <param name="req">查询参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.SelectDicAreaData(System.String)">
+            <summary>
+            查询配置区域所有数据(不考虑分页)
+            </summary> 
+            Areacode
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.GetMidAreaQueryPageByParm(System.API.DTO.MidAreaQueryParm)">
+            <summary>
+            获取位置数据
+            </summary>
+            <param name="paras"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.DelConfigMidAreaId(System.String)">
+            <summary>
+            删除单个实体类
+            </summary>
+            <param name="id">单个对象的ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.MutilDelConfigMidAreaId(System.String)">
+            <summary>
+            删除位置多个实体类
+            </summary>
+            <param name="Ids">多个对象的ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Controllers.SystemController.SelectConfigAreaDataDTO">
+            <summary>
+            查询配置区域所有数据(不考虑分页)
+            </summary> 
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Function.Helper.GetEnumDescription(System.Enum)">
+            <summary>
+            获取枚举描述值
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Function.Helper.ModelToDTO``2(System.Collections.Generic.List{``0},System.Collections.Generic.List{``1})">
+            <summary>
+            List类型转换
+            </summary>
+            <typeparam name="T">源对象</typeparam>
+            <typeparam name="T1">目标对象</typeparam>
+            <param name="list">源数据</param>
+            <param name="ListDTO">目标数据</param>
+        </member>
+        <member name="M:System.API.Core.Function.Helper.ModelToDTOBySingle``2(``0,``1)">
+            <summary>
+            类型转换
+            </summary>
+            <typeparam name="T">源对象</typeparam>
+            <typeparam name="T1">目标对象</typeparam>
+            <param name="list"></param>
+            <param name="ListDTO"></param>
+        </member>
+        <member name="M:System.API.Core.Function.Helper.ModelToDTOByone``2(``0,``1)">
+            <summary>
+            类型转换
+            </summary>
+            <typeparam name="T">源对象</typeparam>
+            <typeparam name="T1">目标对象</typeparam>
+            <param name="list"></param>
+            <param name="ListDTO"></param>
+        </member>
+        <member name="M:System.API.Core.Function.Helper.DiffDates(System.DateTime,System.DateTime)">
+            <summary>
+            计算两个日期的天数
+            </summary>
+            <param name="startDate"></param>
+            <param name="endStartDate"></param>
+            <returns></returns>
+        </member>
+        <member name="T:System.API.Core.Log.Logger">
+            <summary>
+            日志封装类
+            </summary>
+        </member>
+        <member name="M:System.API.Core.Log.Logger.Info(System.String,System.Exception)">
+            <summary>
+            普通日志
+            </summary>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="M:System.API.Core.Log.Logger.Warn(System.String,System.Exception)">
+            <summary>
+            警告日志
+            </summary>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="M:System.API.Core.Log.Logger.Error(System.String,System.Exception)">
+            <summary>
+            错误日志
+            </summary>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="T:System.API.Core.ModelCtrl">
+            <summary>
+            通用实体操作类
+            </summary>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.GetModel``1(System.Data.DataRow)">
+            <summary>
+            通过DataRow获实体对象，不区分大小写
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="dr">DataRow</param>
+            <returns>实体</returns>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.SelectModel``1(System.Data.DataTable)">
+            <summary>
+            通过DataTable获实体列表
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="dt">DataTable</param>
+            <returns>实体列表</returns>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.CopyModel(System.Object,System.Object,System.String,System.String)">
+            <summary>
+            复制实体对象的属性值，相同属性名，而且属性类型相同才会复制
+            </summary>
+            <param name="objTarget">目标对象</param>
+            <param name="objSource">源对象</param>
+            <param name="strFields">指定哪些属性,多个用,分开,null=全部</param>
+            <param name="strExcludeFields">排除属性,多个用,分开,为空不排除</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.CopyModel(System.Object,System.Object,System.String)">
+            <summary>
+            复制实体对象的属性值，相同属性名，而且属性类型相同才会复制
+            </summary>
+            <param name="objTarget">目标对象</param>
+            <param name="objSource">源对象</param>
+            <param name="strFields">指定哪些属性,多个用,分开,null=全部</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.CopyModel(System.Object,System.Object)">
+            <summary>
+            复制实体对象的属性值，相同属性名，而且属性类型相同才会复制
+            </summary>
+            <param name="objTarget">目标对象</param>
+            <param name="objSource">源对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.CopyCompatibleModel(System.Object,System.Object,System.String,System.String)">
+            <summary>
+            复制实体对象的属性值，相同属性名，而且属性类型相同[兼容?前缀]才会复制
+            </summary>
+            <param name="objTarget">目标对象</param>
+            <param name="objSource">源对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.GetFromCollection(System.Object,System.Collections.Specialized.NameValueCollection,System.String,System.String)">
+            <summary>
+            通过键值对集合对获得实体对象的属性，在表单请求参数是很实用，不必一个个赋值
+            </summary>
+            <param name="objTarget">目标对象</param>
+            <param name="nvc">键值对集合</param>
+            <param name="strFields">指定哪些属性,多个用,分开,null=全部</param>
+            <param name="strExcludeFields">排除属性,多个用,分开,为空不排除</param>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.GetFromCollection(System.Object,System.Collections.Specialized.NameValueCollection,System.String)">
+            <summary>
+            通过键值对集合对获得实体对象的属性，在表单请求参数是很实用，不必一个个赋值
+            </summary>
+            <param name="objTarget">目标对象</param>
+            <param name="nvc">键值对集合</param>
+            <param name="strFields">指定哪些属性,多个用,分开,null=全部</param>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.GetFromCollection(System.Object,System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            通过键值对集合对获得实体对象的属性，在表单请求参数是很实用，不必一个个赋值
+            </summary>
+            <param name="objTarget">目标对象</param>
+            <param name="nvc">键值对集合</param>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.SetPropertyValue(System.Object,System.Reflection.PropertyInfo,System.String)">
+            <summary>
+            根据属性类型，获值
+            </summary>
+            <param name="obj"></param>
+            <param name="pi"></param>
+            <param name="strValue"></param>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.ToDataTable``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Convert a List{T} to a DataTable.
+            </summary>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.ToDataTable``1(``0)">
+            <summary>
+            Convert a List{T} to a DataRow.
+            </summary>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.IsNullable(System.Type)">
+            <summary>
+            Determine of specified type is nullable
+            </summary>
+        </member>
+        <member name="M:System.API.Core.ModelCtrl.GetCoreType(System.Type)">
+            <summary>
+            Return underlying type if type is Nullable otherwise return the type
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Request.RequestContext`1.data">
+            <summary>
+            请求体
+            </summary>
+        </member>
+        <member name="M:System.API.Core.Request.RequestContext`1.#ctor">
+            <summary>
+            构造方法
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Request.RequestHead.Version">
+            <summary>
+            版本信息
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Request.RequestHead.Token">
+            <summary>
+            Token信息
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Request.RequestHead.AppType">
+            <summary>
+            App类型
+            默认为0: pc
+            1:Android 2:IOS  3:微信 4：M站
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Request.RequestHead.ApiType">
+            <summary>
+            Api类型
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Request.RequestHead.AppVersion">
+            <summary>
+            APP版本号(兼容IOS旧版本加的)
+            </summary>
+        </member>
+        <member name="M:System.API.Core.Response.ResponseContext.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Response.ResponseContext.ret">
+            <summary>
+            返回值
+            0   :成功
+            -1  :失败
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Response.ResponseContext.code">
+            <summary>
+            错误码
+            1000,1001
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Response.ResponseContext.data">
+            <summary>
+            响应体
+            </summary>
+        </member>
+        <member name="M:System.API.Core.Response.ResponseHead.#ctor">
+            <summary>
+            默认成功
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Response.ResponseHead.NotAutoCalcMsg">
+            <summary>
+            不自动计算Msg
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Response.ResponseHead.Ret">
+            <summary>
+            返回值
+            0   :成功
+            -1  :失败
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Response.ResponseHead.Code">
+            <summary>
+            错误码
+            1000,1001
+            </summary>
+        </member>
+        <member name="P:System.API.Core.Response.ResponseHead.Msg">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="T:System.API.Core.Response.ResponseHelper">
+            <summary>
+            工具类
+            </summary>
+        </member>
+        <member name="M:System.API.Core.Response.ResponseHelper.GetResponseJson``1(``0,System.String)">
+            <summary>
+            json方式返回
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="v"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Response.ResponseHelper.GetResponseJsonWithMicrosoftDate``1(``0,System.String)">
+            <summary>
+            json方式返回
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="v"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.API.Core.Response.ResponseHelper.GetResponseHead(System.Int32,System.API.Core.Response.ErrCode,System.String,System.Boolean)">
+            <summary>
+            获取响应头
+            </summary>
+            <param name="ret"></param>
+            <param name="code"></param>
+            <param name="msg"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
