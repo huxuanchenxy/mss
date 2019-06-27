@@ -116,12 +116,12 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<MSSResult> Delete(string ids)
+        public async Task<MSSResult> Delete(string ids,int userID)
         {
             MSSResult mRet = new MSSResult();
             try
             {
-                mRet.data = await _UserRepo.Delete(ids.Split(','));
+                mRet.data = await _UserRepo.Delete(ids.Split(','),userID);
                 mRet.code = (int)ErrType.OK;
                 return mRet;
             }

@@ -81,7 +81,8 @@ namespace MSS.API.Core.V1.Controllers
         [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
-            var resp = _UserService.Delete(ids);
+            int userID = 1;
+            var resp = _UserService.Delete(ids,userID);
             return Ok(resp.Result);
         }
 

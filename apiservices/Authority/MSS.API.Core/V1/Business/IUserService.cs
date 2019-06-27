@@ -15,7 +15,7 @@ namespace MSS.API.Core.V1.Business
 
         Task<MSSResult> Add(User User);
         Task<MSSResult> Update(User User);
-        Task<MSSResult> Delete(string ids);
+        Task<MSSResult> Delete(string ids,int userID);
         Task<MSSResult> GetAll();
         Task<MSSResult> ChangePwd(int userID, string oldPwd, string newPwd);
         Task<MSSResult> ResetPwd(string ids, int userID);
