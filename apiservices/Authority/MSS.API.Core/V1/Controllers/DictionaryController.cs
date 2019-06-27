@@ -53,7 +53,7 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPost("Add")]
         public ActionResult Add(Dictionary Dictionary)
         {
-            int userID = (int)HttpContext.Session.GetInt32("UserID");
+            int userID = 1;
             Dictionary.created_by = userID;
             Dictionary.updated_by = userID;
             var resp = _DictionaryService.Add(Dictionary);

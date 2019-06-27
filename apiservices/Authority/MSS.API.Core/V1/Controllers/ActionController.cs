@@ -65,7 +65,8 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPut("Update")]
         public ActionResult Update(ActionInfo action)
         {
-            int userID = (int)HttpContext.Session.GetInt32("UserID");
+            //int userID = (int)HttpContext.Session.GetInt32("UserID");
+            int userID = 1;
             action.updated_by = userID;
             var resp = _ActionService.Update(action);
             return Ok(resp.Result);
