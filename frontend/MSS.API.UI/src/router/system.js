@@ -140,6 +140,26 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/AddWarnSetting.vue')
           }
         ]
+      }, {
+        path: 'Area',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'SmallArea',
+            redirect: 'list'
+          },
+          {
+            path: 'list',
+            name: 'SmallAreaList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/SmallAreaList.vue')
+          },
+          {
+            path: 'AddSmallArea/:mark?/:id?',
+            name: 'AddSmallArea',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
+          }
+        ]
       }
     ]
   }

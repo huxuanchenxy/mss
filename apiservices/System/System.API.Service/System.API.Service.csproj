@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\System.API.DAO\System.API.DAO.csproj" />
+    <ProjectReference Include="..\System.API.Model\System.API.Model.csproj" />
+  </ItemGroup>
+
+</Project>

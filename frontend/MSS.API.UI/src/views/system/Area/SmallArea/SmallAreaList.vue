@@ -13,27 +13,20 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">设备类型</label>
+            <label for="name">位置</label>
             <div class="inp">
-              <el-select v-model="eqpTypeID" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="item in eqpTypeList"
-                  :key="item.key"
-                  :label="item.tName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-input v-model.trim="AreaName" placeholder="请输入位置名称"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="">参数名</label>
+            <label for="">车站</label>
             <div class="inp">
-              <el-select v-model="paramID" clearable filterable placeholder="请选择">
+              <el-select v-model="PType" clearable filterable placeholder="请选择">
                 <el-option
-                  v-for="item in paramList"
+                  v-for="item in PTypeList"
                   :key="item.key"
-                  :label="item.paramName"
-                  :value="item.paramId">
+                  :label="item.areaName"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
@@ -46,8 +39,8 @@
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
           <x-button>
-            <router-link :to="{ name: 'AddUser', params: { mark: 'add' } }">添加</router-link>
-          </x-button>
+            <router-link :to="{ name: 'AddSmallArea', params: { mark: 'add' } }">添加</router-link>
+          </x-button> 
         </li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
@@ -58,56 +51,41 @@
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
-          序号
+          编码
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('equipment_type_id')">
-          设备类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.equipment_type_id === 0 }, { 'el-icon-caret-top': headOrder.equipment_type_id === 1 }, { 'el-icon-caret-bottom': headOrder.equipment_type_id === 2 }]"></i>
-        </li>
-        <li class="list number c-pointer" @click="changeOrder('param_name')">
-          参数名
-          <i :class="[{ 'el-icon-d-caret': headOrder.param_name === 0 }, { 'el-icon-caret-top': headOrder.param_name === 1 }, { 'el-icon-caret-bottom': headOrder.param_name === 2 }]"></i>
-        </li>
-        <li class="list name c-pointer">
-          最小阀值
-        </li>
-        <li class="list name c-pointer">
-          最大阀值
-        </li>
-        <li class="list name c-pointer">
-          扩展条件
-        </li>
-        <li class="list number c-pointer">
-          是否启用
+        <li class="list name c-pointer" @click="changeOrder('areaName')">
+          位置名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.areaName === 0 }, { 'el-icon-caret-top': headOrder.areaName === 1 }, { 'el-icon-caret-bottom': headOrder.areaName === 2 }]"></i>
+        </li> 
+        <li class="list number c-pointer" @click="changeOrder('Pid')">
+          车站名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.Pid === 0 }, { 'el-icon-caret-top': headOrder.Pid === 1 }, { 'el-icon-caret-bottom': headOrder.Pid === 2 }]"></i>
+        </li> 
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
+          最后更新时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
         <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
-          最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
-        </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item) in dataList" :key="item.key">
+            <li class="list" v-for="(item) in ConfigMidAreaList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="checkedID" :value="item.id" @change="checkAll">
+                  <input type="checkbox" v-model="editAreaIDList" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
-                <div class="number">{{ item.tName }}</div>
-                <div class="number">{{ item.paramName }}</div>
-                <div class="number">{{ item.ParamLimitLower }}</div>
-                <div class="number">{{ item.ParamLimitUpper }}</div>
-                <div class="number">{{ item.position }}</div>
-                <div class="number">{{ item.settingEx }}</div>
-                <div class="number">{{ item.IsActived }}</div>
-                <div class="last-maintainer">{{ item.updatedBy }}</div>
-                <div class="last-update-time color-white">{{ item.updatedTime }}</div>
+                <div class="name">
+                  <router-link :to="{ name: 'SmallAreaList', params: { id: item.id } }">{{ item.areaName }}</router-link>
+                </div> 
+                <div class="number">{{ item.pName }}</div> 
+                <div class="last-update-time color-white">{{ item.created_Time }}</div>
+                <div class="last-maintainer">{{ item.created_By }}</div>
               </div>
             </li>
           </ul>
@@ -144,28 +122,21 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import XButton from '@/components/button'
-import api from '@/api/authApi'
+import XButton from '@/components/button' 
+import api from '@/api/AreaApi.js'
 export default {
-  name: 'SeeUserList',
+  name: 'SmallAreaList',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 预警设置',
-      eqpTypeList: [],
-      paramList: [],
-      eqpTypeID: '',
-      paramID: '',
-      dataList: [],
-      checkedID: [],
-
-      userName: '',
-      role: '',
-      roleList: [],
-      UserList: [],
-      editUserID: [],
+      title: ' | 位置配置',
+      AreaName: '',
+      PType: '', 
+      PTypeList:[],
+      ConfigMidAreaList: [],
+      editAreaIDList: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -182,22 +153,20 @@ export default {
       },
       headOrder: {
         id: 1,
-        acc_name: 0,
-        user_name: 0,
-        role_id: 0,
-        job_number: 0,
+        AreaName: 0,
+        PType: 0,
+        Sort: 0,
         updated_time: 0,
         updated_by: 0
       }
     }
   },
   created () {
-    this.$emit('title', '| 用户')
-    this.init()
-
-    // 角色列表
-    api.getRoleAll().then(res => {
-      this.roleList = res.data
+    this.$emit('title', '| 位置配置')
+    this.init() 
+    // 站区配置类型列表
+     api.GetChezhanData().then(res => {
+      this.PTypeList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
@@ -214,10 +183,9 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.acc_name = 0
-        this.headOrder.user_name = 0
-        this.headOrder.role_id = 0
-        this.headOrder.job_number = 0
+        this.headOrder.AreaName = 0
+        this.headOrder.Pid = 0
+        this.headOrder.Sort = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -243,60 +211,61 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.userName,
-        searchRole: this.role
+        searchName: this.AreaName,
+        searchType: this.PType
       }
-      api.getUser(parm).then(res => {
+      api.GetMidAreaQueryPageByParm(parm).then(res => {
         this.loading = false
-        res.data.rows.map(item => {
-          item.updated_time = transformDate(item.updated_time)
-        })
-        this.UserList = res.data.rows
+        // res.Content.rows.map(item => {
+        //   item.updated_time = transformDate(item.updated_time)
+        // })
+         this.ConfigMidAreaList = res.data
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
-    // 修改用户
+    // 修改站区
     edit () {
-      if (!this.editUserID.length) {
+      if (!this.editAreaIDList.length) {
+         alert(this.editAreaIDList.length)
         this.$message({
-          message: '请选择需要修改的用户',
+          message: '请选择需要修改的位置',
           type: 'warning'
         })
-      } else if (this.editUserID.length > 1) {
+      } else if (this.editAreaIDList.length > 1) {
         this.$message({
-          message: '修改的用户不能超过1个',
+          message: '修改的位置不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddUser',
+          name: 'AddSmallArea',
           params: {
-            id: this.editUserID[0],
+            id: this.editAreaIDList[0],
             mark: 'edit'
           }
         })
       }
     },
 
-    // 删除用户
+    // 删除站区
     remove () {
-      if (!this.editUserID.length) {
+      if (!this.editAreaIDList.length) {
         this.$message({
-          message: '请选择需要删除的用户',
+          message: '请选择需要删除的位置',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条用户信息?'
+        this.dialogVisible.text = '确定删除该条位置信息?'
       }
     },
     // 弹框确认是否删除
     dialogEnter () {
-      api.delUser(this.editUserID.join(',')).then(res => {
-        if (res.code === 0) {
-          this.editUserID = []
+      api.DelConfigMidAreaId(this.editAreaIDList.join(',')).then(res => {
+        if (res.ret === 0) {
+          this.editAreaIDList = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -315,20 +284,21 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 用户管理')
+      this.$emit('title', '| 位置配置')
       this.loading = true
       this.init()
       this.searchResult(1)
     },
 
-    // 获取修改用户id
+    // 获取修改站区id
     emitEditID () {
-      this.$emit('editUserID', this.editUserID)
+      this.$emit('editAreaIDList', this.editAreaIDList)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.Users.map(val => this.checkedID.push(val.id)) : this.checkedID = []
+      this.bCheckAll ? this.ConfigMidAreaList.map(val => this.editAreaIDList.push(val.id)) : this.editAreaIDList = []
+      this.emitEditID()
     },
 
     // 序号、指定页翻页

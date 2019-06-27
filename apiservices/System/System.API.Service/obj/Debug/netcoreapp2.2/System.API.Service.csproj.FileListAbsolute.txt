@@ -1,0 +1,14 @@
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\bin\Debug\netcoreapp2.2\System.API.Service.deps.json
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\bin\Debug\netcoreapp2.2\System.API.Service.dll
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\bin\Debug\netcoreapp2.2\System.API.Service.pdb
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\bin\Debug\netcoreapp2.2\System.API.DAO.dll
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\bin\Debug\netcoreapp2.2\System.API.Model.dll
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\bin\Debug\netcoreapp2.2\System.API.DAO.pdb
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\bin\Debug\netcoreapp2.2\System.API.Model.pdb
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\obj\Debug\netcoreapp2.2\System.API.Service.csprojAssemblyReference.cache
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\obj\Debug\netcoreapp2.2\System.API.Service.csproj.CoreCompileInputs.cache
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\obj\Debug\netcoreapp2.2\System.API.Service.AssemblyInfoInputs.cache
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\obj\Debug\netcoreapp2.2\System.API.Service.AssemblyInfo.cs
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\obj\Debug\netcoreapp2.2\System.API.Service.csproj.CopyComplete
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\obj\Debug\netcoreapp2.2\System.API.Service.dll
+E:\代码库\mss\apiservices\System\System.API\System.API.Service\obj\Debug\netcoreapp2.2\System.API.Service.pdb

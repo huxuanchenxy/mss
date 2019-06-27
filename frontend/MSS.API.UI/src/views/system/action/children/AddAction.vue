@@ -176,7 +176,6 @@ export default {
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
         action.id = this.actionID
-        debugger
         // 修改权限
         api.updateAction(action).then(res => {
           if (res.code === 0) {
