@@ -28,7 +28,7 @@
                     <div class="number">{{ item.id }}</div>
                     <div class="name">{{ item.user_name }}</div>
                     <div class="list checkbox">
-                      <el-checkbox v-model="checkedID" :disabled="item.disabled" :checked="item.disabled" :label="item.id"></el-checkbox>
+                      <el-checkbox v-model="checkedID" :label="item.id"></el-checkbox>
                     </div>
                   </div>
                 </li>
