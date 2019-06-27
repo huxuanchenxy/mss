@@ -1,9 +1,0 @@
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\bin\Debug\netcoreapp2.2\System.API.DTO.deps.json
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\bin\Debug\netcoreapp2.2\System.API.DTO.dll
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\bin\Debug\netcoreapp2.2\System.API.DTO.pdb
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.csproj.CoreCompileInputs.cache
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.AssemblyInfoInputs.cache
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.AssemblyInfo.cs
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.dll
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.pdb
-E:\代码库\mss\apiservices\System\System.API\System.API.DTO\obj\Debug\netcoreapp2.2\System.API.DTO.csprojAssemblyReference.cache
