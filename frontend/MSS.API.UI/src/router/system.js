@@ -123,44 +123,42 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/action/children/AddAction.vue')
           }
         ]
-      },
-      // {
-      //   path: 'Area',
-      //   component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
-      //   children: [
-      //     {
-      //       path: '/',
-      //       name: 'MidArea',
-      //       redirect: 'list'
-      //     }, {
-      //       path: 'list',
-      //       name: 'MidAreaList',
-      //       component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/MidArea/MidAreaList.vue')
-      //     }, {
-      //       path: 'AddMidArea/:mark?/:id?',
-      //       name: 'AddMidArea',
-      //       component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/MidArea/AddMidArea.vue')
-      //     }
-      //   ]}
-        ,{
-          path: 'Area',
-          component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'), 
-          children: [
-            {
-              path: '/',
-              name: 'SmallArea',
-              redirect: 'list'
-            }, 
-            {
-              path: 'list',
-              name: 'SmallAreaList',
-              component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/SmallAreaList.vue')
-            }, 
-            {
-              path: 'AddSmallArea/:mark?/:id?',
-              name: 'AddSmallArea',
-              component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
-            }
+      }, {
+        path: 'warnsetting',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'WarnSettingList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/List.vue')
+          }, {
+            path: 'setting/:id?',
+            name: 'WarnSetting',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/AddWarnSetting.vue')
+          }
+        ]
+      }, {
+        path: 'Area',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'SmallArea',
+            redirect: 'list'
+          },
+          {
+            path: 'list',
+            name: 'SmallAreaList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/SmallAreaList.vue')
+          },
+          {
+            path: 'AddSmallArea/:mark?/:id?',
+            name: 'AddSmallArea',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
+          }
         ]
       },{
         path: 'operlog',
