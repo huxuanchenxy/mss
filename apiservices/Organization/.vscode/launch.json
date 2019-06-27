@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/MSS.API.Core/bin/Debug/netcoreapp2.2/MSS.API.Core.dll",
-            "args": [],
+            "args": ["3851"],
             "cwd": "${workspaceFolder}/MSS.API.Core",
             "stopAtEntry": false,
             "launchBrowser": {

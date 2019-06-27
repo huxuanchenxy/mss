@@ -11,6 +11,7 @@ namespace MSS.API.Core.V1.Business
     {
         Task<DataResult> GetAllOrg();
         Task<DataResult> GetOrgByIDs(List<int> ids);
+        Task<DataResult> GetOrgByUserID(int userId);
         Task<DataResult> AddOrgNode(OrgTree node);
         Task<DataResult> UpdateOrgNode(OrgTree node);
         Task<DataResult> DeleteOrgNode(OrgTree node);

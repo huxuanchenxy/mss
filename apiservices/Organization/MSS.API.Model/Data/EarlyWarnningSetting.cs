@@ -13,6 +13,7 @@ namespace MSS.API.Model.Data
         public string ParamUnit { get; set; }
         public int ParamLimitUpper { get; set; }
         public int ParamLimitLower { get; set; }
+        public bool IsActived { get; set; }
         public List<EarlyWarnningSettingEx> SettingEx { get; set; }
     }
 
@@ -26,6 +27,7 @@ namespace MSS.API.Model.Data
             Map(o => o.ParamUnit).ToColumn("param_unit");
             Map(o => o.ParamLimitUpper).ToColumn("param_limit_upper");
             Map(o => o.ParamLimitLower).ToColumn("param_limit_lower");
+            Map(o => o.IsActived).ToColumn("is_actived");
             Map(o => o.SettingEx).Ignore();
 
             Map(o => o.CreatedBy).ToColumn("created_by");

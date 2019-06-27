@@ -33,6 +33,9 @@ namespace MSS.API.Dao
                 config.AddMap(new OrgNodePropertyMap());
                 config.AddMap(new OrgUserMap());
                 config.AddMap(new UserMap());
+                config.AddMap(new EarlyWarnningSettingMap());
+                config.AddMap(new EarlyWarnningSettingExMap());
+                config.AddMap(new EarlyWarnningExTypeMap());
             });
             return services;
         }
