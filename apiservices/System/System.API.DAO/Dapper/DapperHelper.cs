@@ -17,8 +17,7 @@ namespace System.API.DAO.Dapper
         /// 获取连接名        
         private static string Connection
         {
-            get { return _connection; }
-            //set { _connection = value; }
+            get { return _connection; } 
         }
 
         /// 返回连接实例        
@@ -66,25 +65,29 @@ namespace System.API.DAO.Dapper
         /// <returns></returns>
         public static IDbConnection OpenCurrentDbConnection()
         {
-            if (dbConnection == null)
+            try
             {
-                dbConnection = new MySqlConnection(Connection);
-            }
-            //判断连接状态
-            if (dbConnection.State == ConnectionState.Closed)
-            {
-                dbConnection.Open();
-            }
-            return dbConnection;
-            //连接字符串
-            //const string connectionString = "Server=localhost;port=3306;Database=testDB;Uid=root;Pwd=123abc;SslMode=None;";
-            //public static MySqlConnection Connection()
-            //{
 
-            //    var mysql = new MySqlConnection(connectionString);
-            //    mysql.Open();
-            //    return mysql;
-            //}
+                if (dbConnection == null)
+                {
+                    dbConnection = new MySqlConnection(Connection);
+                }
+                //判断连接状态
+                if (dbConnection.State == ConnectionState.Closed)
+                {
+                    dbConnection.Open();
+                }
+                return dbConnection; 
+            }
+            catch (TimeoutException ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            catch (MySqlException ex)
+            {
+                
+                throw new Exception(ex.ToString());
+            }
         }
     }
 }
