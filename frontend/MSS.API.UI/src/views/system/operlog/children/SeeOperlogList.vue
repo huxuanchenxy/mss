@@ -103,20 +103,7 @@
         </el-scrollbar>
       </div>
     </div>
-    <!-- dialog对话框 -->
-    <el-dialog
-      :visible.sync="dialogVisible.isShow"
-      :modal-append-to-body="false"
-      :show-close="false">
-      {{ dialogVisible.text }}
-      <template slot="footer" class="dialog-footer">
-        <template v-if="dialogVisible.btn">
-          <el-button @click="dialogVisible.isShow = false">否</el-button>
-          <el-button @click="dialogEnter">是</el-button>
-        </template>
-        <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
-      </template>
-    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -132,6 +119,9 @@ export default {
     return {
       title: ' | 日志查看',
       userName: '',
+      actionName: '',
+      startTime: '',
+      endTime: '',
       role: '',
       roleList: [],
       UserList: [],
