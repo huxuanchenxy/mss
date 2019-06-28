@@ -121,7 +121,6 @@
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/AreaApi.js'
 export default {
@@ -165,7 +164,7 @@ export default {
     this.$emit('title', '| 位置配置')
     this.init()
     // 站区配置类型列表
-    api.GetChezhanData().then(res => {
+    api.GetSubWayStation().then(res => {
       this.PTypeList = res.data
     }).catch(err => console.log(err))
   },

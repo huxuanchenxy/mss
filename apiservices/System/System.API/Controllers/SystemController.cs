@@ -212,12 +212,12 @@ namespace System.API.Core.Controllers
 
 
         /// <summary>
-        /// 获取车站数据
+        /// 获取地铁站数据
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GetChezhanData")]
+        [HttpGet("GetSubWayStation")]
         //[Route("GetChezhanData")]
-        public ResponseContext GetChezhanData()
+        public ResponseContext GetSubWayStation()
         {
             ResponseContext result = new ResponseContext();
             string where = "1";
@@ -363,7 +363,7 @@ namespace System.API.Core.Controllers
         public ResponseContext GetMidAreaQueryPageByParm([FromQuery] MidAreaQueryParm paras)
         {
              ResponseContext result = new ResponseContext();
-            // TB_Config_BigAreaDTO model = new TB_Config_BigAreaDTO();
+            TB_Config_BigArea  model = null;
             // string where = " AreaName like '% " + paras.SearchName + "%'";
             //result.data = _SystemService._IConfigMidAreaService.GetList(where);
             // return result; 
@@ -381,8 +381,12 @@ namespace System.API.Core.Controllers
             Helper.ModelToDTO<TB_Config_MidArea, TB_Config_MidAreaDTO>(list, results);
             foreach (var v in results)
             {
-                v.PName = _SystemService._IConfigBigAreaService.GetModel(v.PID).AreaName;
-
+                model = _SystemService._IConfigBigAreaService.GetModel(v.PID);//.AreaName;
+                if(model!=null)
+                {
+                    v.PName = model.AreaName;
+                }
+                v.PName = string.Empty;
             }
             result.data = results;
             result.total = results.Count();

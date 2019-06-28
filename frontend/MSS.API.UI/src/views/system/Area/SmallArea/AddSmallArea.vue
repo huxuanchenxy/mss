@@ -50,7 +50,6 @@
         <router-link :to="{name:'SmallAreaList' }">取消</router-link>
       </x-button>
       <x-button class="active" @click.native="enter">保存</x-button>
-      <x-button class="active" @click.native="test">testAPI</x-button> 
     </div>
   </div>
 </template>
@@ -91,8 +90,7 @@ export default {
       alert('edit')
       this.getMidArea()
     }
-    debugger
-    api.GetChezhanData().then(res => {
+    api.GetSubWayStation().then(res => {
       this.AreaTypeList = res.data
     }).catch(err => {
       console.log(err)
@@ -162,7 +160,6 @@ export default {
       }
     },
     getMidArea () {
-      alert('11212')
       let id = this.editAreaID
       api.GetConfigMidAreaId(id).then(res => {
         this.loading = false
@@ -195,18 +192,9 @@ export default {
         return true
       }
     },
-    
     validateNumber () {
       // validateNumberCommon(this.groupOrder)
     },
-     test()
-     {
-       api.getAllEqpType().then(res => {
-      alert(res.data)
-    }).catch(err => {
-      console.log(err)
-    }) 
-     },
     validateAll () {
       // if (!validateInputCommon(this.areaName)) return false
       if (!this.validateSelect()) return false

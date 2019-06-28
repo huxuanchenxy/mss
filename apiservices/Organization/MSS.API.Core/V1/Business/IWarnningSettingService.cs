@@ -13,6 +13,10 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> UpdateWarnningSetting(EarlyWarnningSetting setting);
 
         Task<ApiResult> DeleteWarnningSetting(EarlyWarnningSetting setting);
-        Task<ApiResult> ListWarnningSettingByPage(int page, int size, string sort, string order);
+        Task<ApiResult> DeleteListWarnningSetting(List<EarlyWarnningSetting> settings);
+        Task<ApiResult> ListWarnningSettingByPage(int page, int size, string sort, string order,
+            int? eqpTypeID, string paramID);
+        Task<ApiResult> ListWarnningSettingExType();
+        Task<ApiResult> GetWarnningSettingByID(int id);
     }
 }
