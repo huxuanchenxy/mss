@@ -7,8 +7,7 @@
     <div class="con-padding-horizontal header">
       <h2 class="title">
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
-      
-       </h2>
+      </h2>
       <x-button class="active">
         <router-link :to="{name:'SmallAreaList'}">返回</router-link>
       </x-button>
@@ -32,23 +31,18 @@
           </div>
           <p class="validate-tips">{{ areaName.tips }}</p>
         </li>
-         
-        <li class="list" >
+         <li class="list" >
           <div class="inp-wrap">
             <span class="text">车站<em class="validate-mark">*</em></span>
-            <div class="inp"> 
-              <el-select v-model="AreaType.id" clearable placeholder="请选择" @change="validateSelect()"> 
-                 <el-option 
-                 v-for="item in AreaTypeList" 
-                 :key="item.key" 
-                 :value="item.id" 
-                 :label="item.areaName">
-                 </el-option> 
+            <div class="inp">
+              <el-select v-model="AreaType.id" clearable placeholder="请选择" @change="validateSelect()">
+                 <el-option  v-for="item in AreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
+                 </el-option>
               </el-select>
             </div>
           </div>
           <p class="validate-tips">{{ AreaType.tips }}</p>
-        </li> 
+        </li>
       </ul>
     </div>
     <div class="btn-enter">
@@ -60,9 +54,9 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, validateNumberCommon, vInput } from '@/common/js/utils.js'
+import { vInput } from '@/common/js/utils.js'
 import api from '@/api/AreaApi.js'
-import XButton from '@/components/button' 
+import XButton from '@/components/button'
 
 export default {
   name: 'AddSmallArea',
@@ -72,36 +66,35 @@ export default {
   data () {
     return {
       loading: false,
-      isShow: 'add',//this.$route.params.mark,
+      isShow: 'add', // this.$route.params.mark,
       editAreaID: this.$route.params.id,
       AreaID: '',
       areaName: {
         text: '',
         tips: ''
-      }, 
+      },
       AreaType: {
         id: '',
         tips: ''
-      }, 
-      AreaTypeList: [] 
+      },
+      AreaTypeList: []
     }
   },
   created () {
     if (this.isShow === 'add') {
       this.loading = false
-      this.title = '| 添加位置' 
+      this.title = '| 添加位置'
     } else if (this.isShow === 'edit') {
       this.loading = true
-      this.title = '| 修改位置' 
+      this.title = '| 修改位置'
       alert('edit')
       this.getMidArea()
-    }  
-     api.GetChezhanData().then(res => {
-      this.AreaTypeList=res.data  
+    }
+    api.GetChezhanData().then(res => {
+      this.AreaTypeList = res.data
     }).catch(err => {
-      console.log(err) 
+      console.log(err)
     })
-    
   },
   methods: {
     // 添加权限组
@@ -113,21 +106,19 @@ export default {
         })
         return
       }
-    
-    let TB_Config_MidArea ={  
-                            areaName:this.areaName.text,
-                            pid:this.AreaType.id,
-                            sort:'1',
-                            is_Used :'1',
-                            is_Deleted:'0',
-                            created_Time :'',
-                            created_By:'101', 
-                            remark:this.areaName.text 
-                          }
+      let tbConfigMidArea = {
+        areaName: this.areaName.text,
+        pid: this.AreaType.id,
+        sort: '1',
+        is_Used: '1',
+        is_Deleted: '0',
+        created_Time: '',
+        created_By: '101',
+        remark: this.areaName.text
+      }
       if (this.isShow === 'add') {
         // 添加权限组
-        
-      api.SaveConfigMidArea(TB_Config_MidArea).then(res => { 
+        api.SaveConfigMidArea(tbConfigMidArea).then(res => {
           if (res.ret === 0) {
             this.$message({
               message: '添加成功',
@@ -146,9 +137,9 @@ export default {
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
-        TB_Config_MidArea.id = this.AreaID
+        tbConfigMidArea.id = this.AreaID
         // 修改权限组
-         api.UpdateMidArea(TB_Config_MidArea).then(res => {
+        api.UpdateMidArea(tbConfigMidArea).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '修改成功',
@@ -168,21 +159,19 @@ export default {
         }).catch(err => console.log(err))
       }
     },
-    
     getMidArea () {
       alert('11212')
-      let id=this.editAreaID
-     api.GetConfigMidAreaId(id).then(res => {
+      let id = this.editAreaID
+      api.GetConfigMidAreaId(id).then(res => {
         this.loading = false
-         let _res = res.content
+        let _res = res.content
         this.AreaID = _res.id
         this.areaName.text = _res.areaName
-        //this.AreaType.id=_res.pid
-      }).catch(err => console.log(err)) 
+      }).catch(err => console.log(err))
     },
     // 验证
     validateInput (val) {
-      validateInputCommon(val)
+      // validateInputCommon(val)
     },
 
     // 验证非法字符串，但允许为空
@@ -195,7 +184,7 @@ export default {
         return true
       }
     },
-    validateSelect () { 
+    validateSelect () {
       if (this.AreaType.text === '') {
         this.AreaType.tips = '此项必选'
         return false
@@ -206,11 +195,11 @@ export default {
     },
 
     validateNumber () {
-      //validateNumberCommon(this.groupOrder)
+      // validateNumberCommon(this.groupOrder)
     },
 
-    validateAll () { 
-      if (!validateInputCommon(this.areaName)) return false 
+    validateAll () {
+      // if (!validateInputCommon(this.areaName)) return false
       if (!this.validateSelect()) return false
       return true
     }

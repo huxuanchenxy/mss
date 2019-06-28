@@ -20,7 +20,8 @@ namespace System.API
 
         //public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         //    WebHost.CreateDefaultBuilder(args)
-        //        .UseStartup<Startup>(); 
+        //        .UseStartup<Startup>();
+
 
         public static void Main(string[] args)
         {
@@ -46,5 +47,6 @@ namespace System.API
               .UseStartup<Startup>()
                 .Build();
         }
+         
     }
 }

@@ -21,15 +21,15 @@
           </div>
           <div class="input-group">
             <label for="">区域</label>
-            <div class="inp"> 
-              <el-select v-model="AreaType" clearable placeholder="请选择" @change="validateSelect()"> 
-                 <el-option 
-                 v-for="item in AreaTypeList" 
-                 :key="item.key" 
-                 :value="item.id" 
+            <div class="inp">
+              <el-select v-model="AreaType" clearable placeholder="请选择" @change="validateSelect()">
+                 <el-option
+                 v-for="item in AreaTypeList"
+                 :key="item.key"
+                 :value="item.id"
                  :label="item.areaName">
-                 </el-option> 
-              </el-select> 
+                 </el-option>
+              </el-select>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@
         <li class="list name c-pointer" @click="changeOrder('AreaName')">
           站区名称
           <i :class="[{ 'el-icon-d-caret': headOrder.AreaName === 0 }, { 'el-icon-caret-top': headOrder.AreaName === 1 }, { 'el-icon-caret-bottom': headOrder.AreaName === 2 }]"></i>
-        </li> 
+        </li>
         <li class="list number c-pointer" @click="changeOrder('ConfigType')">
           区域名称
           <i :class="[{ 'el-icon-d-caret': headOrder.AreaType === 0 }, { 'el-icon-caret-top': headOrder.AreaType === 1 }, { 'el-icon-caret-bottom': headOrder.AreaType === 2 }]"></i>
@@ -74,7 +74,7 @@
         <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
-        </li> 
+        </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -88,11 +88,10 @@
                 <div class="name">
                   <router-link :to="{ name: 'MidAreaList', params: { id: item.id } }">{{ item.areaName }}</router-link>
                 </div>
-                
                 <div class="number">{{ item.configTypeName }}</div>
-                <!-- <div class="number">{{ item.sort }}</div>-->                
+                <!-- <div class="number">{{ item.sort }}</div>-->
                 <div class="last-update-time color-white">{{ item.created_Time }}</div>
-                <div class="last-maintainer">{{ item.created_By }}</div> 
+                <div class="last-maintainer">{{ item.created_By }}</div>
               </div>
             </li>
           </ul>
@@ -128,8 +127,7 @@
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
-import XButton from '@/components/button' 
+import XButton from '@/components/button'
 import api from '@/api/AreaApi'
 export default {
   name: 'MidAreaList',
@@ -140,10 +138,8 @@ export default {
     return {
       title: ' | 站区配置',
       AreaName: '',
-      //ConfigType:'',
-       AreaType: '', 
-      AreaTypeList: [], //场区类型: 车站\正线轨行区\保护区\车场生产区
-     // ConfigTypeList:[],
+      AreaType: '',
+      AreaTypeList: [],
       ConfigBigAreaList: [],
       editAreaIDList: [],
       bCheckAll: false,
@@ -175,7 +171,7 @@ export default {
     this.init()
 
     // 站区配置类型列表
-     api.SelectDicAreaData('1').then(res => { 
+    api.SelectDicAreaData('1').then(res => {
       this.AreaTypeList = res.data
     }).catch(err => console.log(err))
   },
@@ -187,7 +183,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-       this.searchResult(1)
+      this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
