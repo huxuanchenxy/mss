@@ -46,7 +46,6 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        
         <li class="list number c-pointer" @click="changeOrder('id')">
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
@@ -63,7 +62,6 @@
         <li class="list name" >
           登录账号
        </li>
-        
         <li class="list name">ip地址</li>
         <li class="list name">mac地址</li>
         <li class="list name">操作时间</li>
@@ -73,7 +71,6 @@
           <ul class="list-wrap">
             <li class="list" v-for="(item) in UserList" :key="item.key">
               <div class="list-content">
-                
                 <div class="number">{{ item.id }}</div>
                 <div class="name">{{ item.controller_name }}</div>
                 <div class="name">{{ item.action_name }}</div>
@@ -170,7 +167,6 @@ export default {
     },
     // 改变排序
     changeOrder (sort) {
-      
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
         // this.headOrder.acc_name = 0
@@ -189,9 +185,8 @@ export default {
         this.headOrder[sort] = 2
       }
       this.currentSort.sort = sort
-      //this.bCheckAll = false
-      //this.checkAll()
-      
+      // this.bCheckAll = false
+      // this.checkAll()
       this.searchResult(this.currentPage)
     },
     // 搜索
@@ -217,9 +212,6 @@ export default {
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
-
-
-
     // 搜索功能
     searchRes () {
       this.$emit('title', '| 操作日志')
@@ -227,18 +219,15 @@ export default {
       this.init()
       this.searchResult(1)
     },
-
     // 获取修改用户id
     emitEditID () {
       this.$emit('editUserID', this.editUserID)
     },
-
     // 全选
     checkAll () {
       this.bCheckAll ? this.UserList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
       this.emitEditID()
     },
-
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.bCheckAll = false
