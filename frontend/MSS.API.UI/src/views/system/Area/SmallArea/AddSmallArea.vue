@@ -50,6 +50,7 @@
         <router-link :to="{name:'SmallAreaList' }">取消</router-link>
       </x-button>
       <x-button class="active" @click.native="enter">保存</x-button>
+      <x-button class="active" @click.native="test">test</x-button>
     </div>
   </div>
 </template>
@@ -66,7 +67,7 @@ export default {
   data () {
     return {
       loading: false,
-      isShow: 'add', // this.$route.params.mark,
+      isShow: this.$route.params.mark,
       editAreaID: this.$route.params.id,
       AreaID: '',
       areaName: {
@@ -163,16 +164,15 @@ export default {
       let id = this.editAreaID
       api.GetConfigMidAreaId(id).then(res => {
         this.loading = false
-        let _res = res.content
-        this.AreaID = _res.id
-        this.areaName.text = _res.areaName
+        this.AreaID = res.data.id
+        this.areaName.text = res.data.areaName
+        this.AreaType.id = res.data.pname
       }).catch(err => console.log(err))
     },
     // 验证
     validateInput (val) {
       // validateInputCommon(val)
     },
-
     // 验证非法字符串，但允许为空
     validateInputNull (val) {
       if (!vInput(val.text)) {

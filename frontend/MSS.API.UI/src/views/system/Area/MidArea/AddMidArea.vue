@@ -166,7 +166,7 @@ export default {
       let id = this.editAreaID
       api.GetConfigBigAreaId(id).then(res => {
         this.loading = false
-        let _res = res.content
+        let _res = res.data
         this.AreaID = _res.id
         this.areaName.text = _res.areaName
         this.AreaType.id = _res.configType

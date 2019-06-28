@@ -70,8 +70,8 @@ namespace System.API.Core.Controllers
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("UpdateConfigBigArea")]
+        [HttpPost("UpdateConfigBigArea")]
+        //[Route("UpdateConfigBigArea")]
         public ResponseContext UpdateConfigBigAre(RequestContext<TB_Config_BigAreaDTO> req)
         {
             ResponseContext result = new ResponseContext();
@@ -90,9 +90,12 @@ namespace System.API.Core.Controllers
                 var Content = req.data;
                 TB_Config_BigArea model = new TB_Config_BigArea();
                 ModelCtrl.CopyModel(model, Content, null, null);
+                model.Updated_Time = DateTime.Now;
+                model.Updated_By = 101;
                 if (!_SystemService._IConfigBigAreaService.Update(model))
                 {
-                   // result.Head = new ResponseHead { Code = ErrCode.Failure, Ret = -1 };
+                    result.code = ErrCode.Failure;
+                    result.ret = -1;
                 }
                 ts.Complete();
             }
@@ -101,6 +104,35 @@ namespace System.API.Core.Controllers
             return result;
         }
 
+        /// <summary>
+        /// 修改位置
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        [HttpPost("UpdateConfigMidArea")]
+        public ResponseContext UpdateConfigMidArea(RequestContext<TB_Config_MidAreaDTO> req)
+        {
+            ResponseContext result = new ResponseContext();
+            result.data = true;
+            var obj = req.data;
+            using (TransactionScope ts = new TransactionScope(TransactionScopeOption.RequiresNew))
+            {
+                //校验传入参数
+                //  var reqHeader = req.Head;
+                var Content = req.data;
+                TB_Config_MidArea model = new TB_Config_MidArea();
+                ModelCtrl.CopyModel(model, Content, null, null);
+                model.Updated_Time = DateTime.Now;
+                model.Updated_By = 101;
+                if (!_SystemService._IConfigMidAreaService.Update(model))
+                {
+                    result.code = ErrCode.Failure;
+                    result.ret = -1;
+                }
+                ts.Complete();
+            }
+            return result;
+        }
 
         /// <summary>
         /// 获取站区数据
@@ -166,8 +198,18 @@ namespace System.API.Core.Controllers
         {
             ResponseContext result = new ResponseContext();
             TB_Config_BigAreaDTO model = new TB_Config_BigAreaDTO();
-            string where = " id='" + id + "'";
-           result.data = _SystemService._IConfigBigAreaService.GetList(where);
+            string where = " id='" + id + "'"; 
+            List<TB_Config_BigArea> list = _SystemService._IConfigBigAreaService.GetList(where);
+            if (list != null && list.Count > 0)
+            {
+                result.data = list[0];
+                result.ret = 0;
+            }
+            else
+            {
+                result.data = null;
+                result.ret = -1;
+            }
             return result;
         }
 
@@ -309,7 +351,17 @@ namespace System.API.Core.Controllers
             ResponseContext result = new ResponseContext();
             TB_Config_MidAreaDTO model = new TB_Config_MidAreaDTO();
             string where = " id='" + id + "'";
-            result.data = _SystemService._IConfigMidAreaService.GetList(where);
+           List<TB_Config_MidArea> list= _SystemService._IConfigMidAreaService.GetList(where);
+            if (list != null && list.Count > 0)
+            {
+                result.data = list[0];
+                result.ret = 0;
+            }
+            else
+            {
+                result.data =null;
+                result.ret =-1;
+            }
             return result;
         }
 
@@ -382,11 +434,14 @@ namespace System.API.Core.Controllers
             foreach (var v in results)
             {
                 model = _SystemService._IConfigBigAreaService.GetModel(v.PID);//.AreaName;
-                if(model!=null)
+                if (model != null)
                 {
                     v.PName = model.AreaName;
                 }
-                v.PName = string.Empty;
+                else
+                {
+                    v.PName = string.Empty;
+                }
             }
             result.data = results;
             result.total = results.Count();

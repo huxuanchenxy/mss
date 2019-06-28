@@ -104,7 +104,12 @@ namespace System.API.DAO.Implement
 
         public bool Update(TB_Config_MidArea model)
         {
-            throw new NotImplementedException();
+            var ret = DbContext.Execute("update TB_Config_MidArea set  AreaName=@AreaName,PID=@PID,Updated_Time=@Updated_Time,Updated_By=@Updated_By,Remark=@Remark where id=@id", model);
+            if (ret > 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
