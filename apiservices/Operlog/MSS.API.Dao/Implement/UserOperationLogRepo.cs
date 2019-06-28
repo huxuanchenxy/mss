@@ -27,14 +27,14 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and a.action_name like '%" + parm.actionName + "%' ");
                 }
-                //if (parm.searchGroup!=null)
-                //{
-                //    whereSql.Append(" and a.group_id="+ parm.searchGroup);
-                //}
-                //if (parm.searchParent != null)
-                //{
-                //    whereSql.Append(" and a.parent_menu=" + parm.searchParent);
-                //}
+                if (!string.IsNullOrWhiteSpace(parm.userName))
+                {
+                    whereSql.Append(" and a.user_name like '%" + parm.userName + "%' ");
+                }
+                if (!string.IsNullOrWhiteSpace(parm.startTime) && !string.IsNullOrWhiteSpace(parm.endTime))
+                {
+                    whereSql.Append(" and ( a.created_time >= '" + parm.startTime + "' AND a.created_time <= '" + parm.endTime + "' ) ");
+                }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);

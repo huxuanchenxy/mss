@@ -11,5 +11,8 @@ namespace MSS.API.Model.DTO
         /// group_name模糊查询
         /// </summary>
         public string actionName { get; set; }
+        public string userName { get; set; }
+        public string startTime { get; set; }
+        public string endTime { get; set; }
     }
 }
