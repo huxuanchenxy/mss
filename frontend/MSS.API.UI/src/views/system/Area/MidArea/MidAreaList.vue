@@ -127,6 +127,7 @@
   </div>
 </template>
 <script>
+import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/AreaApi'
 export default {

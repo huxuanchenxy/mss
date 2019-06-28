@@ -121,6 +121,7 @@
   </div>
 </template>
 <script>
+import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/AreaApi.js'
 export default {
@@ -176,7 +177,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      // this.searchResult(1)
+      this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {

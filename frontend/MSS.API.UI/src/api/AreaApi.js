@@ -1,5 +1,5 @@
 import axios from './interceptors'
-let api = 'http://10.89.36.204:5801/areaapi'
+let api = 'http://10.89.36.204:5801/areaapi' // 'http://localhost:52227/api/System'
 export default {
   getAllUsers: () => { return {} },
   SaveConfigBigArea: data => { return axios.post(`${api}/SaveConfigBigArea`, data).then(res => res.data) },
