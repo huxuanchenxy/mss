@@ -162,7 +162,7 @@ const routes = [
         ]
       },{
         path: 'operlog',
-        component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'), 
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/index.vue'), 
         children: [
           {
             path: '/',

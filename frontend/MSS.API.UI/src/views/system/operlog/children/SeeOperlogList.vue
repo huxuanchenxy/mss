@@ -13,35 +13,15 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">权限名称</label>
+            <label for="name">用户姓名</label>
             <div class="inp">
-              <el-input v-model.trim="actionName" placeholder="请输入权限名称"></el-input>
+              <el-input v-model.trim="userName" placeholder="请输入用户姓名"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="">权限组</label>
+            <label for="name">操作名称</label>
             <div class="inp">
-              <el-select v-model="searchActionGroup" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="item in actionGroupList"
-                  :key="item.key"
-                  :label="item.group_name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="">所属菜单</label>
-            <div class="inp">
-              <el-select v-model="searchMenu" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="item in parentMenuList"
-                  :key="item.key"
-                  :label="item.action_name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-input v-model.trim="actionName" placeholder="请输入操作名称"></el-input>
             </div>
           </div>
         </div>
@@ -49,39 +29,41 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
-      <ul class="con-padding-horizontal btn-group">
-        <li class="list">
-          <x-button><router-link :to="{ name: 'AddAction', params: { mark: 'add' } }">添加</router-link></x-button>
-        </li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
-      </ul>
+
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
-          权限编号
+          序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('action_name')">
-          权限名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.action_name === 0 }, { 'el-icon-caret-top': headOrder.action_name === 1 }, { 'el-icon-caret-bottom': headOrder.action_name === 2 }]"></i>
+        <li class="list number">
+          模块名称
+       </li>
+        <li class="list number c-pointer" @click="changeOrder('acc_name')">
+          登录账号
+          <i :class="[{ 'el-icon-d-caret': headOrder.acc_name === 0 }, { 'el-icon-caret-top': headOrder.acc_name === 1 }, { 'el-icon-caret-bottom': headOrder.acc_name === 2 }]"></i>
         </li>
-        <li class="list url">权限URL</li>
-        <li class="list name c-pointer" @click="changeOrder('group_id')">
-          权限组
-          <i :class="[{ 'el-icon-d-caret': headOrder.group_id === 0 }, { 'el-icon-caret-top': headOrder.group_id === 1 }, { 'el-icon-caret-bottom': headOrder.group_id === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('user_name')">
+          姓名
+          <i :class="[{ 'el-icon-d-caret': headOrder.user_name === 0 }, { 'el-icon-caret-top': headOrder.user_name === 1 }, { 'el-icon-caret-bottom': headOrder.user_name === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('parent_menu')">
-          所属菜单
-          <i :class="[{ 'el-icon-d-caret': headOrder.parent_menu === 0 }, { 'el-icon-caret-top': headOrder.parent_menu === 1 }, { 'el-icon-caret-bottom': headOrder.parent_menu === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('role_id')">
+          角色
+          <i :class="[{ 'el-icon-d-caret': headOrder.role_id === 0 }, { 'el-icon-caret-top': headOrder.role_id === 1 }, { 'el-icon-caret-bottom': headOrder.role_id === 2 }]"></i>
         </li>
-        <li class="list menuOrder c-pointer" @click="changeOrder('action_order')">
-          权限顺序
-          <i :class="[{ 'el-icon-d-caret': headOrder.action_order === 0 }, { 'el-icon-caret-top': headOrder.action_order === 1 }, { 'el-icon-caret-bottom': headOrder.action_order === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('job_number')">
+          工号
+          <i :class="[{ 'el-icon-d-caret': headOrder.job_number === 0 }, { 'el-icon-caret-top': headOrder.job_number === 1 }, { 'el-icon-caret-bottom': headOrder.job_number === 2 }]"></i>
         </li>
+        <li class="list number">职位</li>
+        <li class="list number">手机</li>
+        <li class="list number">邮件</li>
+        <!--<li class="list number">身份证</li>
+        <li class="list number">生日</li>
+        <li class="list number">性别</li>-->
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -94,19 +76,27 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="item in ActionGroupList" :key="item.key">
+            <li class="list" v-for="(item) in UserList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editActionID" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editUserID" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
-                <div class="name word-break">{{ item.action_name }}</div>
-                <div class="url word-break">{{ item.request_url }}</div>
-                <div class="name word-break">{{ item.group_name }}</div>
-                <div class="name word-break">{{ item.parent_name }}</div>
-                <div class="menuOrder word-break">{{ item.action_order }}</div>
-                <div class="last-update-time color-white word-break">{{ item.updated_time }}</div>
-                <div class="last-maintainer word-break">{{ item.updated_name }}</div>
+                <div class="number">{{ item.controller_name }}</div>
+                <!--<div class="name">
+                  <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.user_name }}</router-link>
+                </div>-->
+                <div class="number">{{ item.user_name }}</div>
+                <div class="number">{{ item.role_name }}</div>
+                <div class="number">{{ item.job_number }}</div>
+                <div class="number">{{ item.position }}</div>
+                <div class="number">{{ item.mobile }}</div>
+                <div class="number">{{ item.email }}</div>
+                <!--<div class="number">{{ item.id_card }}</div>
+                <div class="number">{{ item.birth }}</div>
+                <div class="number">{{ item.sex }}</div>-->
+                <div class="last-update-time color-white">{{ item.updated_time }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
@@ -146,20 +136,18 @@ import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/operlogApi'
 export default {
-  name: 'SeeActionList',
+  name: 'SeeOperlogList',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 权限定义',
-      actionName: '',
-      searchActionGroup: '',
-      searchMenu: '',
-      parentMenuList: [],
-      actionGroupList: [],
-      ActionGroupList: [],
-      editActionID: [],
+      title: ' | 用户管理',
+      userName: '',
+      role: '',
+      roleList: [],
+      UserList: [],
+      editUserID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -176,28 +164,25 @@ export default {
       },
       headOrder: {
         id: 1,
-        action_name: 0,
-        group_id: 0,
-        parent_menu: 0,
-        action_order: 0,
+        acc_name: 0,
+        user_name: 0,
+        role_id: 0,
+        job_number: 0,
         updated_time: 0,
         updated_by: 0
       }
     }
   },
   created () {
-    this.$emit('title', '| 权限定义')
-    if (this.$route.params.id !== '' && this.$route.params.id !== null) {
-      this.searchActionGroup = this.$route.params.id
+    this.$emit('title', '| 用户')
+    if (this.$route.params.roleID !== '' && this.$route.params.roleID !== null) {
+      this.role = this.$route.params.roleID
     }
     this.init()
-    // 权限组列表
-    api.getActionGroupAll().then(res => {
-      this.actionGroupList = res.data
-    }).catch(err => console.log(err))
-    // 菜单组列表
-    api.getActionMenu().then(res => {
-      this.parentMenuList = res.data
+
+    // 角色列表
+    api.getRoleAll().then(res => {
+      this.roleList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
@@ -214,9 +199,10 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.action_name = 0
-        this.headOrder.group_id = 0
-        this.headOrder.action_order = 0
+        this.headOrder.acc_name = 0
+        this.headOrder.user_name = 0
+        this.headOrder.role_id = 0
+        this.headOrder.job_number = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -237,78 +223,65 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
-      api.getOperationLog({
+      let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.actionName,
-        searchGroup: this.searchActionGroup,
-        searchParent: this.searchMenu
-      }).then(res => {
+        searchName: this.userName,
+        searchRole: this.role
+      }
+      api.getOperationLog(parm).then(res => {
         this.loading = false
-        if (res.data.total === 0) {
-          this.ActionGroupList = []
-        } else {
-          res.data.rows.map(item => {
-            item.updated_time = transformDate(item.updated_time)
-          })
-          this.ActionGroupList = res.data.rows
-        }
+        res.data.rows.map(item => {
+          item.updated_time = transformDate(item.updated_time)
+        })
+        this.UserList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
-    // 修改权限
+    // 修改用户
     edit () {
-      if (!this.editActionID.length) {
+      if (!this.editUserID.length) {
         this.$message({
-          message: '请选择修改操作的权限',
+          message: '请选择需要修改的用户',
           type: 'warning'
         })
-      } else if (this.editActionID.length > 1) {
+      } else if (this.editUserID.length > 1) {
         this.$message({
-          message: '修改的权限不能超过1个',
+          message: '修改的用户不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddAction',
+          name: 'AddUser',
           params: {
-            id: this.editActionID[0],
+            id: this.editUserID[0],
             mark: 'edit'
           }
         })
       }
     },
 
-    // 删除权限
+    // 删除用户
     remove () {
-      if (!this.editActionID.length) {
+      if (!this.editUserID.length) {
         this.$message({
-          message: '请选择需删除作的权限',
+          message: '请选择需要删除的用户',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条权限信息?'
+        this.dialogVisible.text = '确定删除该条用户信息?'
       }
     },
-
-    // 搜索功能
-    searchRes () {
-      this.$emit('title', '| 权限定义')
-      this.loading = true
-      this.init()
-      this.searchResult(1)
-    },
-
     // 弹框确认是否删除
     dialogEnter () {
-      api.delAction(this.editActionID.join(',')).then(res => {
+      api.delUser(this.editUserID.join(',')).then(res => {
         if (res.code === 0) {
-          this.editActionID = []
+          this.editUserID = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -317,7 +290,7 @@ export default {
           this.searchResult(1)
         } else {
           this.$message({
-            message: '删除失败',
+            message: res.msg,
             type: 'error'
           })
         }
@@ -325,15 +298,22 @@ export default {
         this.dialogVisible.isShow = false
       }).catch(err => console.log(err))
     },
+    // 搜索功能
+    searchRes () {
+      this.$emit('title', '| 用户管理')
+      this.loading = true
+      this.init()
+      this.searchResult(1)
+    },
 
-    // 获取修改权限id
+    // 获取修改用户id
     emitEditID () {
-      this.$emit('editActionID', this.editActionID)
+      this.$emit('editUserID', this.editUserID)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.ActionGroupList.map(val => this.editActionID.push(val.id)) : this.editActionID = []
+      this.bCheckAll ? this.UserList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
       this.emitEditID()
     },
 
@@ -401,6 +381,10 @@ $con-height: $content-height - 145 - 56;
       justify-content: space-between;
       align-items: center;
       padding: PXtoEm(15) PXtoEm(24);
+
+      div{
+        word-break: break-all;
+      }
     }
 
     .left-title{
@@ -440,30 +424,29 @@ $con-height: $content-height - 145 - 56;
     }
   }
 
-  .number{
-    width: 10%;
-  }
-
+  .number,
   .name,
   .btn-wrap{
     width: 10%;
   }
 
+  .name{
+    a{
+      color: #42abfd;
+    }
+  }
+
   .last-update-time{
-    width: 20%;
+    width: 18%;
     color: $color-content-text;
   }
 
   .last-maintainer{
-    width: 15%;
-  }
-
-  .url{
-    width: 20%;
-  }
-
-  .menuOrder{
     width: 10%;
+  }
+
+  .state{
+    width: 5%;
   }
 }
 </style>
