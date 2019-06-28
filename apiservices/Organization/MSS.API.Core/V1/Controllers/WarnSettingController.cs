@@ -30,6 +30,8 @@ namespace MSS.API.Core.V1.Controllers
         {
             setting.CreatedBy = _userId;
             setting.CreatedTime = DateTime.Now;
+            setting.UpdatedBy = _userId;
+            setting.UpdatedTime = DateTime.Now;
             setting.IsDel = false;
             var ret = await _warnService.SaveWarnningSetting(setting);
             return ret;
@@ -47,23 +49,52 @@ namespace MSS.API.Core.V1.Controllers
 
         // 查询
         [HttpGet()]
-        public async Task<ActionResult<ApiResult>> GetWarnningSettingByPage(WarnSettingQueryParm query)
+        public async Task<ActionResult<ApiResult>> GetWarnningSettingByPage([FromQuery]WarnSettingQueryParm query)
         {
-            var ret = await _warnService.ListWarnningSettingByPage(query.page, query.rows, query.sort, query.order);
+            int? eqpTypeID = null;
+            if (!string.IsNullOrEmpty(query.EquipmentTypeID)) {
+                eqpTypeID = Convert.ToInt32(query.EquipmentTypeID);
+            }
+            var ret = await _warnService.ListWarnningSettingByPage(query.page, query.rows, query.sort, query.order,
+                eqpTypeID, query.ParamID);
             return ret;
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<ApiResult>> Delete(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ApiResult>> GetWarnningSettingByID(int id)
         {
-            EarlyWarnningSetting setting = new EarlyWarnningSetting();
-            setting.UpdatedBy = _userId;
-            setting.UpdatedTime = DateTime.Now;
-            setting.ID = id;
-            var ret = await _warnService.DeleteWarnningSetting(setting);
-
+            var ret = await _warnService.GetWarnningSettingByID(id);
             return ret;
         }
 
+        [HttpDelete("{ids}")]
+        public async Task<ActionResult<ApiResult>> Delete(string ids)
+        {
+            List<EarlyWarnningSetting > list = new List<EarlyWarnningSetting>();
+            string[] idsArry = ids.Split(',');
+            foreach(string item in idsArry)
+            {
+                int id = Convert.ToInt32(item);
+                EarlyWarnningSetting setting = new EarlyWarnningSetting();
+                setting.UpdatedBy = _userId;
+                setting.UpdatedTime = DateTime.Now;
+                setting.ID = id;
+                list.Add(setting);
+            }
+            if (list.Count > 0)
+            {
+                var ret = await _warnService.DeleteListWarnningSetting(list);
+                return ret;
+            } else {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("extype")]
+        public async Task<ActionResult<ApiResult>> GetWarnningSettingExType()
+        {
+            var ret = await _warnService.ListWarnningSettingExType();
+            return ret;
+        }
     }
 }

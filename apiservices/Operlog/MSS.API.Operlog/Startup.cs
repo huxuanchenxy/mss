@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MSS.API.Dao;
+using MSS.API.Operlog.Dao;
 using MSS.API.Operlog.Infrastructure;
 using System;
-using static MSS.API.Model.Const;
+using static MSS.API.Operlog.Model.Const;
 
 namespace MSS.API.Operlog
 {
