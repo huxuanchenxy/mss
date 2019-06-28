@@ -34,7 +34,7 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
+        
         <li class="list number c-pointer" @click="changeOrder('id')">
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
@@ -42,61 +42,37 @@
         <li class="list number">
           模块名称
        </li>
-        <li class="list number c-pointer" @click="changeOrder('acc_name')">
+        <li class="list number">
+          操作名称
+       </li>
+       <li class="list number">
+          用户姓名
+       </li>
+        <li class="list number" >
           登录账号
-          <i :class="[{ 'el-icon-d-caret': headOrder.acc_name === 0 }, { 'el-icon-caret-top': headOrder.acc_name === 1 }, { 'el-icon-caret-bottom': headOrder.acc_name === 2 }]"></i>
-        </li>
-        <li class="list name c-pointer" @click="changeOrder('user_name')">
-          姓名
-          <i :class="[{ 'el-icon-d-caret': headOrder.user_name === 0 }, { 'el-icon-caret-top': headOrder.user_name === 1 }, { 'el-icon-caret-bottom': headOrder.user_name === 2 }]"></i>
-        </li>
-        <li class="list number c-pointer" @click="changeOrder('role_id')">
-          角色
-          <i :class="[{ 'el-icon-d-caret': headOrder.role_id === 0 }, { 'el-icon-caret-top': headOrder.role_id === 1 }, { 'el-icon-caret-bottom': headOrder.role_id === 2 }]"></i>
-        </li>
-        <li class="list number c-pointer" @click="changeOrder('job_number')">
-          工号
-          <i :class="[{ 'el-icon-d-caret': headOrder.job_number === 0 }, { 'el-icon-caret-top': headOrder.job_number === 1 }, { 'el-icon-caret-bottom': headOrder.job_number === 2 }]"></i>
-        </li>
-        <li class="list number">职位</li>
-        <li class="list number">手机</li>
-        <li class="list number">邮件</li>
-        <!--<li class="list number">身份证</li>
-        <li class="list number">生日</li>
-        <li class="list number">性别</li>-->
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
-          最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
-        </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
-          最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
-        </li>
+       </li>
+        
+        <li class="list number">ip地址</li>
+        <li class="list number">mac地址</li>
+        <li class="list number">操作时间</li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
             <li class="list" v-for="(item) in UserList" :key="item.key">
               <div class="list-content">
-                <div class="checkbox">
-                  <input type="checkbox" v-model="editUserID" :value="item.id" @change="emitEditID">
-                </div>
+                
                 <div class="number">{{ item.id }}</div>
                 <div class="number">{{ item.controller_name }}</div>
+                <div class="number">{{ item.action_name }}</div>
                 <!--<div class="name">
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.user_name }}</router-link>
                 </div>-->
                 <div class="number">{{ item.user_name }}</div>
-                <div class="number">{{ item.role_name }}</div>
-                <div class="number">{{ item.job_number }}</div>
-                <div class="number">{{ item.position }}</div>
-                <div class="number">{{ item.mobile }}</div>
-                <div class="number">{{ item.email }}</div>
-                <!--<div class="number">{{ item.id_card }}</div>
-                <div class="number">{{ item.birth }}</div>
-                <div class="number">{{ item.sex }}</div>-->
-                <div class="last-update-time color-white">{{ item.updated_time }}</div>
-                <div class="last-maintainer">{{ item.updated_name }}</div>
+                <div class="number">{{ item.acc_name }}</div>
+                <div class="number">{{ item.ip }}</div>
+                <div class="number">{{ item.mac_add }}</div>
+                <div class="number">{{ item.created_time }}</div>
               </div>
             </li>
           </ul>
@@ -142,7 +118,7 @@ export default {
   },
   data () {
     return {
-      title: ' | 用户管理',
+      title: ' | 日志查看',
       userName: '',
       role: '',
       roleList: [],
@@ -197,14 +173,15 @@ export default {
     },
     // 改变排序
     changeOrder (sort) {
+      
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.acc_name = 0
-        this.headOrder.user_name = 0
-        this.headOrder.role_id = 0
-        this.headOrder.job_number = 0
-        this.headOrder.updated_by = 0
-        this.headOrder.updated_time = 0
+        // this.headOrder.acc_name = 0
+        // this.headOrder.user_name = 0
+        // this.headOrder.role_id = 0
+        // this.headOrder.job_number = 0
+        // this.headOrder.updated_by = 0
+        // this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -215,8 +192,9 @@ export default {
         this.headOrder[sort] = 2
       }
       this.currentSort.sort = sort
-      this.bCheckAll = false
-      this.checkAll()
+      //this.bCheckAll = false
+      //this.checkAll()
+      
       this.searchResult(this.currentPage)
     },
     // 搜索
@@ -228,40 +206,16 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.userName,
-        searchRole: this.role
+        actionName: this.actionName
       }
       api.getOperationLog(parm).then(res => {
         this.loading = false
-        res.data.rows.map(item => {
-          item.updated_time = transformDate(item.updated_time)
-        })
+        // res.data.rows.map(item => {
+        //   item.updated_time = transformDate(item.updated_time)
+        // })
         this.UserList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
-    },
-
-    // 修改用户
-    edit () {
-      if (!this.editUserID.length) {
-        this.$message({
-          message: '请选择需要修改的用户',
-          type: 'warning'
-        })
-      } else if (this.editUserID.length > 1) {
-        this.$message({
-          message: '修改的用户不能超过1个',
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'AddUser',
-          params: {
-            id: this.editUserID[0],
-            mark: 'edit'
-          }
-        })
-      }
     },
 
     // 删除用户
