@@ -24,6 +24,18 @@
               <el-input v-model.trim="actionName" placeholder="请输入操作名称"></el-input>
             </div>
           </div>
+          <div class="input-group">
+            <label for="name">操作时间</label>
+            <div class="inp" style="width:165px;">
+              <el-input v-model.trim="startTime" placeholder="请输入开始时间"></el-input>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="name">至</label>
+            <div class="inp" style="width:165px;">
+              <el-input v-model.trim="endTime" placeholder="请输入结束时间" ></el-input>
+            </div>
+          </div>
         </div>
         <div class="search-btn" @click="searchRes">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
@@ -39,22 +51,22 @@
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list number">
+        <li class="list name">
           模块名称
        </li>
-        <li class="list number">
+        <li class="list name">
           操作名称
        </li>
-       <li class="list number">
+       <li class="list name">
           用户姓名
        </li>
-        <li class="list number" >
+        <li class="list name" >
           登录账号
        </li>
         
-        <li class="list number">ip地址</li>
-        <li class="list number">mac地址</li>
-        <li class="list number">操作时间</li>
+        <li class="list name">ip地址</li>
+        <li class="list name">mac地址</li>
+        <li class="list name">操作时间</li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -63,16 +75,16 @@
               <div class="list-content">
                 
                 <div class="number">{{ item.id }}</div>
-                <div class="number">{{ item.controller_name }}</div>
-                <div class="number">{{ item.action_name }}</div>
+                <div class="name">{{ item.controller_name }}</div>
+                <div class="name">{{ item.action_name }}</div>
                 <!--<div class="name">
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.user_name }}</router-link>
                 </div>-->
-                <div class="number">{{ item.user_name }}</div>
-                <div class="number">{{ item.acc_name }}</div>
-                <div class="number">{{ item.ip }}</div>
-                <div class="number">{{ item.mac_add }}</div>
-                <div class="number">{{ item.created_time }}</div>
+                <div class="name">{{ item.user_name }}</div>
+                <div class="name">{{ item.acc_name }}</div>
+                <div class="name">{{ item.ip }}</div>
+                <div class="name">{{ item.mac_add }}</div>
+                <div class="name">{{ item.created_time }}</div>
               </div>
             </li>
           </ul>
@@ -140,17 +152,12 @@ export default {
       },
       headOrder: {
         id: 1,
-        acc_name: 0,
-        user_name: 0,
-        role_id: 0,
-        job_number: 0,
-        updated_time: 0,
-        updated_by: 0
+        acc_name: 0
       }
     }
   },
   created () {
-    this.$emit('title', '| 用户')
+    this.$emit('title', '| 日志查看')
     if (this.$route.params.roleID !== '' && this.$route.params.roleID !== null) {
       this.role = this.$route.params.roleID
     }
@@ -166,10 +173,10 @@ export default {
   },
   methods: {
     init () {
-      this.bCheckAll = false
-      this.checkAll()
+      // this.bCheckAll = false
+      // this.checkAll()
       this.currentPage = 1
-      // this.searchResult(1)
+      this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
@@ -206,55 +213,26 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        actionName: this.actionName
+        actionName: this.actionName,
+        userName: this.userName,
+        startTime: this.startTime,
+        endTime: this.endTime
       }
       api.getOperationLog(parm).then(res => {
         this.loading = false
-        // res.data.rows.map(item => {
-        //   item.updated_time = transformDate(item.updated_time)
-        // })
+        res.data.rows.map(item => {
+          item.created_time = transformDate(item.created_time)
+        })
         this.UserList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
-    // 删除用户
-    remove () {
-      if (!this.editUserID.length) {
-        this.$message({
-          message: '请选择需要删除的用户',
-          type: 'warning'
-        })
-      } else {
-        this.dialogVisible.isShow = true
-        this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条用户信息?'
-      }
-    },
-    // 弹框确认是否删除
-    dialogEnter () {
-      api.delUser(this.editUserID.join(',')).then(res => {
-        if (res.code === 0) {
-          this.editUserID = []
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-          this.currentPage = 1
-          this.searchResult(1)
-        } else {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
-        // 隐藏dialog
-        this.dialogVisible.isShow = false
-      }).catch(err => console.log(err))
-    },
+
+
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 用户管理')
+      this.$emit('title', '| 操作日志')
       this.loading = true
       this.init()
       this.searchResult(1)
@@ -381,7 +359,7 @@ $con-height: $content-height - 145 - 56;
   .number,
   .name,
   .btn-wrap{
-    width: 10%;
+    width: 13%;
   }
 
   .name{
