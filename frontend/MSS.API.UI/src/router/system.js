@@ -179,7 +179,22 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
           }
         ]
-      },
+      },{
+        path: 'operlog',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/index.vue'), 
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, 
+          {
+            path: 'list',
+            name: 'SeeOperlogList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeOperlogList.vue')
+          }
+      ]
+    }
+      ,
       {
         path: 'Area1',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
