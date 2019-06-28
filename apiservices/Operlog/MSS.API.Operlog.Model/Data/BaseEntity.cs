@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MSS.API.Model.Data
+namespace MSS.API.Operlog.Model.Data
 {
     public abstract class BaseEntity
     {
@@ -11,5 +11,6 @@ namespace MSS.API.Model.Data
         public int created_by { get; set; }
         public DateTime updated_time { get; set; }
         public int updated_by { get; set; }
+        public int is_del { get; set; }
     }
 }

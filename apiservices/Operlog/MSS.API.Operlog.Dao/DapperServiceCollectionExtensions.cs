@@ -1,14 +1,14 @@
-﻿using MSS.API.Model;
-using MSS.API.Model.Data;
+﻿using MSS.API.Operlog.Model;
+using MSS.API.Operlog.Model.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using MSS.API.Dao.Interface;
-using MSS.API.Dao.Implement;
+using MSS.API.Operlog.Dao.Interface;
+using MSS.API.Operlog.Dao.Implement;
 
-namespace MSS.API.Dao
+namespace MSS.API.Operlog.Dao
 {
     public static class DapperServiceCollectionExtensions
     {

@@ -1,9 +1,6 @@
-﻿using MSS.API.Model.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
-namespace MSS.API.Model.DTO
+namespace MSS.API.Operlog.Model.DTO
 {
     public class UserOperationLogParm : BaseQueryParm
     {

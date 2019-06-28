@@ -3,7 +3,7 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
 
-namespace MSS.API.Dao
+namespace MSS.API.Operlog.Dao
 {
     public abstract class BaseRepo
     {

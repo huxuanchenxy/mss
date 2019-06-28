@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MSS.API.Model
+namespace MSS.API.Operlog.Model
 {
     public static class Const
     {

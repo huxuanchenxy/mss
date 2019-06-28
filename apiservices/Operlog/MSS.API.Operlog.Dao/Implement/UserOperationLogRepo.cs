@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using MSS.API.Dao.Interface;
-using MSS.API.Model.Data;
+using MSS.API.Operlog.Dao.Interface;
+using MSS.API.Operlog.Model.Data;
 using System.Threading.Tasks;
 using Dapper;
-using MSS.API.Model.DTO;
-using static MSS.API.Model.Const;
+using MSS.API.Operlog.Model.DTO;
+using static MSS.API.Operlog.Model.Const;
 using System.Linq;
 
-namespace MSS.API.Dao.Implement
+namespace MSS.API.Operlog.Dao.Implement
 {
     public class UserOperationLogRepo : BaseRepo, IUserOperationLogRepo<UserOperationLog>
     {
@@ -46,14 +46,14 @@ namespace MSS.API.Dao.Implement
         }
 
 
-        public async Task<int> Add(UserOperationLog action)
+        public async Task<int> Add(UserOperationLog obj)
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" insert into Action_Info " +
-                    " values (0,@request_url,@action_name,@description,@action_order,@icon, " +
-                    " @level,@group_id,@parent_menu, " +
-                    " @created_time,@created_by,@updated_time,@updated_by) ", action);
+                var result = await c.ExecuteAsync(" insert into user_operation_log " +
+                    " values (0,@controller_name,@action_name,@method_name,@acc_name,@user_name, " +
+                    " @ip,@mac_add, " +
+                    " @created_time,@created_by,@updated_time,@updated_by,@is_del) ", obj);
                 return result;
             });
         }
