@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MSS.API.Dao
+namespace MSS.API.Operlog.Dao
 {
     public class DapperOptions
     {

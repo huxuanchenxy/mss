@@ -1,8 +1,8 @@
-﻿using MSS.API.Dao.Interface;
-using MSS.API.Model.Data;
+﻿using MSS.API.Operlog.Dao.Interface;
+using MSS.API.Operlog.Model.Data;
 using System.Threading.Tasks;
-using MSS.API.Model.DTO;
-using static MSS.API.Model.Const;
+using MSS.API.Operlog.Model.DTO;
+using static MSS.API.Operlog.Model.Const;
 using System;
 using System.Collections.Generic;
 using System.Linq;

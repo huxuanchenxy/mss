@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MSS.API.Model.Data
+namespace MSS.API.Operlog.Model.Data
 {
     public abstract class BaseEntity
     {
