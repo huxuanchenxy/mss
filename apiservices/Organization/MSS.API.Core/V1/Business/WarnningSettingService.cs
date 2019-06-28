@@ -130,8 +130,28 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
+        public async Task<ApiResult> DeleteListWarnningSetting(List<EarlyWarnningSetting> settings)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                foreach(EarlyWarnningSetting setting in settings)
+                {
+                    await _warnRepo.DeleteWarnningSetting(setting);
+                }
+                ret.code = Code.Success;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
 
-        public async Task<ApiResult> ListWarnningSettingByPage(int page, int size, string sort, string order)
+            return ret;
+        }
+
+        public async Task<ApiResult> ListWarnningSettingByPage(int page, int size, string sort, string order,
+            int? eqpTypeID, string paramID)
         {
             ApiResult ret = new ApiResult();
             try
@@ -139,14 +159,49 @@ namespace MSS.API.Core.V1.Business
                 using (TransactionScope scope = new TransactionScope())
                 {
                     int count = await _warnRepo.Count();
-                    var list = await _warnRepo.ListWarnningSettingByPage(page, size, sort, order);
+                    var list = await _warnRepo.ListWarnningSettingByPage(page, size, sort, order, eqpTypeID, paramID);
                     ret.code = Code.Success;
                     ret.data = new {
                         total = count,
-                        list = list
+                        rows = list
                     };
                     scope.Complete();
                 }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+        public async Task<ApiResult> ListWarnningSettingExType()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var data = await _warnRepo.ListEarlyWarnningExType();
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> GetWarnningSettingByID(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var data = await _warnRepo.GetWarnningSettingByID(id);
+                ret.code = Code.Success;
+                ret.data = data;
             }
             catch (Exception ex)
             {
