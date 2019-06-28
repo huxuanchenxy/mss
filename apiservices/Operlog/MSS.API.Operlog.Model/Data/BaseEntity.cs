@@ -11,5 +11,6 @@ namespace MSS.API.Operlog.Model.Data
         public int created_by { get; set; }
         public DateTime updated_time { get; set; }
         public int updated_by { get; set; }
+        public int is_del { get; set; }
     }
 }

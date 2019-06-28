@@ -9,5 +9,7 @@ namespace MSS.API.Operlog.V1.Business
     {
         Task<MSSResult<UserOperationLogView>> GetPageByParm(UserOperationLogParm parm);
 
+        Task<int> Add(UserOperationLog obj);
+
     }
 }

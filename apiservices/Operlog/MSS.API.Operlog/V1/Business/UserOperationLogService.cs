@@ -40,5 +40,11 @@ namespace MSS.API.Operlog.V1.Business
             }
         }
 
+
+        public async Task<int> Add(UserOperationLog obj)
+        {
+            return await _userOperationLogRepo.Add(obj);
+        }
+
     }
 }
