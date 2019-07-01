@@ -20,7 +20,7 @@ namespace MSS.API.Dao.Interface
 
         Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int idx, int size, string sort, string order,
             int? eqpTypeID, string paramID);
-        Task<int> Count();
+        Task<int> Count(int? eqpTypeID, string paramID);
 
         Task<EarlyWarnningSetting> GetWarnningSettingByID(int id);
 

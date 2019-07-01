@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using MSS.API.Common;
 using Newtonsoft.Json;
 using System;
-using MSS.API.Common.Utility;
-using MSS.API.Operlog.Dao;
-using MSS.API.Operlog.Dao.Implement;
-using MSS.API.Operlog.Model.Data;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using System.Net;
+using System.Net.Sockets;
 
-namespace MSS.Common.Web
+namespace MSS.API.Operlog.Common
 {
     public class GlobalActionFilter: IActionFilter
     {
@@ -33,30 +34,37 @@ namespace MSS.Common.Web
                     if (header.IndexOf("Bearer") >= 0)
                     {
                         token = header.Replace("Bearer", "").Trim();
+                        UserTokenResponse response = new UserTokenResponse();
+                        //AuthHelper au = new AuthHelper();
+                        //int userid = au.GetUserId(context.HttpContext);
+
+                        RedisHelper.Initialization(new CSRedis.CSRedisClient(this.Configuration["redis:ConnectionString"]));
+                        //RedisMSSHelper.Init(this.Configuration["redis:ConnectionString"]);
+                        int userid = int.Parse(RedisHelper.Get(token));
+                        response = JsonConvert.DeserializeObject<UserTokenResponse>(RedisHelper.Get(userid.ToString()));
+                        string localIPAddress = LocalIPAddress;
+                        string localMacAddress = LocalMacAddress;
+
+                        using (HttpClient client = new HttpClient())
+                        {
+                            client.DefaultRequestHeaders.Accept.Clear();
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            Dictionary<string, string> dic = new Dictionary<string, string>();
+                            dic.Add("controller_name", controllername);
+                            dic.Add("action_name", actionname);
+                            dic.Add("method_name", methodname);
+                            dic.Add("acc_name", response.acc_name);
+                            dic.Add("user_name", response.user_name);
+                            dic.Add("ip", localIPAddress);
+                            dic.Add("mac_add", localMacAddress);
+
+                            FormUrlEncodedContent data = new FormUrlEncodedContent(dic);
+                            string httpurl = Configuration["operlog:posturl"];
+                            //string httpurl = "http://10.89.36.204:8003/api/v1/UserOperationLog/Add";
+                            client.PostAsync(httpurl, data);
+                        }
                     }
-                    UserTokenResponse response = new UserTokenResponse();
-                    AuthHelper au = new AuthHelper();
-                    int userid = au.GetUserId(context.HttpContext);
-                    RedisMSSHelper.Init(this.Configuration["redis:ConnectionString"]);
-                    response = JsonConvert.DeserializeObject<UserTokenResponse>(RedisMSSHelper.Get(userid.ToString()));
-                    string localIPAddress = NetworkHelper.LocalIPAddress;
-                    string localMacAddress = NetworkHelper.LocalMacAddress;
-                    //DapperOptions options = new DapperOptions();
-                    //options.ConnectionString = this.Configuration.Item("Dapper:ConnectionString");
-                    UserOperationLog obj = new UserOperationLog();
-                    obj.controller_name = controllername;
-                    obj.action_name = actionname;
-                    obj.method_name = methodname;
-                    obj.acc_name = response.acc_name;
-                    obj.user_name = response.user_name;
-                    obj.ip = localIPAddress;
-                    obj.mac_add = localMacAddress;
-                    obj.created_time = DateTime.Now;
-                    obj.created_by = -999;
-                    DapperOptions dapper = new DapperOptions();
-                    dapper.ConnectionString = Configuration["Dapper:ConnectionString"];
-                    UserOperationLogRepo repo = new UserOperationLogRepo(dapper);
-                      repo.Add(obj);
+                    
                 }
             }
 
@@ -66,6 +74,68 @@ namespace MSS.Common.Web
         public void OnActionExecuting(ActionExecutingContext context)
         {
             
+        }
+
+        public static string LocalIPAddress
+        {
+            get
+            {
+                UnicastIPAddressInformation mostSuitableIp = null;
+                var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+                foreach (var network in networkInterfaces)
+                {
+                    if (network.OperationalStatus != OperationalStatus.Up)
+                        continue;
+                    var properties = network.GetIPProperties();
+                    if (properties.GatewayAddresses.Count == 0)
+                        continue;
+
+                    foreach (var address in properties.UnicastAddresses)
+                    {
+                        if (address.Address.AddressFamily != AddressFamily.InterNetwork)
+                            continue;
+                        if (IPAddress.IsLoopback(address.Address))
+                            continue;
+                        return address.Address.ToString();
+                    }
+                }
+
+                return mostSuitableIp != null
+                    ? mostSuitableIp.Address.ToString()
+                    : "";
+            }
+        }
+
+
+        public static string LocalMacAddress
+        {
+            get
+            {
+                string macadd = string.Empty;
+
+                NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+                foreach (NetworkInterface adapter in nics)
+                {
+                    PhysicalAddress address = adapter.GetPhysicalAddress();
+                    byte[] bytes = address.GetAddressBytes();
+                    for (int i = 0; i < bytes.Length; i++)
+                    {
+                        // Display the physical address in hexadecimal.
+                        //Console.Write("{0}", bytes[i].ToString("X2"));
+                        macadd += bytes[i].ToString("X2");
+                        // Insert a hyphen after each byte, unless we are at the end of the 
+                        // address.
+                        if (i != bytes.Length - 1)
+                        {
+                            //Console.Write("-");
+                            macadd += "-";
+                        }
+                    }
+                    break;//TODO
+                }
+                return macadd;
+            }
         }
 
     }

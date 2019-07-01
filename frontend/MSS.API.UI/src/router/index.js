@@ -24,11 +24,14 @@ let routes = [
   }
 ]
 
-// 系统管理
+// 专家库
 import system from './system'
 import MainTainData from './MainTainData'
 routes = routes.concat(system)
-routes = routes.concat(MainTainData)
+// 设备台账
+import equipmentManager from './equipmentManager'
+routes = routes.concat(equipmentManager)
+
 // // 基础数据
 // import dataBasic from './dataBasic'
 // routes = routes.concat(dataBasic)
