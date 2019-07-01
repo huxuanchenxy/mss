@@ -269,14 +269,18 @@ export default {
       }
       let fd = new FormData()
       if (this.$refs.uploadWorking.uploadFiles.length > 0) {
-        this.$refs.uploadWorking.submit()
-        fd.append('file', this.needUpload.working[0])
-        fd.append('PWorking', this.needUpload.working[0].name)
+        if (this.$refs.uploadWorking.uploadFiles[0].status !== 'success') {
+          this.$refs.uploadWorking.submit()
+          fd.append('file', this.needUpload.working[0])
+          fd.append('PWorking', this.needUpload.working[0].name)
+        }
       }
       if (this.$refs.uploadDrawings.uploadFiles.length > 0) {
-        this.$refs.uploadDrawings.submit()
-        fd.append('file', this.needUpload.drawings[0])
-        fd.append('PDrawings', this.needUpload.drawings[0].name)
+        if (this.$refs.uploadDrawings.uploadFiles[0].status !== 'success') {
+          this.$refs.uploadDrawings.submit()
+          fd.append('file', this.needUpload.drawings[0])
+          fd.append('PDrawings', this.needUpload.drawings[0].name)
+        }
       }
       if (this.$refs.uploadInstall.uploadFiles.length > 0) {
         this.$refs.uploadInstall.submit()
@@ -293,9 +297,6 @@ export default {
         fd.append('file', this.needUpload.regulations[0])
         fd.append('PRegulations', this.needUpload.regulations[0])
       }
-      if (this.$route.query.type !== 'Add') {
-        fd.append('ID', this.$route.query.id)
-      }
       fd.append('TName', this.eqpTypeName.text)
       fd.append('Desc', this.eqpTypeDesc.text)
       fd.append('Model', this.model.text)
@@ -310,20 +311,38 @@ export default {
           return data
         }
       }
-      api.addEqpType(fd, config).then(res => {
-        if (res.code === 0) {
-          this.$router.push({name: 'SeeEqpTypeList'})
-          // this.$message({
-          //   message: '保存成功',
-          //   type: 'success'
-          // })
-        } else {
-          this.$message({
-            message: '保存失败',
-            type: 'error'
-          })
-        }
-      }).catch(err => console.log(err))
+      if (this.$route.query.type === 'Add') {
+        api.addEqpType(fd, config).then(res => {
+          if (res.code === 0) {
+            this.$router.push({name: 'SeeEqpTypeList'})
+            // this.$message({
+            //   message: '保存成功',
+            //   type: 'success'
+            // })
+          } else {
+            this.$message({
+              message: '保存失败',
+              type: 'error'
+            })
+          }
+        }).catch(err => console.log(err))
+      } else {
+        fd.append('ID', this.eqpTypeID)
+        api.updateEqpType(fd, config).then(res => {
+          if (res.code === 0) {
+            this.$router.push({name: 'SeeEqpTypeList'})
+            // this.$message({
+            //   message: '保存成功',
+            //   type: 'success'
+            // })
+          } else {
+            this.$message({
+              message: '保存失败',
+              type: 'error'
+            })
+          }
+        }).catch(err => console.log(err))
+      }
     },
     uploadWorking (file) {
       this.needUpload.working.push(file.file)

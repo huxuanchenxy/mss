@@ -36,11 +36,11 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpPut]
-        public ActionResult Update(EquipmentType eqpType)
+        public ActionResult Update([FromForm]EquipmentType eqpType, List<IFormFile> file)
         {
             eqpType.UpdatedBy = 1;
             eqpType.UpdatedTime = DateTime.Now;
-            var ret = _eqpTypeService.Update(eqpType);
+            var ret = _eqpTypeService.Update(eqpType,file);
             return Ok(ret.Result);
         }
 
