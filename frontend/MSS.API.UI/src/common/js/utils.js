@@ -164,9 +164,9 @@ export const vInput = str => !/[@#$!%^&*()！￥……‘’“”：；:;""'']/
 export const vcode = str => /[\u4E00-\u9FA5]/g.test(str)
 
 // 全局pdf的url，api为虚拟目录，跨域使用
-export const PDF_URL = process.env.NODE_ENV === 'production' ? '' : 'C:/Users/twg/Desktop/测试用pdf/'
+export const PDF_URL = process.env.NODE_ENV === 'production' ? '' : 'D:/bin/eqp/'
 // 全局已上传的pdf的查看控件路径
-export const PDF_UPLOADED_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : 'http://10.89.36.93:8099' + '/Compoment/pdfViewer/web/viewer.html?file=/'
+export const PDF_UPLOADED_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/'
 // 全局本地准备上传还未上传的pdf的查看控件路径
 export const PDF_BLOB_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : '/api' + '/Compoment/pdfViewer/web/viewer.html?file='
 

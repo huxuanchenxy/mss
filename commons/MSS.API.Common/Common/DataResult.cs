@@ -39,7 +39,7 @@ namespace MSS.API.Common
         /// <summary>
         /// 基础绝对路径
         /// </summary>
-        public static string BASEFILE = "C:/Users/twg/Desktop/测试用pdf/";
+        public static string BASEFILE = "F:/mssAll/MSS/apiservices/Equipment/MSS.API.Core/V1/"; //"D:/bin/eqp/";
         public static string EQPTYPE = "File/EqpType/";
     }
     #endregion

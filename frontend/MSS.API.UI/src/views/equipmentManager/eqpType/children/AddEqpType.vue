@@ -143,7 +143,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, PDF_UPLOADED_VIEW_URL, PDF_IMAGE, PDF_BLOB_VIEW_URL } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 export default {
