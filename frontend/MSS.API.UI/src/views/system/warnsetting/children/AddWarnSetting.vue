@@ -133,7 +133,7 @@ export default {
   data () {
     return {
       loading: false,
-      isShow: this.$route.params.mark,
+      isShow: 'Add',
       settingExTypeList: [],
       limitTypeList: [{
         id: 1,
@@ -172,6 +172,7 @@ export default {
     this.getAllEqpType()
   },
   activated () {
+    this.isShow = this.$route.params.mark
     if (this.isShow === 'edit') {
       this.ID = this.$route.params.id
       this.getWarnningSetting()
@@ -237,7 +238,6 @@ export default {
     save () {
       if (this.validateAll()) {
         var param = {
-          ID: this.ID,
           EquipmentTypeID: this.equipmentTypeID,
           ParamID: this.paramObj._paramID,
           ParamName: this.paramObj._paramName,
@@ -250,7 +250,7 @@ export default {
         if (this.isShow === 'add') {
           api.saveWarnningSetting(param).then((res) => {
             if (res.code === ApiRESULT.Success) {
-              this.$message.error('设定成功')
+              this.$message.success('设定成功')
               this.$router.push({
                 name: 'WarnSettingList'
               })
@@ -261,9 +261,10 @@ export default {
             }
           })
         } else if (this.isShow === 'edit') {
+          param.ID = this.ID
           api.updateWarnningSetting(this.ID, param).then((res) => {
             if (res.code === ApiRESULT.Success) {
-              this.$message.error('修改成功')
+              this.$message.success('修改成功')
               this.$router.push({
                 name: 'WarnSettingList'
               })
