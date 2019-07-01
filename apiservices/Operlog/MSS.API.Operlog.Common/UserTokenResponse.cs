@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MSS.Common.Web
+namespace MSS.API.Operlog.Common
 {
     public class UserTokenResponse
     {

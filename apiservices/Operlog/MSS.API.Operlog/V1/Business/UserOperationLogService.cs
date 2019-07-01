@@ -43,6 +43,8 @@ namespace MSS.API.Operlog.V1.Business
 
         public async Task<int> Add(UserOperationLog obj)
         {
+            obj.created_time = DateTime.Now;
+            obj.updated_time = DateTime.Now;
             return await _userOperationLogRepo.Add(obj);
         }
 
