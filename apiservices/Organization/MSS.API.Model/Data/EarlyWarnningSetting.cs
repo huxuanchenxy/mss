@@ -15,6 +15,9 @@ namespace MSS.API.Model.Data
         public int ParamLimitLower { get; set; }
         public bool IsActived { get; set; }
         public List<EarlyWarnningSettingEx> SettingEx { get; set; }
+
+        public string EquipmentTypeName { get; set; }
+        public string UserName { get; set;}
     }
 
     public class EarlyWarnningSettingMap : EntityMap<EarlyWarnningSetting>
@@ -29,6 +32,9 @@ namespace MSS.API.Model.Data
             Map(o => o.ParamLimitLower).ToColumn("param_limit_lower");
             Map(o => o.IsActived).ToColumn("is_actived");
             Map(o => o.SettingEx).Ignore();
+
+            Map(o => o.EquipmentTypeName).ToColumn("eqp_type_name");
+            Map(o => o.UserName).ToColumn("user_name");
 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedTime).ToColumn("created_time");

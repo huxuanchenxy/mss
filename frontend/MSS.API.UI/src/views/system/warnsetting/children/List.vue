@@ -15,7 +15,8 @@
           <div class="input-group">
             <label for="name">设备类型</label>
             <div class="inp">
-              <el-select v-model="eqpTypeID" clearable filterable placeholder="请选择">
+              <el-select v-model="eqpTypeID" @change="chooseEqpType" placeholder="请选择">
+                <el-option label="所有设备类型" value=''></el-option>
                 <el-option
                   v-for="item in eqpTypeList"
                   :key="item.key"
@@ -28,12 +29,12 @@
           <div class="input-group">
             <label for="">参数名</label>
             <div class="inp">
-              <el-select v-model="paramID" clearable filterable placeholder="请选择">
+              <el-select v-model="paramID" placeholder="请选择">
                 <el-option
                   v-for="item in paramList"
                   :key="item.key"
-                  :label="item.paramName"
-                  :value="item.paramId">
+                  :label="item._paramName"
+                  :value="item._paramID">
                 </el-option>
               </el-select>
             </div>
@@ -46,7 +47,7 @@
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
           <x-button>
-            <router-link :to="{ name: 'AddUser', params: { mark: 'add' } }">添加</router-link>
+            <router-link :to="{ name: 'WarnSetting', params: { mark: 'add' } }">添加</router-link>
           </x-button>
         </li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
@@ -56,7 +57,7 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
+        <li class="list"><el-checkbox v-model="bCheckAll" @change="checkAll"></el-checkbox></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
@@ -96,17 +97,16 @@
             <li class="list" v-for="(item) in dataList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="checkedID" :value="item.id" @change="checkAll">
+                  <el-checkbox v-model="checkedID" :label="item.id"></el-checkbox>
                 </div>
                 <div class="number">{{ item.id }}</div>
-                <div class="number">{{ item.tName }}</div>
+                <div class="number">{{ item.equipmentTypeName }}</div>
                 <div class="number">{{ item.paramName }}</div>
-                <div class="number">{{ item.ParamLimitLower }}</div>
-                <div class="number">{{ item.ParamLimitUpper }}</div>
-                <div class="number">{{ item.position }}</div>
-                <div class="number">{{ item.settingEx }}</div>
-                <div class="number">{{ item.IsActived }}</div>
-                <div class="last-maintainer">{{ item.updatedBy }}</div>
+                <div class="number">{{ item.paramLimitLower }}</div>
+                <div class="number">{{ item.paramLimitUpper }}</div>
+                <div class="number">{{ item.settingExShow }}</div>
+                <div class="number">{{ item.isActivedShow }}</div>
+                <div class="last-maintainer">{{ item.userName }}</div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
               </div>
             </li>
@@ -145,7 +145,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/authApi'
+import api from '@/api/warnSettingApi'
 export default {
   name: 'SeeUserList',
   components: {
@@ -166,6 +166,7 @@ export default {
       roleList: [],
       UserList: [],
       editUserID: [],
+
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -182,42 +183,49 @@ export default {
       },
       headOrder: {
         id: 1,
-        acc_name: 0,
-        user_name: 0,
-        role_id: 0,
-        job_number: 0,
+        equipment_type_id: 0,
+        param_name: 0,
         updated_time: 0,
         updated_by: 0
       }
     }
   },
   created () {
-    this.$emit('title', '| 用户')
+    this.getAllEqpType()
     this.init()
-
-    // 角色列表
-    api.getRoleAll().then(res => {
-      this.roleList = res.data
-    }).catch(err => console.log(err))
   },
   activated () {
-    this.searchResult(this.currentPage)
+    this.search()
   },
   methods: {
     init () {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
+      this.search()
       // this.searchResult(1)
+    },
+    getAllEqpType () {
+      api.getAllEqpType().then(res => {
+        this.eqpTypeList = res.data
+      }).catch(err => console.log(err))
+    },
+    chooseEqpType () {
+      let id = this.eqpTypeID
+      this.paramList = []
+      this.paramID = ''
+      if (id !== '') {
+        api.getParamByEqpType(id).then(res => {
+          this.paramList = res.data
+        }).catch(err => console.log(err))
+      }
     },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.acc_name = 0
-        this.headOrder.user_name = 0
-        this.headOrder.role_id = 0
-        this.headOrder.job_number = 0
+        this.headOrder.equipment_type_id = 0
+        this.headOrder.param_name = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -232,47 +240,58 @@ export default {
       this.currentSort.sort = sort
       this.bCheckAll = false
       this.checkAll()
-      this.searchResult(this.currentPage)
+      this.search()
     },
-    // 搜索
-    searchResult (page) {
-      this.currentPage = page
+    search () {
       this.loading = true
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
-        page: page,
-        searchName: this.userName,
-        searchRole: this.role
+        page: this.currentPage,
+        EquipmentTypeID: this.eqpTypeID,
+        ParamID: this.paramID
       }
-      api.getUser(parm).then(res => {
+      api.getWarnSetting(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.updated_time = transformDate(item.updated_time)
+          item.updatedTime = transformDate(item.updatedTime)
+          item.isActivedShow = item.isActived ? '是' : '否'
+          item.settingExShow = ''
+          item.settingEx.forEach(el => {
+            let op = ''
+            if (el.paramLimitType === 1) {
+              op = '>'
+            } else if (el.paramLimitType === 2) {
+              op = '='
+            } else {
+              op = '<'
+            }
+            item.settingExShow += (el.pidName + op + el.paramLimitValue + ' ')
+          })
         })
-        this.UserList = res.data.rows
+        this.dataList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
     // 修改用户
     edit () {
-      if (!this.editUserID.length) {
+      if (!this.checkedID.length) {
         this.$message({
-          message: '请选择需要修改的用户',
+          message: '请选择一行',
           type: 'warning'
         })
-      } else if (this.editUserID.length > 1) {
+      } else if (this.checkedID.length > 1) {
         this.$message({
-          message: '修改的用户不能超过1个',
+          message: '选择不能超过一行',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddUser',
+          name: 'WarnSetting',
           params: {
-            id: this.editUserID[0],
+            id: this.checkedID[0],
             mark: 'edit'
           }
         })
@@ -281,28 +300,28 @@ export default {
 
     // 删除用户
     remove () {
-      if (!this.editUserID.length) {
+      if (!this.checkedID.length) {
         this.$message({
-          message: '请选择需要删除的用户',
+          message: '请选择需要删除的行',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条用户信息?'
+        this.dialogVisible.text = '确定删除该行信息?'
       }
     },
     // 弹框确认是否删除
     dialogEnter () {
-      api.delUser(this.editUserID.join(',')).then(res => {
+      api.deleteWarnningSetting(this.checkedID.join(',')).then(res => {
         if (res.code === 0) {
-          this.editUserID = []
+          this.checkedID = []
           this.$message({
             message: '删除成功',
             type: 'success'
           })
           this.currentPage = 1
-          this.searchResult(1)
+          this.search()
         } else {
           this.$message({
             message: res.msg,
@@ -315,20 +334,12 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 用户管理')
-      this.loading = true
       this.init()
-      this.searchResult(1)
+      this.search()
     },
-
-    // 获取修改用户id
-    emitEditID () {
-      this.$emit('editUserID', this.editUserID)
-    },
-
     // 全选
     checkAll () {
-      this.bCheckAll ? this.Users.map(val => this.checkedID.push(val.id)) : this.checkedID = []
+      this.bCheckAll ? this.dataList.map(val => this.checkedID.push(val.id)) : this.checkedID = []
     },
 
     // 序号、指定页翻页
@@ -336,7 +347,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
+      this.search()
     },
 
     // 上一页
@@ -344,7 +355,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
+      this.search()
     },
 
     // 下一页
@@ -352,7 +363,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
+      this.search()
     }
   }
 }
@@ -442,6 +453,9 @@ $con-height: $content-height - 145 - 56;
   .name,
   .btn-wrap{
     width: 10%;
+  }
+  /deep/ .el-checkbox__label{
+    display: none;
   }
 
   .name{

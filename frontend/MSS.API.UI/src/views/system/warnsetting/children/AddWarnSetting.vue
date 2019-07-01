@@ -9,100 +9,122 @@
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
       <x-button class="active">
-        <router-link :to="{name:'SeeUserList'}">返回</router-link>
+        <router-link :to="{name:'WarnSettingList'}">返回</router-link>
       </x-button>
     </div>
     <div class="con-padding-horizontal operation">
       <ul class="input-group">
         <li class="list" v-show="false">
           <div class="inp-wrap">
-            <span class="text">用户ID</span>
+            <span class="text">预警设置ID</span>
             <div class="inp">
-              <el-input v-model="userID" :disabled="isShow === 'edit'" ></el-input>
+              <el-input v-model="ID" :disabled="isShow === 'edit'" ></el-input>
             </div>
           </div>
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">用户登录账号<em class="validate-mark">*</em></span>
+            <span class="text">设备类型</span>
             <div class="inp">
-              <el-input placeholder="请输入用户名称" v-model.trim="accName.text" @keyup.native="validateInput(accName)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ accName.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">用户姓名<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-input placeholder="请输入姓名" v-model.trim="userName.text" @keyup.native="validateInput(userName)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ userName.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">用户所属角色</span>
-            <div class="inp">
-              <el-select v-model="role" clearable placeholder="请选择">
-                <el-option value="" label="请选择"></el-option>
-                <el-option v-for="item in roleList" :key="item.key" :value="item.id" :label="item.role_name"></el-option>
+              <el-select v-model="equipmentTypeID" @change="chooseEqpType" placeholder="请选择">
+                <el-option
+                  v-for="item in eqpTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
               </el-select>
             </div>
           </div>
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">用户工号<em class="validate-mark">*</em></span>
+            <span class="text">设备参数</span>
             <div class="inp">
-              <el-input placeholder="请输入工号" v-model.trim="jobNumber.text" @keyup.native="validateInput(jobNumber)"></el-input>
+              <el-select v-model="paramObj" value-key="_paramID" placeholder="请选择">
+                <el-option
+                  v-for="item in paramList"
+                  :key="item.key"
+                  :label="item._paramName"
+                  :value="item">
+                </el-option>
+              </el-select>
             </div>
           </div>
-          <p class="validate-tips">{{ jobNumber.tips }}</p>
         </li>
-        <li class="list">
+        <li class="list" >
           <div class="inp-wrap">
-            <span class="text">用户职位</span>
+            <span class="text">是否启用</span>
             <div class="inp">
-              <el-input placeholder="请输入职位" v-model.trim="position.text" @keyup.native="validateInputNull(position)"></el-input>
+              <el-checkbox v-model="isActived"></el-checkbox>
             </div>
           </div>
-          <p class="validate-tips">{{ position.tips }}</p>
         </li>
-        <li class="list">
+        <li class="list" >
           <div class="inp-wrap">
-            <span class="text">用户手机号</span>
+            <span class="text">预阀值上限<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入手机号码" v-model.trim="mobile.text" @keyup.native="validateInputPhone(mobile)"></el-input>
+              <el-input placeholder="预阀值上线" v-model.trim="limitUp.text" @keyup.native="validateInputNum(limitUp)"></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ mobile.tips }}</p>
+          <p class="validate-tips">{{ limitUp.tips }}</p>
         </li>
-        <li class="list">
+        <li class="list" >
           <div class="inp-wrap">
-            <span class="text">用户邮箱</span>
+            <span class="text">预阀值下限<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入邮箱" v-model.trim="email.text" @keyup.native="validateInputEMail(email)"></el-input>
+              <el-input placeholder="预阀值下线" v-model.trim="limitDown.text" @keyup.native="validateInputNum(limitDown)"></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ email.tips }}</p>
+          <p class="validate-tips">{{ limitDown.tips }}</p>
+        </li>
+        <li class="list" >
+          <x-button class="active" @click.native="addSettingEx">添加环境条件</x-button>
         </li>
         <li class="list"/>
-        <li class="list"/>
+      </ul>
+      <ul class="input-group-ex">
+        <li class="list" v-for="(item, index) in settingEx"
+                        :key="item.key">
+          <div class="inp-wrap">
+            <span class="text">条件{{index+1}}</span>
+            <div class="inp" style="display:inline-flex">
+              <el-select v-model="item.paramID" placeholder="环境条件">
+                <el-option
+                  v-for="item in settingExTypeList"
+                  :key="item.key"
+                  :label="item.pidName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="item.paramLimitType" style="margin-left:10px" placeholder="运算符">
+                <el-option
+                  v-for="item in limitTypeList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-input placeholder="值" v-model="item.paramLimitValue" style="margin-left:10px" @keyup.native="validateInputNum(limitDown)"></el-input>
+              <x-button style="margin-left:30px" class="active" @click.native="DelThisSetting(index)">删除</x-button>
+              <p class="validate-tips">{{ item.tips }}</p>
+            </div>
+          </div>
+        </li>
       </ul>
     </div>
     <div class="btn-enter">
       <x-button class="close">
-        <router-link :to="{ name: 'SeeUserList' }">取消</router-link>
+        <router-link :to="{ name: 'WarnSettingList' }">取消</router-link>
       </x-button>
-      <x-button class="active" @click.native="enter">保存</x-button>
+      <x-button class="active" @click.native="save">保存</x-button>
     </div>
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, vEmail, vPhone } from '@/common/js/utils.js'
+import { vNumber, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/authApi'
+import api from '@/api/warnSettingApi'
 export default {
   name: 'AddUser',
   components: {
@@ -111,187 +133,163 @@ export default {
   data () {
     return {
       loading: false,
-      isShow: this.$route.params.mark,
-      editUserID: this.$route.params.id,
-      userID: '',
-      accName: {
+      isShow: 'Add',
+      settingExTypeList: [],
+      limitTypeList: [{
+        id: 1,
+        name: '>'
+      }, {
+        id: 2,
+        name: '='
+      }, {
+        id: 3,
+        name: '<'
+      }],
+      paramList: [],
+      equipmentTypeID: '',
+      paramObj: {},
+      ID: null,
+      isActived: true,
+      limitUp: {
         text: '',
         tips: ''
       },
-      userName: {
+      limitDown: {
         text: '',
         tips: ''
       },
-      jobNumber: {
-        text: '',
-        tips: ''
-      },
-      role: '',
-      roleList: [],
-      position: {
-        text: '',
-        tips: ''
-      },
-      mobile: {
-        text: '',
-        tips: ''
-      },
-      email: {
-        text: '',
-        tips: ''
-      }
+      settingEx: []
     }
   },
   created () {
     if (this.isShow === 'add') {
-      this.loading = false
-      this.title = '| 添加用户'
-      // this.$emit('title', '| 添加用户')
-      // this.btnText = '确认'
+      this.title = '| 添加预警设定'
     } else if (this.isShow === 'edit') {
-      this.loading = true
-      this.title = '| 修改用户'
-      // this.$emit('title', '| 修改用户')
-      // this.btnText = '保存'
-      this.getUser()
+      this.title = '| 修改预警设定'
+      this.getWarnningSetting()
     }
-    // 角色列表
-    api.getRoleAll().then(res => {
-      this.roleList = res.data
-    }).catch(err => console.log(err))
+    this.getSettingExType()
+    this.getAllEqpType()
+  },
+  activated () {
+    this.isShow = this.$route.params.mark
+    if (this.isShow === 'edit') {
+      this.ID = this.$route.params.id
+      this.getWarnningSetting()
+    }
   },
   methods: {
-    // 添加用户
-    enter () {
-      if (!this.validateAll()) {
-        this.$message({
-          message: '验证失败，请查看提示信息',
-          type: 'error'
-        })
-        return
-      }
-      let user = {
-        acc_name: this.accName.text,
-        user_name: this.userName.text,
-        role_id: this.role,
-        job_number: this.jobNumber.text,
-        position: this.position.text,
-        mobile: this.mobile.text,
-        email: this.email.text
-      }
-      if (this.isShow === 'add') {
-        // 添加用户
-        api.addUser(user).then(res => {
-          if (res.code === 0) {
-            this.$message({
-              message: '添加成功',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeUserList'
-                })
-              }
-            })
-          } else {
-            this.$message({
-              message: res.msg,
-              type: 'error'
-            })
-          }
-        }).catch(err => console.log(err))
-      } else if (this.isShow === 'edit') {
-        user.id = this.userID
-        // 修改用户
-        api.updateUser(user).then(res => {
-          if (res.code === 0) {
-            this.$message({
-              message: '修改成功',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeUserList'
-                })
-              }
-            })
-          } else {
-            this.$message({
-              message: res.msg,
-              type: 'error'
-            })
-          }
-        }).catch(err => console.log(err))
-      }
-    },
-    // 修改用户时获取用户资料
-    getUser () {
-      api.getUserByID(this.editUserID).then(res => {
-        this.loading = false
-        let _res = res.data
-        this.userID = _res.id
-        this.accName.text = _res.acc_name
-        this.userName.text = _res.user_name
-        this.role = _res.role_id === null ? '' : _res.role_id.toString()
-        this.jobNumber.text = _res.job_number
-        this.position.text = _res.position
-        this.mobile.text = _res.mobile
-        this.email.text = _res.email
+    getSettingExType () {
+      api.getSettingExType().then(res => {
+        this.settingExTypeList = res.data
       }).catch(err => console.log(err))
     },
-    // 验证
-    validateInput (val) {
-      validateInputCommon(val)
+    getAllEqpType () {
+      api.getAllEqpType().then(res => {
+        this.eqpTypeList = res.data
+        this.equipmentTypeID = res.data[0].id
+        this.chooseEqpType()
+      }).catch(err => console.log(err))
     },
-    validateInputPhone (val) {
-      if (val.text !== '' && !vPhone(val.text)) {
-        val.tips = '此手机号非法'
+    chooseEqpType () {
+      let id = this.equipmentTypeID
+      api.getParamByEqpType(id).then(res => {
+        this.paramList = res.data
+        this.paramObj = res.data[0]
+      }).catch(err => console.log(err))
+    },
+    validateInputNum (val) {
+      if (val.text === '' || !vNumber(val.text)) {
+        val.tips = '此处比需填数字'
         return false
       } else {
         val.tips = ''
         return true
       }
     },
-    validateInputEMail (val) {
-      if (val.text !== '' && !vEmail(val.text)) {
-        val.tips = '此邮箱非法'
-        return false
-      } else {
-        val.tips = ''
-        return true
-      }
+    addSettingEx () {
+      this.settingEx.push({
+        paramID: '',
+        paramLimitType: '',
+        paramLimitValue: null
+      })
     },
-    // 验证非法字符串，但允许为空
-    validateInputNull (val) {
-      if (!vInput(val.text)) {
-        val.tips = '此项含有非法字符'
-        return false
-      } else {
-        val.tips = ''
-        return true
-      }
+    DelThisSetting (idx) {
+      this.settingEx.splice(idx, 1)
     },
-    validateSelect () {
-      if (this.role.text === '') {
-        this.role.tips = '此项必选'
-        return false
-      } else {
-        this.role.tips = ''
-        return true
-      }
-    },
-
-    // validateNumber () {
-    //   validateNumberCommon(this.groupOrder)
-    // },
-
     validateAll () {
-      if (!validateInputCommon(this.accName)) return false
-      if (!validateInputCommon(this.userName)) return false
-      if (!validateInputCommon(this.jobNumber)) return false
-      if (!this.validateInputNull(this.position)) return false
-      if (!this.validateInputEMail(this.email)) return false
-      if (!this.validateInputPhone(this.mobile)) return false
+      if (!this.validateInputNum(this.limitUp)) return false
+      if (!this.validateInputNum(this.limitDown)) return false
       // if (!this.validateSelect()) return false
+      // 验证扩展条件
+      for (let i = 0; i < this.settingEx.length; ++i) {
+        let item = this.settingEx[i]
+        if (item.paramID === '' || item.paramLimitType === '' ||
+            !vNumber(item.paramLimitValue)) {
+          this.$message({
+            message: '条件' + (i + 1) + '输入不合格',
+            type: 'error'
+          })
+          return false
+        }
+      }
       return true
+    },
+    save () {
+      if (this.validateAll()) {
+        var param = {
+          EquipmentTypeID: this.equipmentTypeID,
+          ParamID: this.paramObj._paramID,
+          ParamName: this.paramObj._paramName,
+          ParamUnit: this.paramObj._paramUnit,
+          ParamLimitUpper: this.limitUp.text,
+          ParamLimitLower: this.limitDown.text,
+          IsActived: this.isActived,
+          settingEx: this.settingEx
+        }
+        if (this.isShow === 'add') {
+          api.saveWarnningSetting(param).then((res) => {
+            if (res.code === ApiRESULT.Success) {
+              this.$message.success('设定成功')
+              this.$router.push({
+                name: 'WarnSettingList'
+              })
+            } else if (res.code === ApiRESULT.DataIsExist) {
+              this.$message.error('参数已设定重复')
+            } else {
+              this.$message.error('设定失败')
+            }
+          })
+        } else if (this.isShow === 'edit') {
+          param.ID = this.ID
+          api.updateWarnningSetting(this.ID, param).then((res) => {
+            if (res.code === ApiRESULT.Success) {
+              this.$message.success('修改成功')
+              this.$router.push({
+                name: 'WarnSettingList'
+              })
+            } else {
+              this.$message.error('修改失败')
+            }
+          })
+        }
+      }
+    },
+
+    // 修改用户时获取用户资料
+    getWarnningSetting () {
+      this.loading = true
+      api.getWarnSettingByID(this.ID).then(res => {
+        this.loading = false
+        if (res.code === ApiRESULT.Success) {
+          this.equipmentTypeID = res.data.equipmentTypeID
+          this.paramObj = {_paramID: res.data.paramID}
+          this.isActived = res.data.isActived
+          this.limitUp.text = res.data.paramLimitUpper
+          this.limitDown.text = res.data.paramLimitLower
+          this.settingEx = res.data.settingEx
+        }
+      }).catch(err => console.log(err))
     }
   }
 }
@@ -326,7 +324,35 @@ export default {
       }
     }
   }
+  .input-group-ex{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .list{
+      width: 100%;
+      margin-top: PXtoEm(25);
+
+      span{
+        width: PXtoEm(100);
+      }
+
+      .inp-wrap{
+        display: flex;
+        align-items: center;
+      }
+
+      &:nth-of-type(3n+1){
+        // justify-content: flex-start;
+      }
+
+      &:nth-of-type(3n){
+        // justify-content: flex-end;
+      }
+    }
+  }
 }
+
 .btn-enter{
   margin: 15px 0;
   text-align: center;

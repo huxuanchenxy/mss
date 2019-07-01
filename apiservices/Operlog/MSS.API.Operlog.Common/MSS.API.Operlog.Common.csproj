@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSRedisCore" Version="3.0.62" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\commons\MSS.API.Common\MSS.API.Common.csproj" />
+    <ProjectReference Include="..\MSS.API.Operlog.Dao\MSS.API.Operlog.Dao.csproj" />
+    <ProjectReference Include="..\MSS.API.Operlog.Model\MSS.API.Operlog.Model.csproj" />
+  </ItemGroup>
+
+</Project>

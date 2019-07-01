@@ -123,7 +123,8 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/action/children/AddAction.vue')
           }
         ]
-      }, {
+      },
+       {
         path: 'warnsetting',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/Index.vue'),
         children: [
@@ -150,13 +151,49 @@ const routes = [
             redirect: 'list'
           },
           {
-            path: 'list',
+            path: 'list/:id?',
             name: 'SmallAreaList',
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/SmallAreaList.vue')
           },
           {
             path: 'AddSmallArea/:mark?/:id?',
             name: 'AddSmallArea',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
+          }
+        ]
+      },{
+        path: 'operlog',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/index.vue'), 
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, 
+          {
+            path: 'list',
+            name: 'SeeOperlogList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeOperlogList.vue')
+          }
+      ]
+    }
+      ,
+      {
+        path: 'Area1',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'MidArea',
+            redirect: 'list'
+          },
+          {
+            path: 'list/:id?',
+            name: 'MidAreaList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/SmallAreaList.vue')
+          },
+          {
+            path: 'AddMidArea/:mark?/:id?',
+            name: 'AddMidArea',
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
           }
         ]

@@ -25,7 +25,7 @@ namespace System.API.DTO
     [DataContract]
     public partial class TB_Config_BigAreaDTO 
     {
-       // [DataMember]
+       [DataMember]
         /// <summary>
         /// 
         /// </summary>

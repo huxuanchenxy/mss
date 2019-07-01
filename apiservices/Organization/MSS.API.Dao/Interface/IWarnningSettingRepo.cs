@@ -18,7 +18,12 @@ namespace MSS.API.Dao.Interface
 
         Task<bool> DeleteWarnningSetting(EarlyWarnningSetting setting);
 
-        Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int idx, int size, string sort, string order);
-        Task<int> Count();
+        Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int idx, int size, string sort, string order,
+            int? eqpTypeID, string paramID);
+        Task<int> Count(int? eqpTypeID, string paramID);
+
+        Task<EarlyWarnningSetting> GetWarnningSettingByID(int id);
+
+        Task<List<EarlyWarnningExType>> ListEarlyWarnningExType();
     }
 }

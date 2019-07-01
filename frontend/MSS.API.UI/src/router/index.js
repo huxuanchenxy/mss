@@ -85,12 +85,14 @@ const router = new Router({
 })
 
 // 全局路由拦截
-router.beforeEach((to, from, next) => {
-  if (from.matched[0] === undefined && to.name !== 'Login' && window.sessionStorage.getItem('token') === null) {
-    next('/login')
-  } else {
-    next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   if (from.matched[0] === undefined && to.name !== 'Login' && window.sessionStorage.getItem('token') === null) {
+//     next('/login')
+//   } else {
+//     next()
+//   }
+// })
+
+ 
 
 export default router

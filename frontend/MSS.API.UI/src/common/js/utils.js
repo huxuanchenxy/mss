@@ -184,3 +184,9 @@ export const RESULT = {
   Success: 1,
   Reinsert: 2
 }
+export const ApiRESULT = {
+  Success: 0,
+  Failure: 1,
+  DataIsExist: 2,
+  DataIsnotExist: 3
+}
