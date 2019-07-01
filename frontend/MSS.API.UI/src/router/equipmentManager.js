@@ -28,6 +28,23 @@ const routes = [
             component: () => import(/* webpackChunkName: "equipment" */ '@/views/equipmentManager/eqpType/children/AddEqpType.vue')
           }
         ]
+      },{
+        path: 'warnsetting',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'WarnSettingList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/List.vue')
+          }, {
+            path: 'setting/:id?',
+            name: 'WarnSetting',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/AddWarnSetting.vue')
+          }
+        ]
       }
       // , {
       //   path: 'equipment',
