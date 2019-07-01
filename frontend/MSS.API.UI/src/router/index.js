@@ -26,8 +26,9 @@ let routes = [
 
 // 系统管理
 import system from './system'
+import MainTainData from './MainTainData'
 routes = routes.concat(system)
-
+routes = routes.concat(MainTainData)
 // // 基础数据
 // import dataBasic from './dataBasic'
 // routes = routes.concat(dataBasic)

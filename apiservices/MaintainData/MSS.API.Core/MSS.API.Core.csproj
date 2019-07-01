@@ -6,18 +6,33 @@
     <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>E:\Mss地铁项目代码库\MSS\apiservices\MaintainData\MSS.API.Core\ExpertData.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.60.6" />
-    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <Compile Remove="V1\Business\IOrgService.cs" />
+    <Compile Remove="V1\Business\IWarnningSettingService.cs" />
+    <Compile Remove="V1\Business\OrgService.cs" />
+    <Compile Remove="V1\Business\WarnningSettingService.cs" />
+    <Compile Remove="V1\Controllers\OrgController.cs" />
+    <Compile Remove="V1\Controllers\WarnSettingController.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.60.6" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\commons\MSS.API.Common\MSS.API.Common.csproj" />
     <ProjectReference Include="..\MSS.API.Dao\MSS.API.Dao.csproj" />
     <ProjectReference Include="..\MSS.API.Model\MSS.API.Model.csproj" />
-    <ProjectReference Include="..\..\..\commons\MSS.API.Common\MSS.API.Common.csproj" />
   </ItemGroup>
 
 </Project>

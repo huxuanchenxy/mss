@@ -19,23 +19,14 @@ namespace MSS.API.Dao
             var optionsSection = configuration.GetSection("Dapper");
             var options = new DapperOptions();
             optionsSection.Bind(options);
-            services.AddSingleton<DapperOptions>(options);
-            services.AddTransient<IOrgRepo<OrgTree>, OrgRepo>();
-            services.AddTransient<IWarnningSettingRepo<EarlyWarnningSetting>, WarnningSettingRepo>();
+            services.AddSingleton<DapperOptions>(options); 
+            services.AddTransient<Itb_expert_dataRepo<tb_expert_data>, Tb_expert_dataRepo>();
 
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
                 config.AddMap(new BaseEntityMap());
-                config.AddMap(new OrgTreeMap());
-                config.AddMap(new OrgNodeTypePropertyMap());
-                config.AddMap(new OrgNodeTypeMap());
-                config.AddMap(new OrgNodePropertyMap());
-                config.AddMap(new OrgUserMap());
-                config.AddMap(new UserMap());
-                config.AddMap(new EarlyWarnningSettingMap());
-                config.AddMap(new EarlyWarnningSettingExMap());
-                config.AddMap(new EarlyWarnningExTypeMap());
+                config.AddMap(new tb_expert_dataMap()); 
             });
             return services;
         }

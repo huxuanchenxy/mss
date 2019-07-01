@@ -5,6 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\EarlyWarnningExType.cs" />
+    <Compile Remove="Data\EarlyWarnningSetting.cs" />
+    <Compile Remove="Data\EarlyWarnningSettingEx.cs" />
+    <Compile Remove="Data\OrgNodeProperty.cs" />
+    <Compile Remove="Data\OrgNodeType.cs" />
+    <Compile Remove="Data\OrgNodeTypeProperty.cs" />
+    <Compile Remove="Data\OrgTree.cs" />
+    <Compile Remove="Data\OrgUser.cs" />
+    <Compile Remove="Data\User.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper.FluentMap" Version="1.8.0" />
   </ItemGroup>
 

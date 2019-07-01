@@ -50,7 +50,6 @@
         <router-link :to="{name:'SmallAreaList' }">取消</router-link>
       </x-button>
       <x-button class="active" @click.native="enter">保存</x-button>
-      <x-button class="active" @click.native="test">test</x-button>
     </div>
   </div>
 </template>

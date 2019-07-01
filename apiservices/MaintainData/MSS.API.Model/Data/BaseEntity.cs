@@ -12,7 +12,7 @@ namespace MSS.API.Model.Data
         public DateTime CreatedTime { get; set; }
         public int UpdatedBy { get; set; }
         public DateTime UpdatedTime { get; set; }
-        public bool IsDel { get; set;}
+        public int Is_deleted { get; set;}
     }
 
     public class BaseEntityMap : EntityMap<BaseEntity>
@@ -23,7 +23,7 @@ namespace MSS.API.Model.Data
             Map(o => o.CreatedTime).ToColumn("created_time");
             Map(o => o.UpdatedBy).ToColumn("updated_by");
             Map(o => o.UpdatedTime).ToColumn("updated_time");
-            Map(o => o.IsDel).ToColumn("is_del");
+            Map(o => o.Is_deleted).ToColumn("Is_deleted");
         }
     }
 }

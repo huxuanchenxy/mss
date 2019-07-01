@@ -189,12 +189,12 @@ const routes = [
           {
             path: 'list/:id?',
             name: 'MidAreaList',
-            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/SmallAreaList.vue')
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/MidArea/MidAreaList.vue')
           },
           {
             path: 'AddMidArea/:mark?/:id?',
             name: 'AddMidArea',
-            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/MidArea/AddMidArea.vue')
           }
         ]
       }

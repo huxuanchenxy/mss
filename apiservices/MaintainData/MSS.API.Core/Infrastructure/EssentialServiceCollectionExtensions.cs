@@ -11,10 +11,8 @@ namespace MSS.API.Core.Infrastructure
     {
         public static IServiceCollection AddEssentialService(this IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-
-            services.AddTransient<IOrgService, OrgService>();
-            services.AddTransient<IWarnningSettingService, WarnningSettingService>();
+            if (services == null) throw new ArgumentNullException(nameof(services)); 
+            services.AddTransient<IExpertDataService, ExpertDataService>(); 
             return services;
         }
     }
