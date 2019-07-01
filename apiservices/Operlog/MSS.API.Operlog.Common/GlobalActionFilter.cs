@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace MSS.API.Operlog.Common
 {
@@ -44,24 +45,31 @@ namespace MSS.API.Operlog.Common
                         response = JsonConvert.DeserializeObject<UserTokenResponse>(RedisHelper.Get(userid.ToString()));
                         string localIPAddress = LocalIPAddress;
                         string localMacAddress = LocalMacAddress;
+                        //response.acc_name = "houtai111";
+                        //response.user_name = "houtaitest111";
 
                         using (HttpClient client = new HttpClient())
                         {
                             client.DefaultRequestHeaders.Accept.Clear();
                             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                            Dictionary<string, string> dic = new Dictionary<string, string>();
-                            dic.Add("controller_name", controllername);
-                            dic.Add("action_name", actionname);
-                            dic.Add("method_name", methodname);
-                            dic.Add("acc_name", response.acc_name);
-                            dic.Add("user_name", response.user_name);
-                            dic.Add("ip", localIPAddress);
-                            dic.Add("mac_add", localMacAddress);
 
-                            FormUrlEncodedContent data = new FormUrlEncodedContent(dic);
                             string httpurl = Configuration["operlog:posturl"];
-                            //string httpurl = "http://10.89.36.204:8003/api/v1/UserOperationLog/Add";
-                            client.PostAsync(httpurl, data);
+                            UserOperationLog parmobj = new UserOperationLog()
+                            {
+                                controller_name = controllername,
+                                action_name = actionname,
+                                method_name = methodname,
+                                acc_name = response.acc_name,
+                                user_name = response.user_name,
+                                ip = localIPAddress,
+                                mac_add = localMacAddress
+                            };
+                            var content = new StringContent(JsonConvert.SerializeObject(parmobj), Encoding.UTF8, "application/json");
+                            //var ret = client.PostAsync(httpurl, content).ContinueWith(responseTask => {
+                            //    var result = responseTask.Result;
+                            //});
+                            HttpResponseMessage httpresp = client.PostAsync(httpurl, content).Result;
+                            var temp = httpresp.Content.ReadAsStringAsync().Result;
                         }
                     }
                     
@@ -71,11 +79,55 @@ namespace MSS.API.Operlog.Common
 
         }
 
+        public static string HttpPost(string url, string postData = null, string contentType = null, int timeOut = 30, Dictionary<string, string> headers = null)
+        {
+            postData = postData ?? "";
+            using (HttpClient client = new HttpClient())
+            {
+                if (headers != null)
+                {
+                    foreach (var header in headers)
+                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+                using (HttpContent httpContent = new StringContent(postData, Encoding.UTF8))
+                {
+                    if (contentType != null)
+                        httpContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+
+                    HttpResponseMessage response = client.PostAsync(url, httpContent).Result;
+                    return response.Content.ReadAsStringAsync().Result;
+                }
+            }
+        }
+
         public void OnActionExecuting(ActionExecutingContext context)
         {
             
         }
 
+
+        public class UserOperationLog
+        {
+            public string controller_name { get; set; }
+            public string action_name { get; set; }
+
+            public string method_name { get; set; }
+
+            public string acc_name { get; set; }
+
+            public string user_name { get; set; }
+
+            public string ip { get; set; }
+
+            public string mac_add { get; set; }
+            public int id { get; set; }
+            public DateTime created_time { get; set; }
+            public int created_by { get; set; }
+            public DateTime updated_time { get; set; }
+            public int updated_by { get; set; }
+            public int is_del { get; set; }
+
+        }
         public static string LocalIPAddress
         {
             get
