@@ -163,47 +163,12 @@ export const vInput = str => !/[@#$!%^&*()！￥……‘’“”：；:;""'']/
 // 不能输入中文
 export const vcode = str => /[\u4E00-\u9FA5]/g.test(str)
 
-// 任务中管廊、分区、设备类型、设备的常显示长度，超出此长度，则启用tip提示
-export const TASK_TIP_LENGTH = 12
-
-// 任务类型
-export const TASKTYPE = 'TaskType'
-
-// 巡检
-export const TASK_TYPE_RI = 'RoutingInspect'
-// 抢修
-export const TASK_TYPE_UR = 'UrgentRepair'
-// 维修
-export const TASK_TYPE_RR = 'RegularRepair'
-// 专项
-export const TASK_TYPE_SI = 'SpecialInspect'
-
-// 任务状态
-export const TASKSTATUS = 'TaskStatus'
-
-// 任务状态-未开始
-export const TASKSTATUS_NOTSTART = 'NotStart'
-
-// 任务状态-未结束
-export const TASKTYPE_STARTING = 'Starting'
-
-// 任务状态-待确认
-export const TASKTYPE_REPAIRED = 'Repaired'
-
-// 任务状态-已完成
-export const TASKTYPE_FINISHED = 'Finished'
-
-// 维修申请状态
-export const MATYPE = 'MAType'
-
-// 维修申请状态-未处理
-export const MATYPE_UNDO = 'Undo'
-
-// 维修申请状态-同意维修申请
-export const MATYPE_AGREE = 'Agree'
-
-// 维修申请状态-不同意维修申请
-export const MATYPE_DISAGREE = 'Disagree'
+// 全局pdf的url，api为虚拟目录，跨域使用
+export const PDF_URL = process.env.NODE_ENV === 'production' ? '' : 'C:/Users/twg/Desktop/测试用pdf/'
+// 全局已上传的pdf的查看控件路径
+export const PDF_UPLOADED_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : 'http://10.89.36.93:8099' + '/Compoment/pdfViewer/web/viewer.html?file=/'
+// 全局本地准备上传还未上传的pdf的查看控件路径
+export const PDF_BLOB_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : '/api' + '/Compoment/pdfViewer/web/viewer.html?file='
 
 // 全局url，api为虚拟目录，跨域使用
 export const BASE_URL = process.env.NODE_ENV === 'production' ? '' : '/api'

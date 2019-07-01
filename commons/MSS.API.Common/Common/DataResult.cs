@@ -29,6 +29,19 @@ namespace MSS.API.Common
         no,
         yes
     }
+    public class Const
+    {
+        public static int PAGESIZE = 10;
+    }
+
+    public static class FilePath
+    {
+        /// <summary>
+        /// 基础绝对路径
+        /// </summary>
+        public static string BASEFILE = "C:/Users/twg/Desktop/测试用pdf/";
+        public static string EQPTYPE = "File/EqpType/";
+    }
     #endregion
 
 }
