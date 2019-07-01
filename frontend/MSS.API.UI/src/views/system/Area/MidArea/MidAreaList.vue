@@ -127,7 +127,6 @@
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/AreaApi'
 export default {
@@ -223,7 +222,6 @@ export default {
       }
       api.GetBigAreaQueryPageByParm(parm).then(res => {
         this.loading = false
-        debugger
         // res.data.map(item => {
         //   item.updated_time = transformDate(item.updated_time)
         // })
@@ -271,7 +269,6 @@ export default {
     },
     // 弹框确认是否删除
     dialogEnter () {
-      debugger
       api.DelConfigBigAreaId(this.editAreaIDList.join(',')).then(res => {
         if (res.ret === 0) {
           this.editAreaIDList = []
@@ -301,7 +298,6 @@ export default {
 
     // 获取修改站区id
     emitEditID () {
-      debugger
       this.$emit('editAreaIDList', this.editAreaIDList)
     },
 

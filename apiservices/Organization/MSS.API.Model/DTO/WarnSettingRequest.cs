@@ -11,5 +11,6 @@ namespace MSS.API.Model.DTO
         /// 设备类型
         /// </summary>
         public string EquipmentTypeID { get; set; }
+        public string ParamID { get; set; }
     }
 }
