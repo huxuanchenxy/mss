@@ -123,7 +123,7 @@ namespace MSS.API.Dao.Implement
                     sql.Append(" and a.equipment_type_id=" + eqpTypeID);
                 }
                 if (!string.IsNullOrEmpty(paramID)) {
-                    sql.Append(" and a.param_id=" + paramID);
+                    sql.Append(" and a.param_id='" + paramID + "'");
                 }
                 if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order))
                 {
@@ -199,12 +199,21 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<int> Count()
+        public async Task<int> Count(int? eqpTypeID, string paramID)
         {
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT count(*) FROM early_warnning_setting");
+                sql.Append(" WHERE is_del!=1");
+                if (eqpTypeID != null)
+                {
+                    sql.Append(" and equipment_type_id=" + eqpTypeID);
+                }
+                if (!string.IsNullOrEmpty(paramID))
+                {
+                    sql.Append(" and param_id='" + paramID + "'");
+                }
 
                 var count = await c.QueryFirstAsync<int>(sql.ToString());
                 return count;

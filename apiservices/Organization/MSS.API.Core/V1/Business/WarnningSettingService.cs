@@ -158,7 +158,7 @@ namespace MSS.API.Core.V1.Business
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    int count = await _warnRepo.Count();
+                    int count = await _warnRepo.Count(eqpTypeID, paramID);
                     var list = await _warnRepo.ListWarnningSettingByPage(page, size, sort, order, eqpTypeID, paramID);
                     ret.code = Code.Success;
                     ret.data = new {
