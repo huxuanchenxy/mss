@@ -2,6 +2,9 @@
 using MSS.API.Operlog.Model.Data;
 using MSS.API.Operlog.Model.DTO;
 using MSS.API.Operlog.V1.Business;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using static MSS.API.Operlog.Model.Const;
 
 namespace MSS.API.Operlog.V1.Controllers
@@ -36,11 +39,12 @@ namespace MSS.API.Operlog.V1.Controllers
         }
 
         [HttpPost("Add")]
-        public ActionResult Add([FromQuery] UserOperationLog parm)
+        public ActionResult Add([FromForm] UserOperationLog parm)
         {
             _userOperationLogService.Add(parm);
             return Ok("ok");
         }
-        
+
+
     }
 }
