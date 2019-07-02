@@ -2,6 +2,7 @@
 bin/
 obj/
 logs/
+File/
 .vs/
 .vscode/
 *.csproj.user

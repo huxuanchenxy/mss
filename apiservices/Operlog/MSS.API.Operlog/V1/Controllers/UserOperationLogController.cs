@@ -39,7 +39,7 @@ namespace MSS.API.Operlog.V1.Controllers
         }
 
         [HttpPost("Add")]
-        public ActionResult Add([FromForm] UserOperationLog parm)
+        public ActionResult Add(UserOperationLog parm)
         {
             _userOperationLogService.Add(parm);
             return Ok("ok");

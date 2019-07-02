@@ -143,7 +143,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, PDF_UPLOADED_VIEW_URL, PDF_IMAGE, PDF_BLOB_VIEW_URL } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 export default {
@@ -390,6 +390,7 @@ export default {
       this.fileList.regulations.push(file)
     },
     preview (item) {
+      console.log(item)
       this.centerDialogVisible = true
       // var urlbase = process.env.NODE_ENV === 'production' ? '' : '/api'
       if (item.status === 'success') {

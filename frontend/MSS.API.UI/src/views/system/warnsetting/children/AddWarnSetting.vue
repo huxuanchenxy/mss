@@ -132,6 +132,7 @@ export default {
   },
   data () {
     return {
+      title: '',
       loading: false,
       isShow: 'Add',
       settingExTypeList: [],
@@ -174,8 +175,11 @@ export default {
   activated () {
     this.isShow = this.$route.params.mark
     if (this.isShow === 'edit') {
+      this.title = '| 修改预警设定'
       this.ID = this.$route.params.id
       this.getWarnningSetting()
+    } else {
+      this.title = '| 添加预警设定'
     }
   },
   methods: {

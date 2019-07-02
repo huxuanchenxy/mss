@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using MSS.API.Common;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
+using MSS.API.Operlog.Common;
 using static MSS.API.Common.Const;
 
 namespace MSS.API.Core
@@ -64,7 +65,11 @@ namespace MSS.API.Core
 
             services.AddDistributedMemoryCache();
             services.AddSession();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<GlobalActionFilter>();
+            }
+).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
