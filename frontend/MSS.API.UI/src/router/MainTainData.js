@@ -12,8 +12,8 @@ const routes = [
               redirect: 'Expert'
             }, 
             {
-              path: 'Expert',
-              component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/Expert/Index.vue'),
+              // path: 'Expert',
+              // component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/Expert/Index.vue'),
               children: [
                 {
                   path: '/',

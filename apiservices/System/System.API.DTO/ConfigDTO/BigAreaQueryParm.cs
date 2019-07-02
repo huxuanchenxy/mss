@@ -11,7 +11,6 @@ namespace System.API.DTO
         /// </summary>
         public string SearchName { get; set; }
         public string searchType { get; set; }
-        
     }
  
     
@@ -23,6 +22,8 @@ namespace System.API.DTO
         public string SearchName { get; set; }
 
         public string searchType { get; set; }
+
+        public string serachBigType { get; set; }
     }
 
 }

@@ -56,11 +56,11 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('AreaName')">
-          站区名称
+          站区名
           <i :class="[{ 'el-icon-d-caret': headOrder.AreaName === 0 }, { 'el-icon-caret-top': headOrder.AreaName === 1 }, { 'el-icon-caret-bottom': headOrder.AreaName === 2 }]"></i>
         </li>
         <li class="list number c-pointer" @click="changeOrder('ConfigType')">
-          区域名称
+          类型
           <i :class="[{ 'el-icon-d-caret': headOrder.ConfigType === 0 }, { 'el-icon-caret-top': headOrder.ConfigType === 1 }, { 'el-icon-caret-bottom': headOrder.ConfigType === 2 }]"></i>
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
@@ -221,7 +221,7 @@ export default {
         //   item.updated_time = transformDate(item.updated_time)
         // })
         this.ConfigBigAreaList = res.data
-        this.total = res.data.total
+        this.total = res.total
       }).catch(err => console.log(err))
     },
 

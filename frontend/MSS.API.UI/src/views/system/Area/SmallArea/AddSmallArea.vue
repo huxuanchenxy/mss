@@ -33,16 +33,23 @@
         </li>
          <li class="list" >
           <div class="inp-wrap">
-            <span class="text">车站<em class="validate-mark">*</em></span>
+            <span class="text">所属站区<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-select v-model="BigAreaType.id" clearable placeholder="请选择" @change="validatechildSelect(BigAreaType.id)">
+                <option disabled value="" selected>请选择</option>
+                 <el-option  v-for="item in BigAreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
+                 </el-option>
+              </el-select>
+            </div>&nbsp;&nbsp;
             <div class="inp">
               <el-select v-model="AreaType.id" clearable placeholder="请选择" @change="validateSelect()">
                 <option disabled value="" selected>请选择</option>
                  <el-option  v-for="item in AreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
                  </el-option>
               </el-select>
-            </div>
           </div>
-          <p class="validate-tips">{{ AreaType.tips }}</p>
+          <p class="validate-tips">{{ AreaType.tips }}</p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
         </li>
       </ul>
     </div>
@@ -78,7 +85,13 @@ export default {
         id: '',
         tips: ''
       },
-      AreaTypeList: []
+      AreaTypeList: [],
+      childType: '',
+      BigAreaType: {
+        id: '',
+        tips: ''
+      },
+      BigAreaTypeList: []
     }
   },
   created () {
@@ -90,8 +103,8 @@ export default {
       this.title = '| 修改位置'
       this.getMidArea()
     }
-    api.GetSubWayStation().then(res => {
-      this.AreaTypeList = res.data
+    api.SelectDicAreaData('1').then(res => {
+      this.BigAreaTypeList = res.data
     }).catch(err => {
       console.log(err)
     })
@@ -181,6 +194,17 @@ export default {
         val.tips = ''
         return true
       }
+    },
+    validatechildSelect (val) {
+      if (val === '') {
+        this.AreaTypeList = []
+        this.AreaType.id = ''
+      }
+      api.GetSubWayStation(val).then(res => {
+        this.AreaTypeList = res.data
+      }).catch(err => {
+        console.log(err)
+      })
     },
     validateSelect () {
       if (this.AreaType.id === '') {

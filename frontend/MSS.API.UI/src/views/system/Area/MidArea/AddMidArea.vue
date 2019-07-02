@@ -24,16 +24,16 @@
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">站区<em class="validate-mark">*</em></span>
+            <span class="text">站区名<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入站区名称" v-model="areaName.text" @keyup.native="validateInput(areaName)"></el-input>
+              <el-input placeholder="请输入站区名名称" v-model="areaName.text" @keyup.native="validateInput(areaName)"></el-input>
             </div>
           </div>
           <p class="validate-tips">{{ areaName.tips }}</p>
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">场区<em class="validate-mark">*</em></span>
+            <span class="text">类型<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-select v-model="AreaType.text" clearable placeholder="请选择" @change="validateSelect()">
                 <option disabled value="" selected>请选择</option>

@@ -13,15 +13,26 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">位置</label>
+            <label for="name">位置名称</label>
             <div class="inp">
               <el-input v-model.trim="AreaName" placeholder="请输入位置名称"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="">车站</label>
+            <label for="">所属站区</label>
             <div class="inp">
-              <el-select v-model="PType" clearable filterable placeholder="请选择">
+              <el-select v-model="BigAreaType.id" clearable filterable placeholder="请选择" @change="validatechildSelect(BigAreaType.id)">
+                <option disabled value="" selected>请选择</option>
+                <el-option
+                  v-for="item in BigAreaTypeList"
+                  :key="item.key"
+                  :label="item.areaName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+               </div>
+                 <div class="inp">
+               <el-select v-model="PType" clearable filterable placeholder="请选择">
                 <el-option
                   v-for="item in PTypeList"
                   :key="item.key"
@@ -59,7 +70,7 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.areaName === 0 }, { 'el-icon-caret-top': headOrder.areaName === 1 }, { 'el-icon-caret-bottom': headOrder.areaName === 2 }]"></i>
         </li>
         <li class="list number c-pointer" @click="changeOrder('Pid')">
-          车站名称
+          所属站区
           <i :class="[{ 'el-icon-d-caret': headOrder.Pid === 0 }, { 'el-icon-caret-top': headOrder.Pid === 1 }, { 'el-icon-caret-bottom': headOrder.Pid === 2 }]"></i>
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
@@ -134,6 +145,11 @@ export default {
       AreaName: '',
       PType: '',
       PTypeList: [],
+      BigAreaType: {
+        id: '',
+        tips: ''
+      },
+      BigAreaTypeList: [],
       ConfigMidAreaList: [],
       editAreaIDList: [],
       bCheckAll: false,
@@ -163,10 +179,11 @@ export default {
   created () {
     this.$emit('title', '| 位置配置')
     this.init()
-    // 站区配置类型列表
-    api.GetSubWayStation().then(res => {
-      this.PTypeList = res.data
-    }).catch(err => console.log(err))
+    api.SelectDicAreaData('1').then(res => {
+      this.BigAreaTypeList = res.data
+    }).catch(err => {
+      console.log(err)
+    })
   },
   activated () {
     this.searchResult(this.currentPage)
@@ -211,6 +228,7 @@ export default {
         rows: 10,
         page: page,
         searchName: this.AreaName,
+        serachBigType:this.BigAreaType.id,
         searchType: this.PType
       }
       api.GetMidAreaQueryPageByParm(parm).then(res => {
@@ -219,7 +237,7 @@ export default {
         //   item.updated_time = transformDate(item.updated_time)
         // })
         this.ConfigMidAreaList = res.data
-        this.total = res.data.total
+        this.total = res.total
       }).catch(err => console.log(err))
     },
 
@@ -245,7 +263,17 @@ export default {
         })
       }
     },
-
+    validatechildSelect (val) {
+      if (val === '') {
+        this.PTypeList = []
+        this.PType = ''
+      }
+      api.GetSubWayStation(val).then(res => {
+        this.PTypeList = res.data
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     // 删除站区
     remove () {
       if (!this.editAreaIDList.length) {

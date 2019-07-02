@@ -147,6 +147,7 @@ namespace System.API.Core.Controllers
                 where += " and  ConfigType= '" + paras.searchType.Trim() + "'";
             }
             List<TB_Config_BigArea> list = _SystemService._IConfigBigAreaService.GetListByPage(where, paras.sort, paras.order, paras.page, paras.rows);
+            int totalNum = _SystemService._IConfigBigAreaService.GetList(where).Count;
             List<TB_Config_BigAreaDTO> results = new List<TB_Config_BigAreaDTO>();
             Helper.ModelToDTO<TB_Config_BigArea, TB_Config_BigAreaDTO>(list, results);
             foreach(var v in results)
@@ -173,7 +174,7 @@ namespace System.API.Core.Controllers
                 }
             }
             result.data = results;
-            result.total = results.Count();
+            result.total = totalNum;
             return result; 
         }
 
@@ -248,12 +249,16 @@ namespace System.API.Core.Controllers
         /// 获取地铁站数据
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GetSubWayStation")]
+        [HttpGet("GetSubWayStation/{id}")]
         //[Route("GetChezhanData")]
-        public ResponseContext GetSubWayStation()
+        public ResponseContext GetSubWayStation(string id)
         {
             ResponseContext result = new ResponseContext();
             string where = "1";
+            if(!string.IsNullOrEmpty(id))
+            {
+                 where = id ;
+            }
             List<CheZhanDTO> lists = new List<CheZhanDTO>(); 
             Helper.ModelToDTO<TB_Config_BigArea, CheZhanDTO>(_SystemService._IConfigBigAreaService.GetListByConfigType(where), lists);
            result.data = lists;
@@ -405,21 +410,24 @@ namespace System.API.Core.Controllers
         [Route("GetMidAreaQueryPageByParm")]
         public ResponseContext GetMidAreaQueryPageByParm([FromQuery] MidAreaQueryParm paras)
         {
-             ResponseContext result = new ResponseContext();
-            TB_Config_BigArea  model = null;
-            // string where = " AreaName like '% " + paras.SearchName + "%'";
-            //result.data = _SystemService._IConfigMidAreaService.GetList(where);
-            // return result; 
+            ResponseContext result = new ResponseContext();
+            TB_Config_BigArea model = null;
+            string str = fun(paras);
             string where = "  1=1 ";
             if (!string.IsNullOrEmpty(paras.SearchName))
             {
                 where += " and AreaName like '%" + paras.SearchName.Trim() + "%'";
+            }
+            else if (!string.IsNullOrEmpty(str))
+            {
+                where += "  and  PID in (" + str + ")";
             }
             else if (!string.IsNullOrEmpty(paras.searchType))
             {
                 where += " and  PID= '" + paras.searchType.Trim() + "'";
             }
             List<TB_Config_MidArea> list = _SystemService._IConfigMidAreaService.GetListByPage(where, paras.sort, paras.order, paras.page, paras.rows);
+            int totalNum = _SystemService._IConfigMidAreaService.GetList(where).Count;
             List<TB_Config_MidAreaDTO> results = new List<TB_Config_MidAreaDTO>();
             Helper.ModelToDTO<TB_Config_MidArea, TB_Config_MidAreaDTO>(list, results);
             foreach (var v in results)
@@ -435,8 +443,23 @@ namespace System.API.Core.Controllers
                 }
             }
             result.data = results;
-            result.total = results.Count();
+            result.total = totalNum;
             return result;
+        }
+
+        private string fun(MidAreaQueryParm paras)
+        {
+             
+            string strs = string.Empty;
+
+            if (!string.IsNullOrEmpty(paras.serachBigType) && string.IsNullOrEmpty(paras.searchType))
+            {
+               string  strwhere  = " ConfigType='" + paras.serachBigType.Trim() + "'";
+                List<TB_Config_BigArea> list = _SystemService._IConfigBigAreaService.GetList(strwhere);
+                var ids = (from a in list select a.Id).ToList();
+                strs =string.Join(",",ids);
+            }
+            return strs; 
         }
 
         /// <summary>
