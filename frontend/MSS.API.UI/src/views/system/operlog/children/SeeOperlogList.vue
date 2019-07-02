@@ -24,16 +24,21 @@
               <el-input v-model.trim="actionName" placeholder="请输入操作名称"></el-input>
             </div>
           </div>
-          <div class="input-group">
-            <label for="name">操作时间</label>
-            <div class="inp" style="width:165px;">
-              <el-input v-model.trim="startTime" placeholder="请输入开始时间"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="name">至</label>
-            <div class="inp" style="width:165px;">
-              <el-input v-model.trim="endTime" placeholder="请输入结束时间" ></el-input>
+          <div class="list">
+            <span for="name" style="float: left;padding-top: 4px;">操作时间</span>
+            <div class="inp" style="
+    padding-left: 77px;
+">
+                <el-date-picker
+                  v-model="time"
+                  type="daterange"
+                  prefix-icon="el-icon-date"
+                  :unlink-panels="true"
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
+                </el-date-picker>
             </div>
           </div>
         </div>
@@ -50,21 +55,31 @@
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name">
+        <li class="list number c-pointer" @click="changeOrder('controller_name')">
           模块名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.controller_name === 0 }, { 'el-icon-caret-top': headOrder.controller_name === 1 }, { 'el-icon-caret-bottom': headOrder.controller_name === 2 }]"></i>
        </li>
-        <li class="list name">
+        <li class="list number c-pointer" @click="changeOrder('action_name')">
           操作名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.action_name === 0 }, { 'el-icon-caret-top': headOrder.action_name === 1 }, { 'el-icon-caret-bottom': headOrder.action_name === 2 }]"></i>
        </li>
-       <li class="list name">
+       <li class="list number c-pointer" @click="changeOrder('user_name')">
           用户姓名
+          <i :class="[{ 'el-icon-d-caret': headOrder.user_name === 0 }, { 'el-icon-caret-top': headOrder.user_name === 1 }, { 'el-icon-caret-bottom': headOrder.user_name === 2 }]"></i>
        </li>
-        <li class="list name" >
+        <li class="list number c-pointer" @click="changeOrder('acc_name')" >
           登录账号
+          <i :class="[{ 'el-icon-d-caret': headOrder.acc_name === 0 }, { 'el-icon-caret-top': headOrder.acc_name === 1 }, { 'el-icon-caret-bottom': headOrder.acc_name === 2 }]"></i>
        </li>
-        <li class="list name">ip地址</li>
-        <li class="list name">mac地址</li>
-        <li class="list name">操作时间</li>
+        <li class="list number c-pointer" @click="changeOrder('ip')" >ip地址
+          <i :class="[{ 'el-icon-d-caret': headOrder.ip === 0 }, { 'el-icon-caret-top': headOrder.ip === 1 }, { 'el-icon-caret-bottom': headOrder.ip === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('mac_add')" >mac地址
+<i :class="[{ 'el-icon-d-caret': headOrder.mac_add === 0 }, { 'el-icon-caret-top': headOrder.mac_add === 1 }, { 'el-icon-caret-bottom': headOrder.mac_add === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('created_time')">操作时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
+        </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -115,6 +130,7 @@ export default {
   data () {
     return {
       title: ' | 日志查看',
+      time: '',
       userName: '',
       actionName: '',
       startTime: '',
@@ -128,8 +144,8 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'id',
-        order: 'asc'
+        sort: 'created_time',
+        order: 'desc'
       },
       dialogVisible: {
         isShow: false,
@@ -138,8 +154,14 @@ export default {
         btn: true
       },
       headOrder: {
-        id: 1,
-        acc_name: 0
+        id: 0,
+        acc_name: 0,
+        controller_name: 0,
+        action_name: 0,
+        user_name: 0,
+        ip: 0,
+        mac_add: 0,
+        created_time: 0
       }
     }
   },
@@ -169,12 +191,13 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        // this.headOrder.acc_name = 0
-        // this.headOrder.user_name = 0
-        // this.headOrder.role_id = 0
-        // this.headOrder.job_number = 0
-        // this.headOrder.updated_by = 0
-        // this.headOrder.updated_time = 0
+        this.headOrder.acc_name = 0
+        this.headOrder.user_name = 0
+        this.headOrder.controller_name = 0
+        this.headOrder.action_name = 0
+        this.headOrder.ip = 0
+        this.headOrder.mac_add = 0
+        this.headOrder.created_time = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -200,8 +223,8 @@ export default {
         page: page,
         actionName: this.actionName,
         userName: this.userName,
-        startTime: this.startTime,
-        endTime: this.endTime
+        startTime: this.time === null || this.time === '' ? '' : this.time[0] + ' 00:00:00',
+        endTime: this.time === null || this.time === '' ? '' : this.time[1] + ' 23:59:59'
       }
       api.getOperationLog(parm).then(res => {
         this.loading = false
@@ -224,14 +247,14 @@ export default {
       this.$emit('editUserID', this.editUserID)
     },
     // 全选
-    checkAll () {
-      this.bCheckAll ? this.UserList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
-      this.emitEditID()
-    },
+    // checkAll () {
+    //   this.bCheckAll ? this.UserList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
+    //   this.emitEditID()
+    // },
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.bCheckAll = false
-      this.checkAll()
+      // this.checkAll()
       this.currentPage = val
       this.searchResult(val)
     },
@@ -239,7 +262,7 @@ export default {
     // 上一页
     prevPage (val) {
       this.bCheckAll = false
-      this.checkAll()
+      // this.checkAll()
       this.currentPage = val
       this.searchResult(val)
     },
@@ -247,7 +270,7 @@ export default {
     // 下一页
     nextPage (val) {
       this.bCheckAll = false
-      this.checkAll()
+      // this.checkAll()
       this.currentPage = val
       this.searchResult(val)
     }
