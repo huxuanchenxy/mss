@@ -1,7 +1,7 @@
 <template>
   <div class="wrap height-full">
     <div class="content">
-      <keep-alive >
+      <keep-alive include="MidAreaList">
         <router-view @title="getTitle"/>
       </keep-alive>
     </div>
@@ -10,7 +10,7 @@
 <script>
 import XButton from '@/components/button'
 export default {
-  name: 'Action',
+  name: 'MidArea',
   components: {
     XButton
   },
@@ -28,7 +28,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .wrap{
-  .header{
+  /deep/ .header{
     display: flex;
     justify-content: space-between;
   }

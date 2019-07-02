@@ -204,8 +204,8 @@ export default {
     },
 
     validateAll () {
-      // if (!validateInputCommon(this.areaName)) return false
-      // if (!this.validateSelect()) return false
+      if (!validateInputCommon(this.areaName)) return false
+      if (!this.validateSelect()) return false
       return true
     }
   }

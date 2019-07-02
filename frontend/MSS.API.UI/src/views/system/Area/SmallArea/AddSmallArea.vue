@@ -55,7 +55,7 @@
   </div>
 </template>
 <script>
-import { vInput } from '@/common/js/utils.js'
+import { validateInputCommon, vInput } from '@/common/js/utils.js'
 import api from '@/api/AreaApi.js'
 import XButton from '@/components/button'
 
@@ -183,7 +183,7 @@ export default {
       }
     },
     validateSelect () {
-      if (this.AreaType.text === '') {
+      if (this.AreaType.id === '') {
         this.AreaType.tips = '此项必选'
         return false
       } else {
@@ -195,7 +195,7 @@ export default {
       // validateNumberCommon(this.groupOrder)
     },
     validateAll () {
-      // if (!validateInputCommon(this.areaName)) return false
+      if (!validateInputCommon(this.areaName)) return false
       if (!this.validateSelect()) return false
       return true
     }

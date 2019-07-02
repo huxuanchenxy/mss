@@ -129,7 +129,7 @@ const routes = [
         children: [
           {
             path: '/',
-            name: 'SmallArea',
+           // name: 'SmallArea',
             redirect: 'list'
           },
           {
@@ -165,7 +165,7 @@ const routes = [
         children: [
           {
             path: '/',
-            name: 'MidArea',
+           // name: 'MidArea',
             redirect: 'list'
           },
           {
