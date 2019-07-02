@@ -77,11 +77,6 @@
                 <div class="url word-break">{{ item.desc }}</div>
                 <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
                 <div class="last-update-time word-break">{{ item.updatedName }}</div>
-                <!--<div class="list"/>
-                <div class="list"/>
-                <div class="list"/>
-                <div class="list"/>
-                <div class="list"/>-->
                 <div class="list pdf-btn">
                   <div class="box" @click="preview(item.pWorking)"></div>
                 </div>
@@ -164,7 +159,6 @@ export default {
       },
       dialogVisible: {
         isShow: false,
-        text: '',
         // true 为两个按钮，false 为一个按钮
         btn: true
       },
@@ -198,6 +192,7 @@ export default {
     preview (item) {
       this.centerDialogVisible = true
       this.previewUrl = PDF_UPLOADED_VIEW_URL + item
+      // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
     },
     // 改变排序
     changeOrder (sort) {

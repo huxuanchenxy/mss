@@ -390,6 +390,7 @@ export default {
       this.fileList.regulations.push(file)
     },
     preview (item) {
+      console.log(item)
       this.centerDialogVisible = true
       // var urlbase = process.env.NODE_ENV === 'production' ? '' : '/api'
       if (item.status === 'success') {
