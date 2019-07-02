@@ -70,24 +70,17 @@ namespace System.API.Core.Controllers
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        [HttpPost("UpdateConfigBigArea")]
+        [HttpPut("UpdateConfigBigArea")]
         //[Route("UpdateConfigBigArea")]
-        public ResponseContext UpdateConfigBigAre(RequestContext<TB_Config_BigAreaDTO> req)
+        public ResponseContext UpdateConfigBigArea(TB_Config_BigAreaDTO data)
         {
             ResponseContext result = new ResponseContext();
-           result.data = true;
-            var obj = req.data;
-            //if (obj == null)
-            //{
-            //    result.Head.Ret = -1;
-            //    result.Head.Code = ErrCode.ParameterError;
-            //    return result;
-            //}
+           result.data = true; 
             using (TransactionScope ts = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
                 //校验传入参数
               //  var reqHeader = req.Head;
-                var Content = req.data;
+                var Content =data;
                 TB_Config_BigArea model = new TB_Config_BigArea();
                 ModelCtrl.CopyModel(model, Content, null, null);
                 model.Updated_Time = DateTime.Now;
@@ -109,17 +102,16 @@ namespace System.API.Core.Controllers
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        [HttpPost("UpdateConfigMidArea")]
-        public ResponseContext UpdateConfigMidArea(RequestContext<TB_Config_MidAreaDTO> req)
+        [HttpPut("UpdateConfigMidArea")]
+        public ResponseContext UpdateConfigMidArea(TB_Config_MidAreaDTO  data)
         {
             ResponseContext result = new ResponseContext();
-            result.data = true;
-            var obj = req.data;
+            result.data = true; 
             using (TransactionScope ts = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
                 //校验传入参数
                 //  var reqHeader = req.Head;
-                var Content = req.data;
+                var Content = data;
                 TB_Config_MidArea model = new TB_Config_MidArea();
                 ModelCtrl.CopyModel(model, Content, null, null);
                 model.Updated_Time = DateTime.Now;
@@ -148,13 +140,13 @@ namespace System.API.Core.Controllers
             string where = "  1=1 ";
             if (!string.IsNullOrEmpty(paras.SearchName))
             {
-                where += " and AreaName like '%" + paras.SearchName + "%'";
+                where += " and AreaName like '%" + paras.SearchName.Trim() + "%'";
             }
             else if(!string.IsNullOrEmpty(paras.searchType))
             {
-                where += " and  ConfigType= ' " + paras.searchType + "'";
+                where += " and  ConfigType= '" + paras.searchType.Trim() + "'";
             }
-            List<TB_Config_BigArea> list = _SystemService._IConfigBigAreaService.GetList(where);
+            List<TB_Config_BigArea> list = _SystemService._IConfigBigAreaService.GetListByPage(where, paras.sort, paras.order, paras.page, paras.rows);
             List<TB_Config_BigAreaDTO> results = new List<TB_Config_BigAreaDTO>();
             Helper.ModelToDTO<TB_Config_BigArea, TB_Config_BigAreaDTO>(list, results);
             foreach(var v in results)
@@ -192,8 +184,7 @@ namespace System.API.Core.Controllers
         /// </summary>
         /// <param name="id">查询参数</param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("GetConfigBigAreaId")]
+        [HttpGet("GetConfigBigAreaId/{id}")]
         public ResponseContext GetConfigBigAreaId(string id)
         {
             ResponseContext result = new ResponseContext();
@@ -422,13 +413,13 @@ namespace System.API.Core.Controllers
             string where = "  1=1 ";
             if (!string.IsNullOrEmpty(paras.SearchName))
             {
-                where += " and AreaName like '%" + paras.SearchName + "%'";
+                where += " and AreaName like '%" + paras.SearchName.Trim() + "%'";
             }
             else if (!string.IsNullOrEmpty(paras.searchType))
             {
-                where += " and  PID= ' " + paras.searchType + "'";
+                where += " and  PID= '" + paras.searchType.Trim() + "'";
             }
-            List<TB_Config_MidArea> list = _SystemService._IConfigMidAreaService.GetList(where);
+            List<TB_Config_MidArea> list = _SystemService._IConfigMidAreaService.GetListByPage(where, paras.sort, paras.order, paras.page, paras.rows);
             List<TB_Config_MidAreaDTO> results = new List<TB_Config_MidAreaDTO>();
             Helper.ModelToDTO<TB_Config_MidArea, TB_Config_MidAreaDTO>(list, results);
             foreach (var v in results)

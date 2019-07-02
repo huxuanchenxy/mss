@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.API.DAO.Dapper;
 using System.API.DAO.Interface;
 using System.API.Model;
-
+using System.Text;
 
 namespace System.API.DAO.Implement
 {
@@ -81,9 +81,19 @@ namespace System.API.DAO.Implement
             return list;
         }
 
-        public List<TB_Config_MidArea> GetListByPage(string strWhere, string orderby, int startIndex, int endIndex)
+        public List<TB_Config_MidArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size)
         {
-            throw new NotImplementedException();
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT * FROM TB_Config_MidArea where " + strWhere);
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(orderby))
+            {
+                sql.Append(" order by " + sort + " " + orderby);
+            }
+            sql.Append(" limit " + (page - 1) * size + "," + size);
+            List<TB_Config_MidArea> list = new List<TB_Config_MidArea>();
+            var MidArealist = DbContext.Query<TB_Config_MidArea>(sql.ToString()); 
+            list.AddRange(MidArealist);
+            return list; 
         }
 
         public int GetMaxId()

@@ -43,8 +43,6 @@ namespace System.API.Service
         /// </summary>
         List<TB_Config_MidArea> GetList(int Top, string strWhere, string filedOrder);
         int GetRecordCount(string strWhere);
-        List<TB_Config_MidArea> GetListByPage(string strWhere, string orderby, int startIndex, int endIndex);
-      
-
+        List<TB_Config_MidArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size); 
     }
 }

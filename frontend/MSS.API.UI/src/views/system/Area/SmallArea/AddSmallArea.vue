@@ -36,6 +36,7 @@
             <span class="text">车站<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-select v-model="AreaType.id" clearable placeholder="请选择" @change="validateSelect()">
+                <option disabled value="" selected>请选择</option>
                  <el-option  v-for="item in AreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
                  </el-option>
               </el-select>
@@ -87,7 +88,6 @@ export default {
     } else if (this.isShow === 'edit') {
       this.loading = true
       this.title = '| 修改位置'
-      alert('edit')
       this.getMidArea()
     }
     api.GetSubWayStation().then(res => {
@@ -139,14 +139,14 @@ export default {
       } else if (this.isShow === 'edit') {
         tbConfigMidArea.id = this.AreaID
         // 修改权限组
-        api.UpdateMidArea(tbConfigMidArea).then(res => {
-          if (res.code === 0) {
+        api.UpdateConfigMidArea(tbConfigMidArea).then(res => {
+          if (res.ret === 0) {
             this.$message({
               message: '修改成功',
               type: 'success',
               onClose: () => {
                 this.$router.push({
-                  name: 'SmallArealist'
+                  name: 'SmallAreaList'
                 })
               }
             })
@@ -165,7 +165,7 @@ export default {
         this.loading = false
         this.AreaID = res.data.id
         this.areaName.text = res.data.areaName
-        this.AreaType.id = res.data.pname
+        this.AreaType.id = res.data.pid
       }).catch(err => console.log(err))
     },
     // 验证

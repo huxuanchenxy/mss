@@ -142,7 +142,7 @@ const routes = [
           }
         ]
       }, {
-        path: 'Area',
+        path: 'Area2',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
         children: [
           {

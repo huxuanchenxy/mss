@@ -74,12 +74,12 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item) in ConfigMidAreaList" :key="item.key">
+            <li class="list" v-for="(item,index) in ConfigMidAreaList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
                   <input type="checkbox" v-model="editAreaIDList" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.id }}</div>
+                <div class="number">{{index+1}}</div>
                 <div class="name">
                   <router-link :to="{ name: 'SmallAreaList', params: { id: item.id } }">{{ item.areaName }}</router-link>
                 </div>
@@ -226,7 +226,6 @@ export default {
     // 修改站区
     edit () {
       if (!this.editAreaIDList.length) {
-        alert(this.editAreaIDList.length)
         this.$message({
           message: '请选择需要修改的位置',
           type: 'warning'

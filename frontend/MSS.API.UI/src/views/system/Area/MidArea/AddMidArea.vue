@@ -35,7 +35,8 @@
           <div class="inp-wrap">
             <span class="text">场区<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-select v-model="AreaType.id" clearable placeholder="请选择" @change="validateSelect()">
+              <el-select v-model="AreaType.text" clearable placeholder="请选择" @change="validateSelect()">
+                <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in AreaTypeList"
                  :key="item.key"
@@ -69,7 +70,7 @@ export default {
   data () {
     return {
       loading: false,
-      isShow: 'add', // this.$route.params.mark,
+      isShow: this.$route.params.mark,
       editAreaID: this.$route.params.id,
       AreaID: '',
       areaName: {
@@ -78,6 +79,7 @@ export default {
       },
       AreaType: {
         id: '',
+        text: '',
         tips: ''
       },
       AreaTypeList: [] // 场区类型: 车站\正线轨行区\保护区\车场生产区
@@ -110,7 +112,7 @@ export default {
       }
       let tbConfigBigArea = {
         areaName: this.areaName.text,
-        configType: this.AreaType.id,
+        configType: this.AreaType.text,
         sort: '1',
         is_Used: '1',
         is_Deleted: '0',
@@ -141,8 +143,8 @@ export default {
       } else if (this.isShow === 'edit') {
         tbConfigBigArea.id = this.AreaID
         // 修改权限组
-        api.UpdateConfigBigAre(tbConfigBigArea).then(res => {
-          if (res.code === 0) {
+        api.UpdateConfigBigArea(tbConfigBigArea).then(res => {
+          if (res.ret === 0) {
             this.$message({
               message: '修改成功',
               type: 'success',
@@ -169,7 +171,7 @@ export default {
         let _res = res.data
         this.AreaID = _res.id
         this.areaName.text = _res.areaName
-        this.AreaType.id = _res.configType
+        this.AreaType.text = _res.configType
       }).catch(err => console.log(err))
     },
     // 验证
@@ -202,8 +204,8 @@ export default {
     },
 
     validateAll () {
-      if (!validateInputCommon(this.areaName)) return false
-      if (!this.validateSelect()) return false
+      // if (!validateInputCommon(this.areaName)) return false
+      // if (!this.validateSelect()) return false
       return true
     }
   }

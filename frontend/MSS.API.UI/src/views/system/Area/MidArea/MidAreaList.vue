@@ -48,7 +48,7 @@
       </ul>
     </div>
     <!-- 内容 -->
-    <div class="content-wrap">
+   <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
@@ -61,12 +61,8 @@
         </li>
         <li class="list number c-pointer" @click="changeOrder('ConfigType')">
           区域名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.AreaType === 0 }, { 'el-icon-caret-top': headOrder.AreaType === 1 }, { 'el-icon-caret-bottom': headOrder.AreaType === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.ConfigType === 0 }, { 'el-icon-caret-top': headOrder.ConfigType === 1 }, { 'el-icon-caret-bottom': headOrder.ConfigType === 2 }]"></i>
         </li>
-        <!-- <li class="list number c-pointer" @click="changeOrder('Sort')">
-          站区顺序
-          <i :class="[{ 'el-icon-d-caret': headOrder.Sort === 0 }, { 'el-icon-caret-top': headOrder.Sort === 1 }, { 'el-icon-caret-bottom': headOrder.Sort === 2 }]"></i>
-        </li>  -->
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -79,17 +75,16 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item) in ConfigBigAreaList" :key="item.key">
+            <li class="list" v-for="(item,index) in ConfigBigAreaList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
                   <input type="checkbox" v-model="editAreaIDList" :value="item.id" @change="emitEditID">
                 </div>
-                 <div class="number">{{ item.id }}</div>
-                <div class="name">
+                 <div class="number">{{index+1}}</div>
+                 <div class="name">
                   <router-link :to="{ name: 'MidAreaList', params: { id: item.id } }">{{ item.areaName }}</router-link>
                 </div>
                 <div class="number">{{ item.configTypeName }}</div>
-                <!-- <div class="number">{{ item.sort }}</div>-->
                 <div class="last-update-time color-white">{{ item.created_Time }}</div>
                 <div class="last-maintainer">{{ item.created_By }}</div>
               </div>
@@ -233,7 +228,6 @@ export default {
     // 修改站区
     edit () {
       if (!this.editAreaIDList.length) {
-        alert(this.editAreaIDList.length)
         this.$message({
           message: '请选择需要修改的站区',
           type: 'warning'

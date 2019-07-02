@@ -48,9 +48,9 @@ namespace System.API.Service
             return _BigAreaRepo.GetListByConfigType(filedOrder);
         }
 
-        public List<TB_Config_BigArea> GetListByPage(string strWhere, string orderby, int startIndex, int endIndex)
+        public List<TB_Config_BigArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size)
         {
-            return _BigAreaRepo.GetListByPage(strWhere, orderby, startIndex, endIndex);
+            return _BigAreaRepo.GetListByPage(strWhere,  sort,  orderby,  page,  size);
         }
 
         public int GetMaxId()

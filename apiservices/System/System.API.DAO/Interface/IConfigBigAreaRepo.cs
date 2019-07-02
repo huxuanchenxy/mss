@@ -47,7 +47,7 @@ namespace System.API.DAO.Interface
         /// </summary>
         List<TB_Config_BigArea> GetList(int Top, string strWhere, string filedOrder);
         int GetRecordCount(string strWhere);
-        List<TB_Config_BigArea> GetListByPage(string strWhere, string orderby, int startIndex, int endIndex);
+        List<TB_Config_BigArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size);
 
         #endregion  成员方法
         #region  MethodEx

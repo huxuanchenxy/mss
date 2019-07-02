@@ -47,9 +47,9 @@ namespace System.API.Service
             return _MidAreaRepo.GetList(Top, strWhere, filedOrder);
         }
 
-        public List<TB_Config_MidArea> GetListByPage(string strWhere, string orderby, int startIndex, int endIndex)
+        public List<TB_Config_MidArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size)
         {
-            return _MidAreaRepo.GetListByPage(strWhere, orderby, startIndex, endIndex);
+            return _MidAreaRepo.GetListByPage(strWhere, sort, orderby, page, size);
         }
 
         public int GetMaxId()

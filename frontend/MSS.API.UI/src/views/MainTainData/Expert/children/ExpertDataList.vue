@@ -289,7 +289,6 @@ export default {
     // 修改站区
     edit () {
       if (!this.editExpertIDList.length) {
-        alert(this.editExpertIDList.length)
         this.$message({
           message: '请选择需要修改的专家库资料',
           type: 'warning'
@@ -326,7 +325,7 @@ export default {
     // 弹框确认是否删除
     dialogEnter () {
       api.Delete(this.editExpertIDList.join(',')).then(res => {
-        if (res.ret === 0) {
+        if (res.code === 0) {
           this.editExpertIDList = []
           this.$message({
             message: '删除成功',
