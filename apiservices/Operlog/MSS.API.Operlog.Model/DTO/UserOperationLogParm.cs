@@ -11,5 +11,6 @@ namespace MSS.API.Operlog.Model.DTO
         public string userName { get; set; }
         public string startTime { get; set; }
         public string endTime { get; set; }
+        public string methodName { get; set; }
     }
 }

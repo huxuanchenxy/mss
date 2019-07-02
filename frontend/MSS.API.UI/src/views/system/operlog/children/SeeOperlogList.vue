@@ -21,7 +21,11 @@
           <div class="input-group">
             <label for="name">操作名称</label>
             <div class="inp">
-              <el-input v-model.trim="actionName" placeholder="请输入操作名称"></el-input>
+              <el-select v-model="methodName" :disabled="this.ReadOnly"  placeholder="请选择">
+                <el-option value="新增" label="新增" selected></el-option>
+                <el-option value="修改" label="修改" selected></el-option>
+                <el-option value="删除" label="删除" selected></el-option>
+              </el-select>
             </div>
           </div>
           <div class="list">
@@ -59,9 +63,9 @@
           模块名称
           <i :class="[{ 'el-icon-d-caret': headOrder.controller_name === 0 }, { 'el-icon-caret-top': headOrder.controller_name === 1 }, { 'el-icon-caret-bottom': headOrder.controller_name === 2 }]"></i>
        </li>
-        <li class="list number c-pointer" @click="changeOrder('action_name')">
+        <li class="list number c-pointer" @click="changeOrder('method_name')">
           操作名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.action_name === 0 }, { 'el-icon-caret-top': headOrder.action_name === 1 }, { 'el-icon-caret-bottom': headOrder.action_name === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.method_name === 0 }, { 'el-icon-caret-top': headOrder.method_name === 1 }, { 'el-icon-caret-bottom': headOrder.method_name === 2 }]"></i>
        </li>
        <li class="list number c-pointer" @click="changeOrder('user_name')">
           用户姓名
@@ -88,7 +92,7 @@
               <div class="list-content">
                 <div class="number">{{ item.id }}</div>
                 <div class="name">{{ item.controller_name }}</div>
-                <div class="name">{{ item.action_name }}</div>
+                <div class="name">{{ item.method_name }}</div>
                 <!--<div class="name">
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.user_name }}</router-link>
                 </div>-->
@@ -133,6 +137,7 @@ export default {
       time: '',
       userName: '',
       actionName: '',
+      methodName: '',
       startTime: '',
       endTime: '',
       role: '',
@@ -158,6 +163,7 @@ export default {
         acc_name: 0,
         controller_name: 0,
         action_name: 0,
+        method_name: 0,
         user_name: 0,
         ip: 0,
         mac_add: 0,
@@ -194,7 +200,7 @@ export default {
         this.headOrder.acc_name = 0
         this.headOrder.user_name = 0
         this.headOrder.controller_name = 0
-        this.headOrder.action_name = 0
+        this.headOrder.method_name = 0
         this.headOrder.ip = 0
         this.headOrder.mac_add = 0
         this.headOrder.created_time = 0
@@ -221,7 +227,7 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        actionName: this.actionName,
+        methodName: this.methodName,
         userName: this.userName,
         startTime: this.time === null || this.time === '' ? '' : this.time[0] + ' 00:00:00',
         endTime: this.time === null || this.time === '' ? '' : this.time[1] + ' 23:59:59'

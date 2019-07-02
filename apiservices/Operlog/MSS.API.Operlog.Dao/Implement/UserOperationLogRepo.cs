@@ -27,6 +27,10 @@ namespace MSS.API.Operlog.Dao.Implement
                 {
                     whereSql.Append(" and a.action_name like '%" + parm.actionName + "%' ");
                 }
+                if (!string.IsNullOrWhiteSpace(parm.methodName))
+                {
+                    whereSql.Append(" and a.method_name like '%" + parm.methodName + "%' ");
+                }
                 if (!string.IsNullOrWhiteSpace(parm.userName))
                 {
                     whereSql.Append(" and a.user_name like '%" + parm.userName + "%' ");
@@ -51,9 +55,10 @@ namespace MSS.API.Operlog.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.ExecuteAsync(" insert into user_operation_log " +
-                    " values (0,@controller_name,@action_name,@method_name,@acc_name,@user_name, " +
+                    "( `controller_name`, `action_name`, `method_name`, `acc_name`, `user_name`, `ip`, `mac_add`, `created_by`, `updated_time`, `updated_by`, `is_del`) " +
+                    " values (@controller_name,@action_name,@method_name,@acc_name,@user_name, " +
                     " @ip,@mac_add, " +
-                    " @created_time,@created_by,@updated_time,@updated_by,@is_del) ", obj);
+                    " @created_by,@updated_time,@updated_by,@is_del) ", obj);
                 return result;
             });
         }
