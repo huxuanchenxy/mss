@@ -48,8 +48,9 @@
                  </el-option>
               </el-select>
           </div>
-          <p class="validate-tips">{{ AreaType.tips }}</p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           </div>
+          <p class="validate-tips">{{ BigAreaType.tips }}</p><p class="validate-tips">{{ AreaType.tips }}</p>
         </li>
       </ul>
     </div>
@@ -83,12 +84,14 @@ export default {
       },
       AreaType: {
         id: '',
+        text: '',
         tips: ''
       },
       AreaTypeList: [],
       childType: '',
       BigAreaType: {
         id: '',
+        text: '',
         tips: ''
       },
       BigAreaTypeList: []
@@ -112,6 +115,7 @@ export default {
   methods: {
     // 添加权限组
     enter () {
+      debugger
       if (!this.validateAll()) {
         this.$message({
           message: '验证失败，请查看提示信息',
@@ -126,7 +130,7 @@ export default {
         is_Used: '1',
         is_Deleted: '0',
         created_Time: '',
-        created_By: '101',
+        created_By: '1',
         remark: this.areaName.text
       }
       if (this.isShow === 'add') {
@@ -178,7 +182,13 @@ export default {
         this.loading = false
         this.AreaID = res.data.id
         this.areaName.text = res.data.areaName
-        this.AreaType.id = res.data.pid
+        api.GetSubWayStation(res.data.configType).then(res1 => {
+          this.AreaTypeList = res1.data
+          this.AreaType.id = res.data.pid
+        }).catch(err => {
+          console.log(err)
+        })
+        this.BigAreaType.id = res.data.configType
       }).catch(err => console.log(err))
     },
     // 验证

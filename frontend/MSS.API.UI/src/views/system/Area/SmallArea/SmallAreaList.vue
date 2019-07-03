@@ -96,7 +96,7 @@
                 </div>
                 <div class="number">{{ item.pName }}</div>
                 <div class="last-update-time color-white">{{ item.created_Time }}</div>
-                <div class="last-maintainer">{{ item.created_By }}</div>
+                <div class="last-maintainer">{{ '管理员' }}</div>
               </div>
             </li>
           </ul>
@@ -132,6 +132,7 @@
   </div>
 </template>
 <script>
+import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/AreaApi.js'
 export default {
@@ -233,9 +234,9 @@ export default {
       }
       api.GetMidAreaQueryPageByParm(parm).then(res => {
         this.loading = false
-        // res.Content.rows.map(item => {
-        //   item.updated_time = transformDate(item.updated_time)
-        // })
+        res.data.map(item => {
+          item.created_Time = transformDate(item.created_Time)
+        })
         this.ConfigMidAreaList = res.data
         this.total = res.total
       }).catch(err => console.log(err))

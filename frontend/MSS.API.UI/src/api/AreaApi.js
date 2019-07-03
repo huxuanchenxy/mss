@@ -1,5 +1,5 @@
 import axios from './interceptors'
-let api = 'http://10.89.36.204:5801/areaapi' // 'http://localhost:52227/api'
+let api = 'http://localhost:52227/api' // 'http://10.89.36.204:5801/areaapi'
 export default {
   getAllUsers: () => { return {} },
   SaveConfigBigArea: data => { return axios.post(`${api}/System/SaveConfigBigArea`, data).then(res => res.data) },
@@ -15,5 +15,7 @@ export default {
   GetConfigMidAreaId: id => { return axios.get(`${api}/System/GetConfigMidAreaId/${id}`).then(res => res.data) },
   DelConfigMidAreaId: id => { return axios.get(`${api}/System/DelConfigMidAreaId/${id}`).then(res => res.data) },
   MutilDelConfigMidAreaId: Ids => { return axios.get(`${api}/System/MutilDelConfigMidAreaId/${Ids}`).then(res => res.data) },
-  SelectDicAreaData: AreaCode => { return axios.get(`${api}/System/SelectDicAreaData/${AreaCode}`).then(res => res.data) }
+  SelectDicAreaData: AreaCode => { return axios.get(`${api}/System/SelectDicAreaData/${AreaCode}`).then(res => res.data) },
+  SelectConfigAreaData: () => { return axios.post(`${api}/System/SelectConfigAreaData`).then(res => res.data) },
+  GetNameByUid: id => { return axios.get(`${api}/System/GetNameByUid/${id}`).then(res => res.data) }
 }

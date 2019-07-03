@@ -66,6 +66,28 @@ namespace System.API.DTO
             set;
         }
 
+
+        [DataMember]
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ConfigType
+        {
+            get;
+            set;
+        }
+
+
+        [DataMember]
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ConfigTypeName
+        {
+            get;
+            set;
+        }
+
         [DataMember]
         /// <summary>
         /// 

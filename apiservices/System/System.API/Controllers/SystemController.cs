@@ -84,7 +84,7 @@ namespace System.API.Core.Controllers
                 TB_Config_BigArea model = new TB_Config_BigArea();
                 ModelCtrl.CopyModel(model, Content, null, null);
                 model.Updated_Time = DateTime.Now;
-                model.Updated_By = 101;
+                model.Updated_By = 1;
                 if (!_SystemService._IConfigBigAreaService.Update(model))
                 {
                     result.code = ErrCode.Failure;
@@ -115,7 +115,7 @@ namespace System.API.Core.Controllers
                 TB_Config_MidArea model = new TB_Config_MidArea();
                 ModelCtrl.CopyModel(model, Content, null, null);
                 model.Updated_Time = DateTime.Now;
-                model.Updated_By = 101;
+                model.Updated_By = 1;
                 if (!_SystemService._IConfigMidAreaService.Update(model))
                 {
                     result.code = ErrCode.Failure;
@@ -347,10 +347,19 @@ namespace System.API.Core.Controllers
             ResponseContext result = new ResponseContext();
             TB_Config_MidAreaDTO model = new TB_Config_MidAreaDTO();
             string where = " id='" + id + "'";
-           List<TB_Config_MidArea> list= _SystemService._IConfigMidAreaService.GetList(where);
+           List<TB_Config_MidArea> list= _SystemService._IConfigMidAreaService.GetList(where);  
             if (list != null && list.Count > 0)
             {
-                result.data = list[0];
+                ModelCtrl.CopyModel(model, list[0], null, null);
+                var v = _SystemService._IConfigBigAreaService.GetModel(model.PID);//.AreaName;
+                if (v != null)
+                {
+                    model.PName = v.AreaName;
+                    model.ConfigType =(int) v.ConfigType;
+                    model.ConfigTypeName = SelectConfigTypeNamebyCode(v.ConfigType.ToString());
+                }
+
+                result.data = model;
                 result.ret = 0;
             }
             else
@@ -400,6 +409,28 @@ namespace System.API.Core.Controllers
             return result;
         }
 
+
+     
+        private string SelectConfigTypeNamebyCode(string  code)
+        {
+            string str = string.Empty;
+            switch (code)
+            {
+                case "1":
+                    str = "车站";
+                    break;
+                case "2":
+                    str = "正线轨行区";
+                    break;
+                case "3":
+                    str = "保护区";
+                    break;
+                case "4":
+                    str = "车场生产区";
+                    break;
+            }
+            return str;
+        }
 
         /// <summary>
         /// 获取位置数据
@@ -462,6 +493,12 @@ namespace System.API.Core.Controllers
             return strs; 
         }
 
+        [HttpGet("GetNameByUid/{id}")]
+        public string GetNameByUid(string id)
+        {
+            return "管理员";
+        }
+
         /// <summary>
         /// 删除单个实体类
         /// </summary>
@@ -510,8 +547,8 @@ namespace System.API.Core.Controllers
         /// </summary> 
         /// <returns></returns>
         [HttpGet]
-        [Route("SelectConfigAreaDataDTO")]
-        public ResponseContext SelectConfigAreaDataDTO()
+        [Route("SelectConfigAreaData")]
+        public ResponseContext SelectConfigAreaData()
         {
             ResponseContext result = new ResponseContext();
             ConfigAreaDataDTO model = new ConfigAreaDataDTO();

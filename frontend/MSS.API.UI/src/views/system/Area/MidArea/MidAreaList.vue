@@ -14,13 +14,13 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">站区</label>
+            <label for="name">站区名</label>
             <div class="inp">
               <el-input v-model.trim="AreaName" placeholder="请输入站区名称"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="">区域</label>
+            <label for="">类型</label>
             <div class="inp">
               <el-select v-model="AreaType" clearable placeholder="请选择" @change="validateSelect()">
                  <el-option
@@ -86,7 +86,7 @@
                 </div>
                 <div class="number">{{ item.configTypeName }}</div>
                 <div class="last-update-time color-white">{{ item.created_Time }}</div>
-                <div class="last-maintainer">{{ item.created_By }}</div>
+                <div class="last-maintainer">{{ '管理员' }}</div>
               </div>
             </li>
           </ul>
@@ -122,6 +122,7 @@
   </div>
 </template>
 <script>
+import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/AreaApi'
 export default {
@@ -137,6 +138,10 @@ export default {
       AreaTypeList: [],
       ConfigBigAreaList: [],
       editAreaIDList: [],
+      UserInfo: {
+        uid: '',
+        UserName: '管理员'
+      },
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -157,7 +162,7 @@ export default {
         AreaType: 0,
         Sort: 0,
         updated_time: 0,
-        updated_by: 0
+        updated_by: 1
       }
     }
   },
@@ -215,11 +220,14 @@ export default {
         searchName: this.AreaName,
         searchType: this.AreaType
       }
+      api.GetNameByUid('1').then(res => {
+        this.UserInfo.UserName = res
+      }).catch(err => console.log(err))
       api.GetBigAreaQueryPageByParm(parm).then(res => {
         this.loading = false
-        // res.data.map(item => {
-        //   item.updated_time = transformDate(item.updated_time)
-        // })
+        res.data.map(item => {
+          item.created_Time = transformDate(item.created_Time)
+        })
         this.ConfigBigAreaList = res.data
         this.total = res.total
       }).catch(err => console.log(err))
