@@ -228,7 +228,7 @@ export default {
         rows: 10,
         page: page,
         searchName: this.AreaName,
-        serachBigType:this.BigAreaType.id,
+        serachBigType: this.BigAreaType.id,
         searchType: this.PType
       }
       api.GetMidAreaQueryPageByParm(parm).then(res => {
