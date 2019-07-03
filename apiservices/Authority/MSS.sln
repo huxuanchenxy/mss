@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Dao", "MSS.API.Dao\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Common", "MSS.API.Common\MSS.API.Common.csproj", "{F8CDDEF3-EB8C-4DEA-8D4B-C973837B78EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Operlog.Common", "..\Operlog\MSS.API.Operlog.Common\MSS.API.Operlog.Common.csproj", "{2FD94810-CBCD-45B7-AD79-C0DDED2D039B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{F8CDDEF3-EB8C-4DEA-8D4B-C973837B78EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8CDDEF3-EB8C-4DEA-8D4B-C973837B78EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8CDDEF3-EB8C-4DEA-8D4B-C973837B78EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FD94810-CBCD-45B7-AD79-C0DDED2D039B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FD94810-CBCD-45B7-AD79-C0DDED2D039B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FD94810-CBCD-45B7-AD79-C0DDED2D039B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FD94810-CBCD-45B7-AD79-C0DDED2D039B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
