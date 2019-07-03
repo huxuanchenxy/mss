@@ -17,8 +17,8 @@
             <label for="">使用权限</label>
             <div class="inp">
               <el-cascader clearable
-                :props="defaultParams"
-                :show-all-levels="false"
+                :props="{ checkStrictly: true }"
+                :show-all-levels="true"
                 :options="actionInfo"
                 v-model="authority">
               </el-cascader>

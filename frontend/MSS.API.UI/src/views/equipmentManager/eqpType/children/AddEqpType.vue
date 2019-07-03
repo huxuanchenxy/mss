@@ -283,19 +283,25 @@ export default {
         }
       }
       if (this.$refs.uploadInstall.uploadFiles.length > 0) {
-        this.$refs.uploadInstall.submit()
-        fd.append('file', this.needUpload.install[0])
-        fd.append('PInstall', this.needUpload.install[0].name)
+        if (this.$refs.uploadInstall.uploadFiles[0].status !== 'success') {
+          this.$refs.uploadInstall.submit()
+          fd.append('file', this.needUpload.install[0])
+          fd.append('PInstall', this.needUpload.install[0].name)
+        }
       }
       if (this.$refs.uploadUser.uploadFiles.length > 0) {
-        this.$refs.uploadUser.submit()
-        fd.append('file', this.needUpload.user[0])
-        fd.append('PUser', this.needUpload.user[0].name)
+        if (this.$refs.uploadUser.uploadFiles[0].status !== 'success') {
+          this.$refs.uploadUser.submit()
+          fd.append('file', this.needUpload.user[0])
+          fd.append('PUser', this.needUpload.user[0].name)
+        }
       }
       if (this.$refs.uploadRegulations.uploadFiles.length > 0) {
-        this.$refs.uploadRegulations.submit()
-        fd.append('file', this.needUpload.regulations[0])
-        fd.append('PRegulations', this.needUpload.regulations[0])
+        if (this.$refs.uploadRegulations.uploadFiles[0].status !== 'success') {
+          this.$refs.uploadRegulations.submit()
+          fd.append('file', this.needUpload.regulations[0])
+          fd.append('PRegulations', this.needUpload.regulations[0])
+        }
       }
       fd.append('TName', this.eqpTypeName.text)
       fd.append('Desc', this.eqpTypeDesc.text)

@@ -21,7 +21,7 @@
           <div class="input-group">
             <label for="name">操作名称</label>
             <div class="inp">
-              <el-select v-model="methodName" :disabled="this.ReadOnly"  placeholder="请选择">
+              <el-select v-model="methodName" :disabled="this.ReadOnly"  placeholder="请选择" clearable>
                 <el-option value="新增" label="新增" selected></el-option>
                 <el-option value="修改" label="修改" selected></el-option>
                 <el-option value="删除" label="删除" selected></el-option>
@@ -55,10 +55,6 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list number c-pointer" @click="changeOrder('id')">
-          序号
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
-        </li>
         <li class="list number c-pointer" @click="changeOrder('controller_name')">
           模块名称
           <i :class="[{ 'el-icon-d-caret': headOrder.controller_name === 0 }, { 'el-icon-caret-top': headOrder.controller_name === 1 }, { 'el-icon-caret-bottom': headOrder.controller_name === 2 }]"></i>
@@ -90,7 +86,6 @@
           <ul class="list-wrap">
             <li class="list" v-for="(item) in UserList" :key="item.key">
               <div class="list-content">
-                <div class="number">{{ item.id }}</div>
                 <div class="name">{{ item.controller_name }}</div>
                 <div class="name">{{ item.method_name }}</div>
                 <!--<div class="name">

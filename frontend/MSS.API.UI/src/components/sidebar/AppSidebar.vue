@@ -128,7 +128,6 @@ export default {
           value.isShowSubNav = false
           _data[value.path] = value
         }
-        console.log(_data)
         this.navList = res
         this.$router.navList = _data
         Bus.$emit('navList', _data)
