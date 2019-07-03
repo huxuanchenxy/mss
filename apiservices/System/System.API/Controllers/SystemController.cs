@@ -142,7 +142,7 @@ namespace System.API.Core.Controllers
             {
                 where += " and AreaName like '%" + paras.SearchName.Trim() + "%'";
             }
-            else if(!string.IsNullOrEmpty(paras.searchType))
+            if(!string.IsNullOrEmpty(paras.searchType))
             {
                 where += " and  ConfigType= '" + paras.searchType.Trim() + "'";
             }
@@ -449,11 +449,11 @@ namespace System.API.Core.Controllers
             {
                 where += " and AreaName like '%" + paras.SearchName.Trim() + "%'";
             }
-            else if (!string.IsNullOrEmpty(str))
+            if (!string.IsNullOrEmpty(str))
             {
                 where += "  and  PID in (" + str + ")";
             }
-            else if (!string.IsNullOrEmpty(paras.searchType))
+           else if (!string.IsNullOrEmpty(paras.searchType))
             {
                 where += " and  PID= '" + paras.searchType.Trim() + "'";
             }
