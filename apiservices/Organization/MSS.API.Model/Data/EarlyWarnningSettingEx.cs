@@ -10,7 +10,7 @@ namespace MSS.API.Model.Data
         public int EarlyWarnningID { get; set; }
         public int ParamID { get; set; }
         public int  ParamLimitType { get; set; }
-        public int ParamLimitValue { get; set; }
+        public float ParamLimitValue { get; set; }
 
         public string PidName { get; set; }
     }

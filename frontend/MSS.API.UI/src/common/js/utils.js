@@ -157,6 +157,7 @@ export const vEmail = str => /^(\w+|\w+(\.\w+))+@(\w+\.)+\w+$/.test(str)
 export const vNumber = str => /^\d+$/.test(str)
 // 浮点型验证
 export const vdouble = str => /^(:?(:?\d+.\d+)|(:?\d+))$/.test(str)
+export const vdouble3 = str => /^(:?(:?\d+.\d{1,3})|(:?\d+))$/.test(str)
 // 验证非法字符
 // var pattern = new RegExp("")
 export const vInput = str => !/[@#$!%^&*()！￥……‘’“”：；:;""'']/.test(str)

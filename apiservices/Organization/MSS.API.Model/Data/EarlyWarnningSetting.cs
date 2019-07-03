@@ -11,8 +11,8 @@ namespace MSS.API.Model.Data
         public string ParamID { get; set; }
         public string  ParamName { get; set; }
         public string ParamUnit { get; set; }
-        public int ParamLimitUpper { get; set; }
-        public int ParamLimitLower { get; set; }
+        public float ParamLimitUpper { get; set; }
+        public float ParamLimitLower { get; set; }
         public bool IsActived { get; set; }
         public List<EarlyWarnningSettingEx> SettingEx { get; set; }
 
