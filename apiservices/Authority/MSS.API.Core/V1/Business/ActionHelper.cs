@@ -68,14 +68,17 @@ namespace MSS.API.Core.V1.Business
                     at1.text = a.ActionName;
                     at1.parentID = a.GroupID;
                     at.children.Add(at1);
-                    at1.children = new List<ActionTree>();
-                    foreach (ActionAll aa in laa.Where(me=>me.ParentMenu==at1.id).OrderBy(me=>me.ActionOrder))
+                    if (laa.Where(me => me.ParentMenu == at1.id).Count()>0)
                     {
-                        ActionTree at2 = new ActionTree();
-                        at2.id = aa.ActionID;
-                        at2.text = aa.ActionName;
-                        at2.parentID = aa.ParentMenu;
-                        at1.children.Add(at2);
+                        at1.children = new List<ActionTree>();
+                        foreach (ActionAll aa in laa.Where(me => me.ParentMenu == at1.id).OrderBy(me => me.ActionOrder))
+                        {
+                            ActionTree at2 = new ActionTree();
+                            at2.id = aa.ActionID;
+                            at2.text = aa.ActionName;
+                            at2.parentID = aa.ParentMenu;
+                            at1.children.Add(at2);
+                        }
                     }
                 }
                 lat.Add(at);

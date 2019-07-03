@@ -44,4 +44,31 @@ namespace MSS.API.Common
     }
     #endregion
 
+    #region 字典
+    public static class MyDictionary
+    {
+        #region 子系统
+        public const string STR_SUB_SYSTEM = "sub_system";
+        public enum SUB_SYSTEM
+        {
+            ISCS,
+            FAS,
+            OCS,
+            PIS
+        }
+        #endregion
+
+        #region 区域类型（表和ID的关系）
+        public const string STR_AREA_TYPE = "area_table_id";
+        public enum AREA_TYPE
+        {
+            dictionary,
+            tb_config_bigarea,
+            tb_config_midarea
+        }
+        #endregion
+
+    }
+    #endregion
+
 }

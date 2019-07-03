@@ -72,7 +72,9 @@
                   <input type="checkbox" v-model="editEqpTypeID" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
-                <div class="name word-break">{{ item.tName }}</div>
+                <div class="name word-break">
+                  <router-link :to="{ name: 'SeeEqpList', params: { id: item.id } }">{{ item.tName }}</router-link>
+                </div>
                 <div class="name word-break">{{ item.model }}</div>
                 <div class="url word-break">{{ item.desc }}</div>
                 <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
