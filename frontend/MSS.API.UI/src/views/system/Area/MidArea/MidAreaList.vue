@@ -63,13 +63,13 @@
           类型
           <i :class="[{ 'el-icon-d-caret': headOrder.ConfigType === 0 }, { 'el-icon-caret-top': headOrder.ConfigType === 1 }, { 'el-icon-caret-bottom': headOrder.ConfigType === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_Time')">
           最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_Time === 0 }, { 'el-icon-caret-top': headOrder.updated_Time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_Time === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_By')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_By === 0 }, { 'el-icon-caret-top': headOrder.updated_By === 1 }, { 'el-icon-caret-bottom': headOrder.updated_By === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
@@ -83,7 +83,7 @@
                  <div class="number">{{index+1}}</div>
                  <div class="name">{{ item.areaName }}</div>
                 <div class="number">{{ item.configTypeName }}</div>
-                <div class="last-update-time color-white">{{ item.created_Time }}</div>
+                <div class="last-update-time color-white">{{ item.updated_Time }}</div>
                 <div class="last-maintainer">{{ '管理员' }}</div>
               </div>
             </li>
@@ -224,7 +224,7 @@ export default {
       api.GetBigAreaQueryPageByParm(parm).then(res => {
         this.loading = false
         res.data.map(item => {
-          item.created_Time = transformDate(item.created_Time)
+          item.updated_Time = transformDate(item.updated_Time)
         })
         this.ConfigBigAreaList = res.data
         this.total = res.total

@@ -47,7 +47,7 @@ namespace System.API.DTO
         }
 
         [DataMember]
-        public List<BigAreaDTO> BigAreaList { get; set; }
+        public List<BigAreaDTO> children { get; set; }
     }
 
     [DataContract]
@@ -85,7 +85,7 @@ namespace System.API.DTO
         }
 
         [DataMember]
-        public List<MidAreaDTO> MidAreaList { get; set; }
+        public List<MidAreaDTO> children { get; set; }
     }
 
     [DataContract]

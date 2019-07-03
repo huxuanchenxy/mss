@@ -7,20 +7,20 @@ const routes = [
           meta: { validate: true },
           component: () => import(/* webpackChunkName: "MaintainData" */ '@/views/MainTainData/MainTainData.vue'),
           children: [
-            // {
-            //   path: '/',
-            //   redirect: 'Expert'
-            // }, 
+            {
+              path: '/',
+              redirect: 'Expert'
+            },
             {
               path: 'Expert',
               component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/Expert/Index.vue'),
               children: [
                 {
                   path: '/',
-                 // name: 'ExpertData',
+                  name: 'Expert',
                   redirect: 'list'
                 }, {
-                  path: 'list/:id?',
+                  path: 'list',
                   name: 'ExpertDataList',
                   component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/Expert/children/ExpertDataList.vue')
                 }, {
@@ -29,9 +29,9 @@ const routes = [
                   component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/Expert/children/AddExpertData.vue')
                 }
               ]
-            } 
+            }
           ]
         }
-      ] 
+      ]
   export default routes
   

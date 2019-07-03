@@ -55,6 +55,8 @@ namespace System.API.Core.Controllers
                 TB_Config_BigArea model = new TB_Config_BigArea();
                 ModelCtrl.CopyModel(model, Content, null, null);
                 model.Created_Time = DateTime.Now;
+                model.Updated_By = 1;
+                model.Updated_Time = model.Created_Time;
                 if (_SystemService._IConfigBigAreaService.Add(model) < 1)
                 {
                     result.code = ErrCode.Failure;
@@ -326,6 +328,8 @@ namespace System.API.Core.Controllers
                 TB_Config_MidArea model = new TB_Config_MidArea();
                 ModelCtrl.CopyModel(model, Content, null, null);
                 model.Created_Time = DateTime.Now;
+                model.Updated_By = 1;
+                model.Updated_Time = model.Created_Time;
                 if (_SystemService._IConfigMidAreaService.Add(model) < 1)
                 {
                     result.code = ErrCode.Failure;
@@ -561,14 +565,14 @@ namespace System.API.Core.Controllers
             model.DicAreaList = DicAreaList;
             foreach (var v in model.DicAreaList)
             {
-                v.BigAreaList = new List<BigAreaDTO>();
-                Helper.ModelToDTO<TB_Config_BigArea, BigAreaDTO>(_SystemService._IConfigBigAreaService.GetListByConfigType(v.Id.ToString()), v.BigAreaList);
+                v.children = new List<BigAreaDTO>();
+                Helper.ModelToDTO<TB_Config_BigArea, BigAreaDTO>(_SystemService._IConfigBigAreaService.GetListByConfigType(v.Id.ToString()), v.children);
                 //if (v.Id == 1)
                 //{
-                    foreach (var m in v.BigAreaList)
+                    foreach (var m in v.children)
                     {
-                        m.MidAreaList = new List<MidAreaDTO>();
-                        Helper.ModelToDTO<TB_Config_MidArea, MidAreaDTO>(_SystemService._IConfigMidAreaService.GetListByPid(m.Id), m.MidAreaList);
+                        m.children = new List<MidAreaDTO>();
+                        Helper.ModelToDTO<TB_Config_MidArea, MidAreaDTO>(_SystemService._IConfigMidAreaService.GetListByPid(m.Id), m.children);
                     }
                // }
             }
