@@ -22,7 +22,7 @@
             </div>
           </div>
         </li>
-        <li class="list" >
+        <li class="list2">
           <div class="inp-wrap">
             <span class="text"> 位置名称<em class="validate-mark">*</em></span>
             <div class="inp">
@@ -31,17 +31,17 @@
           </div>
           <p class="validate-tips">{{ areaName.tips }}</p>
         </li>
-         <li class="list" >
+         <li class="list1">
           <div class="inp-wrap">
             <span class="text">所属站区<em class="validate-mark">*</em></span>
-            <div class="inp" width="150">
+            <div class="inp">
               <el-select v-model="BigAreaType.id" clearable placeholder="请选择" @change="validatechildSelect(BigAreaType.id)">
                 <option disabled value="" selected>请选择</option>
                  <el-option  v-for="item in BigAreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
                  </el-option>
               </el-select>
             </div>&nbsp;&nbsp;
-            <div class="inp" width="150">
+            <div class="inp">
               <el-select v-model="AreaType.id" clearable placeholder="请选择" @change="validateSelect()">
                 <option disabled value="" selected>请选择</option>
                  <el-option  v-for="item in AreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
@@ -114,7 +114,6 @@ export default {
   methods: {
     // 添加权限组
     enter () {
-      debugger
       if (!this.validateAll()) {
         this.$message({
           message: '验证失败，请查看提示信息',
@@ -263,6 +262,32 @@ export default {
 
       &:nth-of-type(3n){
         // justify-content: flex-end;
+      }
+    }
+    .list1{
+      width: 30%;
+      margin-top: PXtoEm(25);
+
+      span{
+        width: 40%;
+      }
+
+      .inp-wrap{
+        display: flex;
+        align-items:  left;
+      }
+    }
+    .list2{
+      width: 25%;
+      margin-top: PXtoEm(25);
+
+      span{
+        width: 28%;
+      }
+
+      .inp-wrap{
+        display: flex;
+        align-items: left;
       }
     }
   }
