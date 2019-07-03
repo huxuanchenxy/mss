@@ -34,21 +34,20 @@
          <li class="list" >
           <div class="inp-wrap">
             <span class="text">所属站区<em class="validate-mark">*</em></span>
-            <div class="inp">
+            <div class="inp" width="150">
               <el-select v-model="BigAreaType.id" clearable placeholder="请选择" @change="validatechildSelect(BigAreaType.id)">
                 <option disabled value="" selected>请选择</option>
                  <el-option  v-for="item in BigAreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
                  </el-option>
               </el-select>
             </div>&nbsp;&nbsp;
-            <div class="inp">
+            <div class="inp" width="150">
               <el-select v-model="AreaType.id" clearable placeholder="请选择" @change="validateSelect()">
                 <option disabled value="" selected>请选择</option>
                  <el-option  v-for="item in AreaTypeList"  :key="item.key"  :value="item.id" :label="item.areaName">
                  </el-option>
               </el-select>
           </div>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           </div>
           <p class="validate-tips">{{ BigAreaType.tips }}</p><p class="validate-tips">{{ AreaType.tips }}</p>
         </li>
@@ -212,6 +211,7 @@ export default {
       }
       api.GetSubWayStation(val).then(res => {
         this.AreaTypeList = res.data
+        this.AreaType.id = ''
       }).catch(err => {
         console.log(err)
       })

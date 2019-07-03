@@ -52,7 +52,7 @@
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
-          编号
+          序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('AreaName')">
@@ -81,9 +81,7 @@
                   <input type="checkbox" v-model="editAreaIDList" :value="item.id" @change="emitEditID">
                 </div>
                  <div class="number">{{index+1}}</div>
-                 <div class="name">
-                  <router-link :to="{ name: 'MidAreaList', params: { id: item.id } }">{{ item.areaName }}</router-link>
-                </div>
+                 <div class="name">{{ item.areaName }}</div>
                 <div class="number">{{ item.configTypeName }}</div>
                 <div class="last-update-time color-white">{{ item.created_Time }}</div>
                 <div class="last-maintainer">{{ '管理员' }}</div>
