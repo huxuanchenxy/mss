@@ -15,7 +15,7 @@
     <div class="content">
       <div class="text-wrap">
         <p class="con-sub-title">上海电气自动化设计研究所有限公司</p>
-        <h2 class="con-title">综合管廊智慧运维统一管理平台</h2>
+        <h2 class="con-title">上海轨道交通18号线维修支持系统</h2>
         <div class="en-title">Intelligent Pipeline Operation Management Platform</div>
       </div>
       <!-- 登录框 -->

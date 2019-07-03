@@ -13,7 +13,7 @@
         </p>
       </li>
       <li class="list">
-        <h2 class="title"><span class="text">综合管廊智慧运维统一管理平台</span></h2>
+        <h2 class="title"><span class="text">上海轨道交通18号线维修支持系统</span></h2>
       </li>
       <li class="list clearfix">
         <div class="fl">
