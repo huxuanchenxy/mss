@@ -88,10 +88,10 @@ export default {
   created () {
     if (this.isShow === 'add') {
       this.loading = false
-      this.title = '| 添加位置'
+      this.title = '| 添加站区'
     } else if (this.isShow === 'edit') {
       this.loading = true
-      this.title = '| 修改位置'
+      this.title = '| 修改站区'
       this.getMidArea()
     }
     api.SelectDicAreaData('1').then(res => {

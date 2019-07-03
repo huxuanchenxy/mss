@@ -22,7 +22,7 @@
             </div>
           </div>
         </li>
-        <li class="list" >
+        <li class="list2">
           <div class="inp-wrap">
             <span class="text"> 位置名称<em class="validate-mark">*</em></span>
             <div class="inp">
@@ -31,7 +31,7 @@
           </div>
           <p class="validate-tips">{{ areaName.tips }}</p>
         </li>
-         <li class="list" >
+         <li class="list1">
           <div class="inp-wrap">
             <span class="text">所属站区<em class="validate-mark">*</em></span>
             <div class="inp">
@@ -48,7 +48,6 @@
                  </el-option>
               </el-select>
           </div>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           </div>
           <p class="validate-tips">{{ BigAreaType.tips }}</p><p class="validate-tips">{{ AreaType.tips }}</p>
         </li>
@@ -115,7 +114,6 @@ export default {
   methods: {
     // 添加权限组
     enter () {
-      debugger
       if (!this.validateAll()) {
         this.$message({
           message: '验证失败，请查看提示信息',
@@ -212,6 +210,7 @@ export default {
       }
       api.GetSubWayStation(val).then(res => {
         this.AreaTypeList = res.data
+        this.AreaType.id = ''
       }).catch(err => {
         console.log(err)
       })
@@ -263,6 +262,32 @@ export default {
 
       &:nth-of-type(3n){
         // justify-content: flex-end;
+      }
+    }
+    .list1{
+      width: 30%;
+      margin-top: PXtoEm(25);
+
+      span{
+        width: 40%;
+      }
+
+      .inp-wrap{
+        display: flex;
+        align-items:  left;
+      }
+    }
+    .list2{
+      width: 25%;
+      margin-top: PXtoEm(25);
+
+      span{
+        width: 28%;
+      }
+
+      .inp-wrap{
+        display: flex;
+        align-items: left;
       }
     }
   }
