@@ -150,6 +150,14 @@ namespace MSS.API.Core.V1.Business
                     }
                 }
             }
+            if (node_p.children.Count == 0)
+            {
+                return new {
+                    id = parentNode.ID,
+                    label = parentNode.Name,
+                    node_type = parentNode.NodeType,
+                };
+            }
             return node_p;
         }
 
