@@ -526,14 +526,14 @@ namespace System.API.Core.Controllers
             {
                 v.BigAreaList = new List<BigAreaDTO>();
                 Helper.ModelToDTO<TB_Config_BigArea, BigAreaDTO>(_SystemService._IConfigBigAreaService.GetListByConfigType(v.Id.ToString()), v.BigAreaList);
-                if (v.Id == 1)
-                {
+                //if (v.Id == 1)
+                //{
                     foreach (var m in v.BigAreaList)
                     {
                         m.MidAreaList = new List<MidAreaDTO>();
                         Helper.ModelToDTO<TB_Config_MidArea, MidAreaDTO>(_SystemService._IConfigMidAreaService.GetListByPid(m.Id), m.MidAreaList);
                     }
-                }
+               // }
             }
            result.data = model;
             return result;
