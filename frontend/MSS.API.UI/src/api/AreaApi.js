@@ -16,6 +16,6 @@ export default {
   DelConfigMidAreaId: id => { return axios.get(`${api}/System/DelConfigMidAreaId/${id}`).then(res => res.data) },
   MutilDelConfigMidAreaId: Ids => { return axios.get(`${api}/System/MutilDelConfigMidAreaId/${Ids}`).then(res => res.data) },
   SelectDicAreaData: AreaCode => { return axios.get(`${api}/System/SelectDicAreaData/${AreaCode}`).then(res => res.data) },
-  SelectConfigAreaData: () => { return axios.post(`${api}/System/SelectConfigAreaData`).then(res => res.data) },
+  SelectConfigAreaData: () => { return axios.get(`${api}/System/SelectConfigAreaData`).then(res => res.data) },
   GetNameByUid: id => { return axios.get(`${api}/System/GetNameByUid/${id}`).then(res => res.data) }
 }
