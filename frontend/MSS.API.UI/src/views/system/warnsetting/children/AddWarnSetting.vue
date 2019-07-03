@@ -64,7 +64,7 @@
           <div class="inp-wrap">
             <span class="text">预阀值上限<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="预阀值上线" v-model.trim="limitUp.text" @keyup.native="validateInputNum(limitUp)"></el-input>
+              <el-input placeholder="预阀值上线" v-model.trim="limitUp.text" @keyup.native="validateInputDouble3(limitUp)"></el-input>
             </div>
           </div>
           <p class="validate-tips">{{ limitUp.tips }}</p>
@@ -73,7 +73,7 @@
           <div class="inp-wrap">
             <span class="text">预阀值下限<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="预阀值下线" v-model.trim="limitDown.text" @keyup.native="validateInputNum(limitDown)"></el-input>
+              <el-input placeholder="预阀值下线" v-model.trim="limitDown.text" @keyup.native="validateInputDouble3(limitDown)"></el-input>
             </div>
           </div>
           <p class="validate-tips">{{ limitDown.tips }}</p>
@@ -87,28 +87,37 @@
         <li class="list" v-for="(item, index) in settingEx"
                         :key="item.key">
           <div class="inp-wrap">
-            <span class="text">条件{{index+1}}</span>
-            <div class="inp" style="display:inline-flex">
-              <el-select v-model="item.paramID" placeholder="环境条件">
-                <el-option
-                  v-for="item in settingExTypeList"
-                  :key="item.key"
-                  :label="item.pidName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-              <el-select v-model="item.paramLimitType" style="margin-left:10px" placeholder="运算符">
-                <el-option
-                  v-for="item in limitTypeList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-              <el-input placeholder="值" v-model="item.paramLimitValue" style="margin-left:10px" @keyup.native="validateInputNum(limitDown)"></el-input>
-              <x-button style="margin-left:30px" class="active" @click.native="DelThisSetting(index)">删除</x-button>
-              <p class="validate-tips">{{ item.tips }}</p>
-            </div>
+            <el-row>
+              <el-col :span="2">条件{{index+1}}</el-col>
+              <el-col :span="5">
+                <el-select v-model="item.paramID" placeholder="环境条件">
+                  <el-option
+                    v-for="item in settingExTypeList"
+                    :key="item.key"
+                    :label="item.pidName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="5">
+                <el-select v-model="item.paramLimitType" style="margin-left:10px" placeholder="运算符">
+                  <el-option
+                    v-for="item in limitTypeList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="2">
+                <el-input placeholder="值" v-model="item.paramLimitValue"
+                  style="margin-left:10px" @keyup.native="validateInputDouble3(limitDown)"></el-input>
+              </el-col>
+              <el-col :span="5">
+                <x-button style="margin-left:30px" class="active" @click.native="DelThisSetting(index)">删除</x-button>
+                <p class="validate-tips">{{ item.tips }}</p>
+              </el-col>
+            </el-row>
           </div>
         </li>
       </ul>
@@ -122,7 +131,7 @@
   </div>
 </template>
 <script>
-import { vNumber, ApiRESULT } from '@/common/js/utils.js'
+import { vdouble3, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/warnSettingApi'
 export default {
@@ -202,9 +211,9 @@ export default {
         this.paramObj = res.data[0]
       }).catch(err => console.log(err))
     },
-    validateInputNum (val) {
-      if (val.text === '' || !vNumber(val.text)) {
-        val.tips = '此处比需填数字'
+    validateInputDouble3 (val) {
+      if (val.text === '' || !vdouble3(val.text)) {
+        val.tips = '此处比需填数字且最多三位小数'
         return false
       } else {
         val.tips = ''
@@ -222,14 +231,18 @@ export default {
       this.settingEx.splice(idx, 1)
     },
     validateAll () {
-      if (!this.validateInputNum(this.limitUp)) return false
-      if (!this.validateInputNum(this.limitDown)) return false
+      if (!this.validateInputDouble3(this.limitUp)) return false
+      if (!this.validateInputDouble3(this.limitDown)) return false
+      if (parseFloat(this.limitDown.text) > parseFloat(this.limitUp.text)) {
+        this.$message.error('下限值必须小于上限值')
+        return false
+      }
       // if (!this.validateSelect()) return false
       // 验证扩展条件
       for (let i = 0; i < this.settingEx.length; ++i) {
         let item = this.settingEx[i]
         if (item.paramID === '' || item.paramLimitType === '' ||
-            !vNumber(item.paramLimitValue)) {
+            !vdouble3(item.paramLimitValue)) {
           this.$message({
             message: '条件' + (i + 1) + '输入不合格',
             type: 'error'

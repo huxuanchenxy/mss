@@ -1,7 +1,7 @@
 import axios from './interceptors'
 // let api = 'http://127.0.0.1:3851/api/v1'
 let api = 'http://10.89.36.204:5801/orgapi'
-// let serviceAuth = 'http://10.89.36.204:5801/authapi'
+let serviceeqp = 'http://10.89.36.204:5801/eqpapi'
 export default {
   getWarnSetting: (param) => { return axios.get(`${api}/warnsetting`, { params: param }).then(res => res.data) },
   getWarnSettingByID: (id) => { return axios.get(`${api}/warnsetting/${id}`).then(res => res.data) },
@@ -9,23 +9,24 @@ export default {
   saveWarnningSetting: (data) => { return axios.post(`${api}/warnsetting`, data).then(res => res.data) },
   updateWarnningSetting: (id, data) => { return axios.put(`${api}/warnsetting/${id}`, data).then(res => res.data) },
   deleteWarnningSetting: ids => { return axios.delete(`${api}/warnsetting/${ids}`).then(res => res.data) },
-  getAllEqpType: () => {
-    return {
-      then: (call) => {
-        call({
-          data: [
-            {
-              id: 1,
-              tName: 'test'
-            },
-            {
-              id: 2,
-              tName: 'test2'
-            }
-          ]})
-      }
-    }
-  },
+  getAllEqpType: () => { return axios.get(`${serviceeqp}/EquipmentType/All`).then(res => res.data) },
+  // getAllEqpType: () => {
+  //   return {
+  //     then: (call) => {
+  //       call({
+  //         data: [
+  //           {
+  //             id: 1,
+  //             tName: 'test'
+  //           },
+  //           {
+  //             id: 2,
+  //             tName: 'test2'
+  //           }
+  //         ]})
+  //     }
+  //   }
+  // },
   getParamByEqpType: (id) => {
     return {
       then: (call) => {
