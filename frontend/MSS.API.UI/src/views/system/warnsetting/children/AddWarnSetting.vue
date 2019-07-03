@@ -131,6 +131,7 @@
   </div>
 </template>
 <script>
+// test
 import { vdouble3, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/warnSettingApi'
