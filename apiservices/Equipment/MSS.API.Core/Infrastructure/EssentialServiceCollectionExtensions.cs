@@ -14,6 +14,8 @@ namespace MSS.API.Core.Infrastructure
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             services.AddTransient<IEquipmentTypeService, EquipmentTypeService>();
+            services.AddTransient<IEquipmentService, EquipmentService>();
+            services.AddTransient<IFirmService, FirmService>();
             return services;
         }
     }

@@ -11,6 +11,7 @@ using MSS.API.Common;
 
 namespace MSS.API.Dao.Implement
 {
+    //目前为了设备能选中，只用了getall，其余需要重新修改代码
     public class FirmRepo : BaseRepo, IFirmRepo<Firm>
     {
         public FirmRepo(DapperOptions options) : base(options) { }
@@ -19,7 +20,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = " insert into equipment_type " +
+                string sql = " insert into firm " +
                     " values (0,@TName,@Model,@Desc,@PWorking,@PDrawings, " +
                     " @PInstall,@PUser,@PRegulations, " +
                     " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
@@ -34,7 +35,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" update equipment_type " +
+                var result = await c.ExecuteAsync(" update firm " +
                     " set type_name=@TName,model=@Model,description=@Desc,path_working_instruction=@PWorking, " +
                     " path_technical_drawings=@PDrawings,path_installation_manual=@PInstall,path_user_guide=@PUser, " +
                     " path_regulations=@PRegulations,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqpType);
@@ -46,7 +47,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" Update equipment_type set is_del=" + (int)IsDeleted.yes+
+                var result = await c.ExecuteAsync(" Update firm set is_del=" + (int)IsDeleted.yes+
                 ",updated_time=@updated_time,updated_by=@updated_by" +
                 " WHERE id in @ids ", new { ids = ids, updated_time = DateTime.Now, updated_by = userID });
                 return result;
@@ -59,7 +60,7 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,u1.user_name as created_name,u2.user_name as updated_name ")
-                .Append(" FROM equipment_type a ")
+                .Append(" FROM firm a ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id ");
                 StringBuilder whereSql = new StringBuilder();
@@ -77,7 +78,7 @@ namespace MSS.API.Dao.Implement
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 List< Firm > ets= (await c.QueryAsync<Firm>(sql.ToString())).ToList();
                 int total = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from equipment_type a " + whereSql.ToString());
+                    "select count(*) from firm a " + whereSql.ToString());
                 return new {rows=ets,total=total };
             });
         }
@@ -87,7 +88,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<Firm>(
-                    "SELECT * FROM equipment_type WHERE id = @id", new { id = id });
+                    "SELECT * FROM firm WHERE id = @id", new { id = id });
                 return result;
             });
         }
@@ -97,7 +98,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = (await c.QueryAsync<Firm>(
-                    "SELECT * FROM equipment_type")).ToList();
+                    "SELECT * FROM firm")).ToList();
                 return result;
             });
         }
