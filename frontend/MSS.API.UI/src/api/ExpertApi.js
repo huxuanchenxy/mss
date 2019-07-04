@@ -8,6 +8,6 @@ export default {
   GetExpertDataById: id => { return axios.get(`${api}/ExpertData/GetExpertDataById/${id}`).then(res => res.data) },
   GetdeptList: () => { return axios.get(`${api}/ExpertData/GetdeptList`).then(res => res.data) },
   GetDeviceTypeList: () => { return axios.get(`${api}/ExpertData/GetDeviceTypeList`).then(res => res.data) },
-  Delete: id => { return axios.get(`${api}/ExpertData/Delete/${id}`).then(res => res.data) },
-  DeleteList: Ids => { return axios.post(`${api}/ExpertData/DeleteList/${Ids}`, Ids).then(res => res.data) }
+  Delete: id => { return axios.delete(`${api}/ExpertData/Delete/${id}`).then(res => res.data) },
+  DeleteList: Ids => { return axios.delete(`${api}/ExpertData/DeleteList/${Ids}`, Ids).then(res => res.data) }
 }

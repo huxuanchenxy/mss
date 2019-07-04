@@ -564,17 +564,23 @@ namespace System.API.Core.Controllers
             DicAreaList.Add(new DicAreaDTO() { AreaName = "车场生产区", Id = 4, sort = 4 });
             model.DicAreaList = DicAreaList;
             foreach (var v in model.DicAreaList)
-            {
-                v.children = new List<BigAreaDTO>();
-                Helper.ModelToDTO<TB_Config_BigArea, BigAreaDTO>(_SystemService._IConfigBigAreaService.GetListByConfigType(v.Id.ToString()), v.children);
-                //if (v.Id == 1)
-                //{
+            {   
+               
+                List<TB_Config_BigArea> Biglist = _SystemService._IConfigBigAreaService.GetListByConfigType(v.Id.ToString());
+                if (Biglist != null && Biglist.Count > 0)
+                {
+                    v.children = new List<BigAreaDTO>();
+                    Helper.ModelToDTO<TB_Config_BigArea, BigAreaDTO>(Biglist, v.children);
                     foreach (var m in v.children)
                     {
-                        m.children = new List<MidAreaDTO>();
-                        Helper.ModelToDTO<TB_Config_MidArea, MidAreaDTO>(_SystemService._IConfigMidAreaService.GetListByPid(m.Id), m.children);
+                        List<TB_Config_MidArea> Midlist = _SystemService._IConfigMidAreaService.GetListByPid(m.Id);
+                        if (Midlist != null && Midlist.Count > 0)
+                        {
+                            m.children = new List<MidAreaDTO>();
+                            Helper.ModelToDTO<TB_Config_MidArea, MidAreaDTO>(Midlist, m.children);
+                        }
                     }
-               // }
+                }
             }
            result.data = model;
             return result;

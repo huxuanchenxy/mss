@@ -68,7 +68,7 @@ namespace MSS.API.Core.V1.Business
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    bool isExist = await _expertRepo.Exists(model.keyword);
+                    bool isExist = await _expertRepo.Exists(model.title);
                     if (!isExist)
                     {
                         var data = await _expertRepo.Update(model);
@@ -160,6 +160,15 @@ namespace MSS.API.Core.V1.Business
                 {
                     int count = await _expertRepo.GetRecordCount(strWhere);
                     var list = await _expertRepo.GetListByPage(strWhere , sort, orderby, page, size);
+                    if (list != null && list.Count > 0)
+                    {
+                        foreach (var v in list)
+                        {
+                          v.deptname= GetDeptNameByID(v.deptid.ToString());
+                          v.deviceTypeName = GetDeviceTypeNameByID(v.device_type.ToString());
+                        }
+                    }
+  
                     ret.code = Code.Success;
                     ret.data = new
                     {
@@ -176,6 +185,54 @@ namespace MSS.API.Core.V1.Business
             }
 
             return ret;
+        }
+
+        private string GetDeviceTypeNameByID(string device_type)
+        {
+            string deviceTypeName = string.Empty;
+            switch (device_type)
+            {
+                case "1":
+                    deviceTypeName = "设备001";
+                    break;
+                case "2":
+                    deviceTypeName = "设备002";
+                    break;
+                case "3":
+                    deviceTypeName = "设备003";
+                    break;
+                case "4":
+                    deviceTypeName = "设备004";
+                    break;
+                case "5":
+                    deviceTypeName = "设备005";
+                    break;
+            }
+            return deviceTypeName;
+        }
+
+        private string GetDeptNameByID(string deptId)
+        {
+            string deptName = string.Empty;
+            switch (deptId)
+            {
+                case "1":
+                    deptName = "维护一部";
+                    break;
+                case "2":
+                    deptName = "维护二部";
+                    break;
+                case "3":
+                    deptName = "维护三部";
+                    break;
+                case "4":
+                    deptName = "计划部";
+                    break;
+                case "5":
+                    deptName = "信息部";
+                    break;
+            }
+            return deptName;
         }
 
         //Task<ApiResult> IExpertDataService.GetMaxId()

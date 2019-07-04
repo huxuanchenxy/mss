@@ -30,6 +30,8 @@ namespace MSS.API.Core.V1.Controllers
         {
             setting.CreatedBy = _userId;
             setting.CreatedTime = DateTime.Now;
+            setting.UpdatedBy = _userId;
+            setting.UpdatedTime = setting.CreatedTime;
             setting.Is_deleted = 0;
             var ret = await _expertService.Add(setting);
             return ret;
@@ -52,26 +54,26 @@ namespace MSS.API.Core.V1.Controllers
             string where = "  1=1 ";
             if (!string.IsNullOrEmpty(query.keyword))
             {
-                where += " and keyword like '%" + query.keyword + "%'";
+                where += " and keyword like '%" + query.keyword.Trim() + "%'";
             }
-            else if (!string.IsNullOrEmpty(query.titile))
+            if (!string.IsNullOrEmpty(query.title))
             {
-                where += " and  titile like '%" + query.titile + "%'";
+                where += " and  title like '%" + query.title.Trim() + "%'";
             }
-            else if (!string.IsNullOrEmpty(query.dept))
+            if (!string.IsNullOrEmpty(query.deptid))
             {
-                where += " and  deptID= ' " + query.dept + "'";
+                where += " and  deptid= '" + query.deptid.Trim() + "'";
             }
-            else if (!string.IsNullOrEmpty(query.deviceType))
+            if (!string.IsNullOrEmpty(query.deviceType))
             {
-                where += " and  device_type= ' " + query.deviceType + "'";
+                where += " and  device_type= '" + query.deviceType.Trim() + "'";
             }
             var ret = await _expertService.GetListByPage(where, query.sort, query.order, query.page, query.rows);
             return ret;
-        }
+        } 
 
         // 查询
-        [HttpGet("GetExpertDataById")]
+        [HttpGet("GetExpertDataById/{id}")]
         public async Task<ActionResult<ApiResult>> GetExpertDataById(int id)
         {
             var ret = await _expertService.GetModel(id);
@@ -117,7 +119,7 @@ namespace MSS.API.Core.V1.Controllers
 
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<ApiResult>> Delete(int id)
         {
             tb_expert_data setting = new tb_expert_data();
