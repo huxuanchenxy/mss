@@ -26,7 +26,7 @@
           <div class="inp-wrap">
             <span class="text">设备类型</span>
             <div class="inp">
-              <el-select v-model="equipmentTypeID" @change="chooseEqpType" placeholder="请选择">
+              <el-select v-model="equipmentTypeID" :disabled="isShow === 'edit'" @change="chooseEqpType" placeholder="请选择">
                 <el-option
                   v-for="item in eqpTypeList"
                   :key="item.key"
@@ -41,7 +41,7 @@
           <div class="inp-wrap">
             <span class="text">设备参数</span>
             <div class="inp">
-              <el-select v-model="paramObj" value-key="_paramID" placeholder="请选择">
+              <el-select v-model="paramObj" :disabled="isShow === 'edit'" value-key="_paramID" placeholder="请选择">
                 <el-option
                   v-for="item in paramList"
                   :key="item.key"
@@ -78,10 +78,12 @@
           </div>
           <p class="validate-tips">{{ limitDown.tips }}</p>
         </li>
+        <li class="list"/>
+      </ul>
+      <ul class="input-group-ex">
         <li class="list" >
           <x-button class="active" @click.native="addSettingEx">添加环境条件</x-button>
         </li>
-        <li class="list"/>
       </ul>
       <ul class="input-group-ex">
         <li class="list" v-for="(item, index) in settingEx"
@@ -109,7 +111,7 @@
                   </el-option>
                 </el-select>
               </el-col>
-              <el-col :span="2">
+              <el-col :span="3">
                 <el-input placeholder="值" v-model="item.paramLimitValue"
                   style="margin-left:10px"  @keyup.native="validateInputDouble3(limitDown)"></el-input>
               </el-col>
@@ -131,6 +133,7 @@
   </div>
 </template>
 <script>
+// test
 import { vdouble3, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/warnSettingApi'
