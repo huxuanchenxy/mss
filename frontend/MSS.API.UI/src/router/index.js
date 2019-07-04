@@ -28,6 +28,7 @@ let routes = [
 import system from './system'
 import MainTainData from './MainTainData'
 routes = routes.concat(system)
+routes = routes.concat(MainTainData)
 // 设备台账
 import equipmentManager from './equipmentManager'
 routes = routes.concat(equipmentManager)

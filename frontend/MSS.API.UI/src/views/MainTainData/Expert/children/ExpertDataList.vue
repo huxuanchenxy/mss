@@ -29,6 +29,7 @@
             <label for="">设备类型</label>
             <div class="inp">
               <el-select v-model="deviceType" clearable placeholder="请选择">
+                <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deviceTypeList"
                  :key="item.key"
@@ -41,7 +42,8 @@
            <div class="input-group">
             <label for="">部门</label>
             <div class="inp">
-              <el-select v-model="dept" clearable placeholder="请选择">
+              <el-select v-model="deptid" clearable placeholder="请选择">
+                <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deptList"
                  :key="item.key"
@@ -71,7 +73,7 @@
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
-          编号
+          序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('keyword')">
@@ -82,10 +84,10 @@
           标题
           <i :class="[{ 'el-icon-d-caret': headOrder.title === 0 }, { 'el-icon-caret-top': headOrder.title === 1 }, { 'el-icon-caret-bottom': headOrder.title === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('content')">
+        <!-- <li class="list number c-pointer" @click="changeOrder('content')">
           内容
           <i :class="[{ 'el-icon-d-caret': headOrder.content === 0 }, { 'el-icon-caret-top': headOrder.content === 1 }, { 'el-icon-caret-bottom': headOrder.content === 2 }]"></i>
-        </li>
+        </li> -->
          <li class="list number c-pointer" @click="changeOrder('device_type')">
           设备类型
           <i :class="[{ 'el-icon-d-caret': headOrder.device_type === 0 }, { 'el-icon-caret-top': headOrder.device_type === 1 }, { 'el-icon-caret-bottom': headOrder.device_type === 2 }]"></i>
@@ -104,33 +106,31 @@
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updatedTime === 0 }, { 'el-icon-caret-top': headOrder.updatedTime === 1 }, { 'el-icon-caret-bottom': headOrder.updatedTime === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('Updated_By')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updatedBy === 0 }, { 'el-icon-caret-top': headOrder.updatedBy === 1 }, { 'el-icon-caret-bottom': headOrder.updatedBy === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item) in ExpertdataList" :key="item.key">
+            <li class="list" v-for="(item,index) in ExpertdataList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
                   <input type="checkbox" v-model="editExpertIDList" :value="item.id" @change="emitEditID">
                 </div>
-                 <div class="number">{{ item.id }}</div>
+                 <div class="number">{{index+1}}</div>
                 <div class="number">{{ item.keyword }}</div>
-                 <div class="name">
-                  <router-link :to="{ name: 'ExpertDataList', params: { id: item.id } }">{{ item.title }}</router-link>
-                </div>
-                <div class="number">{{ item.content }}</div>
-                <div class="number">{{ item.device_type }}</div>
-                <!-- <div class="number">{{ item.deptname }}</div> -->
+                <div class="name">{{ item.title }}</div>
+                <!-- <div class="number">{{ item.content }}</div> -->
+                <div class="number">{{ item.deviceTypeName }}</div>
+                <div class="number">{{ item.deptname }}</div>
                 <div class="number">{{ item.video_file }}</div>
                 <div class="number">{{ item.attch_file }}</div>
-                <div class="last-update-time color-white">{{ item.created_Time }}</div>
-                <div class="last-maintainer">{{ item.created_By }}</div>
+                <div class="last-update-time color-white">{{ item.updatedTime }}</div>
+                <div class="last-maintainer">{{ '管理员' }}</div>
               </div>
             </li>
           </ul>
@@ -166,6 +166,7 @@
   </div>
 </template>
 <script>
+import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/ExpertApi'
 export default {
@@ -178,15 +179,9 @@ export default {
       title: ' | 专家库',
       ExpertTitle: '',
       ExpertID: '',
-      dept: {
-        id: '',
-        tips: ''
-      },
+      deptid: '',
       deptList: [], // 部门
-      deviceType: {
-        id: '',
-        tips: ''
-      },
+      deviceType: '',
       deviceTypeList: [],
       ExpertdataList: [],
       editExpertIDList: [],
@@ -214,8 +209,8 @@ export default {
         video_file: 0,
         attch_file: 0,
         Sort: 0,
-        updated_time: 0,
-        updated_by: 0
+        updatedTime: 0,
+        updatedBy: 0
       }
     }
   },
@@ -273,14 +268,16 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.keyword,
-        searchType: this.deptid
+        keyword: this.keyword,
+        title: this.ExpertTitle,
+        deptid: this.deptid,
+        deviceType: this.deviceType
       }
       api.GetListByPage(parm).then(res => {
         this.loading = false
-        // res.data.map(item => {
-        //   item.updated_time = transformDate(item.updated_time)
-        // })
+        res.data.list.map(item => {
+          item.updatedTime = transformDate(item.updatedTime)
+        })
         this.ExpertdataList = res.data.list
         this.total = res.data.total
       }).catch(err => console.log(err))
@@ -324,6 +321,7 @@ export default {
     },
     // 弹框确认是否删除
     dialogEnter () {
+      debugger
       api.Delete(this.editExpertIDList.join(',')).then(res => {
         if (res.code === 0) {
           this.editExpertIDList = []
