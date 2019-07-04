@@ -1,5 +1,8 @@
 <template>
-  <div class="height-full">
+  <div class="wrap height-full"
+    v-loading="loading"
+    element-loading-text="加载中"
+    element-loading-spinner="el-icon-loading">
     <div ref="header" class="header con-padding-horizontal">
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
@@ -37,6 +40,11 @@
             <p class="validate-tips">{{ model.tips }}</p>
           </li>
         </ul>
+        <div class="con-padding-horizontal cause">
+          <span class="lable">设备类型描述：</span>
+          <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述"></el-input>
+          <p class="validate-tips">{{ eqpTypeDesc.tips }}</p>
+        </div>
         <!-- 上传图片列表 -->
         <div class="upload-wrap con-padding-horizontal">
           <span class="lable">作业指导书：</span>
@@ -103,7 +111,7 @@
           </el-upload>
         </div>
         <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">使维护规程：</span>
+          <span class="lable">维护规程：</span>
           <el-upload
             ref="uploadRegulations"
             :action="``"
@@ -117,11 +125,6 @@
             :on-preview="preview">
             <i class="iconfont icon-pdf"></i>
           </el-upload>
-        </div>
-        <div class="con-padding-horizontal cause">
-          <span class="lable">设备类型描述：</span>
-          <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述"></el-input>
-          <p class="validate-tips">{{ eqpTypeDesc.tips }}</p>
         </div>
         <!-- 按钮 -->
         <div class="btn-group">
@@ -153,6 +156,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       title: '| 添加设备类型',
       eqpTypeID: '',
       eqpTypeName: {text: '', tips: ''},
@@ -185,12 +189,14 @@ export default {
   },
   created () {
     // this.pageType = this.$route.query.type
-    // this.title += this.pageType === 'Add' ? '添加' : '修改'
+    this.title = this.pageType === 'Add' ? '| 添加设备类型' : '| 修改设备类型'
     this.init()
   },
   methods: {
     init () {
       if (this.$route.query.type !== 'Add') {
+        this.title = '| 修改设备类型'
+        this.loading = true
         this.getEqpType()
       }
     },
@@ -243,6 +249,7 @@ export default {
             type: 'error'
           })
         }
+        this.loading = false
       }).catch(err => console.log(err))
     },
     validateInput () {

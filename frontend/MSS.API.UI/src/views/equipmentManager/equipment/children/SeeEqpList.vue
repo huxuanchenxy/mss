@@ -5,8 +5,7 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }}
-         {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
     <div class="box">
@@ -14,77 +13,108 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">站区名</label>
+            <label for="">子系统</label>
             <div class="inp">
-              <el-input v-model.trim="AreaName" placeholder="请输入站区名称"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="">类型</label>
-            <div class="inp">
-              <el-select v-model="AreaType" clearable placeholder="请选择" @change="validateSelect()">
-                 <el-option
-                 v-for="item in AreaTypeList"
-                 :key="item.key"
-                 :value="item.id"
-                 :label="item.areaName">
-                 </el-option>
+              <el-select v-model="subSystem" clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in subSystemList"
+                  :key="item.key"
+                  :label="item.sub_code_name"
+                  :value="item.sub_code">
+                </el-option>
               </el-select>
             </div>
           </div>
+          <div class="input-group">
+            <label for="">设备类型</label>
+            <div class="inp">
+              <el-select v-model="eqpType" clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in eqpTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="name">设备图纸编码</label>
+            <div class="inp">
+              <el-input v-model.trim="eqpCode" placeholder="请输入设备图纸编码"></el-input>
+            </div>
+          </div>
+          <!--<div class="input-group">
+            <label for="">安装位置</label>
+            <div class="inp">
+              <el-cascader clearable
+                :props="defaultParams"
+                :show-all-levels="false"
+                :options="actionInfo"
+                v-model="authority">
+              </el-cascader>
+            </div>
+          </div>-->
         </div>
         <div class="search-btn" @click="searchRes">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list">
-          <x-button>
-            <router-link :to="{ name: 'AddMidArea', params: { mark: 'add' } }">添加</router-link>
-          </x-button>
-        </li>
+        <li class="list" @click="add"><x-button>添加</x-button></li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
-   <div class="content-wrap">
+    <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('id')">
-          序号
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('eqp_code')">
+          图纸编号
+          <i :class="[{ 'el-icon-d-caret': headOrder.eqp_code === 0 }, { 'el-icon-caret-top': headOrder.eqp_code === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_code === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('AreaName')">
-          站区名
-          <i :class="[{ 'el-icon-d-caret': headOrder.AreaName === 0 }, { 'el-icon-caret-top': headOrder.AreaName === 1 }, { 'el-icon-caret-bottom': headOrder.AreaName === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('eqp_name')">
+          名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.eqp_name === 0 }, { 'el-icon-caret-top': headOrder.eqp_name === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_name === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('ConfigType')">
+        <li class="list number c-pointer" @click="changeOrder('sub_system')">
+          子系统
+          <i :class="[{ 'el-icon-d-caret': headOrder.sub_system === 0 }, { 'el-icon-caret-top': headOrder.sub_system === 1 }, { 'el-icon-caret-bottom': headOrder.sub_system === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('eqp_type')">
           类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.ConfigType === 0 }, { 'el-icon-caret-top': headOrder.ConfigType === 1 }, { 'el-icon-caret-bottom': headOrder.ConfigType === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.eqp_type === 0 }, { 'el-icon-caret-top': headOrder.eqp_type === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_type === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_Time')">
+        <li class="list number c-pointer" @click="changeOrder('team')">
+          管辖班组
+          <i :class="[{ 'el-icon-d-caret': headOrder.team === 0 }, { 'el-icon-caret-top': headOrder.team === 1 }, { 'el-icon-caret-bottom': headOrder.team === 2 }]"></i>
+        </li>
+        <li class="list number">安装位置</li>
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_Time === 0 }, { 'el-icon-caret-top': headOrder.updated_Time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_Time === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_By')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_By === 0 }, { 'el-icon-caret-top': headOrder.updated_By === 1 }, { 'el-icon-caret-bottom': headOrder.updated_By === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item,index) in ConfigBigAreaList" :key="item.key">
+            <li class="list" v-for="(item) in EqpList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editAreaIDList" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editEqpID" :value="item.id" @change="emitEditID">
                 </div>
-                 <div class="number">{{index+1}}</div>
-                 <div class="name">{{ item.areaName }}</div>
-                <div class="number">{{ item.configTypeName }}</div>
-                <div class="last-update-time color-white">{{ item.updated_Time }}</div>
-                <div class="last-maintainer">{{ '管理员' }}</div>
+                <div class="number">{{ item.code }}</div>
+                <div class="name">{{ item.name }}</div>
+                <div class="name">{{ item.subSystemName }}</div>
+                <div class="name">{{ item.tName }}</div>
+                <div class="number">{{ item.teamName }}</div>
+                <div class="last-update-time color-white">{{ item.updated_time }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
@@ -122,30 +152,32 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/AreaApi'
+import apiAuth from '@/api/authApi'
+import api from '@/api/eqpApi'
+import apiArea from '@/api/AreaApi.js'
 export default {
-  name: 'MidAreaList',
+  name: 'SeeEqpList',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 站区配置',
-      AreaName: '',
-      AreaType: '',
-      AreaTypeList: [],
-      ConfigBigAreaList: [],
-      editAreaIDList: [],
-      UserInfo: {
-        uid: '',
-        UserName: '管理员'
-      },
+      title: ' | 设备定义',
+      eqpCode: '',
+      subSystem: '',
+      subSystemList: [],
+      eqpType: '',
+      eqpTypeList: [],
+      area: [],
+      areaList: [],
+      EqpList: [],
+      editEqpID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'id',
+        sort: 'eqp_code',
         order: 'asc'
       },
       dialogVisible: {
@@ -155,22 +187,37 @@ export default {
         btn: true
       },
       headOrder: {
-        id: 1,
-        AreaName: 0,
-        AreaType: 0,
-        Sort: 0,
+        eqp_code: 1,
+        eqp_name: 0,
+        sub_system: 0,
+        eqp_type: 0,
+        team: 0,
         updated_time: 0,
-        updated_by: 1
+        updated_by: 0
       }
     }
   },
   created () {
-    this.$emit('title', '| 站区配置')
+    // this.$emit('title', '| 设备别')
+    if (this.$route.params.id !== '' && this.$route.params.id !== null) {
+      this.eqpType = this.$route.params.id
+    }
     this.init()
 
-    // 站区配置类型列表
-    api.SelectDicAreaData('1').then(res => {
-      this.AreaTypeList = res.data
+    // 子系统加载
+    apiAuth.getSubCode('sub_system').then(res => {
+      this.subSystemList = res.data
+    }).catch(err => console.log(err))
+
+    // 设备类型加载
+    api.getEqpTypeAll().then(res => {
+      this.eqpTypeList = res.data
+    }).catch(err => console.log(err))
+
+    // 安装位置加载
+    apiArea.SelectConfigAreaData().then(res => {
+      console.log(res)
+      // this.eqpTypeList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
@@ -181,15 +228,16 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      this.searchResult(1)
+      // this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.id = 0
-        this.headOrder.AreaName = 0
-        this.headOrder.AreaType = 0
-        this.headOrder.Sort = 0
+        this.headOrder.eqp_code = 0
+        this.headOrder.eqp_name = 0
+        this.headOrder.sub_system = 0
+        this.headOrder.eqp_type = 0
+        this.headOrder.team = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -215,63 +263,69 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.AreaName,
-        searchType: this.AreaType
+        SearchSubSystem: this.subSystem,
+        SearchCode: this.eqpCode,
+        SearchType: this.eqpType
       }
-      api.GetNameByUid('1').then(res => {
-        this.UserInfo.UserName = res
-      }).catch(err => console.log(err))
-      api.GetBigAreaQueryPageByParm(parm).then(res => {
+      api.getEqp(parm).then(res => {
         this.loading = false
-        res.data.map(item => {
-          item.updated_Time = transformDate(item.updated_Time)
+        res.data.rows.map(item => {
+          item.updated_time = transformDate(item.updated_time)
         })
-        this.ConfigBigAreaList = res.data
-        this.total = res.total
+        this.EqpList = res.data.rows
+        this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
-    // 修改站区
+    add () {
+      this.$router.push({
+        name: 'AddEqp',
+        params: {
+          mark: 'add'
+        }
+      })
+    },
+    // 修改设备
     edit () {
-      if (!this.editAreaIDList.length) {
+      if (!this.editEqpID.length) {
         this.$message({
-          message: '请选择需要修改的站区',
+          message: '请选择需要修改的设备',
           type: 'warning'
         })
-      } else if (this.editAreaIDList.length > 1) {
+      } else if (this.editEqpID.length > 1) {
         this.$message({
-          message: '修改的站区不能超过1个',
+          message: '修改的设备不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddMidArea',
+          name: 'AddEqp',
           params: {
-            id: this.editAreaIDList[0],
+            id: this.editEqpID[0],
             mark: 'edit'
           }
         })
       }
     },
 
-    // 删除站区
+    // 删除设备
     remove () {
-      if (!this.editAreaIDList.length) {
+      if (!this.editEqpID.length) {
         this.$message({
-          message: '请选择需要删除的站区',
+          message: '请选择需要删除的设备',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条站区信息?'
+        this.dialogVisible.text = '确定删除该条设备信息?'
       }
     },
     // 弹框确认是否删除
     dialogEnter () {
-      api.DelConfigBigAreaId(this.editAreaIDList.join(',')).then(res => {
-        if (res.ret === 0) {
-          this.editAreaIDList = []
+      api.delEqp(this.editEqpID.join(',')).then(res => {
+        if (res.code === 0) {
+          this.editEqpID = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -290,20 +344,20 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 站区别')
+      this.$emit('title', '| 设备别')
       this.loading = true
       this.init()
       this.searchResult(1)
     },
 
-    // 获取修改站区id
+    // 获取修改设备id
     emitEditID () {
-      this.$emit('editAreaIDList', this.editAreaIDList)
+      this.$emit('editEqpID', this.editEqpID)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.ConfigBigAreaList.map(val => this.editAreaIDList.push(val.id)) : this.editAreaIDList = []
+      this.bCheckAll ? this.EqpList.map(val => this.editEqpID.push(val.id)) : this.editEqpID = []
       this.emitEditID()
     },
 

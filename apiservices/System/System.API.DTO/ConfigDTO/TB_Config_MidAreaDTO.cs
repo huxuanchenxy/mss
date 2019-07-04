@@ -138,7 +138,7 @@ namespace System.API.DTO
             set;
         }
 
-        //[DataMember]
+        [DataMember]
         /// <summary>
         /// 
         /// </summary>
@@ -148,7 +148,7 @@ namespace System.API.DTO
             set;
         }
 
-       // [DataMember]
+       [DataMember]
         /// <summary>
         /// 
         /// </summary>

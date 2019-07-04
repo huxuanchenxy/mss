@@ -45,26 +45,25 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/warnsetting/children/AddWarnSetting.vue')
           }
         ]
+      }, {
+        path: 'equipment',
+        component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'equipment',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeEqpList',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/SeeEqpList.vue')
+          }, {
+            path: 'add',
+            name: 'AddEqp',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/AddEqp.vue')
+          }
+        ]
       }
-      // , {
-      //   path: 'equipment',
-      //   component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/Index.vue'),
-      //   children: [
-      //     {
-      //       path: '/',
-      //       name: 'equipment',
-      //       redirect: 'list'
-      //     }, {
-      //       path: 'list',
-      //       name: 'SeeEqpList',
-      //       component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/SeeEqpList.vue')
-      //     }, {
-      //       path: 'add',
-      //       name: 'AddEqp',
-      //       component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/AddEqp.vue')
-      //     }
-      //   ]
-      // }
     ]
   }
 ]

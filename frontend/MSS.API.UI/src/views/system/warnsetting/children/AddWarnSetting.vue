@@ -113,7 +113,7 @@
               </el-col>
               <el-col :span="3">
                 <el-input placeholder="值" v-model="item.paramLimitValue"
-                  style="margin-left:10px" @keyup.native="validateInputDouble3(limitDown)"></el-input>
+                  style="margin-left:10px"  @keyup.native="validateInputDouble3(limitDown)"></el-input>
               </el-col>
               <el-col :span="5">
                 <x-button style="margin-left:30px" class="active" @click.native="DelThisSetting(index)">删除</x-button>
