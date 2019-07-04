@@ -10,14 +10,19 @@ namespace MSS.API.Model.Data
         public string Code { get; set; }
         public string Name { get; set; }
         public int Type { get; set; }
+        public string TName { get; set; }
         public string AssetNo { get; set; }
         public string Model { get; set; }
         public int SubSystem { get; set; }
+        public int SubSystemName { get; set; }
         public int Team { get; set; }
+        public string TeamName { get; set; }
         public string BarCode { get; set; }
         public string Desc { get; set; }
         public int Supplier { get; set; }
+        public int SupplierName { get; set; }
         public int Manufacturer { get; set; }
+        public int ManufacturerName { get; set; }
         public string SerialNo { get; set; }
         public double RatedVoltage { get; set; }
         public double RatedCurrent { get; set; }
@@ -26,7 +31,8 @@ namespace MSS.API.Model.Data
         /// <summary>
         /// 哪张表的位置ID
         /// </summary>
-        public string LocationBy { get; set; }
+        public int LocationBy { get; set; }
+        public string LocationName { get; set; }
         public DateTime Online { get; set; }
         public string Life { get; set; }
         public string PathPic { get; set; }
@@ -44,16 +50,21 @@ namespace MSS.API.Model.Data
             Map(o => o.Code).ToColumn("eqp_code");
             Map(o => o.Name).ToColumn("eqp_name");
             Map(o => o.Type).ToColumn("eqp_type");
+            Map(o => o.TName).ToColumn("type_name");
 
             Map(o => o.AssetNo).ToColumn("eqp_asset_number");
             Map(o => o.Model).ToColumn("eqp_model");
             Map(o => o.SubSystem).ToColumn("sub_system");
+            Map(o => o.SubSystemName).ToColumn("sub_code_name");
             Map(o => o.Team).ToColumn("team");
+            Map(o => o.TeamName).ToColumn("name");
             Map(o => o.BarCode).ToColumn("bar_code");
             Map(o => o.Desc).ToColumn("discription");
 
             Map(o => o.Supplier).ToColumn("supplier");
+            Map(o => o.SupplierName).ToColumn("sname");
             Map(o => o.Manufacturer).ToColumn("manufacturer");
+            Map(o => o.ManufacturerName).ToColumn("mname");
             Map(o => o.SerialNo).ToColumn("serial_number");
 
             Map(o => o.RatedVoltage).ToColumn("rated_voltage");
@@ -62,6 +73,7 @@ namespace MSS.API.Model.Data
 
             Map(o => o.Location).ToColumn("location");
             Map(o => o.LocationBy).ToColumn("location_by");
+            Map(o => o.LocationName).ToColumn("AreaName");
             Map(o => o.Online).ToColumn("online_date");
             Map(o => o.Life).ToColumn("life");
 
@@ -82,7 +94,18 @@ namespace MSS.API.Model.Data
 
     public class EqpQueryParm:BaseQueryParm
     {
-        public string SearchName { get; set; }
-        public string SearchDesc { get; set; }
+        public int? SearchSubSystem { get; set; }
+        public int? SearchType { get; set; }
+        public string SearchCode { get; set; }
+        public int? SearchLocation { get; set; }
+
+        public int? SearchLocationBy { get; set; }
+    }
+
+    public class AllArea
+    {
+        public int ID { get; set; }
+        public string AreaName { get; set; }
+        public string Tablename { get; set; }
     }
 }
