@@ -231,7 +231,7 @@ export default {
       this.title = '| 修改设备'
       // this.getActionGroup()
     }
-    // 子系统加载
+    // 子系统加载 
     apiAuth.getSubCode('sub_system').then(res => {
       this.subSystemList = res.data
     }).catch(err => console.log(err))
