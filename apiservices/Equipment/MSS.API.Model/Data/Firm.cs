@@ -8,7 +8,7 @@ namespace MSS.API.Model.Data
     public class Firm:BaseEntity
     {
         public string Name { get; set; }
-        public string Type { get; set; }
+        public int Type { get; set; }
         public string Mobile { get; set; }
         public string Contact { get; set; }
         public string Address { get; set; }

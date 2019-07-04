@@ -87,5 +87,59 @@ export default {
       }
     }
   }
+
+  // 图片预览
+  /deep/ .show-list-wrap{
+    position: absolute;
+    z-index: 9;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background: #1c1c1c;
+    transform: translate(0px);
+
+    .el-carousel{
+      height: 100%;
+    }
+
+    img{
+      max-width: 100%;
+      height: 100%;
+    }
+
+    .icon-close{
+      position: absolute;
+      z-index: 99;
+      top: 3px;
+      right: 3px;
+      width: 27px;
+      height: 27px;
+      background: url(../../../common/images/icon-close.png) no-repeat 0 0/100% 100%;
+      cursor: pointer;
+    }
+
+    .el-dialog__header{
+      display: block;
+      padding: 0;
+
+      .el-dialog__headerbtn{
+        top: -14px;
+        right: -14px;
+        width: 27px;
+        height: 27px;
+        background: url(../../../common/images/icon-close.png) no-repeat 0 0/100% 100%;
+      }
+
+      .el-dialog__close{
+        display: none;
+      }
+    }
+
+    .el-dialog__body{
+      height: 100%;
+    }
+  }
 }
 </style>

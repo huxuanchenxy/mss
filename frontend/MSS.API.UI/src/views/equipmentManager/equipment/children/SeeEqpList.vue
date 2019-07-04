@@ -44,17 +44,18 @@
               <el-input v-model.trim="eqpCode" placeholder="请输入设备图纸编码"></el-input>
             </div>
           </div>
-          <!--<div class="input-group">
-            <label for="">安装位置</label>
+          <div class="input-group">
+            <label for="">安装位置{{area}}</label>
             <div class="inp">
               <el-cascader clearable
-                :props="defaultParams"
-                :show-all-levels="false"
-                :options="actionInfo"
-                v-model="authority">
+                change-on-select
+                :props="areaParams"
+                :show-all-levels="true"
+                :options="areaList"
+                v-model="area">
               </el-cascader>
             </div>
-          </div>-->
+          </div>
         </div>
         <div class="search-btn" @click="searchRes">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
@@ -162,6 +163,11 @@ export default {
   },
   data () {
     return {
+      areaParams: {
+        label: 'areaName',
+        value: 'id',
+        children: 'children'
+      },
       title: ' | 设备定义',
       eqpCode: '',
       subSystem: '',
@@ -216,8 +222,7 @@ export default {
 
     // 安装位置加载
     apiArea.SelectConfigAreaData().then(res => {
-      console.log(res)
-      // this.eqpTypeList = res.data
+      this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
   },
   activated () {
@@ -258,6 +263,7 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
+      let l = this.area.length - 1
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
@@ -265,7 +271,9 @@ export default {
         page: page,
         SearchSubSystem: this.subSystem,
         SearchCode: this.eqpCode,
-        SearchType: this.eqpType
+        SearchType: this.eqpType,
+        SearchLocation: this.area[l],
+        SearchLocationBy: l
       }
       api.getEqp(parm).then(res => {
         this.loading = false

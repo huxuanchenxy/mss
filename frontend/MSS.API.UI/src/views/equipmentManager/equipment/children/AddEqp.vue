@@ -12,156 +12,260 @@
         <router-link :to="{name:'SeeEqpList'}">返回</router-link>
       </x-button>
     </div>
-    <div class="con-padding-horizontal operation">
-      <ul class="input-group">
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">设备图纸编码<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-input placeholder="请输入设备图纸编码" v-model="eqpCode.text" @keyup.native="validateInput(eqpCode)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ eqpCode.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">设备名称<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-input placeholder="请输入设备名称" v-model="eqpName.text" @keyup.native="validateInput(eqpName)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ eqpName.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">子系统<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-select v-model="subSystem.text" clearable filterable placeholder="请选择" @change="validateSelect(subSystem)">
-                <el-option
-                  v-for="item in subSystemList"
-                  :key="item.key"
-                  :label="item.sub_code_name"
-                  :value="item.sub_code">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ subSystem.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">设备类型<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-select v-model="eqpType.text" clearable filterable placeholder="请选择" @change="validateSelect(eqpType)">
-                <el-option
-                  v-for="item in eqpTypeList"
-                  :key="item.key"
-                  :label="item.tName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ eqpType.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">设备资产编码</span>
-            <div class="inp">
-              <el-input placeholder="请输入设备资产编码" v-model="assetNo.text" @keyup.native="validateInputNull(assetNo)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ assetNo.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">设备规格型号</span>
-            <div class="inp">
-              <el-input placeholder="请输入设备规格型号" v-model="model.text" @keyup.native="validateInputNull(model)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ model.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">管辖班组</span>
-            <div class="inp">
-              <el-cascader class="cascader_width" clearable
-                :props="defaultParams"
-                change-on-select
-                @change="cascader_change"
-                :show-all-levels="true"
-                :options="teamList">
-              </el-cascader>
-            </div>
-          </div>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">条码</span>
-            <div class="inp">
-              <el-input placeholder="请输入条码" v-model="barCode.text" @keyup.native="validateInputNull(barCode)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ barCode.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">描述</span>
-            <div class="inp">
-              <el-input placeholder="请输入描述" v-model="desc.text" @keyup.native="validateInputNull(desc)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ desc.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">供应商<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-select v-model="supplier.text" clearable filterable placeholder="请选择" @change="validateSelect(supplier)">
-                <el-option
-                  v-for="item in supplierList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ supplier.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">制造商<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-select v-model="manufacturer.text" clearable filterable placeholder="请选择" @change="validateSelect(manufacturer)">
-                <el-option
-                  v-for="item in manufacturerList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ manufacturer.tips }}</p>
-        </li>
-      </ul>
+    <div class="scroll">
+      <el-scrollbar>
+        <div class="con-padding-horizontal operation">
+          <ul class="input-group">
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">设备图纸编码<em class="validate-mark">*</em></span>
+                <div class="inp">
+                  <el-input placeholder="请输入设备图纸编码" v-model="eqpCode.text" @keyup.native="validateInput(eqpCode)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ eqpCode.tips }}</p>
+            </li>
+            <li class="list" >
+              <div class="inp-wrap">
+                <span class="text">设备名称<em class="validate-mark">*</em></span>
+                <div class="inp">
+                  <el-input placeholder="请输入设备名称" v-model="eqpName.text" @keyup.native="validateInput(eqpName)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ eqpName.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">子系统<em class="validate-mark">*</em></span>
+                <div class="inp">
+                  <el-select v-model="subSystem.text" clearable filterable placeholder="请选择" @change="validateSelect(subSystem)">
+                    <el-option
+                      v-for="item in subSystemList"
+                      :key="item.key"
+                      :label="item.sub_code_name"
+                      :value="item.sub_code">
+                    </el-option>
+                  </el-select>
+                </div>
+              </div>
+              <p class="validate-tips">{{ subSystem.tips }}</p>
+            </li>
+            <li class="list" >
+              <div class="inp-wrap">
+                <span class="text">设备类型<em class="validate-mark">*</em></span>
+                <div class="inp">
+                  <el-select v-model="eqpType.text" clearable filterable placeholder="请选择" @change="validateSelect(eqpType)">
+                    <el-option
+                      v-for="item in eqpTypeList"
+                      :key="item.key"
+                      :label="item.tName"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </div>
+              <p class="validate-tips">{{ eqpType.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">设备资产编码</span>
+                <div class="inp">
+                  <el-input placeholder="请输入设备资产编码" v-model="assetNo.text" @keyup.native="validateInputNull(assetNo)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ assetNo.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">设备规格型号</span>
+                <div class="inp">
+                  <el-input placeholder="请输入设备规格型号" v-model="model.text" @keyup.native="validateInputNull(model)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ model.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">管辖班组</span>
+                <div class="inp">
+                  <el-cascader class="cascader_width" clearable
+                    :props="defaultParams"
+                    change-on-select
+                    @change="cascader_change"
+                    :show-all-levels="true"
+                    :options="teamList">
+                  </el-cascader>
+                </div>
+              </div>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">条码</span>
+                <div class="inp">
+                  <el-input placeholder="请输入条码" v-model="barCode.text" @keyup.native="validateInputNull(barCode)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ barCode.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">描述</span>
+                <div class="inp">
+                  <el-input placeholder="请输入描述" v-model="desc.text" @keyup.native="validateInputNull(desc)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ desc.tips }}</p>
+            </li>
+            <li class="list" >
+              <div class="inp-wrap">
+                <span class="text">供应商<em class="validate-mark">*</em></span>
+                <div class="inp">
+                  <el-select v-model="supplier.text" clearable filterable placeholder="请选择" @change="validateSelect(supplier)">
+                    <el-option
+                      v-for="item in supplierList"
+                      :key="item.key"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </div>
+              <p class="validate-tips">{{ supplier.tips }}</p>
+            </li>
+            <li class="list" >
+              <div class="inp-wrap">
+                <span class="text">制造商<em class="validate-mark">*</em></span>
+                <div class="inp">
+                  <el-select v-model="manufacturer.text" clearable filterable placeholder="请选择" @change="validateSelect(manufacturer)">
+                    <el-option
+                      v-for="item in manufacturerList"
+                      :key="item.key"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </div>
+              <p class="validate-tips">{{ manufacturer.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">设备序列号</span>
+                <div class="inp">
+                  <el-input placeholder="请输入设备序列号" v-model="serialNo.text" @keyup.native="validateInputNull(serialNo)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ serialNo.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">额定电压</span>
+                <div class="inp">
+                  <el-input placeholder="请输入额定电压" v-model="ratedVoltage.text" @keyup.native="validateDouble(ratedVoltage)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ ratedVoltage.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">额定电流</span>
+                <div class="inp">
+                  <el-input placeholder="请输入额定电流" v-model="ratedCurrent.text" @keyup.native="validateDouble(ratedCurrent)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ ratedCurrent.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">额定电压</span>
+                <div class="inp">
+                  <el-input placeholder="请输入额定电压" v-model="ratedPower.text" @keyup.native="validateDouble(ratedPower)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ ratedPower.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">安装位置</span>
+                <div class="inp">
+                  <el-cascader class="cascader_width" clearable
+                    change-on-select
+                    :props="areaParams"
+                    :show-all-levels="true"
+                    :options="areaList"
+                    v-model="area.text">
+                  </el-cascader>
+                </div>
+              </div>
+              <p class="validate-tips">{{ area.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">上线日期</span>
+                <div class="inp">
+                  <el-date-picker
+                    v-model="time.text"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="请选择日期">
+                  </el-date-picker>
+                </div>
+              </div>
+              <p class="validate-tips">{{ time.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">使用期限</span>
+                <div class="inp">
+                  <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateInputNull(life)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ life.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="upload-wrap con-padding-horizontal">
+                <span class="text">设备图纸：</span>
+                <el-upload class="el-upload-my-picture-card"
+                  ref="upload"
+                  :action="``"
+                  accept="application/pdf"
+                  :file-list="fileList"
+                  :show-file-list="true"
+                  list-type="picture-card"
+                  :auto-upload="false"
+                  :http-request="upload"
+                  :on-change="onChange"
+                  :on-preview="preview">
+                  <i class="iconfont icon-pdf"></i>
+                </el-upload>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="btn-enter">
+          <x-button class="close">
+            <router-link :to="{ name: 'SeeEqpList' }">取消</router-link>
+          </x-button>
+          <x-button class="active" @click.native="enter">保存</x-button>
+        </div>
+      </el-scrollbar>
     </div>
-    <div class="btn-enter">
-      <x-button class="close">
-        <router-link :to="{ name: 'SeeEqpList' }">取消</router-link>
-      </x-button>
-      <x-button class="active" @click.native="enter">保存</x-button>
-    </div>
+    <el-dialog
+      :visible.sync="centerDialogVisible"
+      :modal-append-to-body="false"
+      custom-class="show-list-wrap"
+      center>
+      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { validateInputCommon, validateNumberCommon, vInput } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
 import apiOrg from '@/api/orgApi'
+import apiArea from '@/api/AreaApi.js'
 export default {
   name: 'AddEqp',
   components: {
@@ -169,6 +273,15 @@ export default {
   },
   data () {
     return {
+      fileList: [],
+      needUpload: [],
+      centerDialogVisible: false,
+      previewUrl: '',
+      areaParams: {
+        label: 'areaName',
+        value: 'id',
+        children: 'children'
+      },
       defaultParams: {
         label: 'label',
         value: 'id',
@@ -216,7 +329,42 @@ export default {
         text: '',
         tips: ''
       },
-      manufacturerList: {
+      supplier: {
+        text: '',
+        tips: ''
+      },
+      supplierList: [],
+      manufacturer: {
+        text: '',
+        tips: ''
+      },
+      manufacturerList: [],
+      serialNo: {
+        text: '',
+        tips: ''
+      },
+      ratedVoltage: {
+        text: '',
+        tips: ''
+      },
+      ratedCurrent: {
+        text: '',
+        tips: ''
+      },
+      ratedPower: {
+        text: '',
+        tips: ''
+      },
+      area: {
+        text: [],
+        tips: ''
+      },
+      areaList: [],
+      time: {
+        text: '',
+        tips: ''
+      },
+      life: {
         text: '',
         tips: ''
       }
@@ -231,7 +379,7 @@ export default {
       this.title = '| 修改设备'
       // this.getActionGroup()
     }
-    // 子系统加载 
+    // 子系统加载
     apiAuth.getSubCode('sub_system').then(res => {
       this.subSystemList = res.data
     }).catch(err => console.log(err))
@@ -243,11 +391,42 @@ export default {
 
     // 班组加载
     apiOrg.getOrgAll().then(res => {
-      console.log(res)
       this.teamList = res.data
+    }).catch(err => console.log(err))
+
+    // 供应商/制造商加载
+    api.getFirmAll().then(res => {
+      this.supplierList = res.data.filter((item) => { return item.type === 0 })
+      this.manufacturerList = res.data.filter((item) => { return item.type === 1 })
+    }).catch(err => console.log(err))
+
+    // 安装位置加载
+    apiArea.SelectConfigAreaData().then(res => {
+      this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
   },
   methods: {
+    upload (file) {
+      this.needUpload.push(file.file)
+    },
+    onChange (file, fileList) {
+      file.pdfUrl = file.url
+      file.url = PDF_IMAGE
+      this.fileList = []
+      this.fileList.push(file)
+    },
+    preview (item) {
+      this.centerDialogVisible = true
+      if (item.status === 'success') {
+        if (item.pdfUrl.indexOf('blob:') !== -1) {
+          this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
+        } else {
+          this.previewUrl = PDF_UPLOADED_VIEW_URL + item.pdfUrl
+        }
+      } else {
+        this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
+      }
+    },
     cascader_change (val) {
       let selectedTeam = val[val.length - 1]
       let obj = this.getCascaderObj(selectedTeam, this.teamList)
@@ -349,6 +528,17 @@ export default {
       validateInputCommon(val)
     },
 
+    // 验证3位小数
+    validateDouble (val) {
+      if (!vdouble3(val.text)) {
+        val.tips = '此项必须为最多三位小数的浮点数'
+        return false
+      } else {
+        val.tips = ''
+        return true
+      }
+    },
+
     // 验证非法字符串，但允许为空
     validateInputNull (val) {
       if (!vInput(val.text)) {
@@ -429,7 +619,26 @@ export default {
 .cascader_width{
   width: 100%!important;
 }
-.el-cascader-menu__item.is-disabled{
-  background-color: #606266!important;
+.el-date-editor.el-input, .el-date-editor.el-input__inner{
+  width: 93%;
+}
+
+.scroll{
+  /**
+   * percent函数转换百分比
+   * $content-height内容区域总高度
+   * 页面标题栏高度：56
+   */
+  height: percent($content-height - 56, $content-height);
+  .upload-wrap{
+    display: flex;
+    align-items: center;
+  }
+  /deep/ .el-collapse-item{
+    .img-list{
+      margin: 20px 10px 0 0;
+      cursor: pointer;
+    }
+  }
 }
 </style>
