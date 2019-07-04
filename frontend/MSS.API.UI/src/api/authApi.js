@@ -1,5 +1,5 @@
 import axios from './interceptors'
-// 'http://10.89.36.204:5800/authapi'
+// 'http://10.89.36.204:5801/authapi'
 // 'http://127.0.0.1:3851/api/v1'
 let api = 'http://10.89.36.204:5801/authapi'
 export default {
@@ -10,7 +10,7 @@ export default {
   addUser: parm => { return axios.post(`${api}/User/Add`, parm).then(res => res.data) },
   updateUser: parm => { return axios.put(`${api}/User/Update`, parm).then(res => res.data) },
   delUser: ids => { return axios.delete(`${api}/User/${ids}`).then(res => res.data) },
-  getUserAll: id => { return axios.get(`${api}/User/All`).then(res => res.data) },
+  getUserAll: () => { return axios.get(`${api}/User/All`).then(res => res.data) },
   changePwd: (oldPwd, newPwd) => { return axios.put(`${api}/User/changePwd/${oldPwd}/${newPwd}`).then(res => res.data) },
   ResetPwd: ids => { return axios.put(`${api}/User/ResetPwd/${ids}`).then(res => res.data) },
 
@@ -26,14 +26,14 @@ export default {
   addActionGroup: parm => { return axios.post(`${api}/ActionGroup/Add`, parm).then(res => res.data) },
   updateActionGroup: parm => { return axios.put(`${api}/ActionGroup/Update`, parm).then(res => res.data) },
   delActionGroup: ids => { return axios.delete(`${api}/ActionGroup/${ids}`).then(res => res.data) },
-  getActionGroupAll: id => { return axios.get(`${api}/ActionGroup/All`).then(res => res.data) },
+  getActionGroupAll: () => { return axios.get(`${api}/ActionGroup/All`).then(res => res.data) },
 
   getAction: parm => { return axios.get(`${api}/Action/QueryList`, {params: parm}).then(res => res.data) },
   getActionByID: id => { return axios.get(`${api}/Action/${id}`).then(res => res.data) },
   addAction: parm => { return axios.post(`${api}/Action/Add`, parm).then(res => res.data) },
   updateAction: parm => { return axios.put(`${api}/Action/Update`, parm).then(res => res.data) },
   delAction: ids => { return axios.delete(`${api}/Action/${ids}`).then(res => res.data) },
-  getActionAll: id => { return axios.get(`${api}/Action/All`).then(res => res.data) },
+  getActionAll: () => { return axios.get(`${api}/Action/All`).then(res => res.data) },
   getActionMenu: parm => { return axios.get(`${api}/Action/Menu`, {params: parm}).then(res => res.data) },
   getActionTree: id => { return axios.get(`${api}/Action/ActionTree`).then(res => res.data) },
 
@@ -42,5 +42,5 @@ export default {
   addRole: parm => { return axios.post(`${api}/Role/Add`, parm).then(res => res.data) },
   updateRole: parm => { return axios.put(`${api}/Role/Update`, parm).then(res => res.data) },
   delRole: ids => { return axios.delete(`${api}/Role/${ids}`).then(res => res.data) },
-  getRoleAll: id => { return axios.get(`${api}/Role/All`).then(res => res.data) }
+  getRoleAll: () => { return axios.get(`${api}/Role/All`).then(res => res.data) }
 }
