@@ -28,28 +28,34 @@ export default {
   //   }
   // },
   getParamByEqpType: (id) => {
-    return {
-      then: (call) => {
-        var data
-        if (id === 1) {
-          data = [{
-            _paramID: 'aa',
-            _paramName: '温度',
-            _paramUnit: '℃'
-          }, {
-            _paramID: 'aa2',
-            _paramName: '温度2',
-            _paramUnit: '℃'
-          }]
-        } else {
-          data = [{
-            _paramID: 'bb',
-            _paramName: '湿度',
-            _paramUnit: '度'
-          }]
-        }
-        call({data: data})
-      }
-    }
+    return axios.get(`/static/mock/param.json`).then(res => {
+      res.data = res.data.filter(item => item.type === id)
+      return res
+    })
   }
+  // getParamByEqpType: (id) => {
+  //   return {
+  //     then: (call) => {
+  //       var data
+  //       if (id === 1) {
+  //         data = [{
+  //           _paramID: 'aa',
+  //           _paramName: '温度',
+  //           _paramUnit: '℃'
+  //         }, {
+  //           _paramID: 'aa2',
+  //           _paramName: '温度2',
+  //           _paramUnit: '℃'
+  //         }]
+  //       } else {
+  //         data = [{
+  //           _paramID: 'bb',
+  //           _paramName: '湿度',
+  //           _paramUnit: '度'
+  //         }]
+  //       }
+  //       call({data: data})
+  //     }
+  //   }
+  // }
 }

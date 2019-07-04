@@ -1,0 +1,20 @@
+[
+    {
+        "type": 1,
+        "_paramID": "aa",
+        "_paramName": "温度",
+        "_paramUnit": "℃"
+    },
+    {
+        "type": 1,
+        "_paramID": "aa2",
+        "_paramName": "温度2",
+        "_paramUnit": "℃"
+    },
+    {
+        "type": 2,
+        "_paramID": "bb",
+        "_paramName": "湿度",
+        "_paramUnit": "度"
+    }
+]
