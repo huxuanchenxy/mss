@@ -12,10 +12,10 @@ namespace MSS.API.Model.Data
     {
        // public int Id { get; set; }
         public int device_type { get; set; }
-       // public string deviceTypeName { get; set; }
+        public string deviceTypeName { get; set; }
 
         public int deptid { get; set; }
-      //  public string deptname { get; set; }
+        public string deptname { get; set; }
 
         public string keyword { get; set; }
         public string title { get; set; }

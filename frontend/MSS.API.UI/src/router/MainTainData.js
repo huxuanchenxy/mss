@@ -20,7 +20,7 @@ const routes = [
                   name: 'Expert',
                   redirect: 'list'
                 }, {
-                  path: 'list',
+                  path: 'list:id?',
                   name: 'ExpertDataList',
                   component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/Expert/children/ExpertDataList.vue')
                 }, {

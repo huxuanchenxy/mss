@@ -11,10 +11,10 @@ namespace MSS.API.Model.DTO
     {
         public string keyword { get; set; }
 
-        public string titile { get; set; }      
+        public string title { get; set; }      
 
         public string deviceType { get; set; }
 
-        public string dept { get; set; }
+        public string deptid { get; set; }
     }
 }

@@ -20,8 +20,8 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(
                 async c =>
                 {
-                    string sql = "INSERT INTO tb_expert_data (device_type, deptID, keyword, title, content, video_file, attch_file,Is_deleted, created_time, created_by, remark)"
-                                                  + " Values (@device_type, @deptID, @keyword, @title, @content, @video_file, @attch_file,@Is_deleted, @CreatedTime, @CreatedBy, @remark) ";
+                    string sql = "INSERT INTO tb_expert_data (device_type, deptID, keyword, title, content, video_file, attch_file,Is_deleted, created_time, created_by,updated_time,updated_by, remark)"
+                                                  + " Values (@device_type, @deptID, @keyword, @title, @content, @video_file, @attch_file,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy, @remark) ";
                     // sql += "SELECT LAST_INSERT_ID()";
                     // int newid = await c.QueryFirstOrDefaultAsync<int>(sql, model);
                     // model.ID = newid; 
@@ -55,16 +55,16 @@ namespace MSS.API.Dao.Implement
             throw new NotImplementedException();
         }
 
-     public  async Task<bool> Exists(string keyword)
+     public  async Task<bool> Exists(string title)
         {
             return await WithConnection(
                 async c =>
                 {
-                    string sql = " SELECT* FROM tb_expert_data WHERE  keyword = @keyword and Is_deleted!= 1 ";
+                    string sql = " SELECT* FROM tb_expert_data WHERE  title = @title and Is_deleted!= 1 ";
                    int ret= await c.ExecuteAsync(sql, new
                     {
-                        keyword = keyword
-                    });
+                       title = title
+                   });
                     if(ret<1)
                     {
                         return false;
@@ -90,7 +90,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT * FROM tb_expert_data where " + strWhere );
+                sql.Append("SELECT * FROM tb_expert_data where   Is_deleted!= 1 and " + strWhere );
                 if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(orderby))
                 {
                     sql.Append(" order by " + sort  + " " + orderby);
@@ -111,7 +111,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM tb_expert_data WHERE ID = @ID";
+                string sql = "SELECT * FROM tb_expert_data WHERE ID = @ID  and Is_deleted!= 1";
                 tb_expert_data model = await c.QueryFirstOrDefaultAsync<tb_expert_data>(sql,
                 new
                 {
@@ -126,7 +126,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT count(*) FROM tb_expert_data"); 
+                sql.Append("SELECT count(*) FROM tb_expert_data where Is_deleted!= 1"); 
                 var count = await c.QueryFirstAsync<int>(sql.ToString());
                 return count;
             });
