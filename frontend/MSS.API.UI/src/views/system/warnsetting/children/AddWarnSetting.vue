@@ -158,6 +158,7 @@ export default {
         id: 3,
         name: '<'
       }],
+      eqpTypeList: [],
       paramList: [],
       equipmentTypeID: '',
       paramObj: {},
@@ -175,12 +176,12 @@ export default {
     }
   },
   created () {
-    if (this.isShow === 'add') {
-      this.title = '| 添加预警设定'
-    } else if (this.isShow === 'edit') {
-      this.title = '| 修改预警设定'
-      this.getWarnningSetting()
-    }
+    // if (this.isShow === 'add') {
+    //   this.title = '| 添加预警设定'
+    // } else if (this.isShow === 'edit') {
+    //   this.title = '| 修改预警设定'
+    //   // this.getWarnningSetting()
+    // }
     this.getSettingExType()
     this.getAllEqpType()
   },
@@ -192,6 +193,7 @@ export default {
       this.getWarnningSetting()
     } else {
       this.title = '| 添加预警设定'
+      this.reset()
     }
   },
   methods: {
@@ -310,6 +312,19 @@ export default {
           this.settingEx = res.data.settingEx
         }
       }).catch(err => console.log(err))
+    },
+
+    // 还原初始设置
+    reset () {
+      if (this.eqpTypeList.length > 0) {
+        this.equipmentTypeID = this.eqpTypeList[0].id
+        this.chooseEqpType()
+      }
+
+      this.isActived = true
+      this.limitUp.text = ''
+      this.limitDown.text = ''
+      this.settingEx = []
     }
   }
 }
