@@ -94,20 +94,11 @@ namespace MSS.API.Core.V1.Business
                 OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userId);
                 if (orguser != null) {
                     ret = await GetOrgByIDs(new List<int> { orguser.NodeID });
-                } else {
+                }
+                else
+                {
                     ret = await GetAllOrg();
                 }
-                // List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
-                // // 找到用户节点属于的顶级节点
-                // OrgTree topNode = _findTopNode(orguser.NodeID, nodes_all);
-                // // 解析单个组织
-                // List<object> orgs = new List<object>();
-                // if (!topNode.IsDel) {
-                //     var obj = _parseOrgTree(topNode, nodes_all);
-                //     orgs.Add(obj);
-                // }
-                // ret.Result = RESULT.OK;
-                // ret.Data = orgs;
             }
             catch (Exception ex)
             {
@@ -124,7 +115,9 @@ namespace MSS.API.Core.V1.Business
             if (node.ParentID == null)
             {
                 return node;
-            } else {
+            }
+            else
+            {
                 return _findTopNode((int)node.ParentID, nodes);
             }
         }
@@ -248,7 +241,7 @@ namespace MSS.API.Core.V1.Business
             //获取此节点类型对应的属性
             List<OrgNodeTypeProperty> typeProps = await _orgRepo.ListNodeTypeProperty(node.NodeType);
             List<OrgNodeProperty> props = new List<OrgNodeProperty>();
-            foreach(OrgNodeProperty prop in node.PropEx)
+            foreach (OrgNodeProperty prop in node.PropEx)
             {
                 foreach (var tp in typeProps)
                 {

@@ -34,7 +34,7 @@ namespace MSS.API.Core
                     //    listenOptions.UseHttps("server.pfx", "password");
                     //});
                 })
-              .UseStartup<Startup>()
+                .UseStartup<Startup>()
                 .Build();
         }
     }
