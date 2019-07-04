@@ -72,7 +72,7 @@ namespace MSS.API.Core.V1.Controllers
         {
             List<EarlyWarnningSetting > list = new List<EarlyWarnningSetting>();
             string[] idsArry = ids.Split(',');
-            foreach(string item in idsArry)
+            foreach (string item in idsArry)
             {
                 int id = Convert.ToInt32(item);
                 EarlyWarnningSetting setting = new EarlyWarnningSetting();
@@ -85,7 +85,9 @@ namespace MSS.API.Core.V1.Controllers
             {
                 var ret = await _warnService.DeleteListWarnningSetting(list);
                 return ret;
-            } else {
+            }
+            else
+            {
                 return NotFound();
             }
         }

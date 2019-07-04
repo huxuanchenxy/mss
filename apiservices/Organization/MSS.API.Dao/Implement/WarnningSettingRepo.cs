@@ -101,16 +101,6 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                // StringBuilder sql = new StringBuilder();
-                // sql.Append("SELECT * FROM early_warnning_setting");
-                // if(!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order))
-                // {
-                //     sql.Append(" order by " + sort + " " + order);
-                // }
-                // sql.Append(" limit " + (page - 1) * size + "," + size);
-
-                // var list = await c.QueryAsync<EarlyWarnningSetting>(sql.ToString());
-
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,d.type_name as eqp_type_name,e.user_name,c.pid_name, b.param_limit_type,b.param_limit_value FROM early_warnning_setting AS a");
                 sql.Append(" LEFT JOIN early_warnning_setting_ex AS b ON a.ID=b.early_warnning_id AND b.is_del!=1");
@@ -122,7 +112,8 @@ namespace MSS.API.Dao.Implement
                 {
                     sql.Append(" and a.equipment_type_id=" + eqpTypeID);
                 }
-                if (!string.IsNullOrEmpty(paramID)) {
+                if (!string.IsNullOrEmpty(paramID))
+                {
                     sql.Append(" and a.param_id='" + paramID + "'");
                 }
                 if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order))
@@ -143,7 +134,8 @@ namespace MSS.API.Dao.Implement
                             settingEntity.SettingEx = new List<EarlyWarnningSettingEx>();
                             orderDictionary.Add(settingEntity.ID, settingEntity);
                         }
-                        if (settingEx != null) {
+                        if (settingEx != null)
+                        {
                             settingEntity.SettingEx.Add(settingEx);
                         }
                         return settingEntity;
@@ -156,16 +148,6 @@ namespace MSS.API.Dao.Implement
         public async Task<EarlyWarnningSetting> GetWarnningSettingByID(int id) {
             return await WithConnection(async c =>
             {
-                // StringBuilder sql = new StringBuilder();
-                // sql.Append("SELECT * FROM early_warnning_setting");
-                // if(!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order))
-                // {
-                //     sql.Append(" order by " + sort + " " + order);
-                // }
-                // sql.Append(" limit " + (page - 1) * size + "," + size);
-
-                // var list = await c.QueryAsync<EarlyWarnningSetting>(sql.ToString());
-
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,d.type_name as eqp_type_name,e.user_name,c.pid_name,b.param_id, b.param_limit_type,b.param_limit_value FROM early_warnning_setting AS a");
                 sql.Append(" LEFT JOIN early_warnning_setting_ex AS b ON a.ID=b.early_warnning_id AND b.is_del!=1");

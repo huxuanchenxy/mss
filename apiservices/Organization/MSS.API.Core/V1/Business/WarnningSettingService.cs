@@ -135,7 +135,7 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                foreach(EarlyWarnningSetting setting in settings)
+                foreach (EarlyWarnningSetting setting in settings)
                 {
                     await _warnRepo.DeleteWarnningSetting(setting);
                 }
