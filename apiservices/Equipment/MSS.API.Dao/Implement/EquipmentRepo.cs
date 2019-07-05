@@ -22,9 +22,9 @@ namespace MSS.API.Dao.Implement
             {
                 string sql = " insert into equipment " +
                     " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
-                    " @SubSystem,@Team,@BarCode,@Desc,@Supplier,@Manufacturer, " +
+                    " @SubSystem,@Team,@TeamPath,@BarCode,@Desc,@Supplier,@Manufacturer, " +
                     " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
-                    " @Location,@LocationBy,@Online,@Life,@PathPic, " +
+                    " @Location,@LocationBy,@LocationPath,@Online,@Life,@PathPic, " +
                     " @MediumRepair,@LargeRepair,@OnlineAgain, " +
                     " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                 sql += "SELECT LAST_INSERT_ID()";
@@ -40,10 +40,10 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.ExecuteAsync(" update equipment " +
                     " set eqp_code=@Code,eqp_name=@Name,eqp_type=@Type,eqp_asset_number=@AssetNo, " +
-                    " eqp_model=@Model,sub_system=@SubSystem,team=@Team,bar_code=@BarCode, " +
+                    " eqp_model=@Model,sub_system=@SubSystem,team=@Team,team_path=@TeamPath,bar_code=@BarCode, " +
                     " discription=@Desc,supplier=@Supplier,manufacturer=@Manufacturer,serial_number=@SerialNo, " +
                     " rated_voltage=@RatedVoltage,rated_current=@RatedCurrent,team=@Team,rated_power=@RatedPower, " +
-                    " location=@Location,location_by=@LocationBy,online_date=@Online,life=@Life, " +
+                    " location=@Location,location_by=@LocationBy,location_path=@LocationPath,online_date=@Online,life=@Life, " +
                     " eqp_pic=@PathPic,medium_repair=@MediumRepair,large_repair=@LargeRepair,online_again=@OnlineAgain, " +
                     " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqpType);
                 return result;
@@ -61,13 +61,13 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<object> GetPageByParm(EqpQueryParm parm)
+        public async Task<EqpView> GetPageByParm(EqpQueryParm parm)
         {
             return await WithConnection(async c =>
             {
                 List<Dictionary> dics = (await c.QueryAsync<Dictionary>("select * from Dictionary where code=@code", new { code = STR_AREA_TYPE })).ToList();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,u1.user_name as created_name,u2.user_name as updated_name, ")
+                sql.Append("SELECT distinct a.*,u1.user_name as created_name,u2.user_name as updated_name, ")
                 .Append(" et.type_name,d.sub_code_name,ot.name,f1.name as sname,f2.name as mname ");
                 if (parm.SearchLocationBy == (int)AREA_TYPE.dictionary)
                 {
@@ -91,9 +91,9 @@ namespace MSS.API.Dao.Implement
                 .Append(" left join org_tree ot on ot.id=a.team ")
                 .Append(" left join firm f1 on f1.id=a.Supplier ")
                 .Append(" left join firm f2 on f2.id=a.Manufacturer ")
-                .Append(" where d.sub_code=a.sub_system and d.code='"+ STR_SUB_SYSTEM + "'");
+                .Append(" where d.sub_code=a.sub_system and d.code='"+ STR_SUB_SYSTEM + "' and ");
                 StringBuilder whereSql = new StringBuilder();
-                whereSql.Append(" and a.is_del=" + (int)IsDeleted.no);
+                whereSql.Append(" a.is_del=" + (int)IsDeleted.no);
                 if (parm.SearchSubSystem!=null)
                 {
                     whereSql.Append(" and a.sub_system =" + parm.SearchSubSystem);
@@ -108,7 +108,8 @@ namespace MSS.API.Dao.Implement
                 }
                 if (parm.SearchLocation != null && parm.SearchLocationBy==(int)AREA_TYPE.dictionary)
                 {
-                    whereSql.Append(" and area.sub_code =" + parm.SearchLocation);
+                    whereSql.Append(" and area.sub_code=a.location and area.code='" + STR_AREA_TYPE + "'")
+                    .Append(" and area.sub_code =" + parm.SearchLocation);
                 }
                 else if (parm.SearchLocation != null && parm.SearchLocationBy != (int)AREA_TYPE.dictionary)
                 {
@@ -130,9 +131,16 @@ namespace MSS.API.Dao.Implement
                     string tbName = dics.Where(a => a.sub_code == parm.SearchLocationBy).FirstOrDefault().sub_code_name;
                     sql.Append(" left join " + tbName + " area on area.id=a.location ");
                 }
+                else
+                {
+                    sql.Append(" FROM equipment a ");
+                }
                 int total = await c.QueryFirstOrDefaultAsync<int>(
-                    sql.ToString() + whereSql.ToString());
-                return new {rows=ets,total=total };
+                    sql.ToString() + " where " + whereSql.ToString());
+                EqpView ret = new EqpView();
+                ret.rows = ets;
+                ret.total = total;
+                return ret;
             });
         }
 
@@ -152,6 +160,19 @@ namespace MSS.API.Dao.Implement
             {
                 var result = (await c.QueryAsync<Equipment>(
                     "SELECT * FROM equipment")).ToList();
+                return result;
+            });
+        }
+
+        public async Task<List<AllArea>> GetAllArea()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT sub_code_name as AreaName,sub_code as id,0 as TableName " +
+                "from dictionary where code='metro_area' UNION " +
+                "select AreaName,id,1 as TableName from tb_config_bigarea UNION " +
+                "select AreaName,id,2 as TableName from tb_config_midarea";
+                var result = (await c.QueryAsync<AllArea>(sql)).ToList();
                 return result;
             });
         }

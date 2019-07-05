@@ -13,33 +13,30 @@ using MSS.API.Common;
 using static MSS.API.Common.Const;
 using static MSS.API.Common.FilePath;
 using Microsoft.AspNetCore.Http;
-using MSS.API.Common.Utility;
 using System.IO;
 
 namespace MSS.API.Core.V1.Business
 {
-    public class EquipmentService : IEquipmentService
+    public class FirmService : IFirmService
     {
         //private readonly ILogger<UserService> _logger;
-        private readonly IEquipmentRepo<Equipment> _eqpRepo;
+        private readonly IFirmRepo<Firm> _firmRepo;
 
-        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo)
+        public FirmService(IFirmRepo<Firm> firmRepo)
         {
             //_logger = logger;
-            _eqpRepo = eqpRepo;
+            _firmRepo = firmRepo;
         }
 
-        public async Task<ApiResult> Save(Equipment eqp, List<IFormFile> file)
+        public async Task<ApiResult> Save(Firm firm)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                PDFHelper pdf = new PDFHelper();
-                eqp.PathPic = pdf.SavePDF(file, EQP);
                 DateTime dt = DateTime.Now;
-                eqp.UpdatedTime = dt;
-                eqp.CreatedTime = dt;
-                ret.data = await _eqpRepo.Save(eqp);
+                firm.UpdatedTime = dt;
+                firm.CreatedTime = dt;
+                ret.data = await _firmRepo.Save(firm);
                 return ret;
             }
             catch (Exception ex)
@@ -50,19 +47,17 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Update(Equipment eqp, List<IFormFile> file)
+        public async Task<ApiResult> Update(Firm firm)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                Equipment et = await _eqpRepo.GetByID(eqp.ID);
+                Firm et = await _firmRepo.GetByID(firm.ID);
                 if (et!=null)
                 {
-                    PDFHelper pdf = new PDFHelper();
-                    eqp.PathPic = pdf.SavePDF(file, EQP);
                     DateTime dt = DateTime.Now;
-                    eqp.UpdatedTime = dt;
-                    ret.data = await _eqpRepo.Update(eqp);
+                    firm.UpdatedTime = dt;
+                    ret.data = await _firmRepo.Update(firm);
                 }
                 else
                 {
@@ -85,7 +80,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 // 判断设备类型下有没有挂设备，有的话不允许删除
-                ret.data = await _eqpRepo.Delete(ids.Split(','),userID);
+                ret.data = await _firmRepo.Delete(ids.Split(','),userID);
                 return ret;
             }
             catch (Exception ex)
@@ -96,7 +91,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> GetPageByParm(EqpQueryParm parm)
+        public async Task<ApiResult> GetPageByParm(FirmQueryParm parm)
         {
             ApiResult ret = new ApiResult();
             try
@@ -105,15 +100,7 @@ namespace MSS.API.Core.V1.Business
                 parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
                 parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
                 parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
-                EqpView ev = await _eqpRepo.GetPageByParm(parm);
-                List<Equipment> eqps=ev.rows;
-                List<AllArea> laa = await _eqpRepo.GetAllArea();
-                foreach (var item in eqps)
-                {
-                    item.LocationName = laa.Where(a => a.Tablename == item.LocationBy && a.ID == item.Location)
-                        .FirstOrDefault().AreaName;
-                }
-                ret.data = ev;
+                //ret.data = await _firmRepo.GetPageByParm(parm);
                 return ret;
             }
             catch (Exception ex)
@@ -129,7 +116,7 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _eqpRepo.GetByID(id);
+                ret.data = await _firmRepo.GetByID(id);
                 return ret;
             }
             catch (Exception ex)
@@ -145,7 +132,7 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _eqpRepo.GetAll();
+                ret.data = await _firmRepo.GetAll();
                 return ret;
             }
             catch (Exception ex)

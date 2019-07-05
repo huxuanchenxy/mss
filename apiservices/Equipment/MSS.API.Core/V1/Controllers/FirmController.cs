@@ -14,31 +14,31 @@ namespace MSS.API.Core.V1.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class EquipmentTypeController : ControllerBase
+    public class FirmController : ControllerBase
     {
-        private readonly IEquipmentTypeService _eqpTypeService;
-        public EquipmentTypeController(IEquipmentTypeService eqpTypeService)
+        private readonly IFirmService _firmService;
+        public FirmController(IFirmService firmService)
         {
-            _eqpTypeService = eqpTypeService;
+            _firmService = firmService;
 
         }
 
         [HttpPost]
-        public ActionResult Save([FromForm]EquipmentType eqpType, List<IFormFile> file)
+        public ActionResult Save([FromForm]Firm firm)
         {
-            eqpType.CreatedBy = 1;
-            eqpType.UpdatedBy = 1;
-            eqpType.IsDel = false;
+            firm.CreatedBy = 1;
+            firm.UpdatedBy = 1;
+            firm.IsDel = false;
 
-            var ret = _eqpTypeService.Save(eqpType, file);
+            var ret = _firmService.Save(firm);
             return Ok(ret.Result);
         }
 
         [HttpPut]
-        public ActionResult Update([FromForm]EquipmentType eqpType, List<IFormFile> file)
+        public ActionResult Update([FromForm]Firm firm)
         {
-            eqpType.UpdatedBy = 1;
-            var ret = _eqpTypeService.Update(eqpType,file);
+            firm.UpdatedBy = 1;
+            var ret = _firmService.Update(firm);
             return Ok(ret.Result);
         }
 
@@ -46,28 +46,28 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult Delete(string ids)
         {
             int userID = 1;
-            var resp = _eqpTypeService.Delete(ids, userID);
+            var resp = _firmService.Delete(ids, userID);
             return Ok(resp.Result);
         }
 
         [HttpGet]
-        public ActionResult GetPageByParm([FromQuery] EqpTypeQueryParm parm)
+        public ActionResult GetPageByParm([FromQuery] FirmQueryParm parm)
         {
-            var resp = _eqpTypeService.GetPageByParm(parm);
+            var resp = _firmService.GetPageByParm(parm);
             return Ok(resp.Result);
         }
 
         [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
-            var resp = _eqpTypeService.GetByID(id);
+            var resp = _firmService.GetByID(id);
             return Ok(resp.Result);
         }
 
         [HttpGet("All")]
         public ActionResult GetAll()
         {
-            var resp = _eqpTypeService.GetAll();
+            var resp = _firmService.GetAll();
             return Ok(resp.Result);
         }
     }

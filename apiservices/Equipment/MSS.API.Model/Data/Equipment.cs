@@ -14,31 +14,33 @@ namespace MSS.API.Model.Data
         public string AssetNo { get; set; }
         public string Model { get; set; }
         public int SubSystem { get; set; }
-        public int SubSystemName { get; set; }
+        public string SubSystemName { get; set; }
         public int Team { get; set; }
+        public string TeamPath { get; set; }
         public string TeamName { get; set; }
         public string BarCode { get; set; }
         public string Desc { get; set; }
-        public int Supplier { get; set; }
-        public int SupplierName { get; set; }
-        public int Manufacturer { get; set; }
-        public int ManufacturerName { get; set; }
+        public int? Supplier { get; set; }
+        public string SupplierName { get; set; }
+        public int? Manufacturer { get; set; }
+        public string ManufacturerName { get; set; }
         public string SerialNo { get; set; }
-        public double RatedVoltage { get; set; }
-        public double RatedCurrent { get; set; }
-        public double RatedPower { get; set; }
+        public double? RatedVoltage { get; set; }
+        public double? RatedCurrent { get; set; }
+        public double? RatedPower { get; set; }
         public int Location { get; set; }
         /// <summary>
         /// 哪张表的位置ID
         /// </summary>
         public int LocationBy { get; set; }
+        public string LocationPath { get; set; }
         public string LocationName { get; set; }
         public DateTime Online { get; set; }
         public string Life { get; set; }
         public string PathPic { get; set; }
         public int MediumRepair { get; set; }
         public int LargeRepair { get; set; }
-        public DateTime OnlineAgain { get; set; }
+        public DateTime? OnlineAgain { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
     }
@@ -57,6 +59,7 @@ namespace MSS.API.Model.Data
             Map(o => o.SubSystem).ToColumn("sub_system");
             Map(o => o.SubSystemName).ToColumn("sub_code_name");
             Map(o => o.Team).ToColumn("team");
+            Map(o => o.TeamPath).ToColumn("team_path");
             Map(o => o.TeamName).ToColumn("name");
             Map(o => o.BarCode).ToColumn("bar_code");
             Map(o => o.Desc).ToColumn("discription");
@@ -72,6 +75,7 @@ namespace MSS.API.Model.Data
             Map(o => o.RatedPower).ToColumn("rated_power");
 
             Map(o => o.Location).ToColumn("location");
+            Map(o => o.LocationPath).ToColumn("location_path");
             Map(o => o.LocationBy).ToColumn("location_by");
             Map(o => o.LocationName).ToColumn("AreaName");
             Map(o => o.Online).ToColumn("online_date");
@@ -106,6 +110,12 @@ namespace MSS.API.Model.Data
     {
         public int ID { get; set; }
         public string AreaName { get; set; }
-        public string Tablename { get; set; }
+        public int Tablename { get; set; }
+    }
+
+    public class EqpView
+    {
+        public List<Equipment> rows { get; set; }
+        public int total { get; set; }
     }
 }
