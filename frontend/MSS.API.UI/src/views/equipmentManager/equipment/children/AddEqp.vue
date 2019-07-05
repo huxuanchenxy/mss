@@ -86,17 +86,19 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">管辖班组</span>
+                <span class="text">管辖班组<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-cascader class="cascader_width" clearable
                     :props="defaultParams"
                     change-on-select
                     @change="cascader_change"
                     :show-all-levels="true"
-                    :options="teamList">
+                    :options="teamList"
+                    v-model="teamPath.text">
                   </el-cascader>
                 </div>
               </div>
+              <p class="validate-tips">{{ teamPath.tips }}</p>
             </li>
             <li class="list">
               <div class="inp-wrap">
@@ -118,9 +120,9 @@
             </li>
             <li class="list" >
               <div class="inp-wrap">
-                <span class="text">供应商<em class="validate-mark">*</em></span>
+                <span class="text">供应商</span>
                 <div class="inp">
-                  <el-select v-model="supplier.text" clearable filterable placeholder="请选择" @change="validateSelect(supplier)">
+                  <el-select v-model="supplier" clearable filterable placeholder="请选择">
                     <el-option
                       v-for="item in supplierList"
                       :key="item.key"
@@ -130,13 +132,12 @@
                   </el-select>
                 </div>
               </div>
-              <p class="validate-tips">{{ supplier.tips }}</p>
             </li>
             <li class="list" >
               <div class="inp-wrap">
-                <span class="text">制造商<em class="validate-mark">*</em></span>
+                <span class="text">制造商</span>
                 <div class="inp">
-                  <el-select v-model="manufacturer.text" clearable filterable placeholder="请选择" @change="validateSelect(manufacturer)">
+                  <el-select v-model="manufacturer" clearable filterable placeholder="请选择">
                     <el-option
                       v-for="item in manufacturerList"
                       :key="item.key"
@@ -146,7 +147,6 @@
                   </el-select>
                 </div>
               </div>
-              <p class="validate-tips">{{ manufacturer.tips }}</p>
             </li>
             <li class="list">
               <div class="inp-wrap">
@@ -186,7 +186,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">安装位置</span>
+                <span class="text">安装位置<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-cascader class="cascader_width" clearable
                     change-on-select
@@ -201,7 +201,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">上线日期</span>
+                <span class="text">上线日期<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-date-picker
                     v-model="time.text"
@@ -222,23 +222,58 @@
               </div>
               <p class="validate-tips">{{ life.tips }}</p>
             </li>
+          </ul>
+        </div>
+        <div class="upload-wrap con-padding-horizontal">
+          <span class="label">设备图纸：</span>
+          <el-upload class="el-upload-my-picture-card"
+            ref="upload"
+            :action="``"
+            accept="application/pdf"
+            :file-list="fileList"
+            :show-file-list="true"
+            list-type="picture-card"
+            :auto-upload="false"
+            :http-request="upload"
+            :on-change="onChange"
+            :on-preview="preview">
+            <i class="iconfont icon-pdf"></i>
+          </el-upload>
+        </div>
+        <div class="con-padding-horizontal header"/>
+        <div class="con-padding-horizontal operation">
+          <ul class="input-group">
             <li class="list">
-              <div class="upload-wrap con-padding-horizontal">
-                <span class="text">设备图纸：</span>
-                <el-upload class="el-upload-my-picture-card"
-                  ref="upload"
-                  :action="``"
-                  accept="application/pdf"
-                  :file-list="fileList"
-                  :show-file-list="true"
-                  list-type="picture-card"
-                  :auto-upload="false"
-                  :http-request="upload"
-                  :on-change="onChange"
-                  :on-preview="preview">
-                  <i class="iconfont icon-pdf"></i>
-                </el-upload>
+              <div class="inp-wrap">
+                <span class="text">中修频率</span>
+                <div class="inp">
+                  <el-input placeholder="请输入中修频率" v-model="mediumRepair.text" @keyup.native="validateNumber(mediumRepair)"></el-input>
+                </div>
               </div>
+              <p class="validate-tips">{{ mediumRepair.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">大修频率</span>
+                <div class="inp">
+                  <el-input placeholder="请输入大修频率" v-model="largeRepair.text" @keyup.native="validateNumber(largeRepair)"></el-input>
+                </div>
+              </div>
+              <p class="validate-tips">{{ largeRepair.tips }}</p>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
+                <span class="text">再次上线日期</span>
+                <div class="inp">
+                  <el-date-picker
+                    v-model="timeAgain.text"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="请选择日期">
+                  </el-date-picker>
+                </div>
+              </div>
+              <p class="validate-tips">{{ timeAgain.tips }}</p>
             </li>
           </ul>
         </div>
@@ -260,7 +295,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
@@ -293,8 +328,6 @@ export default {
       loading: false,
       isShow: this.$route.params.mark,
       editEqpID: this.$route.params.id,
-      team: '',
-      teamList: [],
       eqpCode: {
         text: '',
         tips: ''
@@ -313,6 +346,12 @@ export default {
         tips: ''
       },
       eqpTypeList: [],
+      team: '',
+      teamPath: {
+        text: [],
+        tips: ''
+      },
+      teamList: [],
       assetNo: {
         text: '',
         tips: ''
@@ -329,15 +368,9 @@ export default {
         text: '',
         tips: ''
       },
-      supplier: {
-        text: '',
-        tips: ''
-      },
+      supplier: '',
       supplierList: [],
-      manufacturer: {
-        text: '',
-        tips: ''
-      },
+      manufacturer: '',
       manufacturerList: [],
       serialNo: {
         text: '',
@@ -367,6 +400,18 @@ export default {
       life: {
         text: '',
         tips: ''
+      },
+      mediumRepair: {
+        text: 0,
+        tips: ''
+      },
+      largeRepair: {
+        text: 0,
+        tips: ''
+      },
+      timeAgain: {
+        text: '',
+        tips: ''
       }
     }
   },
@@ -377,7 +422,7 @@ export default {
     } else if (this.isShow === 'edit') {
       this.loading = true
       this.title = '| 修改设备'
-      // this.getActionGroup()
+      this.getEqp()
     }
     // 子系统加载
     apiAuth.getSubCode('sub_system').then(res => {
@@ -427,6 +472,7 @@ export default {
         this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
       }
     },
+    // 班组下拉选中，过滤非班组
     cascader_change (val) {
       let selectedTeam = val[val.length - 1]
       let obj = this.getCascaderObj(selectedTeam, this.teamList)
@@ -458,17 +504,56 @@ export default {
         })
         return
       }
-      let actionGroup = {
-        group_name: this.eqpName.text,
-        group_type: this.groupType.text,
-        group_order: this.groupOrder.text,
-        request_url: this.groupUrl.text,
-        icon: this.groupIcon.text,
-        active_icon: this.titleIcon.text
+      let fd = new FormData()
+      if (this.$refs.upload.uploadFiles.length > 0) {
+        if (this.$refs.upload.uploadFiles[0].status !== 'success') {
+          this.$refs.upload.submit()
+          fd.append('file', this.needUpload[0])
+        }
+      }
+      fd.append('Code', this.eqpCode.text)
+      fd.append('Name', this.eqpName.text)
+      fd.append('Type', this.eqpType.text)
+      fd.append('AssetNo', this.assetNo.text)
+      fd.append('Model', this.model.text)
+      fd.append('SubSystem', this.subSystem.text)
+      fd.append('Team', this.team)
+      fd.append('TeamPath', this.teamPath.text.join(','))
+      fd.append('BarCode', this.barCode.text)
+      fd.append('Desc', this.desc.text)
+      fd.append('Supplier', this.supplier)
+      fd.append('Manufacturer', this.manufacturer)
+      fd.append('SerialNo', this.serialNo.text)
+      if (this.ratedVoltage.text !== '') {
+        fd.append('RatedVoltage', this.ratedVoltage.text)
+      }
+      if (this.ratedCurrent.text !== '') {
+        fd.append('RatedCurrent', this.ratedCurrent.text)
+      }
+      if (this.ratedPower.text !== '') {
+        fd.append('RatedPower', this.ratedPower.text)
+      }
+      let l = this.area.text.length - 1
+      fd.append('Location', this.area.text[l])
+      fd.append('LocationBy', l)
+      fd.append('LocationPath', this.area.text.join(','))
+      fd.append('Online', this.time.text)
+      fd.append('Life', this.life.text)
+      fd.append('MediumRepair', this.mediumRepair.text)
+      fd.append('LargeRepair', this.largeRepair.text)
+      fd.append('OnlineAgain', this.timeAgain.text)
+
+      let config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        transformRequest: function (data, headers) {
+          return data
+        }
       }
       if (this.isShow === 'add') {
         // 添加设备
-        api.AddEqp(actionGroup).then(res => {
+        api.addEqp(fd, config).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '添加成功',
@@ -487,9 +572,9 @@ export default {
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
-        actionGroup.id = this.eqpCode
+        fd.append('ID', this.editEqpID)
         // 修改设备
-        api.updateActionGroup(actionGroup).then(res => {
+        api.updateEqp(fd, config).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '修改成功',
@@ -510,18 +595,46 @@ export default {
       }
     },
     // 修改设备时获取设备资料
-    getActionGroup () {
-      api.getActionGroupByID(this.editEqpID).then(res => {
+    getEqp () {
+      api.getEqpByID(this.editEqpID).then(res => {
         this.loading = false
         let _res = res.data
-        this.eqpCode = _res.id
-        this.eqpName.text = _res.group_name
-        this.groupType.text = _res.group_type.toString()
-        this.groupOrder.text = _res.group_order.toString()
-        this.groupUrl.text = _res.request_url
-        this.groupIcon.text = _res.icon
-        this.titleIcon.text = _res.active_icon
+        this.eqpCode.text = _res.code
+        this.eqpName.text = _res.name
+        this.eqpType.text = _res.type
+        this.subSystem.text = _res.subSystem
+        this.team = _res.team
+        this.teamPath.text = this.strToIntArr(_res.teamPath)
+        this.assetNo.text = nullToEmpty(_res.assetNo)
+        this.model.text = nullToEmpty(_res.model)
+        this.barCode.text = nullToEmpty(_res.barCode)
+        this.desc.text = nullToEmpty(_res.desc)
+        this.serialNo.text = nullToEmpty(_res.serialNo)
+        this.ratedVoltage.text = _res.ratedVoltage === null ? '' : _res.ratedVoltage
+        this.ratedCurrent.text = _res.ratedCurrent === null ? '' : _res.ratedCurrent
+        this.ratedPower.text = _res.ratedPower === null ? '' : _res.ratedPower
+        this.area.text = this.strToIntArr(_res.locationPath)
+        this.time.text = _res.online
+        this.life.text = nullToEmpty(_res.life)
+        this.mediumRepair.text = _res.mediumRepair.toString()
+        this.largeRepair.text = _res.largeRepair.toString()
+        this.timeAgain.text = nullToEmpty(_res.onlineAgain)
+        if (_res.pathPic !== null) {
+          this.fileList.push({
+            url: PDF_IMAGE,
+            pdfUrl: _res.pathPic,
+            status: 'success'
+          })
+        }
       }).catch(err => console.log(err))
+    },
+    strToIntArr (str) {
+      let arr = str.split(',')
+      let ret = []
+      for (let i = 0; i < arr.length; i++) {
+        ret.push(parseInt(arr[i]))
+      }
+      return ret
     },
     // 验证
     validateInput (val) {
@@ -530,13 +643,16 @@ export default {
 
     // 验证3位小数
     validateDouble (val) {
-      if (!vdouble3(val.text)) {
-        val.tips = '此项必须为最多三位小数的浮点数'
-        return false
-      } else {
-        val.tips = ''
-        return true
+      val.tips = ''
+      if (val.text !== '') {
+        if (!vdouble3(val.text)) {
+          val.tips = '此项必须为最多三位小数的浮点数'
+          return false
+        } else {
+          return true
+        }
       }
+      return true
     },
 
     // 验证非法字符串，但允许为空
@@ -559,8 +675,8 @@ export default {
       }
     },
 
-    validateNumber () {
-      validateNumberCommon(this.groupOrder)
+    validateNumber (val) {
+      validateNumberCommon(val)
     },
 
     validateAll () {
@@ -570,7 +686,23 @@ export default {
       if (!this.validateSelect(this.eqpType)) return false
       if (!this.validateInputNull(this.assetNo)) return false
       if (!this.validateInputNull(this.model)) return false
-      if (!this.validateSelect()) return false
+      if (!this.validateInputNull(this.barCode)) return false
+      if (!this.validateInputNull(this.desc)) return false
+      if (!this.validateInputNull(this.serialNo)) return false
+      if (!this.validateDouble(this.ratedVoltage)) return false
+      if (!this.validateDouble(this.ratedCurrent)) return false
+      if (!this.validateDouble(this.ratedPower)) return false
+      if (this.teamPath.text.length === 0) {
+        this.teamPath.tips = '此项必选'
+        return false
+      }
+      if (this.area.text.length === 0) {
+        this.area.tips = '此项必选'
+        return false
+      }
+      if (!this.validateInputNull(this.life)) return false
+      if (!validateNumberCommon(this.mediumRepair)) return false
+      if (!validateNumberCommon(this.largeRepair)) return false
       return true
     }
   }
@@ -641,4 +773,50 @@ export default {
     }
   }
 }
+
+  // 图片预览
+  /deep/ .show-list-wrap{
+    width: 100% !important;
+    height: 100%;
+
+    .el-dialog__header{
+      display: block;
+      padding: 0;
+
+      .el-dialog__headerbtn{
+        top: 0!important;
+        right: 0!important;
+        z-index: 999;
+        width: 27px;
+        height: 27px;
+        background: url(../../../../common/images/icon-close.png) no-repeat 0 0/100% 100%;
+      }
+
+      .el-dialog__close{
+        display: none;
+      }
+    }
+
+    .el-dialog__body{
+      width: 100%;
+      height: 100%;
+      padding: 0 !important;
+
+      img{
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+
+    .el-carousel__item.is-animating{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    // 左右箭头
+    .el-carousel__arrow i{
+      font-size: 20px;
+    }
+  }
 </style>

@@ -100,7 +100,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, vEmail, vPhone } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, vEmail, vPhone, nullToEmpty } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/authApi'
 export default {
@@ -232,9 +232,9 @@ export default {
         this.userName.text = _res.user_name
         this.role = _res.role_id === null ? '' : _res.role_id.toString()
         this.jobNumber.text = _res.job_number
-        this.position.text = _res.position
-        this.mobile.text = _res.mobile
-        this.email.text = _res.email
+        this.position.text = nullToEmpty(_res.position)
+        this.mobile.text = nullToEmpty(_res.mobile)
+        this.email.text = nullToEmpty(_res.email)
       }).catch(err => console.log(err))
     },
     // 验证

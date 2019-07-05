@@ -43,6 +43,15 @@ export default {
     }
   }
 
+  &.import{
+    border-color:  #7CCD7C;
+    background-color:  #7CCD7C;
+    &:hover{
+      border-color:  #7CCD7C;
+      background-color:  #7CCD7C;
+    }
+  }
+
   &.active,
   &:hover{
     border-color: $color-main-btn;

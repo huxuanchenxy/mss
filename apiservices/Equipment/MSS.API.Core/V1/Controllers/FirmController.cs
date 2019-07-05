@@ -28,7 +28,6 @@ namespace MSS.API.Core.V1.Controllers
         {
             firm.CreatedBy = 1;
             firm.UpdatedBy = 1;
-            firm.CreatedTime = DateTime.Now;
             firm.IsDel = false;
 
             var ret = _firmService.Save(firm);
@@ -39,7 +38,6 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult Update([FromForm]Firm firm)
         {
             firm.UpdatedBy = 1;
-            firm.UpdatedTime = DateTime.Now;
             var ret = _firmService.Update(firm);
             return Ok(ret.Result);
         }
