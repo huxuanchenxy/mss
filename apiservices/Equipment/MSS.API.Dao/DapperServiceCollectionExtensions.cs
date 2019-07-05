@@ -21,12 +21,15 @@ namespace MSS.API.Dao
             optionsSection.Bind(options);
             services.AddSingleton<DapperOptions>(options);
             services.AddTransient<IEquipmentTypeRepo<EquipmentType>, EquipmentTypeRepo>();
-
+            services.AddTransient<IFirmRepo<Firm>, FirmRepo>();
+            services.AddTransient<IEquipmentRepo<Equipment>, EquipmentRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
                 //config.AddMap(new BaseEntityMap());
                 config.AddMap(new EquipmentTypeMap());
+                config.AddMap(new EquipmentMap());
+                config.AddMap(new FirmMap());
             });
             return services;
         }

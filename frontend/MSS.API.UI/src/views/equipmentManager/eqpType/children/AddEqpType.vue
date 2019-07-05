@@ -146,7 +146,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 export default {
@@ -177,13 +177,7 @@ export default {
         user: [],
         regulations: []
       },
-      previewUrl: {
-        working: '',
-        drawings: '',
-        install: '',
-        user: '',
-        regulations: ''
-      },
+      previewUrl: '',
       pageType: ''
     }
   },
@@ -206,7 +200,7 @@ export default {
           let data = res.data
           this.eqpTypeID = data.id
           this.eqpTypeName.text = data.tName
-          this.model.text = data.model
+          this.model.text = nullToEmpty(data.model)
           this.eqpTypeDesc.text = data.desc
           if (data.pWorking !== null) {
             this.fileList.working.push({
@@ -403,7 +397,6 @@ export default {
       this.fileList.regulations.push(file)
     },
     preview (item) {
-      console.log(item)
       this.centerDialogVisible = true
       // var urlbase = process.env.NODE_ENV === 'production' ? '' : '/api'
       if (item.status === 'success') {
@@ -414,7 +407,6 @@ export default {
         }
       } else {
         this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
-        console.log(this.previewUrl)
       }
     },
     // 关闭图片预览窗口
@@ -561,59 +553,6 @@ export default {
     width: auto;
   }
 }
-// 图片预览
-/deep/ .show-list-wrap{
-  position: absolute;
-  z-index: 9;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  background: #1c1c1c;
-  transform: translate(0px);
-
-  .el-carousel{
-    height: 100%;
-  }
-
-  img{
-    max-width: 100%;
-    height: 100%;
-  }
-
-  .icon-close{
-    position: absolute;
-    z-index: 99;
-    top: 3px;
-    right: 3px;
-    width: 27px;
-    height: 27px;
-    background: url(../../../../common/images/icon-close.png) no-repeat 0 0/100% 100%;
-    cursor: pointer;
-  }
-
-  .el-dialog__header{
-    display: block;
-    padding: 0;
-
-    .el-dialog__headerbtn{
-      top: -14px;
-      right: -14px;
-      width: 27px;
-      height: 27px;
-      background: url(../../../../common/images/icon-close.png) no-repeat 0 0/100% 100%;
-    }
-
-    .el-dialog__close{
-      display: none;
-    }
-  }
-
-  .el-dialog__body{
-    height: 100%;
-  }
-}
 
 // 列表
 .list-bottom-wrap{
@@ -659,25 +598,6 @@ export default {
   .textarea-wrap{
     width: 100%;
     margin-top: 10px;
-  }
-}
-
-// 上传图片列表
-.picture-list-wrap{
-  .list{
-    width: 80px;
-    height: 80px;
-    background-color: $color-white;
-    border-radius: $border-radius;
-    text-align: center;
-    line-height: 80px;
-
-    &:before{
-      content: "\e6cc";
-      font-size: 28px;
-      font-family: "iconfont";
-      color: #8c939d;
-    }
   }
 }
 

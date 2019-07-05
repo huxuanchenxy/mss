@@ -12,8 +12,15 @@ export default {
 
   getEqp: parm => { return axios.get(`${api}/Equipment`, {params: parm}).then(res => res.data) },
   getEqpByID: id => { return axios.get(`${api}/Equipment/${id}`).then(res => res.data) },
-  addEqp: parm => { return axios.post(`${api}/Equipment`, parm).then(res => res.data) },
-  updateEqp: parm => { return axios.put(`${api}/Equipment`, parm).then(res => res.data) },
+  addEqp: (fd, config) => { return axios.post(`${api}/Equipment`, fd, config).then(res => res.data) },
+  updateEqp: (fd, config) => { return axios.put(`${api}/Equipment`, fd, config).then(res => res.data) },
   delEqp: ids => { return axios.delete(`${api}/Equipment/${ids}`).then(res => res.data) },
-  getEqpAll: () => { return axios.get(`${api}/Equipment/All`).then(res => res.data) }
+  getEqpAll: () => { return axios.get(`${api}/Equipment/All`).then(res => res.data) },
+
+  getFirm: parm => { return axios.get(`${api}/Firm`, {params: parm}).then(res => res.data) },
+  getFirmByID: id => { return axios.get(`${api}/Firm/${id}`).then(res => res.data) },
+  addFirm: parm => { return axios.post(`${api}/Firm`, parm).then(res => res.data) },
+  updateFirm: parm => { return axios.put(`${api}/Firm`, parm).then(res => res.data) },
+  delFirm: ids => { return axios.delete(`${api}/Firm/${ids}`).then(res => res.data) },
+  getFirmAll: () => { return axios.get(`${api}/Firm/All`).then(res => res.data) }
 }

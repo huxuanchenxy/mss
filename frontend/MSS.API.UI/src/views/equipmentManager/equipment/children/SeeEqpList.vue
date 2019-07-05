@@ -44,17 +44,18 @@
               <el-input v-model.trim="eqpCode" placeholder="请输入设备图纸编码"></el-input>
             </div>
           </div>
-          <!--<div class="input-group">
+          <div class="input-group">
             <label for="">安装位置</label>
             <div class="inp">
               <el-cascader clearable
-                :props="defaultParams"
-                :show-all-levels="false"
-                :options="actionInfo"
-                v-model="authority">
+                change-on-select
+                :props="areaParams"
+                :show-all-levels="true"
+                :options="areaList"
+                v-model="area">
               </el-cascader>
             </div>
-          </div>-->
+          </div>
         </div>
         <div class="search-btn" @click="searchRes">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
@@ -64,6 +65,7 @@
         <li class="list" @click="add"><x-button>添加</x-button></li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <!--<li class="list" @click="detail"><x-button>查看明细</x-button></li>-->
       </ul>
     </div>
     <!-- 内容 -->
@@ -113,8 +115,9 @@
                 <div class="name">{{ item.subSystemName }}</div>
                 <div class="name">{{ item.tName }}</div>
                 <div class="number">{{ item.teamName }}</div>
-                <div class="last-update-time color-white">{{ item.updated_time }}</div>
-                <div class="last-maintainer">{{ item.updated_name }}</div>
+                <div class="number">{{ item.locationName }}</div>
+                <div class="last-update-time color-white">{{ item.updatedTime }}</div>
+                <div class="last-maintainer">{{ item.updatedName }}</div>
               </div>
             </li>
           </ul>
@@ -162,6 +165,11 @@ export default {
   },
   data () {
     return {
+      areaParams: {
+        label: 'areaName',
+        value: 'id',
+        children: 'children'
+      },
       title: ' | 设备定义',
       eqpCode: '',
       subSystem: '',
@@ -216,8 +224,7 @@ export default {
 
     // 安装位置加载
     apiArea.SelectConfigAreaData().then(res => {
-      console.log(res)
-      // this.eqpTypeList = res.data
+      this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
   },
   activated () {
@@ -228,7 +235,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      // this.searchResult(1)
+      this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
@@ -258,6 +265,10 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
+      let l = this.area.length - 1
+      if (l === -1) {
+        l = ''
+      }
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
@@ -265,12 +276,14 @@ export default {
         page: page,
         SearchSubSystem: this.subSystem,
         SearchCode: this.eqpCode,
-        SearchType: this.eqpType
+        SearchType: this.eqpType,
+        SearchLocation: this.area[l],
+        SearchLocationBy: l
       }
       api.getEqp(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.updated_time = transformDate(item.updated_time)
+          item.updatedTime = transformDate(item.updatedTime)
         })
         this.EqpList = res.data.rows
         this.total = res.data.total
@@ -307,7 +320,27 @@ export default {
         })
       }
     },
-
+    // 查看设备明细
+    detail () {
+      if (!this.editEqpID.length) {
+        this.$message({
+          message: '请选择需要查看的设备',
+          type: 'warning'
+        })
+      } else if (this.editEqpID.length > 1) {
+        this.$message({
+          message: '查看的设备不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailEqp',
+          params: {
+            id: this.editEqpID[0]
+          }
+        })
+      }
+    },
     // 删除设备
     remove () {
       if (!this.editEqpID.length) {
@@ -347,7 +380,7 @@ export default {
       this.$emit('title', '| 设备别')
       this.loading = true
       this.init()
-      this.searchResult(1)
+      // this.searchResult(1)
     },
 
     // 获取修改设备id
