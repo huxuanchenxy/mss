@@ -30,7 +30,7 @@
               <el-input v-model="Name.text" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ Code.tips }}</p>
+          <p class="validate-tips">{{ Name.tips }}</p>
         </li>
         <li class="list" >
           <div class="inp-wrap">
@@ -97,7 +97,7 @@
               <el-input v-model="Name.text" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ Code.tips }}</p>
+          <p class="validate-tips">{{ Name.tips }}</p>
         </li>
         <li class="list" >
           <div class="inp-wrap">
@@ -145,7 +145,7 @@
               <el-input v-model="Name.text" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ Code.tips }}</p>
+          <p class="validate-tips">{{ Name.tips }}</p>
         </li>
         <li class="list">
           <div class="inp-wrap">
