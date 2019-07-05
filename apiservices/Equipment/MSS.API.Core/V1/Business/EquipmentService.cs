@@ -13,6 +13,7 @@ using MSS.API.Common;
 using static MSS.API.Common.Const;
 using static MSS.API.Common.FilePath;
 using Microsoft.AspNetCore.Http;
+using MSS.API.Common.Utility;
 using System.IO;
 
 namespace MSS.API.Core.V1.Business
@@ -28,11 +29,13 @@ namespace MSS.API.Core.V1.Business
             _eqpRepo = eqpRepo;
         }
 
-        public async Task<ApiResult> Save(Equipment eqp)
+        public async Task<ApiResult> Save(Equipment eqp, List<IFormFile> file)
         {
             ApiResult ret = new ApiResult();
             try
             {
+                PDFHelper pdf = new PDFHelper();
+                eqp.PathPic = pdf.SavePDF(file, EQP);
                 DateTime dt = DateTime.Now;
                 eqp.UpdatedTime = dt;
                 eqp.CreatedTime = dt;
@@ -47,7 +50,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Update(Equipment eqp)
+        public async Task<ApiResult> Update(Equipment eqp, List<IFormFile> file)
         {
             ApiResult ret = new ApiResult();
             try
@@ -55,6 +58,8 @@ namespace MSS.API.Core.V1.Business
                 Equipment et = await _eqpRepo.GetByID(eqp.ID);
                 if (et!=null)
                 {
+                    PDFHelper pdf = new PDFHelper();
+                    eqp.PathPic = pdf.SavePDF(file, EQP);
                     DateTime dt = DateTime.Now;
                     eqp.UpdatedTime = dt;
                     ret.data = await _eqpRepo.Update(eqp);
@@ -100,7 +105,15 @@ namespace MSS.API.Core.V1.Business
                 parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
                 parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
                 parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
-                ret.data = await _eqpRepo.GetPageByParm(parm);
+                EqpView ev = await _eqpRepo.GetPageByParm(parm);
+                List<Equipment> eqps=ev.rows;
+                List<AllArea> laa = await _eqpRepo.GetAllArea();
+                foreach (var item in eqps)
+                {
+                    item.LocationName = laa.Where(a => a.Tablename == item.LocationBy && a.ID == item.Location)
+                        .FirstOrDefault().AreaName;
+                }
+                ret.data = ev;
                 return ret;
             }
             catch (Exception ex)

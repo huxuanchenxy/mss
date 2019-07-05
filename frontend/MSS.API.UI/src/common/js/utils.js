@@ -147,6 +147,10 @@ export const validateNumberCommon = val => {
   }
 }
 
+export const nullToEmpty = val => {
+  return val === null ? '' : val
+}
+
 // 手机号验证
 export const vPhone = str => /^1[345789]\d{9}$/.test(str)
 export const vTelephone = str => /^([0-9]|[-])+$/g.test(str)

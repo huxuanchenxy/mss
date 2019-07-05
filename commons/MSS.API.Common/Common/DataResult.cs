@@ -41,6 +41,7 @@ namespace MSS.API.Common
         /// </summary>
         public static string BASEFILE = "D:/bin/eqp/";//"F:/mssAll/MSS/apiservices/Equipment/MSS.API.Core/V1/"; 
         public static string EQPTYPE = "File/EqpType/";
+        public static string EQP = "File/Eqp/";
     }
     #endregion
 

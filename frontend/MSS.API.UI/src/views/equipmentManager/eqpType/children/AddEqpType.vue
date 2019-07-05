@@ -146,7 +146,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 export default {
@@ -200,7 +200,7 @@ export default {
           let data = res.data
           this.eqpTypeID = data.id
           this.eqpTypeName.text = data.tName
-          this.model.text = data.model
+          this.model.text = nullToEmpty(data.model)
           this.eqpTypeDesc.text = data.desc
           if (data.pWorking !== null) {
             this.fileList.working.push({

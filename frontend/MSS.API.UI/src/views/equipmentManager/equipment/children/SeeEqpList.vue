@@ -45,7 +45,7 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="">安装位置{{area}}</label>
+            <label for="">安装位置</label>
             <div class="inp">
               <el-cascader clearable
                 change-on-select
@@ -65,6 +65,7 @@
         <li class="list" @click="add"><x-button>添加</x-button></li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <!--<li class="list" @click="detail"><x-button>查看明细</x-button></li>-->
       </ul>
     </div>
     <!-- 内容 -->
@@ -114,8 +115,9 @@
                 <div class="name">{{ item.subSystemName }}</div>
                 <div class="name">{{ item.tName }}</div>
                 <div class="number">{{ item.teamName }}</div>
-                <div class="last-update-time color-white">{{ item.updated_time }}</div>
-                <div class="last-maintainer">{{ item.updated_name }}</div>
+                <div class="number">{{ item.locationName }}</div>
+                <div class="last-update-time color-white">{{ item.updatedTime }}</div>
+                <div class="last-maintainer">{{ item.updatedName }}</div>
               </div>
             </li>
           </ul>
@@ -233,7 +235,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      // this.searchResult(1)
+      this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
@@ -264,6 +266,9 @@ export default {
       this.currentPage = page
       this.loading = true
       let l = this.area.length - 1
+      if (l === -1) {
+        l = ''
+      }
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
@@ -278,7 +283,7 @@ export default {
       api.getEqp(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.updated_time = transformDate(item.updated_time)
+          item.updatedTime = transformDate(item.updatedTime)
         })
         this.EqpList = res.data.rows
         this.total = res.data.total
@@ -315,7 +320,27 @@ export default {
         })
       }
     },
-
+    // 查看设备明细
+    detail () {
+      if (!this.editEqpID.length) {
+        this.$message({
+          message: '请选择需要查看的设备',
+          type: 'warning'
+        })
+      } else if (this.editEqpID.length > 1) {
+        this.$message({
+          message: '查看的设备不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailEqp',
+          params: {
+            id: this.editEqpID[0]
+          }
+        })
+      }
+    },
     // 删除设备
     remove () {
       if (!this.editEqpID.length) {
@@ -355,7 +380,7 @@ export default {
       this.$emit('title', '| 设备别')
       this.loading = true
       this.init()
-      this.searchResult(1)
+      // this.searchResult(1)
     },
 
     // 获取修改设备id

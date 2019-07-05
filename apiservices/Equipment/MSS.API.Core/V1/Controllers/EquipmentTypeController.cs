@@ -28,7 +28,6 @@ namespace MSS.API.Core.V1.Controllers
         {
             eqpType.CreatedBy = 1;
             eqpType.UpdatedBy = 1;
-            eqpType.CreatedTime = DateTime.Now;
             eqpType.IsDel = false;
 
             var ret = _eqpTypeService.Save(eqpType, file);
@@ -39,7 +38,6 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult Update([FromForm]EquipmentType eqpType, List<IFormFile> file)
         {
             eqpType.UpdatedBy = 1;
-            eqpType.UpdatedTime = DateTime.Now;
             var ret = _eqpTypeService.Update(eqpType,file);
             return Ok(ret.Result);
         }

@@ -11,8 +11,8 @@ namespace MSS.API.Core.V1.Business
 {
     public interface IEquipmentService
     {
-        Task<ApiResult> Save(Equipment eqp);
-        Task<ApiResult> Update(Equipment eqp);
+        Task<ApiResult> Save(Equipment eqp, List<IFormFile> file);
+        Task<ApiResult> Update(Equipment eqp, List<IFormFile> file);
         Task<ApiResult> Delete(string ids, int userID);
         Task<ApiResult> GetPageByParm(EqpQueryParm parm);
         Task<ApiResult> GetByID(int id);
