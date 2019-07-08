@@ -155,6 +155,10 @@ const routes = [
             path: 'list',
             name: 'SeeOperlogList',
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeOperlogList.vue')
+          }, {
+            path: 'AddOperlog/:mark?/:id?',
+            name: 'AddOperlog',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/AddOperlog.vue')
           }
       ]
     }
