@@ -321,7 +321,6 @@ export default {
     },
     // 弹框确认是否删除
     dialogEnter () {
-      debugger
       api.Delete(this.editExpertIDList.join(',')).then(res => {
         if (res.code === 0) {
           this.editExpertIDList = []

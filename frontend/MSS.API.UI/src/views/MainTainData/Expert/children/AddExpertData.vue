@@ -250,7 +250,6 @@ export default {
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
-        debugger
         tbexpertdata.id = this.ExpertID
         // 修改权限组
         api.Update(tbexpertdata).then(res => {
@@ -275,7 +274,6 @@ export default {
     },
     // 修改权限组时获取权限组资料
     getExpertData () {
-      debugger
       let id = this.editExpertID
       api.GetExpertDataById(id).then(res => {
         this.loading = false
