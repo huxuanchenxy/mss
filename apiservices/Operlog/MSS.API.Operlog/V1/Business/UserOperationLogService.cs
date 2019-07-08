@@ -6,6 +6,7 @@ using static MSS.API.Operlog.Model.Const;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MSS.API.Common;
 
 namespace MSS.API.Operlog.V1.Business
 {
@@ -44,6 +45,24 @@ namespace MSS.API.Operlog.V1.Business
         public async Task<int> Add(UserOperationLog obj)
         {
             return await _userOperationLogRepo.Add(obj);
+        }
+
+        public async Task<ApiResult> GetUserOperationLog(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var data = await _userOperationLogRepo.GetUserOperationLog(id);
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
         }
 
     }

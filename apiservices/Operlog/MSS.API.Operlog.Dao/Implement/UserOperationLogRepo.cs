@@ -63,7 +63,22 @@ namespace MSS.API.Operlog.Dao.Implement
             });
         }
 
-        
+
+        public async Task<UserOperationLog> GetUserOperationLog(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM user_operation_log WHERE ID = @ID";
+                UserOperationLog data = await c.QueryFirstOrDefaultAsync<UserOperationLog>(sql,
+                new
+                {
+                    ID = id
+                });
+                return data;
+            });
+        }
+
+
 
     }
 }
