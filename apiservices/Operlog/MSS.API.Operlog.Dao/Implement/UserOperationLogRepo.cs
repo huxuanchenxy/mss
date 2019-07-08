@@ -55,10 +55,10 @@ namespace MSS.API.Operlog.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.ExecuteAsync(" insert into user_operation_log " +
-                    "( `controller_name`, `action_name`, `method_name`, `acc_name`, `user_name`, `ip`, `mac_add`, `created_by`, `updated_time`, `updated_by`, `is_del`) " +
+                    "( `controller_name`, `action_name`, `method_name`, `acc_name`, `user_name`, `ip`, `mac_add`, `created_by`, `updated_time`, `updated_by`, `is_del`,request_description,response_description) " +
                     " values (@controller_name,@action_name,@method_name,@acc_name,@user_name, " +
                     " @ip,@mac_add, " +
-                    " @created_by,@updated_time,@updated_by,@is_del) ", obj);
+                    " @created_by,@updated_time,@updated_by,@is_del,@request_description,@response_description) ", obj);
                 return result;
             });
         }
