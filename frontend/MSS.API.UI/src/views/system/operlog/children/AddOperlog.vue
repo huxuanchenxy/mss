@@ -14,70 +14,77 @@
     </div>
     <div class="con-padding-horizontal operation">
       <ul class="input-group">
-        <li class="list" v-show="false">
+        <li class="list">
           <div class="inp-wrap">
-            <span class="text">权限组ID</span>
+            <span class="text">模块名称</span>
             <div class="inp">
-              <el-input v-model="actionGroupID" :disabled="isShow === 'edit'" ></el-input>
+              <el-input v-model="controller_name" :disabled="isShow === 'look'" ></el-input>
             </div>
           </div>
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">权限组名称<em class="validate-mark">*</em></span>
+            <span class="text">操作名称</span>
             <div class="inp">
-              <el-input placeholder="请输入权限组别名称" v-model="groupName.text" @keyup.native="validateInput(groupName)"></el-input>
+              <el-input v-model="method_name" :disabled="isShow === 'look'" ></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ groupName.tips }}</p>
         </li>
         <li class="list">
           <div class="inp-wrap">
-            <span class="text">权限组URL<em class="validate-mark">*</em></span>
+            <span class="text">用户姓名</span>
             <div class="inp">
-              <el-input placeholder="请输入权限组权限组URL" v-model="groupUrl.text" @keyup.native="validateInput(groupUrl)"></el-input>
+              <el-input v-model="user_name" :disabled="isShow === 'look'" ></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ groupUrl.tips }}</p>
+        </li>
+        <li class="list">
+          <div class="inp-wrap">
+            <span class="text">用户账号</span>
+            <div class="inp">
+              <el-input v-model="acc_name" :disabled="isShow === 'look'" ></el-input>
+            </div>
+          </div>
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">权限组类型<em class="validate-mark">*</em></span>
+            <span class="text">ip</span>
             <div class="inp">
-              <el-select v-model="groupType.text" clearable placeholder="请选择" @change="validateSelect()">
-                <el-option value="" label="请选择"></el-option>
-                <el-option v-for="item in groupTypeList" :key="item.key" :value="item.sub_code" :label="item.sub_code_name"></el-option>
-              </el-select>
+              <el-input v-model="ip" :disabled="isShow === 'look'" ></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ groupType.tips }}</p>
         </li>
         <li class="list">
           <div class="inp-wrap">
-            <span class="text">权限组顺序</span>
+            <span class="text">操作时间</span>
             <div class="inp">
-              <el-input placeholder="请输入权限组顺序" v-model="groupOrder.text" @keyup.native="validateNumber()"></el-input>
+              <el-input v-model="created_time" :disabled="isShow === 'look'" ></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ groupOrder.tips }}</p>
         </li>
-        <li class="list">
+      </ul>
+    </div>
+    <div class="con-padding-horizontal operation">
+      <ul class="input-group">
+        <li class="list1">
           <div class="inp-wrap">
-            <span class="text">权限组图标</span>
-            <div class="inp">
-              <el-input placeholder="请输入权限组图标" v-model="groupIcon.text" @keyup.native="validateInputNull(groupIcon)"></el-input>
+            <span class="text">请求详情</span>
+            <div class="inp" style="width:86.5%">
+              <el-input type="textarea" v-model="request_description" :disabled="isShow === 'look'" ></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ groupIcon.tips }}</p>
         </li>
-        <li class="list">
+      </ul>
+    </div>
+    <div class="con-padding-horizontal operation">
+      <ul class="input-group">
+        <li class="list1">
           <div class="inp-wrap">
-            <span class="text">标题图标</span>
-            <div class="inp">
-              <el-input placeholder="请输入标题图标" v-model="titleIcon.text" @keyup.native="validateInputNull(titleIcon)"></el-input>
+            <span class="text">响应详情</span>
+            <div class="inp" style="width:86.5%;">
+              <el-input type="textarea" v-model="response_description" :disabled="isShow === 'look'" :rows="7" ></el-input>
             </div>
           </div>
-          <p class="validate-tips">{{ titleIcon.tips }}</p>
         </li>
       </ul>
     </div>
@@ -90,7 +97,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, validateNumberCommon, vInput } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/operlogApi'
 export default {
@@ -100,54 +107,30 @@ export default {
   },
   data () {
     return {
-      loading: false,
+      loading: true,
       isShow: this.$route.params.mark,
-      editActionGroupID: this.$route.params.id,
-      actionGroupID: '',
-      groupName: {
-        text: '',
-        tips: ''
-      },
-      groupUrl: {
-        text: '',
-        tips: ''
-      },
-      groupType: {
-        text: '',
-        tips: ''
-      },
-      groupTypeList: [],
-      groupOrder: {
-        text: '',
-        tips: ''
-      },
-      groupIcon: {
-        text: '',
-        tips: ''
-      },
-      titleIcon: {
-        text: '',
-        tips: ''
-      }
+      editOperlogID: this.$route.params.id,
+      acc_name: '',
+      action_name: '',
+      controller_name: '',
+      created_time: '',
+      ip: '',
+      method_name: '',
+      request_description: '',
+      response_description: '',
+      user_name: ''
     }
   },
   created () {
-    if (this.isShow === 'add') {
-      this.loading = false
-      this.title = '| 添加权限组'
+    if (this.isShow === 'look') {
+      this.loading = true
+      this.title = '| 查看日志详情'
+      this.getOperlogByID()
       // this.$emit('title', '| 添加权限组')
       // this.btnText = '确认'
     } else if (this.isShow === 'edit') {
-      this.loading = true
-      this.title = '| 修改权限组'
-      // this.$emit('title', '| 修改权限组')
-      // this.btnText = '保存'
-      this.getActionGroup()
+      // this.loading = true
     }
-    // 权限组类型列表
-    api.getSubCode('group_type').then(res => {
-      this.groupTypeList = res.data
-    }).catch(err => console.log(err))
   },
   methods: {
     // 添加权限组
@@ -211,17 +194,21 @@ export default {
       }
     },
     // 修改权限组时获取权限组资料
-    getActionGroup () {
-      api.getActionGroupByID(this.editActionGroupID).then(res => {
+    getOperlogByID () {
+      api.getOperationLogByID(this.editOperlogID).then(res => {
         this.loading = false
         let _res = res.data
-        this.actionGroupID = _res.id
-        this.groupName.text = _res.group_name
-        this.groupType.text = _res.group_type.toString()
-        this.groupOrder.text = _res.group_order.toString()
-        this.groupUrl.text = _res.request_url
-        this.groupIcon.text = _res.icon
-        this.titleIcon.text = _res.active_icon
+        // console.log(_res)
+        this.acc_name = _res.acc_name
+        this.action_name = _res.action_name
+        this.controller_name = _res.controller_name
+        this.controller_name = _res.controller_name
+        this.created_time = transformDate(_res.created_time)
+        this.ip = _res.ip
+        this.method_name = _res.method_name
+        this.request_description = _res.request_description
+        this.response_description = _res.response_description
+        this.user_name = _res.user_name
       }).catch(err => console.log(err))
     },
     // 验证
@@ -294,6 +281,28 @@ export default {
         // justify-content: flex-end;
       }
     }
+
+      .list1{
+      width: 100%;
+      margin-top: PXtoEm(25);
+
+      span{
+        width: 8.3%;
+      }
+
+      .inp-wrap{
+        display: flex;
+        align-items: center;
+      }
+
+      &:nth-of-type(3n+1){
+        // justify-content: flex-start;
+      }
+
+      &:nth-of-type(3n){
+        // justify-content: flex-end;
+      }
+    }
   }
 }
 .btn-enter{
@@ -304,5 +313,9 @@ export default {
     border-color: $color-main-btn;
     background: $color-main-btn;
   }
+}
+
+#responsearea{
+    min-height: 93px;
 }
 </style>
