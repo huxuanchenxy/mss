@@ -18,6 +18,8 @@ namespace MSS.API.Operlog.Model.Data
         public string ip { get; set; }
 
         public string mac_add { get; set; }
+        public string response_description { get; set; }
+        public string request_description { get; set; }
 
     }
 }
