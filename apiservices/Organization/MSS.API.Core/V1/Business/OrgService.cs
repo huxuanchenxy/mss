@@ -8,6 +8,8 @@ using System.Transactions;
 using MSS.API.Core.Common;
 using MSS.API.Model.DTO;
 
+using System.Reflection;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MSS.API.Common;
@@ -107,6 +109,122 @@ namespace MSS.API.Core.V1.Business
             }
 
             return ret;
+        }
+
+        public async Task<DataResult> GetOrgUserByUserID(int userId)
+        {
+            DataResult ret = new DataResult();
+            try
+            {
+
+                OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userId);
+                if (orguser != null)
+                {
+                    ret = await GetOrgByIDs(new List<int> { orguser.NodeID });
+                }
+                else
+                {
+                    ret = await GetAllOrg();
+                }
+                List<OrgUser> users = await _orgRepo.ListAllOrgUser();
+                ret.Data = _mountUsers(ret.Data as List<object>, users);
+            }
+            catch (Exception ex)
+            {
+                ret.Result = RESULT.FAIL;
+                ret.Message = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<DataResult> GetOrgUserByNodeID(int id)
+        {
+            DataResult ret = new DataResult();
+            try
+            {
+                ret = await GetOrgByIDs(new List<int> { id });
+                List<OrgUser> users = await _orgRepo.ListAllOrgUser();
+                ret.Data = _mountUsers(ret.Data as List<object>, users);
+            }
+            catch (Exception ex)
+            {
+                ret.Result = RESULT.FAIL;
+                ret.Message = ex.Message;
+            }
+
+            return ret;
+        }
+
+        private List<object> _mountUsers(List<object> nodes, List<OrgUser> users)
+        {
+            for (int i = 0; i < nodes.Count; ++i)
+            {
+                object node = nodes[i];
+                int id = Convert.ToInt32(node.GetType().GetProperty("id").GetValue(node));
+                string label = node.GetType().GetProperty("label").GetValue(node).ToString();
+                int node_type = Convert.ToInt32(node.GetType().GetProperty("node_type").GetValue(node));
+                PropertyInfo pChildInfo = node.GetType().GetProperty("children");
+                object children = null;
+                if (pChildInfo != null)
+                {
+                    children = pChildInfo.GetValue(node);
+                }
+                List <OrgUser> curNodeUsers = users.Where(c => c.NodeID == id).ToList();
+                List<object> nodeusers = curNodeUsers.Select(c => {return new {
+                    id = id + "_" + c.ID,
+                    label = c.UserName,
+                    dataID = c.ID
+                    };
+                }).ToList<object>();
+                if (children != null)
+                {
+                    List<object> nodeChildren = children as List<object>;
+                    if (nodeChildren.Count == 0) // 无子节点也做为叶子节点
+                    {
+                        nodes[i] = new
+                        {
+                            id = id,
+                            label = label,
+                            node_type = node_type,
+                            children = nodeusers
+                        };
+                    }
+                    else
+                    {
+                        _mountUsers(nodeChildren, users);
+                        if (nodeusers.Count > 0)
+                        {
+                            var newNode = new
+                            {
+                                id = id + "_0",
+                                label = "未分配人员",
+                                node_type = 0,
+                                disabled = true,
+                                children = nodeusers
+                            };
+                            nodeChildren.Insert(0, newNode);
+                            nodes[i] = new
+                            {
+                                id = id,
+                                label = label,
+                                node_type = node_type,
+                                children = nodeChildren
+                            };
+                        }
+                    }
+                }
+                else
+                {
+                    nodes[i] = new {
+                        id = id,
+                        label = label,
+                        node_type = node_type,
+                        children = nodeusers
+                    };
+                }
+            }
+            return nodes;
         }
 
         private OrgTree _findTopNode(int nodeId, List<OrgTree> nodes)
@@ -296,12 +414,12 @@ namespace MSS.API.Core.V1.Business
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    //取消bind当前的用户
-                    OrgTree node = new OrgTree();
-                    node.ID = nodeView.ID;
-                    node.UpdatedBy = nodeView.CreatedBy;
-                    node.UpdatedTime = nodeView.CreatedTime;
-                    await _orgRepo.UnbindOrgNodeUsers(node);
+                    // //取消bind当前的用户
+                    // OrgTree node = new OrgTree();
+                    // node.ID = nodeView.ID;
+                    // node.UpdatedBy = nodeView.CreatedBy;
+                    // node.UpdatedTime = nodeView.CreatedTime;
+                    // await _orgRepo.UnbindOrgNodeUsers(node);
                     //bind新用户
                     List<OrgUser> users = new List<OrgUser>();
                     foreach (int id in nodeView.UserIDs)
@@ -325,6 +443,28 @@ namespace MSS.API.Core.V1.Business
             {
                 ret.Result = RESULT.FAIL;
                 ret.Message = ex.Message;
+            }
+
+            return ret;
+        }
+        public async Task<ApiResult> DeleteOrgNodeUsers(OrgUserView nodeView)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    await _orgRepo.DeleteOrgNodeUsers(nodeView);
+
+                    ret.code = Code.Success;
+
+                    scope.Complete();
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
@@ -407,6 +547,26 @@ namespace MSS.API.Core.V1.Business
             {
                 ret.Result = RESULT.FAIL;
                 ret.Message = ex.Message;
+            }
+
+            return ret;
+        }
+
+        // 获取所有已选用户
+        public async Task<ApiResult> ListAllOrgUsers()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<OrgUser> users = await _orgRepo.ListAllOrgUser();
+
+                ret.code = Code.Success;
+                ret.data = users;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;

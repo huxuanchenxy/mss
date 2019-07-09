@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MSS.API.Model.DTO;
 
 namespace MSS.API.Dao.Interface
 {
@@ -25,5 +26,9 @@ namespace MSS.API.Dao.Interface
         Task<int> UnbindOrgNodeUsers(OrgTree node);
         Task<List<OrgNodeType>> ListNodeType();
         Task<OrgUser> GetOrgUserByUserID(int userId);
+
+        // 取出所有已关联组织的用户
+        Task<List<OrgUser>> ListAllOrgUser();
+        Task<int> DeleteOrgNodeUsers(OrgUserView users);
     }
 }
