@@ -90,6 +90,19 @@ const routes = [
           }
         ]
       }, {
+        path: 'orguser',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/organization/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'seting'
+          }, {
+            path: 'seting',
+            name: 'OrgUserSetting',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/organization/children/UserSetting.vue')
+          }
+        ]
+      }, {
         path: 'actionGroup',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/actionGroup/Index.vue'),
         children: [
