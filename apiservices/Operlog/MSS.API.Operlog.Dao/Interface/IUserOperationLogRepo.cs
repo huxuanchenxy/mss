@@ -12,6 +12,7 @@ namespace MSS.API.Operlog.Dao.Interface
         
 
         Task<int> Add(UserOperationLog obj);
+        Task<UserOperationLog> GetUserOperationLog(int id);
 
     }
 }

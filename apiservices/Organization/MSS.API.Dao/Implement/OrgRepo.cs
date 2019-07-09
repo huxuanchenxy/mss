@@ -7,6 +7,7 @@ using MSS.API.Model.Data;
 using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
+using MSS.API.Model.DTO;
 
 namespace MSS.API.Dao.Implement
 {
@@ -287,6 +288,33 @@ namespace MSS.API.Dao.Implement
                     UserID = userId
                 });
                 return orguser;
+            });
+        }
+        public async Task<List<OrgUser>> ListAllOrgUser()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT a.*, b.user_name FROM org_user AS a"
+                    + " INNER JOIN user AS b on a.user_id=b.id WHERE a.is_del != 1";
+                List<OrgUser> orguser = (await c.QueryAsync<OrgUser>(sql)).ToList();
+                return orguser;
+            });
+        }
+
+        public async Task<int> DeleteOrgNodeUsers(OrgUserView users)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "UPDATE org_user SET is_del = 1,"
+                                + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE id = @ID and is_del != 1;";
+                int affectedRows = await c.ExecuteAsync(sql,
+                new
+                {
+                    ID = users.UserIDs,
+                    UpdatedBy = users.UpdatedBy,
+                    UpdatedTime = users.UpdatedTime
+                });
+                return affectedRows;
             });
         }
     }

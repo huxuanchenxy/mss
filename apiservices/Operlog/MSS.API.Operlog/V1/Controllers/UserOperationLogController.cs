@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MSS.API.Common;
 using MSS.API.Operlog.Model.Data;
 using MSS.API.Operlog.Model.DTO;
 using MSS.API.Operlog.V1.Business;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using static MSS.API.Operlog.Model.Const;
 
 namespace MSS.API.Operlog.V1.Controllers
@@ -43,6 +45,14 @@ namespace MSS.API.Operlog.V1.Controllers
         {
             _userOperationLogService.Add(parm);
             return Ok("ok");
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ApiResult>>  Get(int id)
+        {
+            var ret = await _userOperationLogService.GetUserOperationLog(id);
+            return ret;
+            
         }
 
 

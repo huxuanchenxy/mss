@@ -8,6 +8,7 @@ namespace MSS.API.Model.Data
     {
         public int NodeID { get; set; }
         public int UserID { get; set; }
+        public string UserName { get; set; }
     }
 
     public class OrgUserMap : EntityMap<OrgUser>
@@ -16,6 +17,7 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.NodeID).ToColumn("org_node_id");
             Map(o => o.UserID).ToColumn("user_id");
+            Map(o => o.UserName).ToColumn("user_name");
 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedTime).ToColumn("created_time");
