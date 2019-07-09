@@ -24,7 +24,7 @@ namespace MSS.API.Dao.Implement
                     " @PInstall,@PUser,@PRegulations, " +
                     " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                 sql += "SELECT LAST_INSERT_ID()";
-                int newid = await c.ExecuteAsync(sql, eqpType);
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, eqpType);
                 eqpType.ID = newid;
                 return eqpType;
             });

@@ -22,20 +22,20 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IEquipmentRepo<Equipment> _eqpRepo;
+        private readonly IUploadFileRepo<UploadFile> _uploadFileRepo;
 
-        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo)
+        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo, IUploadFileRepo<UploadFile> uploadFileRepo)
         {
             //_logger = logger;
             _eqpRepo = eqpRepo;
+            _uploadFileRepo = uploadFileRepo;
         }
 
-        public async Task<ApiResult> Save(Equipment eqp, List<IFormFile> file)
+        public async Task<ApiResult> Save(Equipment eqp)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                PDFHelper pdf = new PDFHelper();
-                eqp.PathPic = pdf.SavePDF(file, EQP);
                 DateTime dt = DateTime.Now;
                 eqp.UpdatedTime = dt;
                 eqp.CreatedTime = dt;
@@ -50,7 +50,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Update(Equipment eqp, List<IFormFile> file)
+        public async Task<ApiResult> Update(Equipment eqp)
         {
             ApiResult ret = new ApiResult();
             try
@@ -58,8 +58,6 @@ namespace MSS.API.Core.V1.Business
                 Equipment et = await _eqpRepo.GetByID(eqp.ID);
                 if (et!=null)
                 {
-                    PDFHelper pdf = new PDFHelper();
-                    eqp.PathPic = pdf.SavePDF(file, EQP);
                     DateTime dt = DateTime.Now;
                     eqp.UpdatedTime = dt;
                     ret.data = await _eqpRepo.Update(eqp);
@@ -84,7 +82,6 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                // 判断设备类型下有没有挂设备，有的话不允许删除
                 ret.data = await _eqpRepo.Delete(ids.Split(','),userID);
                 return ret;
             }
@@ -129,7 +126,9 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _eqpRepo.GetByID(id);
+                Equipment e = await _eqpRepo.GetByID(id);
+                e.Drawings =await _uploadFileRepo.ListByForeignAndType(e.ID, (int)FileType.Eqp_Drawings);
+                ret.data = e;
                 return ret;
             }
             catch (Exception ex)

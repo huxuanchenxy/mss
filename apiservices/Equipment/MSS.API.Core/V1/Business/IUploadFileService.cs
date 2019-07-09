@@ -9,13 +9,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace MSS.API.Core.V1.Business
 {
-    public interface IEquipmentService
+    public interface IUploadFileService
     {
-        Task<ApiResult> Save(Equipment eqp);
-        Task<ApiResult> Update(Equipment eqp);
-        Task<ApiResult> Delete(string ids, int userID);
-        Task<ApiResult> GetPageByParm(EqpQueryParm parm);
+        Task<ApiResult> Save(int type, List<IFormFile> file);
+        Task<ApiResult> Delete(int id);
         Task<ApiResult> GetByID(int id);
-        Task<ApiResult> GetAll();
+        Task<ApiResult> ListAll();
     }
 }

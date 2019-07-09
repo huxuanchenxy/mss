@@ -16,6 +16,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IEquipmentTypeService, EquipmentTypeService>();
             services.AddTransient<IEquipmentService, EquipmentService>();
             services.AddTransient<IFirmService, FirmService>();
+            services.AddTransient<IUploadFileService, UploadFileService>();
             return services;
         }
     }
