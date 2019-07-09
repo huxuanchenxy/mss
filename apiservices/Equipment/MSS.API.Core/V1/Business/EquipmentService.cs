@@ -31,13 +31,11 @@ namespace MSS.API.Core.V1.Business
             _uploadFileRepo = uploadFileRepo;
         }
 
-        public async Task<ApiResult> Save(Equipment eqp, List<IFormFile> file)
+        public async Task<ApiResult> Save(Equipment eqp)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                PDFHelper pdf = new PDFHelper();
-                eqp.PathPic = pdf.SavePDF(file, EQP);
                 DateTime dt = DateTime.Now;
                 eqp.UpdatedTime = dt;
                 eqp.CreatedTime = dt;
@@ -52,7 +50,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Update(Equipment eqp, List<IFormFile> file)
+        public async Task<ApiResult> Update(Equipment eqp)
         {
             ApiResult ret = new ApiResult();
             try
@@ -60,8 +58,6 @@ namespace MSS.API.Core.V1.Business
                 Equipment et = await _eqpRepo.GetByID(eqp.ID);
                 if (et!=null)
                 {
-                    PDFHelper pdf = new PDFHelper();
-                    eqp.PathPic = pdf.SavePDF(file, EQP);
                     DateTime dt = DateTime.Now;
                     eqp.UpdatedTime = dt;
                     ret.data = await _eqpRepo.Update(eqp);

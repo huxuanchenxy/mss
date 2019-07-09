@@ -30,7 +30,7 @@ namespace MSS.API.Core.V1.Controllers
             eqp.UpdatedBy = 1;
             eqp.IsDel = false;
 
-            var ret = _eqpService.Save(eqp, file);
+            var ret = _eqpService.Save(eqp);
             return Ok(ret.Result);
         }
 
