@@ -462,7 +462,6 @@ export default {
   },
   methods: {
     onSuccess (response, file, fileList) {
-      console.log(fileList)
       this.fileList = fileList
       this.fileList.map(val => {
         if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {

@@ -32,6 +32,40 @@ export default {
       centerDialogVisible: false,
       previewUrl: ''
     }
+  },
+  methods: {
+    onSuccess (response, file, fileList) {
+      this.fileList = fileList
+      this.fileList.map(val => {
+        if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
+          val.id = val.response.data.id
+        }
+      })
+      console.log(this.fileList)
+    },
+    beforeRemove (file, fileList) {
+      api.deleteUploadFile(file.id).then(res => {
+        this.fileList = fileList
+        this.fileList.map(val => {
+          if (val.status === 'success') {
+            val.id = val.response.data.id
+          }
+        })
+        return res.code === 0
+      }).catch(err => console.log(err))
+    },
+    preview (item) {
+      this.centerDialogVisible = true
+      if (item.status === 'success') {
+        if (item.url.indexOf('blob:') !== -1) {
+          this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+        } else {
+          this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+        }
+      } else {
+        this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+      }
+    }
   }
 }
 </script>
