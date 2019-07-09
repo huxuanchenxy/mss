@@ -50,11 +50,14 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
-
+      <ul class="con-padding-horizontal btn-group">
+        <li class="list" @click="look"><x-button>查看详情</x-button></li>
+      </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
+        <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
         <li class="list number c-pointer" @click="changeOrder('controller_name')">
           模块名称
           <i :class="[{ 'el-icon-d-caret': headOrder.controller_name === 0 }, { 'el-icon-caret-top': headOrder.controller_name === 1 }, { 'el-icon-caret-bottom': headOrder.controller_name === 2 }]"></i>
@@ -74,9 +77,9 @@
         <li class="list number c-pointer" @click="changeOrder('ip')" >ip地址
           <i :class="[{ 'el-icon-d-caret': headOrder.ip === 0 }, { 'el-icon-caret-top': headOrder.ip === 1 }, { 'el-icon-caret-bottom': headOrder.ip === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('mac_add')" >mac地址
+        <!-- <li class="list number c-pointer" @click="changeOrder('mac_add')" >mac地址
 <i :class="[{ 'el-icon-d-caret': headOrder.mac_add === 0 }, { 'el-icon-caret-top': headOrder.mac_add === 1 }, { 'el-icon-caret-bottom': headOrder.mac_add === 2 }]"></i>
-        </li>
+        </li> -->
         <li class="list number c-pointer" @click="changeOrder('created_time')">操作时间
           <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
         </li>
@@ -86,6 +89,9 @@
           <ul class="list-wrap">
             <li class="list" v-for="(item) in UserList" :key="item.key">
               <div class="list-content">
+                <div class="checkbox">
+                  <input type="checkbox" v-model="lookOperlogID" :value="item.id" @change="emitEditID">
+                </div>
                 <div class="name">{{ item.controller_name }}</div>
                 <div class="name">{{ item.method_name }}</div>
                 <!--<div class="name">
@@ -94,7 +100,7 @@
                 <div class="name">{{ item.user_name }}</div>
                 <div class="name">{{ item.acc_name }}</div>
                 <div class="name">{{ item.ip }}</div>
-                <div class="name">{{ item.mac_add }}</div>
+                <!-- <div class="name">{{ item.mac_add }}</div> -->
                 <div class="name">{{ item.created_time }}</div>
               </div>
             </li>
@@ -138,7 +144,7 @@ export default {
       role: '',
       roleList: [],
       UserList: [],
-      editUserID: [],
+      lookOperlogID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -245,7 +251,7 @@ export default {
     },
     // 获取修改用户id
     emitEditID () {
-      this.$emit('editUserID', this.editUserID)
+      this.$emit('lookOperlogID', this.lookOperlogID)
     },
     // 全选
     // checkAll () {
@@ -274,6 +280,27 @@ export default {
       // this.checkAll()
       this.currentPage = val
       this.searchResult(val)
+    },
+    look () {
+      if (!this.lookOperlogID.length) {
+        this.$message({
+          message: '请选择需要查看的日志详情',
+          type: 'warning'
+        })
+      } else if (this.lookOperlogID.length > 1) {
+        this.$message({
+          message: '查看的日志详情不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'AddOperlog',
+          params: {
+            id: this.lookOperlogID[0],
+            mark: 'look'
+          }
+        })
+      }
     }
   }
 }
