@@ -13,6 +13,7 @@ namespace MSS.API.Dao.Interface
         Task<int> Delete(string[] ids, int userID);
         Task<EqpView> GetPageByParm(EqpQueryParm parm);
         Task<Equipment> GetByID(int id);
+        Task<List<Equipment>> ListByEqpType(string ids);
         Task<List<Equipment>> GetAll();
         Task<List<AllArea>> GetAllArea();
     }

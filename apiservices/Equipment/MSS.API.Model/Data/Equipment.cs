@@ -37,12 +37,16 @@ namespace MSS.API.Model.Data
         public string LocationName { get; set; }
         public DateTime Online { get; set; }
         public string Life { get; set; }
-        public string PathPic { get; set; }
+        public List<UploadFile> Drawings { get; set; }
         public int MediumRepair { get; set; }
         public int LargeRepair { get; set; }
         public DateTime? OnlineAgain { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
+        /// <summary>
+        /// 上传图片的id，用逗号隔开
+        /// </summary>
+        public string ids { get; set; }
     }
 
     public class EquipmentMap : EntityMap<Equipment>
@@ -81,7 +85,7 @@ namespace MSS.API.Model.Data
             Map(o => o.Online).ToColumn("online_date");
             Map(o => o.Life).ToColumn("life");
 
-            Map(o => o.PathPic).ToColumn("eqp_pic");
+            Map(o => o.Drawings).ToColumn("eqp_pic");
             Map(o => o.MediumRepair).ToColumn("medium_repair");
             Map(o => o.LargeRepair).ToColumn("large_repair");
             Map(o => o.OnlineAgain).ToColumn("online_again");

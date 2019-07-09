@@ -40,8 +40,23 @@ namespace MSS.API.Common
         /// 基础绝对路径
         /// </summary>
         public static string BASEFILE = "D:/bin/eqp/";//"F:/mssAll/MSS/apiservices/Equipment/MSS.API.Core/V1/"; 
-        public static string EQPTYPE = "File/EqpType/";
-        public static string EQP = "File/Eqp/";
+        public static string SHAREFILE = "File/";//"F:/mssAll/MSS/apiservices/Equipment/MSS.API.Core/V1/"; 
+    }
+
+    public enum FileType
+    {
+        //设备类型中的作业指导书
+        EqpType_Working_Instruction = 0,
+        //设备类型中的技术图纸
+        EqpType_Technical_Drawings = 1,
+        //设备类型中的安装手册
+        EqpType_Installation_Manual = 2,
+        //设备类型中的使用手册
+        EqpType_User_Guide = 3,
+        //设备类型中的维护手册
+        EqpType_Regulations = 4,
+        //设备中的设备图纸
+        Eqp_Drawings = 5,
     }
     #endregion
 
@@ -71,5 +86,6 @@ namespace MSS.API.Common
 
     }
     #endregion
+
 
 }

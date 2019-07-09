@@ -137,6 +137,7 @@ export const validateInputCommon = val => {
 
 // 数字验证
 export const validateNumberCommon = val => {
+  val.text = val.text.toString()
   val.text = val.text.replace(/\s*/g, '')
   if (val.text === '' || val.text === null || vNumber(val.text)) {
     val.tips = ''
@@ -172,8 +173,9 @@ export const vcode = str => /[\u4E00-\u9FA5]/g.test(str)
 export const PDF_URL = process.env.NODE_ENV === 'production' ? '' : 'D:/bin/eqp/'
 // 全局已上传的pdf的查看控件路径
 export const PDF_UPLOADED_VIEW_URL = 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/'
-// 全局本地准备上传还未上传的pdf的查看控件路径
-export const PDF_BLOB_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : '/api' + '/Compoment/pdfViewer/web/viewer.html?file='
+// 全局本地准备上传还未上传或第一次完成上传的pdf的查看控件路径
+// export const PDF_BLOB_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : '/api' + '/Compoment/pdfViewer/web/viewer.html?file='
+export const PDF_BLOB_VIEW_URL = process.env.NODE_ENV === 'production' ? '' : 'http://10.89.36.93:8099' + '/Compoment/pdfViewer/web/viewer.html?file='
 
 // 全局url，api为虚拟目录，跨域使用
 export const BASE_URL = process.env.NODE_ENV === 'production' ? '' : '/api'
@@ -194,4 +196,11 @@ export const ApiRESULT = {
   Failure: 1,
   DataIsExist: 2,
   DataIsnotExist: 3
+}
+export const FileType = {
+  EqpType_Working_Instruction: 0,
+  EqpType_Technical_Drawings: 1,
+  EqpType_Installation_Manual: 2,
+  EqpType_Regulations: 4,
+  Eqp_Drawings: 5
 }

@@ -203,7 +203,7 @@
               <div class="inp-wrap">
                 <span class="text">上线日期<em class="validate-mark">*</em></span>
                 <div class="inp">
-                  <el-date-picker width="80%"
+                  <el-date-picker
                     v-model="time.text"
                     type="date"
                     value-format="yyyy-MM-dd"
@@ -222,27 +222,23 @@
               </div>
               <p class="validate-tips">{{ life.tips }}</p>
             </li>
-            <li class="list upload-list">
-              <div>
-                <el-upload
-                  action="http://localhost:3851/api/v1/Upload"
-                  :multiple="true"
-                  :data="fileType"
-                  :headers="uploadHeaders"
-                  accept="application/pdf"
-                  :file-list="fileList"
-                  :show-file-list="true"
-                  list-type="text"
-                  :on-success="onSuccess"
-                  :before-remove="beforeRemove"
-                  :on-preview="preview">
-                  <span class="text">设备图纸</span>
-                  <x-button class="active upload-btn">点击上传</x-button>
-                  <!--<i class="iconfont icon-pdf"></i>-->
-                </el-upload>
-              </div>
-            </li>
           </ul>
+        </div>
+        <div class="upload-wrap con-padding-horizontal">
+          <span class="label">设备图纸：</span>
+          <el-upload class="el-upload-my-picture-card"
+            ref="upload"
+            :action="``"
+            accept="application/pdf"
+            :file-list="fileList"
+            :show-file-list="true"
+            list-type="picture-card"
+            :auto-upload="false"
+            :http-request="upload"
+            :on-change="onChange"
+            :on-preview="preview">
+            <i class="iconfont icon-pdf"></i>
+          </el-upload>
         </div>
         <div class="con-padding-horizontal header"/>
         <div class="con-padding-horizontal operation">
@@ -269,7 +265,7 @@
               <div class="inp-wrap">
                 <span class="text">再次上线日期</span>
                 <div class="inp">
-                  <el-date-picker class="el-date-width"
+                  <el-date-picker
                     v-model="timeAgain.text"
                     type="date"
                     value-format="yyyy-MM-dd"
@@ -299,7 +295,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
@@ -312,9 +308,8 @@ export default {
   },
   data () {
     return {
-      fileType: {type: FileType.Eqp_Drawings},
-      uploadHeaders: {Authorization: ''},
       fileList: [],
+      needUpload: [],
       centerDialogVisible: false,
       previewUrl: '',
       areaParams: {
@@ -454,49 +449,31 @@ export default {
     apiArea.SelectConfigAreaData().then(res => {
       this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
-
-    let token = window.sessionStorage.getItem('token')
-    if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
-      this.uploadHeaders.Authorization = `Bearer ${token}`
-    }
   },
   methods: {
-    onSuccess (response, file, fileList) {
-      console.log(fileList)
-      this.fileList = fileList
-      this.fileList.map(val => {
-        if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
-          val.id = val.response.data.id
-        }
-      })
-      console.log(this.fileList)
+    upload (file) {
+      this.needUpload.push(file.file)
     },
-    beforeRemove (file, fileList) {
-      api.deleteUploadFile(file.id).then(res => {
-        this.fileList = fileList
-        this.fileList.map(val => {
-          if (val.status === 'success') {
-            val.id = val.response.data.id
-          }
-        })
-        return res.code === 0
-      }).catch(err => console.log(err))
+    onChange (file, fileList) {
+      file.pdfUrl = file.url
+      file.url = PDF_IMAGE
+      this.fileList = []
+      this.fileList.push(file)
     },
     preview (item) {
       this.centerDialogVisible = true
       if (item.status === 'success') {
-        if (item.url.indexOf('blob:') !== -1) {
-          this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+        if (item.pdfUrl.indexOf('blob:') !== -1) {
+          this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
         } else {
-          this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+          this.previewUrl = PDF_UPLOADED_VIEW_URL + item.pdfUrl
         }
       } else {
-        this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+        this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
       }
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
-      this.teamPath.tips = ''
       let selectedTeam = val[val.length - 1]
       let obj = this.getCascaderObj(selectedTeam, this.teamList)
       if (obj.node_type === 3) {
@@ -527,51 +504,56 @@ export default {
         })
         return
       }
-      let eqp = {
-        Code: this.eqpCode.text,
-        Name: this.eqpName.text,
-        Type: this.eqpType.text,
-        AssetNo: this.assetNo.text,
-        Model: this.model.text,
-        SubSystem: this.subSystem.text,
-        Team: this.team,
-        TeamPath: this.teamPath.text.join(','),
-        BarCode: this.barCode.text,
-        Desc: this.desc.text,
-        Supplier: this.supplier,
-        Manufacturer: this.manufacturer,
-        SerialNo: this.serialNo.text,
-        Online: this.time.text,
-        Life: this.life.text,
-        MediumRepair: this.mediumRepair.text,
-        LargeRepair: this.largeRepair.text,
-        OnlineAgain: this.timeAgain.text
+      let fd = new FormData()
+      if (this.$refs.upload.uploadFiles.length > 0) {
+        if (this.$refs.upload.uploadFiles[0].status !== 'success') {
+          this.$refs.upload.submit()
+          fd.append('file', this.needUpload[0])
+        }
       }
+      fd.append('Code', this.eqpCode.text)
+      fd.append('Name', this.eqpName.text)
+      fd.append('Type', this.eqpType.text)
+      fd.append('AssetNo', this.assetNo.text)
+      fd.append('Model', this.model.text)
+      fd.append('SubSystem', this.subSystem.text)
+      fd.append('Team', this.team)
+      fd.append('TeamPath', this.teamPath.text.join(','))
+      fd.append('BarCode', this.barCode.text)
+      fd.append('Desc', this.desc.text)
+      fd.append('Supplier', this.supplier)
+      fd.append('Manufacturer', this.manufacturer)
+      fd.append('SerialNo', this.serialNo.text)
       if (this.ratedVoltage.text !== '') {
-        eqp.RatedVoltage = this.ratedVoltage.text
+        fd.append('RatedVoltage', this.ratedVoltage.text)
       }
       if (this.ratedCurrent.text !== '') {
-        eqp.RatedCurrent = this.ratedCurrent.text
+        fd.append('RatedCurrent', this.ratedCurrent.text)
       }
       if (this.ratedPower.text !== '') {
-        eqp.RatedPower = this.ratedPower.text
+        fd.append('RatedPower', this.ratedPower.text)
       }
       let l = this.area.text.length - 1
-      if (l > -1) {
-        eqp.Location = this.area.text[l]
-        eqp.LocationBy = l
-        eqp.LocationPath = this.area.text.join(',')
-      }
-      if (this.fileList.length > 0) {
-        let drawings = ''
-        this.fileList.map(val => {
-          drawings += val.id + ','
-        })
-        eqp.ids = drawings.substring(0, drawings.length - 1)
+      fd.append('Location', this.area.text[l])
+      fd.append('LocationBy', l)
+      fd.append('LocationPath', this.area.text.join(','))
+      fd.append('Online', this.time.text)
+      fd.append('Life', this.life.text)
+      fd.append('MediumRepair', this.mediumRepair.text)
+      fd.append('LargeRepair', this.largeRepair.text)
+      fd.append('OnlineAgain', this.timeAgain.text)
+
+      let config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        transformRequest: function (data, headers) {
+          return data
+        }
       }
       if (this.isShow === 'add') {
         // 添加设备
-        api.addEqp(eqp).then(res => {
+        api.addEqp(fd, config).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '添加成功',
@@ -590,9 +572,9 @@ export default {
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
-        eqp.ID = this.editEqpID
+        fd.append('ID', this.editEqpID)
         // 修改设备
-        api.updateEqp(eqp).then(res => {
+        api.updateEqp(fd, config).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '修改成功',
@@ -637,14 +619,11 @@ export default {
         this.mediumRepair.text = _res.mediumRepair.toString()
         this.largeRepair.text = _res.largeRepair.toString()
         this.timeAgain.text = nullToEmpty(_res.onlineAgain)
-        if (_res.drawings !== null) {
-          _res.drawings.map(val => {
-            this.fileList.push({
-              id: val.id,
-              url: val.filePath,
-              name: val.fileName,
-              status: 'success'
-            })
+        if (_res.pathPic !== null) {
+          this.fileList.push({
+            url: PDF_IMAGE,
+            pdfUrl: _res.pathPic,
+            status: 'success'
           })
         }
       }).catch(err => console.log(err))
@@ -716,16 +695,9 @@ export default {
       if (this.teamPath.text.length === 0) {
         this.teamPath.tips = '此项必选'
         return false
-      } else if (this.team === '') {
-        this.teamPath.tips = '您选的并非是班组，请选择班组'
-        return false
       }
       if (this.area.text.length === 0) {
         this.area.tips = '此项必选'
-        return false
-      }
-      if (this.time.text === '') {
-        this.time.tips = '此项必选'
         return false
       }
       if (!this.validateInputNull(this.life)) return false
@@ -757,11 +729,6 @@ export default {
         align-items: center;
       }
 
-      .inp-wrap-upload{
-        // display: flex;
-        align-items: center;
-      }
-
       &:nth-of-type(3n+1){
         // justify-content: flex-start;
       }
@@ -770,13 +737,7 @@ export default {
         // justify-content: flex-end;
       }
     }
-    .upload-list{
-      margin-bottom: PXtoEm(25);
-    }
   }
-}
-.upload-btn{
-  margin-left:50px!important;
 }
 .btn-enter{
   margin: 15px 0;
@@ -790,12 +751,10 @@ export default {
 .cascader_width{
   width: 100%!important;
 }
-// .el-date-editor.el-input, .el-date-editor.el-input__inner{
-//   width: 80%!important;
-// }
-.el-date-width{
-  width: 93%!important;
+.el-date-editor.el-input, .el-date-editor.el-input__inner{
+  width: 93%;
 }
+
 .scroll{
   /**
    * percent函数转换百分比

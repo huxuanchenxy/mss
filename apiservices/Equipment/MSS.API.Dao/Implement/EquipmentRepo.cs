@@ -9,6 +9,7 @@ using System.Linq;
 using Dapper;
 using MSS.API.Common;
 using static MSS.API.Common.MyDictionary;
+using System.Data;
 
 namespace MSS.API.Dao.Implement
 {
@@ -16,37 +17,62 @@ namespace MSS.API.Dao.Implement
     {
         public EquipmentRepo(DapperOptions options) : base(options) { }
 
-        public async Task<Equipment> Save(Equipment eqpType)
+        public async Task<Equipment> Save(Equipment eqp)
         {
             return await WithConnection(async c =>
             {
-                string sql = " insert into equipment " +
-                    " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
-                    " @SubSystem,@Team,@TeamPath,@BarCode,@Desc,@Supplier,@Manufacturer, " +
-                    " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
-                    " @Location,@LocationBy,@LocationPath,@Online,@Life,@PathPic, " +
-                    " @MediumRepair,@LargeRepair,@OnlineAgain, " +
-                    " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
-                sql += "SELECT LAST_INSERT_ID()";
-                int newid = await c.ExecuteAsync(sql, eqpType);
-                eqpType.ID = newid;
-                return eqpType;
+                string sql;
+                IDbTransaction trans = c.BeginTransaction();
+                try
+                {
+                    sql = " insert into equipment " +
+                        " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
+                        " @SubSystem,@Team,@TeamPath,@BarCode,@Desc,@Supplier,@Manufacturer, " +
+                        " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
+                        " @Location,@LocationBy,@LocationPath,@Online,@Life, " +
+                        " @MediumRepair,@LargeRepair,@OnlineAgain, " +
+                        " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
+                    sql += "SELECT LAST_INSERT_ID()";
+                    int newid = await c.QueryFirstOrDefaultAsync<int>(sql, eqp,trans);
+                    eqp.ID = newid;
+                    sql = "update upload_file set foreign_id=@eqpID where id in @ids";
+                    int ret = await c.ExecuteAsync(sql, new {eqpID=newid,ids=eqp.ids.Split(',') }, trans);
+                    trans.Commit();
+                    return eqp;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    throw new Exception(ex.ToString());
+                }
             });
         }
 
-        public async Task<int> Update(Equipment eqpType)
+        public async Task<int> Update(Equipment eqp)
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" update equipment " +
-                    " set eqp_code=@Code,eqp_name=@Name,eqp_type=@Type,eqp_asset_number=@AssetNo, " +
-                    " eqp_model=@Model,sub_system=@SubSystem,team=@Team,team_path=@TeamPath,bar_code=@BarCode, " +
-                    " discription=@Desc,supplier=@Supplier,manufacturer=@Manufacturer,serial_number=@SerialNo, " +
-                    " rated_voltage=@RatedVoltage,rated_current=@RatedCurrent,team=@Team,rated_power=@RatedPower, " +
-                    " location=@Location,location_by=@LocationBy,location_path=@LocationPath,online_date=@Online,life=@Life, " +
-                    " eqp_pic=@PathPic,medium_repair=@MediumRepair,large_repair=@LargeRepair,online_again=@OnlineAgain, " +
-                    " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqpType);
-                return result;
+                IDbTransaction trans = c.BeginTransaction();
+                try
+                {
+                    var result = await c.ExecuteAsync(" update equipment " +
+                        " set eqp_code=@Code,eqp_name=@Name,eqp_type=@Type,eqp_asset_number=@AssetNo, " +
+                        " eqp_model=@Model,sub_system=@SubSystem,team=@Team,team_path=@TeamPath,bar_code=@BarCode, " +
+                        " discription=@Desc,supplier=@Supplier,manufacturer=@Manufacturer,serial_number=@SerialNo, " +
+                        " rated_voltage=@RatedVoltage,rated_current=@RatedCurrent,team=@Team,rated_power=@RatedPower, " +
+                        " location=@Location,location_by=@LocationBy,location_path=@LocationPath,online_date=@Online,life=@Life, " +
+                        " medium_repair=@MediumRepair,large_repair=@LargeRepair,online_again=@OnlineAgain, " +
+                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
+                    string sql = "update upload_file set foreign_id=@eqpID where id in @ids";
+                    int ret = await c.ExecuteAsync(sql, new { eqpID = eqp.ID, ids = eqp.ids.Split(',') }, trans);
+                    trans.Commit();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    throw new Exception(ex.ToString());
+                }
             });
         }
 
@@ -65,27 +91,11 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                List<Dictionary> dics = (await c.QueryAsync<Dictionary>("select * from Dictionary where code=@code", new { code = STR_AREA_TYPE })).ToList();
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT distinct a.*,u1.user_name as created_name,u2.user_name as updated_name, ")
-                .Append(" et.type_name,d.sub_code_name,ot.name,f1.name as sname,f2.name as mname ");
-                if (parm.SearchLocationBy == (int)AREA_TYPE.dictionary)
-                {
-                    sql.Append(",area.sub_code_name as AreaName ")
-                    .Append(" FROM (equipment a,dictionary d,dictionary area) ");
-                }
-                else if (parm.SearchLocationBy !=null)
-                {
-                    sql.Append(",area.AreaName ")
-                    .Append(" FROM (equipment a,dictionary d) ");
-                    string tbName = dics.Where(a => a.sub_code == parm.SearchLocationBy).FirstOrDefault().sub_code_name;
-                    sql.Append(" left join "+ tbName + " area on area.id=a.location ");
-                }
-                else
-                {
-                    sql.Append(" FROM (equipment a,dictionary d) ");
-                }
-                sql.Append(" left join user u1 on a.created_by=u1.id ")
+                .Append(" et.type_name,d.sub_code_name,ot.name,f1.name as sname,f2.name as mname ")
+                .Append(" FROM (equipment a,dictionary d) ")
+                .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id ")
                 .Append(" left join equipment_type et on et.id=a.eqp_type ")
                 .Append(" left join org_tree ot on ot.id=a.team ")
@@ -106,37 +116,19 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and a.eqp_code like '%" + parm.SearchType + "%' ");
                 }
-                if (parm.SearchLocation != null && parm.SearchLocationBy==(int)AREA_TYPE.dictionary)
+                if (parm.SearchLocation != null && parm.SearchLocationBy!=null)
                 {
-                    whereSql.Append(" and area.sub_code=a.location and area.code='" + STR_AREA_TYPE + "'")
-                    .Append(" and area.sub_code =" + parm.SearchLocation);
-                }
-                else if (parm.SearchLocation != null && parm.SearchLocationBy != (int)AREA_TYPE.dictionary)
-                {
-                    whereSql.Append(" and area.id =" + parm.SearchLocation);
+                    whereSql.Append(" and a.location=" + parm.SearchLocation)
+                    .Append(" and a.location_by =" + parm.SearchLocationBy);
                 }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 List< Equipment > ets= (await c.QueryAsync<Equipment>(sql.ToString())).ToList();
                 sql.Clear();
-                sql.Append("select count(*) ");
-                if (parm.SearchLocation != null && parm.SearchLocationBy == (int)AREA_TYPE.dictionary)
-                {
-                    sql.Append(" FROM (equipment a,dictionary area) ");
-                }
-                else if (parm.SearchLocationBy != null && parm.SearchLocationBy != (int)AREA_TYPE.dictionary)
-                {
-                    sql.Append("FROM equipment a ");
-                    string tbName = dics.Where(a => a.sub_code == parm.SearchLocationBy).FirstOrDefault().sub_code_name;
-                    sql.Append(" left join " + tbName + " area on area.id=a.location ");
-                }
-                else
-                {
-                    sql.Append(" FROM equipment a ");
-                }
+                sql.Append("select count(*) FROM equipment a where ");
                 int total = await c.QueryFirstOrDefaultAsync<int>(
-                    sql.ToString() + " where " + whereSql.ToString());
+                    sql.ToString() + whereSql.ToString());
                 EqpView ret = new EqpView();
                 ret.rows = ets;
                 ret.total = total;
@@ -151,6 +143,16 @@ namespace MSS.API.Dao.Implement
                 var result = await c.QueryFirstOrDefaultAsync<Equipment>(
                     "SELECT * FROM equipment WHERE id = @id", new { id = id });
                 return result;
+            });
+        }
+
+        public async Task<List<Equipment>> ListByEqpType(string ids)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<Equipment>(
+                    "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids });
+                return result.ToList();
             });
         }
 

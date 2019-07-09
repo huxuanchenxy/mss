@@ -24,7 +24,7 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save([FromForm]Equipment eqp, List<IFormFile> file)
+        public ActionResult Save(Equipment eqp)
         {
             eqp.CreatedBy = 1;
             eqp.UpdatedBy = 1;
@@ -35,10 +35,10 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpPut]
-        public ActionResult Update([FromForm]Equipment eqp, List<IFormFile> file)
+        public ActionResult Update(Equipment eqp)
         {
             eqp.UpdatedBy = 1;
-            var ret = _eqpService.Update(eqp, file);
+            var ret = _eqpService.Update(eqp);
             return Ok(ret.Result);
         }
 

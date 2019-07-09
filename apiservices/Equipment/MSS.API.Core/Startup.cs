@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 using MSS.API.Operlog.Common;
+using MSS.API.Common;
 
 namespace MSS.API.Core
 {
@@ -103,6 +104,13 @@ namespace MSS.API.Core
             // app.UseCors(AllowSpecificOrigins);
             app.UseCors();
             app.UseMvc();
+        }
+
+        private void InitConst()
+        {
+            Const.PAGESIZE = Convert.ToInt32(Configuration["InitConst:PageSize"]);
+            FilePath.BASEFILE = Configuration["InitConst:BaseFile"];
+            FilePath.SHAREFILE = Configuration["InitConst:ShareFile"];
         }
     }
 }
