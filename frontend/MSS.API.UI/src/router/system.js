@@ -90,6 +90,19 @@ const routes = [
           }
         ]
       }, {
+        path: 'orguser',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/organization/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'seting'
+          }, {
+            path: 'seting',
+            name: 'OrgUserSetting',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/organization/children/UserSetting.vue')
+          }
+        ]
+      }, {
         path: 'actionGroup',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/actionGroup/Index.vue'),
         children: [
@@ -155,6 +168,10 @@ const routes = [
             path: 'list',
             name: 'SeeOperlogList',
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeOperlogList.vue')
+          }, {
+            path: 'AddOperlog/:mark?/:id?',
+            name: 'AddOperlog',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/AddOperlog.vue')
           }
       ]
     }

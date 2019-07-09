@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MSS.API.Core.Common;
 using MSS.API.Model.DTO;
+using MSS.API.Common;
 namespace MSS.API.Core.V1.Business
 {
     public interface IOrgService
@@ -12,6 +13,8 @@ namespace MSS.API.Core.V1.Business
         Task<DataResult> GetAllOrg();
         Task<DataResult> GetOrgByIDs(List<int> ids);
         Task<DataResult> GetOrgByUserID(int userId);
+        Task<DataResult> GetOrgUserByUserID(int userId);
+        Task<DataResult> GetOrgUserByNodeID(int id);
         Task<DataResult> AddOrgNode(OrgTree node);
         Task<DataResult> UpdateOrgNode(OrgTree node);
         Task<DataResult> DeleteOrgNode(OrgTree node);
@@ -20,5 +23,11 @@ namespace MSS.API.Core.V1.Business
         Task<DataResult> BindOrgNodeUsers(OrgUserView nodeView);
         Task<DataResult> GetNodeType();
         Task<DataResult> GetOrgNode(int id);
+
+        // 获取所有已选用户
+        Task<ApiResult> ListAllOrgUsers();
+
+        // 删除节点关联的用户
+        Task<ApiResult> DeleteOrgNodeUsers(OrgUserView nodeView);
     }
 }
