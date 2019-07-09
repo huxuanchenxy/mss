@@ -61,6 +61,10 @@ const routes = [
             path: 'add',
             name: 'AddEqp',
             component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/AddEqp.vue')
+          }, {
+            path: 'detail',
+            name: 'DetailEqp',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/DetailEqp.vue')
           }
         ]
       }
