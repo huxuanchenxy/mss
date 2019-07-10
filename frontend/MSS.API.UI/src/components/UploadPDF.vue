@@ -1,8 +1,8 @@
 <template>
   <el-upload
-    action="http://localhost:3851/api/v1/Upload"
+    action="http://10.89.36.204:5801/eqpapi/Upload"
     :multiple="true"
-    :data="fileType"
+    :data="myFileType"
     :headers="uploadHeaders"
     accept="application/pdf"
     :file-list="fileList"
@@ -17,21 +17,29 @@
   </el-upload>
 </template>
 <script>
+import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import api from '@/api/eqpApi'
+import XButton from '@/components/button'
 export default {
   name: 'UploadPDF',
+  components: {
+    XButton
+  },
   props: {
     label: String,
-    fileType: Number,
-    isShow: Boolean
+    fileType: Number
   },
   data () {
     return {
-      fileType: {type: fileType},
+      myFileType: {},
       uploadHeaders: {Authorization: ''},
       fileList: [],
       centerDialogVisible: false,
       previewUrl: ''
     }
+  },
+  mounted () {
+    this.myFileType.type = this.fileType
   },
   methods: {
     onSuccess (response, file, fileList) {
@@ -41,7 +49,6 @@ export default {
           val.id = val.response.data.id
         }
       })
-      console.log(this.fileList)
     },
     beforeRemove (file, fileList) {
       api.deleteUploadFile(file.id).then(res => {
@@ -65,6 +72,7 @@ export default {
       } else {
         this.previewUrl = PDF_BLOB_VIEW_URL + item.url
       }
+      this.$emit('preview', this.previewUrl)
     }
   }
 }

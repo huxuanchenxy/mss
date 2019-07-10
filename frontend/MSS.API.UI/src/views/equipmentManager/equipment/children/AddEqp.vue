@@ -224,22 +224,7 @@
             </li>
             <li class="list upload-list">
               <div>
-                <el-upload
-                  action="http://localhost:3851/api/v1/Upload"
-                  :multiple="true"
-                  :data="fileType"
-                  :headers="uploadHeaders"
-                  accept="application/pdf"
-                  :file-list="fileList"
-                  :show-file-list="true"
-                  list-type="text"
-                  :on-success="onSuccess"
-                  :before-remove="beforeRemove"
-                  :on-preview="preview">
-                  <span class="text">设备图纸</span>
-                  <x-button class="active upload-btn">点击上传</x-button>
-                  <!--<i class="iconfont icon-pdf"></i>-->
-                </el-upload>
+                <upload-pdf :fileType="fileType" label="设备图纸"></upload-pdf>
               </div>
             </li>
           </ul>
@@ -299,8 +284,10 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
+// import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, FileType } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import MyUploadPDF from '@/components/UploadPDF'
 import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
 import apiOrg from '@/api/orgApi'
@@ -308,11 +295,12 @@ import apiArea from '@/api/AreaApi.js'
 export default {
   name: 'AddEqp',
   components: {
-    XButton
+    XButton,
+    'upload-pdf': MyUploadPDF
   },
   data () {
     return {
-      fileType: {type: FileType.Eqp_Drawings},
+      fileType: FileType.Eqp_Drawings,
       uploadHeaders: {Authorization: ''},
       fileList: [],
       centerDialogVisible: false,
@@ -461,37 +449,40 @@ export default {
     }
   },
   methods: {
-    onSuccess (response, file, fileList) {
-      this.fileList = fileList
-      this.fileList.map(val => {
-        if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
-          val.id = val.response.data.id
-        }
-      })
-      console.log(this.fileList)
-    },
-    beforeRemove (file, fileList) {
-      api.deleteUploadFile(file.id).then(res => {
-        this.fileList = fileList
-        this.fileList.map(val => {
-          if (val.status === 'success') {
-            val.id = val.response.data.id
-          }
-        })
-        return res.code === 0
-      }).catch(err => console.log(err))
-    },
-    preview (item) {
-      this.centerDialogVisible = true
-      if (item.status === 'success') {
-        if (item.url.indexOf('blob:') !== -1) {
-          this.previewUrl = PDF_BLOB_VIEW_URL + item.url
-        } else {
-          this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
-        }
-      } else {
-        this.previewUrl = PDF_BLOB_VIEW_URL + item.url
-      }
+    // onSuccess (response, file, fileList) {
+    //   this.fileList = fileList
+    //   this.fileList.map(val => {
+    //     if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
+    //       val.id = val.response.data.id
+    //     }
+    //   })
+    //   console.log(this.fileList)
+    // },
+    // beforeRemove (file, fileList) {
+    //   api.deleteUploadFile(file.id).then(res => {
+    //     this.fileList = fileList
+    //     this.fileList.map(val => {
+    //       if (val.status === 'success') {
+    //         val.id = val.response.data.id
+    //       }
+    //     })
+    //     return res.code === 0
+    //   }).catch(err => console.log(err))
+    // },
+    // preview (item) {
+    //   this.centerDialogVisible = true
+    //   if (item.status === 'success') {
+    //     if (item.url.indexOf('blob:') !== -1) {
+    //       this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+    //     } else {
+    //       this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+    //     }
+    //   } else {
+    //     this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+    //   }
+    // },
+    preview (url) {
+      this.previewUrl = url
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
