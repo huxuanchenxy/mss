@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CSRedis;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -7,47 +9,34 @@ using System.Text;
 
 namespace MSS.API.Common.Utility
 {
-    public class AuthHelper
+    public class AuthHelper : IAuthHelper
     {
-        private static readonly IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
-        private static IConfigurationRoot _configuration;
+        private IHttpContextAccessor _httpContextAccessor;
+        private readonly IDistributedCache _cache;
 
-        public AuthHelper()
+        public AuthHelper(IHttpContextAccessor httpContextAccessor, IDistributedCache cache)
         {
-            _configuration = ConfigurationBuilder
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(cfg =>
-                {
-                    cfg.Path = "appsettings.json";
-                    cfg.ReloadOnChange = true;
-                    cfg.Optional = false;
-                })
-                //Build方法的调用要在AddJsonFile之后，否则生成的IConfigurationRoot实例的
-                //Providers属性不包含任何元素而导致无法读取文件中的信息
-                .Build();
+            _httpContextAccessor = httpContextAccessor;
+            _cache = cache;
         }
-        public int GetUserId(HttpContext context)
+        public int GetUserId()
         {
-            int userid = 0;
-            
-            var _redisconfig = _configuration["redis:connectionString"];
-            RedisMSSHelper.Init(_redisconfig);
+            int userid = -1;
+
             string token = string.Empty;
-            var head = context.Request.Headers["Authorization"].ToString();
-            if (head.IndexOf("Bearer") >= 0)
+            var context = _httpContextAccessor.HttpContext;
+            var head = context.Request.Headers["Authorization"];
+            if (!string.IsNullOrEmpty(head))
             {
-                token = head.Replace("Bearer", "").Trim();
-                try
+                if (head.ToString().IndexOf("Bearer") >= 0)
                 {
-                    userid = int.Parse(RedisMSSHelper.Get(token));
-                }
-                catch (Exception ex)
-                {
+                    token = head.ToString().Replace("Bearer", "").Trim();
+
+                    userid = int.Parse(_cache.GetString(token));
+
 
                 }
-                
             }
-            
             return userid;
         }
     }
