@@ -63,8 +63,6 @@
           </div>
         </li>
       </ul>
-    </div>
-    <div class="con-padding-horizontal operation">
       <ul class="input-group">
         <li class="list1">
           <div class="inp-wrap">
@@ -75,8 +73,6 @@
           </div>
         </li>
       </ul>
-    </div>
-    <div class="con-padding-horizontal operation">
       <ul class="input-group">
         <li class="list1">
           <div class="inp-wrap">
@@ -88,12 +84,6 @@
         </li>
       </ul>
     </div>
-    <!-- <div class="btn-enter">
-      <x-button class="close">
-        <router-link :to="{ name: 'SeeActionGroupList' }">取消</router-link>
-      </x-button>
-      <x-button class="active" @click.native="enter">保存</x-button>
-    </div> -->
   </div>
 </template>
 <script>
