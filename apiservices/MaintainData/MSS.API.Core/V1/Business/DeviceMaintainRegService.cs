@@ -161,11 +161,13 @@ namespace MSS.API.Core.V1.Business
                     var list = await _deviceMaintainRegRepo.GetListByPage(strWhere, sort, orderby, page, size);
                     if (list != null && list.Count > 0)
                     {
-                        //foreach (var v in list)
-                        //{
-                        //    v.deptname = GetDeptNameByID(v.deptid.ToString());
-                        //    v.deviceTypeName = GetDeviceTypeNameByID(v.device_type.ToString());
-                        //}
+                        foreach (var v in list)
+                        {
+                            v.device_name = GetdeviceName(v.device_id.ToString());
+                            v.device_type_name = GetDeviceTypeNameByID(v.device_type_id.ToString());
+                            v.director_name = GetderoctName(v.director_id.ToString());
+                            v.team_group_name = GettermGroupName(v.team_group_id.ToString());
+                        }
                     }
 
                     ret.code = Code.Success;
@@ -210,28 +212,82 @@ namespace MSS.API.Core.V1.Business
             return deviceTypeName;
         }
 
-        private string GetDeptNameByID(string deptId)
+        private string GetdeviceName(string deviceID)
         {
-            string deptName = string.Empty;
-            switch (deptId)
+            string deviceName = string.Empty;
+            switch (deviceID)
             {
                 case "1":
-                    deptName = "维护一部";
+                    deviceName = "设备A";
                     break;
                 case "2":
-                    deptName = "维护二部";
+                    deviceName = "设备B";
                     break;
                 case "3":
-                    deptName = "维护三部";
+                    deviceName = "设备C";
                     break;
                 case "4":
-                    deptName = "计划部";
+                    deviceName = "设备D";
                     break;
                 case "5":
-                    deptName = "信息部";
+                    deviceName = "设备E";
                     break;
             }
-            return deptName;
+            return deviceName;
+        }
+
+        private string GettermGroupName(string ID)
+        {
+            string deviceName = string.Empty;
+            switch (ID)
+            {
+                case "1":
+                    deviceName = "维护班组";
+                    break;
+                case "2":
+                    deviceName = "计划班组";
+                    break;
+                case "3":
+                    deviceName = "信息班组";
+                    break; 
+            }
+            return deviceName;
+        }
+
+        private string GetderoctName(string ID)
+        {
+            string deviceName = string.Empty;
+            switch (ID)
+            {
+                case "1":
+                    deviceName = "章仨";
+                    break;
+                case "2":
+                    deviceName = "李素";
+                    break;
+                case "3":
+                    deviceName = "王二";
+                    break;
+            }
+            return deviceName;
+        }
+
+        private string GetdeviceNameByID(string deviceID)
+        {
+            string deviceName = string.Empty;
+            switch (deviceID)
+            {
+                case "1":
+                    deviceName = "设备A";
+                    break;
+                case "2":
+                    deviceName = "设备B";
+                    break;
+                case "3":
+                    deviceName = "设备C";
+                    break; 
+            }
+            return deviceName;
         }
 
         //Task<ApiResult> IExpertDataService.GetMaxId()
