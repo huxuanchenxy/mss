@@ -28,7 +28,7 @@
               <el-cascader clearable
                 :show-all-levels="true"
                 :options="deviceTypeList"
-                v-model="deviceType.text">
+                v-model="deviceType">
               </el-cascader>
             </div>
           </div>
@@ -319,16 +319,32 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        DeviceType: this.deviceType.text,
-        DeviceName: this.deviceName,
+        deviceType: '', // this.deviceType.text,
+        deviceId: '', // this.deviceName,
         TeamGroup: this.teamGroupid,
         Director: this.directorid,
         maintain_date: this.maintain_date
+      }
+      if (this.deviceType !== '') {
+        switch (this.deviceType.length) {
+          case 0:
+            parm.deviceType = ''
+            parm.deviceId = ''
+            break
+          case 1:
+            parm.deviceType = this.deviceType[0]
+            break
+          case 2:
+            parm.deviceType = this.deviceType[0]
+            parm.deviceId = this.deviceType[1]
+            break
+        }
       }
       api.GetListByPage(parm).then(res => {
         this.loading = false
         res.data.list.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
+          item.maintain_date = transformDate(item.maintain_date)
         })
         this.DeviceMaintainRegList = res.data.list
         this.total = res.data.total
