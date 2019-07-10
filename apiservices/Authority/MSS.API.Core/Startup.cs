@@ -15,6 +15,7 @@ using MSS.API.Utility;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 using static MSS.API.Utility.Const;
+using MSS.API.Common;
 
 namespace MSS.API.Core
 {
@@ -45,6 +46,11 @@ namespace MSS.API.Core
                 .AddJsonFormatters();
 
             services.AddDapper(Configuration);
+
+            services.AddCSRedisCache(options =>
+            {
+                options.ConnectionString = this.Configuration["redis:ConnectionString"];
+            });
             services.AddEssentialService();
 
             //services.AddAuthentication("Bearer")//添加授权模式
@@ -63,7 +69,7 @@ namespace MSS.API.Core
             });
 
             services.AddDistributedMemoryCache();
-            services.AddSession();
+            //services.AddSession();
             services.AddMvc(
             //options =>
             //{
@@ -104,7 +110,7 @@ namespace MSS.API.Core
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-            app.UseSession();
+            //app.UseSession();
             app.UseCors("AllowAll");
             app.UseMvc();
         }
