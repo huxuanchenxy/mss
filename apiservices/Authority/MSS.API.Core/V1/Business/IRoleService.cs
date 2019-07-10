@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static MSS.API.Common.Const;
+using static MSS.API.Utility.Const;
 
 namespace MSS.API.Core.V1.Business
 {

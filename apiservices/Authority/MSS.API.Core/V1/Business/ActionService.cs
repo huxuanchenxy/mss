@@ -2,7 +2,7 @@
 using MSS.API.Model.Data;
 using System.Threading.Tasks;
 using MSS.API.Model.DTO;
-using static MSS.API.Common.Const;
+using static MSS.API.Utility.Const;
 using System;
 using System.Collections.Generic;
 using System.Linq;

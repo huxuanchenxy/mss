@@ -442,11 +442,6 @@ export default {
     apiArea.SelectConfigAreaData().then(res => {
       this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
-
-    let token = window.sessionStorage.getItem('token')
-    if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
-      this.uploadHeaders.Authorization = `Bearer ${token}`
-    }
   },
   methods: {
     // onSuccess (response, file, fileList) {
