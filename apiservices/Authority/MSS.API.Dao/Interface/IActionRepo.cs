@@ -2,7 +2,7 @@
 using MSS.API.Model.DTO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static MSS.API.Common.Const;
+using static MSS.API.Utility.Const;
 
 namespace MSS.API.Dao.Interface
 {

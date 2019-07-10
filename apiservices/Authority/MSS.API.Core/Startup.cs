@@ -11,10 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MSS.API.Common;
+using MSS.API.Utility;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
-using static MSS.API.Common.Const;
+using static MSS.API.Utility.Const;
 
 namespace MSS.API.Core
 {

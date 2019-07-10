@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MSS.API.Common
+namespace MSS.API.Utility
 {
     /// <summary>
     /// 密码加解密

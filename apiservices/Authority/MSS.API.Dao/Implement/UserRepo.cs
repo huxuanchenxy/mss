@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Dapper;
 using MSS.API.Model.DTO;
 using System.Linq;
-using static MSS.API.Common.Const;
-using MSS.API.Common;
+using static MSS.API.Utility.Const;
+using MSS.API.Utility;
 
 namespace MSS.API.Dao.Implement
 {

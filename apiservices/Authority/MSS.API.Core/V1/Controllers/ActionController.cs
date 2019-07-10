@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MSS.API.Common;
+using MSS.API.Utility;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Core.V1.Business;
 using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
-using static MSS.API.Common.Const;
+using static MSS.API.Utility.Const;
 
 namespace MSS.API.Core.V1.Controllers
 {

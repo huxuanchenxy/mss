@@ -11,7 +11,7 @@
     :on-success="onSuccess"
     :before-remove="beforeRemove"
     :on-preview="preview">
-    <span class="text">label</span>
+    <span class="text">{{label}}</span>
     <x-button class="active upload-btn">点击上传</x-button>
     <!--<i class="iconfont icon-pdf"></i>-->
   </el-upload>
@@ -39,7 +39,12 @@ export default {
     }
   },
   mounted () {
+    debugger
     this.myFileType.type = this.fileType
+    let token = window.sessionStorage.getItem('token')
+    if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
+      this.uploadHeaders.Authorization = `Bearer ${token}`
+    }
   },
   methods: {
     onSuccess (response, file, fileList) {

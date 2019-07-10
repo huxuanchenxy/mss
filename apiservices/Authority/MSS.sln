@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Model", "MSS.API.Mo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Dao", "MSS.API.Dao\MSS.API.Dao.csproj", "{0CF1EEC1-1762-4276-AAF4-F8C7B953EE50}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Common", "MSS.API.Common\MSS.API.Common.csproj", "{F8CDDEF3-EB8C-4DEA-8D4B-C973837B78EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Utility", "MSS.API.Common\MSS.API.Utility.csproj", "{F8CDDEF3-EB8C-4DEA-8D4B-C973837B78EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

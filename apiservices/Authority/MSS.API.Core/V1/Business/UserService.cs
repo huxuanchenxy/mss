@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MSS.API.Model.DTO;
-using static MSS.API.Common.Const;
-using MSS.API.Common;
+using static MSS.API.Utility.Const;
+using MSS.API.Utility;
 
 namespace MSS.API.Core.V1.Business
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MSS.API.Common
+namespace MSS.API.Utility
 {
     public static class Const
     {
