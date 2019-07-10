@@ -143,6 +143,12 @@ export default {
     }
   },
   created () {
+    // 角色列表
+    api.getRoleAll().then(res => {
+      this.roleList = res.data
+    }).catch(err => console.log(err))
+  },
+  mounted () {
     if (this.isShow === 'add') {
       this.loading = false
       this.title = '| 添加用户'
@@ -155,10 +161,6 @@ export default {
       // this.btnText = '保存'
       this.getUser()
     }
-    // 角色列表
-    api.getRoleAll().then(res => {
-      this.roleList = res.data
-    }).catch(err => console.log(err))
   },
   methods: {
     // 添加用户
@@ -230,7 +232,7 @@ export default {
         this.userID = _res.id
         this.accName.text = _res.acc_name
         this.userName.text = _res.user_name
-        this.role = _res.role_id === null ? '' : _res.role_id.toString()
+        this.role = _res.role_id === null ? '' : _res.role_id
         this.jobNumber.text = _res.job_number
         this.position.text = nullToEmpty(_res.position)
         this.mobile.text = nullToEmpty(_res.mobile)

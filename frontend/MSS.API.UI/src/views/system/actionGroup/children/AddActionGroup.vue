@@ -217,7 +217,7 @@ export default {
         let _res = res.data
         this.actionGroupID = _res.id
         this.groupName.text = _res.group_name
-        this.groupType.text = _res.group_type.toString()
+        this.groupType.text = _res.group_type
         this.groupOrder.text = _res.group_order.toString()
         this.groupUrl.text = _res.request_url
         this.groupIcon.text = _res.icon
