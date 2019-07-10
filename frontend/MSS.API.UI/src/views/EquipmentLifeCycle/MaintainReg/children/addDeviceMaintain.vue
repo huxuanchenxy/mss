@@ -17,16 +17,8 @@
             <div class="inp-wrap">
             <span class="text">设备类别<em class="validate-mark">*</em></span>
             <div class="inp">
-              <!-- <el-select v-model="deviceType.text" clearable placeholder="请选择" @change="validatechildSelect(deviceType.text)">
-                <option disabled value="" selected>请选择</option>
-                 <el-option
-                 v-for="item in deviceTypeList"
-                 :key="item.key"
-                 :value="item.id"
-                 :label="item.deviceTypeName">
-                 </el-option>
-              </el-select> -->
               <el-cascader clearable
+                change-on-select
                 :show-all-levels="true"
                 :options="deviceTypeList"
                 v-model="deviceType.text">
@@ -35,25 +27,6 @@
             </div>
              <p class="validate-tips">{{ deviceType.tips }}</p>
           </li>
-          <li class="list">
-            <div class="inp-wrap">
-               <span class="text">设备名称<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-select v-model="device.text" clearable placeholder="请选择">
-                <option disabled value="" selected>请选择</option>
-                 <el-option
-                 v-for="item in devicelist"
-                 :key="item.key"
-                 :value="item.id"
-                 :label="item.deviceName">
-                 </el-option>
-              </el-select>
-            </div>
-            </div>
-             <p class="validate-tips">{{ device.tips }}</p>
-          </li>
-        </ul>
-        <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
               <span class="text">负责班组<em class="validate-mark">*</em></span>
@@ -71,11 +44,13 @@
             </div>
             <p class="validate-tips">{{ team_group.tips }}</p>
           </li>
+        </ul>
+          <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
               <span class="text">维护负责人<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-select v-model="director" clearable placeholder="请选择">
+              <el-select v-model="director.text" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in directorList"
@@ -88,8 +63,6 @@
             </div>
             <p class="validate-tips">{{ director.tips }}</p>
           </li>
-        </ul>
-        <ul class="con-padding-horizontal input-group">
            <li class="list">
              <div class="inp-wrap">
               <span class="text">维护日期<em class="validate-mark">*</em></span>
@@ -258,14 +231,27 @@ export default {
         }
       }
       let model = {
-        device_type_id: this.deviceType.text,
-        device_id: this.device.text,
+        device_type_id: 0, // this.deviceType.text,
+        device_id: 0, // this.device.text,
         team_group_id: this.team_group.text,
         director_id: this.director.text,
         detail_desc: this.detail_desc.text,
         maintain_date: this.maintain_date.text,
         // attch_file: '1',
         is_deleted: '0'
+      }
+      switch (this.deviceType.text.length) {
+        case 0:
+          model.device_type_id = 0
+          model.device_id = 0
+          break
+        case 1:
+          model.device_type_id = this.deviceType.text[0]
+          break
+        case 2:
+          model.device_type_id = this.deviceType.text[0]
+          model.device_id = this.deviceType.text[1]
+          break
       }
       if (this.isShow === 'add') {
         // 添加站区
@@ -316,13 +302,25 @@ export default {
       api.GetDeviceMaintainRegById(id).then(res => {
         this.loading = false
         let _res = res.data
-        this.deviceType.text = _res.device_type_id
-        this.device.text = _res.device_id
+        this.deviceType.text = this.strToIntArr(_res.device_type_id + ',' + _res.device_id)
+        // this.area.text = this.strToIntArr(_res.locationPath)
+        // this.device.text = _res.device_id
         this.team_group.text = _res.team_group_id
         this.director.text = _res.director_id
         this.detail_desc.text = _res.detail_desc
         this.maintain_date.text = _res.maintain_date
       }).catch(err => console.log(err))
+    },
+    strToIntArr (str) {
+      let arr = str.split(',')
+      let ret = []
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === 0) {
+          continue
+        }
+        ret.push(parseInt(arr[i]))
+      }
+      return ret
     },
     // 验证
     validateInput (val) {
@@ -392,7 +390,7 @@ export default {
     },
     validateAll () {
       if (!this.validatedeviceTypeSelect()) return false
-      if (!this.validatedeviceSelect()) return false
+      // if (!this.validatedeviceSelect()) return false
       if (!this.validateteam_groupSelect()) return false
       if (!this.validatedirectorSelect()) return false
       if (!validateInputCommon(this.maintain_date)) return false
