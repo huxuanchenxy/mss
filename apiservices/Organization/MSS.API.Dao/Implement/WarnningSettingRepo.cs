@@ -61,7 +61,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "UPDATE early_warnning_setting SET equipment_type_id =@EquipmentTypeID, param_id = @ParamID,  param_limit_upper = @ParamLimitUpper, param_limit_lower = @ParamLimitLower, is_actived = @IsActived,"
+                string sql = "UPDATE early_warnning_setting SET equipment_type_id =@EquipmentTypeID, param_id = @ParamID, param_name = @ParamName, param_unit = @ParamUnit, param_limit_upper = @ParamLimitUpper, param_limit_lower = @ParamLimitLower, is_actived = @IsActived,"
                             + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE ID=@ID;";
                 await c.ExecuteAsync(sql, setting);
                 return setting;
