@@ -12,9 +12,9 @@
           <el-button size="mini" @click="delOrgNode(data, node)">删除</el-button>
           <el-button size="mini" @click="updateOrgNode(data)">修改</el-button>
           <el-button size="mini" @click="seeOrgNode(data)">查看</el-button>
-          <el-button size="mini">
+          <!-- <el-button size="mini">
             <router-link class="color-white block" :to="{ name: 'OrgUser', params: { id: data.id, label: data.label } }">人员配置</router-link>
-          </el-button>
+          </el-button> -->
         </div>
       </template>
     </li>
