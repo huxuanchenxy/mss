@@ -70,7 +70,7 @@
           <div class="inp-wrap">
             <span class="text">请求详情</span>
             <div class="inp" style="width:86.5%">
-              <el-input type="textarea" v-model="request_description" :disabled="isShow === 'look'" ></el-input>
+              <el-input type="textarea" v-model="request_description" :disabled="isShow === 'look'" :rows="7"></el-input>
             </div>
           </div>
         </li>
@@ -318,4 +318,9 @@ export default {
 #responsearea{
     min-height: 93px;
 }
+</style>
+<style>
+  .el-textarea .el-textarea__inner{
+    resize: none;
+  }
 </style>
