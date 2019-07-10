@@ -22,13 +22,11 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IEquipmentRepo<Equipment> _eqpRepo;
-        private readonly IUploadFileRepo<UploadFile> _uploadFileRepo;
 
-        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo, IUploadFileRepo<UploadFile> uploadFileRepo)
+        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo)
         {
             //_logger = logger;
             _eqpRepo = eqpRepo;
-            _uploadFileRepo = uploadFileRepo;
         }
 
         public async Task<ApiResult> Save(Equipment eqp)
@@ -127,8 +125,12 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 Equipment e = await _eqpRepo.GetByID(id);
-                e.Drawings =await _uploadFileRepo.ListByForeignAndType(e.ID, (int)FileType.Eqp_Drawings);
-                ret.data = e;
+                var list = await _eqpRepo.ListByEqp(e.ID);
+                if (list!=null)
+                {
+                    e.FileIDs = string.Join(",", list.Select(a => a.FileID).ToArray());
+                    ret.data = e;
+                }
                 return ret;
             }
             catch (Exception ex)

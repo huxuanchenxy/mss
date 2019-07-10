@@ -20,7 +20,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = " insert into upload_file " +
-                    " values (0,@FileName,@FilePath,@FileType,@ForeignID); ";
+                    " values (0,@FileName,@FilePath); ";
                 sql += "SELECT LAST_INSERT_ID()";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, uploadFile);
                 uploadFile.ID = newid;
@@ -47,13 +47,13 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<List<UploadFile>> ListByForeignAndType(int id,int type)
+        public async Task<List<UploadFile>> ListByIDs(string ids)
         {
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<UploadFile>(
-                    "SELECT * FROM upload_file WHERE foreign_id = @id and type=@type", new { id = id,type=type });
-                if (result!=null)
+                    "SELECT * FROM upload_file WHERE id in @ids", new { ids = ids.Split(',') });
+                if (result!=null && result.Count()>0)
                 {
                     return result.ToList();
                 }

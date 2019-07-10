@@ -38,7 +38,6 @@ namespace MSS.API.Core.V1.Business
                 PDFHelper pdf = new PDFHelper();
                 uf.FilePath = pdf.GetSavePDFPath(file, type);
                 uf.FileName = file.FirstOrDefault().FileName;
-                uf.FileType = type;
                 ret.data = await _uploadFileRepo.Save(uf);
                 // 当数据库插入不成功时，则不上传文件
                 if (ret.data!=null)
@@ -90,6 +89,33 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 ret.data = await _uploadFileRepo.GetByID(id);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
+        public async Task<ApiResult> ListByIDs(string ids)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<UploadFile> ufs = await _uploadFileRepo.ListByIDs(ids);
+                List<object> objs = new List<object>();
+                foreach (var item in ufs)
+                {
+                    objs.Add(new {
+                        id=item.ID,
+                        name=item.FileName,
+                        url=item.FilePath,
+                        status="success"
+                    });
+                }
+                ret.data = objs;
                 return ret;
             }
             catch (Exception ex)

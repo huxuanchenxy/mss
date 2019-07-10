@@ -35,8 +35,18 @@ namespace MSS.API.Dao.Implement
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, eqp,trans);
                     eqp.ID = newid;
-                    sql = "update upload_file set foreign_id=@eqpID where id in @ids";
-                    int ret = await c.ExecuteAsync(sql, new {eqpID=newid,ids=eqp.ids.Split(',') }, trans);
+                    sql = "delete from upload_file_eqp where eqp_id=@id";
+                    int ret = await c.ExecuteAsync(sql, new { id = newid}, trans);
+                    List<object> objs = new List<object>();
+                    foreach (var item in eqp.FileIDs.Split(','))
+                    {
+                        objs.Add(new {
+                            eqpID=newid,
+                            fileID=Convert.ToInt32(item)
+                        });
+                    }
+                    sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
+                    ret = await c.ExecuteAsync(sql, objs, trans);
                     trans.Commit();
                     return eqp;
                 }
@@ -63,8 +73,19 @@ namespace MSS.API.Dao.Implement
                         " location=@Location,location_by=@LocationBy,location_path=@LocationPath,online_date=@Online,life=@Life, " +
                         " medium_repair=@MediumRepair,large_repair=@LargeRepair,online_again=@OnlineAgain, " +
                         " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
-                    string sql = "update upload_file set foreign_id=@eqpID where id in @ids";
-                    int ret = await c.ExecuteAsync(sql, new { eqpID = eqp.ID, ids = eqp.ids.Split(',') }, trans);
+                    string sql = "delete from upload_file_eqp where eqp_id=@id";
+                    int ret = await c.ExecuteAsync(sql, new { id = eqp.ID }, trans);
+                    List<object> objs = new List<object>();
+                    foreach (var item in eqp.FileIDs.Split(','))
+                    {
+                        objs.Add(new
+                        {
+                            eqpID = eqp.ID,
+                            fileID = Convert.ToInt32(item)
+                        });
+                    }
+                    sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
+                    ret = await c.ExecuteAsync(sql, objs, trans);
                     trans.Commit();
                     return result;
                 }
@@ -145,6 +166,17 @@ namespace MSS.API.Dao.Implement
                 return result;
             });
         }
+
+        public async Task<List<UploadFileEqp>> ListByEqp(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<UploadFileEqp>(
+                    "SELECT * FROM upload_file_eqp WHERE eqp_id = @id", new { id = id });
+                return result.ToList();
+            });
+        }
+
 
         public async Task<List<Equipment>> ListByEqpType(string ids)
         {
