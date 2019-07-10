@@ -39,7 +39,6 @@ export default {
     }
   },
   mounted () {
-    debugger
     this.myFileType.type = this.fileType
     let token = window.sessionStorage.getItem('token')
     if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
