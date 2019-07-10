@@ -27,6 +27,7 @@ namespace MSS.API.Core
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            InitConst();
         }
 
         readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
