@@ -219,16 +219,15 @@ export default {
     // 设备配置类型列表
     api.GetEquipmentTypeList().then(res => {
       res.data.map((e, i) => {
-        if(e.children != null && e.children.length > 0) {
-        this.deviceTypeList.push({value: e.id, label: e.deviceTypeName, children: []
-        })
-        e.children.map((item) => {
-          this.deviceTypeList[i].children.push({value: item.id, label: item.deviceName})
-        })}
-        else
-        {
+        if (e.children != null && e.children.length > 0) {
+          this.deviceTypeList.push({value: e.id, label: e.deviceTypeName, children: []
+          })
+          e.children.map((item) => {
+            this.deviceTypeList[i].children.push({value: item.id, label: item.deviceName})
+          })
+        } else {
           this.deviceTypeList.push({value: e.id, label: e.deviceTypeName
-        })
+          })
         }
       })
     }).catch(err => console.log(err))
