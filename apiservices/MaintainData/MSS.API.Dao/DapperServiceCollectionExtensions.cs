@@ -21,12 +21,13 @@ namespace MSS.API.Dao
             optionsSection.Bind(options);
             services.AddSingleton<DapperOptions>(options); 
             services.AddTransient<Itb_expert_dataRepo<tb_expert_data>, Tb_expert_dataRepo>();
-
+            services.AddTransient<Itb_devicemaintain_regRepo<tb_devicemaintain_reg>, tb_devicemaintain_regRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
                 config.AddMap(new BaseEntityMap());
-                config.AddMap(new tb_expert_dataMap()); 
+                config.AddMap(new tb_expert_dataMap());
+                config.AddMap(new tb_devicemaintain_regMap());
             });
             return services;
         }

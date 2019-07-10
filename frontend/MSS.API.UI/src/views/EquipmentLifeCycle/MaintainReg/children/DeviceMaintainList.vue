@@ -14,21 +14,9 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">关键字</label>
+            <label for="">设备类别</label>
             <div class="inp">
-              <el-input v-model.trim="keyword" placeholder="请输入站区名称"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="name">标题</label>
-            <div class="inp">
-              <el-input v-model.trim="ExpertTitle" placeholder="请输入标题名称"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="">设备类型</label>
-            <div class="inp">
-              <el-select v-model="deviceType" clearable placeholder="请选择">
+              <!-- <el-select v-model="deviceType" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deviceTypeList"
@@ -36,21 +24,67 @@
                  :value="item.id"
                  :label="item.deviceTypeName">
                  </el-option>
+              </el-select> -->
+              <el-cascader clearable
+                :show-all-levels="true"
+                :options="deviceTypeList"
+                v-model="deviceType.text">
+              </el-cascader>
+            </div>
+          </div>
+           <!-- <div class="input-group">
+            <label for="">设备名称</label>
+            <div class="inp">
+              <el-select v-model="deviceName" clearable placeholder="请选择">
+                <option disabled value="" selected>请选择</option>
+                 <el-option
+                 v-for="item in devicelist"
+                 :key="item.key"
+                 :value="item.id"
+                 :label="item.deviceName">
+                 </el-option>
+              </el-select>
+            </div>
+          </div> -->
+          <div class="input-group">
+            <label for="">负责班组</label>
+            <div class="inp">
+              <el-select v-model="teamGroupid" clearable placeholder="请选择">
+                <option disabled value="" selected>请选择</option>
+                 <el-option
+                 v-for="item in TeamGroupList"
+                 :key="item.key"
+                 :value="item.id"
+                 :label="item.teamGroupName">
+                 </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">维护负责人</label>
+            <div class="inp">
+              <el-select v-model="directorid" clearable placeholder="请选择">
+                <option disabled value="" selected>请选择</option>
+                 <el-option
+                 v-for="item in directorList"
+                 :key="item.key"
+                 :value="item.id"
+                 :label="item.directorName">
+                 </el-option>
               </el-select>
             </div>
           </div>
            <div class="input-group">
-            <label for="">部门</label>
+            <label for="">维护日期</label>
             <div class="inp">
-              <el-select v-model="deptid" clearable placeholder="请选择">
-                <option disabled value="" selected>请选择</option>
-                 <el-option
-                 v-for="item in deptList"
-                 :key="item.key"
-                 :value="item.id"
-                 :label="item.deptName">
-                 </el-option>
-              </el-select>
+              <el-date-picker
+                  v-model="maintain_date"
+                  type="datetime"
+                  prefix-icon="el-icon-date"
+                  :unlink-panels="true"
+                  placeholder="选择日期"
+                  value-format="yyyy-MM-dd">
+                </el-date-picker>
             </div>
           </div>
         </div>
@@ -61,7 +95,7 @@
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
           <x-button>
-            <router-link :to="{ name: 'AddExpertData', params: { mark: 'add' } }">添加</router-link>
+            <router-link :to="{ name: 'addDeviceMaintain', params: { mark: 'add' } }">添加</router-link>
           </x-button>
         </li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
@@ -76,29 +110,29 @@
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('keyword')">
-          关键字
-          <i :class="[{ 'el-icon-d-caret': headOrder.keyword === 0 }, { 'el-icon-caret-top': headOrder.keyword === 1 }, { 'el-icon-caret-bottom': headOrder.keyword === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('device_type_id')">
+          设备类别
+          <i :class="[{ 'el-icon-d-caret': headOrder.device_type_id === 0 }, { 'el-icon-caret-top': headOrder.device_type_id === 1 }, { 'el-icon-caret-bottom': headOrder.device_type_id === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('title')">
-          标题
-          <i :class="[{ 'el-icon-d-caret': headOrder.title === 0 }, { 'el-icon-caret-top': headOrder.title === 1 }, { 'el-icon-caret-bottom': headOrder.title === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('device_name')">
+          设备名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.device_name === 0 }, { 'el-icon-caret-top': headOrder.device_name === 1 }, { 'el-icon-caret-bottom': headOrder.device_name === 2 }]"></i>
         </li>
-        <!-- <li class="list number c-pointer" @click="changeOrder('content')">
-          内容
-          <i :class="[{ 'el-icon-d-caret': headOrder.content === 0 }, { 'el-icon-caret-top': headOrder.content === 1 }, { 'el-icon-caret-bottom': headOrder.content === 2 }]"></i>
-        </li> -->
-         <li class="list number c-pointer" @click="changeOrder('device_type')">
-          设备类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.device_type === 0 }, { 'el-icon-caret-top': headOrder.device_type === 1 }, { 'el-icon-caret-bottom': headOrder.device_type === 2 }]"></i>
+         <li class="list number c-pointer" @click="changeOrder('team_group_id')">
+          维护班组
+          <i :class="[{ 'el-icon-d-caret': headOrder.team_group_id === 0 }, { 'el-icon-caret-top': headOrder.team_group_id === 1 }, { 'el-icon-caret-bottom': headOrder.team_group_id === 2 }]"></i>
         </li>
-         <li class="list number c-pointer" @click="changeOrder('deptid')">
-          上传部门
-          <i :class="[{ 'el-icon-d-caret': headOrder.deptid === 0 }, { 'el-icon-caret-top': headOrder.deptid === 1 }, { 'el-icon-caret-bottom': headOrder.deptid === 2 }]"></i>
+         <li class="list number c-pointer" @click="changeOrder('director_id')">
+          维护负责人
+          <i :class="[{ 'el-icon-d-caret': headOrder.director_id === 0 }, { 'el-icon-caret-top': headOrder.director_id === 1 }, { 'el-icon-caret-bottom': headOrder.director_id === 2 }]"></i>
         </li>
-         <li class="list number c-pointer" @click="changeOrder('video_file')">
-          视频上传
-          <i :class="[{ 'el-icon-d-caret': headOrder.video_file === 0 }, { 'el-icon-caret-top': headOrder.video_file === 1 }, { 'el-icon-caret-bottom': headOrder.video_file === 2 }]"></i>
+         <li class="list number c-pointer" @click="changeOrder('maintain_date')">
+          维护日期
+          <i :class="[{ 'el-icon-d-caret': headOrder.maintain_date === 0 }, { 'el-icon-caret-top': headOrder.maintain_date === 1 }, { 'el-icon-caret-bottom': headOrder.maintain_date === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('detail_desc')">
+          过程记录
+          <i :class="[{ 'el-icon-d-caret': headOrder.detail_desc === 0 }, { 'el-icon-caret-top': headOrder.detail_desc === 1 }, { 'el-icon-caret-bottom': headOrder.detail_desc === 2 }]"></i>
         </li>
          <li class="list number c-pointer" @click="changeOrder('attch_file')">
           附件上传
@@ -116,19 +150,19 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item,index) in ExpertdataList" :key="item.key">
+            <li class="list" v-for="(item,index) in DeviceMaintainRegList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editExpertIDList" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editDeviceMaintainRegIDList" :value="item.id" @change="emitEditID">
                 </div>
                  <div class="number">{{index+1}}</div>
-                <div class="number">{{ item.keyword }}</div>
-                <div class="name">{{ item.title }}</div>
-                <!-- <div class="number">{{ item.content }}</div> -->
-                <div class="number">{{ item.deviceTypeName }}</div>
-                <div class="number">{{ item.deptname }}</div>
-                <div class="number">{{ item.video_file }}</div>
-                <div class="number">{{ item.attch_file }}</div>
+                <div class="number">{{ item.device_type_name }}</div>
+                <div class="name">{{ item.device_name }}</div>
+                <div class="number">{{ item.team_group_name }}</div>
+                <div class="number">{{ item.director_name }}</div>
+                <div class="number">{{ item.maintain_date }}</div>
+                <div class="number">{{ item.detail_desc }}</div>
+                <div class="number">{{ '...' }}</div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
                 <div class="last-maintainer">{{ '管理员' }}</div>
               </div>
@@ -168,23 +202,27 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/ExpertApi'
+import api from '@/api/DeviceMaintainRegApi.js'
 export default {
-  name: 'ExpertDataList',
+  name: 'DeviceMaintainList',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 专家库',
-      ExpertTitle: '',
-      ExpertID: '',
-      deptid: '',
-      deptList: [], // 部门
+      title: ' | 设备维修',
+      maintain_date: '',
+      deviceName: '',
+      devicelist: [],
+      DeviceMaintainRegID: '',
+      teamGroupid: '',
+      TeamGroupList: [],
+      directorid: '',
+      directorList: [],
       deviceType: '',
       deviceTypeList: [],
-      ExpertdataList: [],
-      editExpertIDList: [],
+      DeviceMaintainRegList: [],
+      editDeviceMaintainRegIDList: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -201,13 +239,12 @@ export default {
       },
       headOrder: {
         id: 1,
-        keyword: 1,
-        title: 0,
-        content: 0,
-        device_type: 0,
-        deptid: 0,
-        video_file: 0,
-        attch_file: 0,
+        device_type_id: 0,
+        device_name: 0,
+        team_group_id: 0,
+        director_id: 0,
+        maintain_date: 0,
+        detail_desc: 0,
         Sort: 0,
         updatedTime: 0,
         updatedBy: 0
@@ -215,17 +252,32 @@ export default {
     }
   },
   created () {
-    this.$emit('title', '| 专家库配置')
+    this.$emit('title', '| 设备维修')
     this.init()
 
     // 设备配置类型列表
-    api.GetDeviceTypeList().then(res => {
-      this.deviceTypeList = res.data
+     api.GetEquipmentTypeList().then(res => {
+      res.data.map((e, i) => {
+        if(e.children != null && e.children.length > 0) {
+        this.deviceTypeList.push({value: e.id, label: e.deviceTypeName, children: []
+        })
+        e.children.map((item) => {
+          this.deviceTypeList[i].children.push({value: item.id, label: item.deviceName})
+        })}
+        else
+        {
+          this.deviceTypeList.push({value: e.id, label: e.deviceTypeName
+        })
+        }
+      })
     }).catch(err => console.log(err))
-
+    // 设备配置类型列表
+    api.GetDirectorList().then(res => {
+      this.directorList = res.data
+    }).catch(err => console.log(err))
     // 部门列表
-    api.GetdeptList().then(res => {
-      this.deptList = res.data
+    api.GetTeamGroupList().then(res => {
+      this.TeamGroupList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
@@ -268,38 +320,39 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        keyword: this.keyword,
-        title: this.ExpertTitle,
-        deptid: this.deptid,
-        deviceType: this.deviceType
+        DeviceType: this.deviceType.text,
+        DeviceName: this.deviceName,
+        TeamGroup: this.teamGroupid,
+        Director: this.directorid,
+        maintain_date: this.maintain_date
       }
       api.GetListByPage(parm).then(res => {
         this.loading = false
         res.data.list.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
         })
-        this.ExpertdataList = res.data.list
+        this.DeviceMaintainRegList = res.data.list
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
     // 修改站区
     edit () {
-      if (!this.editExpertIDList.length) {
+      if (!this.editDeviceMaintainRegIDList.length) {
         this.$message({
-          message: '请选择需要修改的专家库资料',
+          message: '请选择需要修改的设备维护记录',
           type: 'warning'
         })
-      } else if (this.editExpertIDList.length > 1) {
+      } else if (this.editDeviceMaintainRegIDList.length > 1) {
         this.$message({
-          message: '修改的专家库资料不能超过1个',
+          message: '修改的设备维护记录不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddExpertData',
+          name: 'addDeviceMaintain',
           params: {
-            id: this.editExpertIDList[0],
+            id: this.editDeviceMaintainRegIDList[0],
             mark: 'edit'
           }
         })
@@ -308,7 +361,7 @@ export default {
 
     // 删除站区
     remove () {
-      if (!this.editExpertIDList.length) {
+      if (!this.editDeviceMaintainRegIDList.length) {
         this.$message({
           message: '请选择需要删除的资料',
           type: 'warning'
@@ -321,9 +374,9 @@ export default {
     },
     // 弹框确认是否删除
     dialogEnter () {
-      api.Delete(this.editExpertIDList.join(',')).then(res => {
+      api.Delete(this.editDeviceMaintainRegIDList.join(',')).then(res => {
         if (res.code === 0) {
-          this.editExpertIDList = []
+          this.editDeviceMaintainRegIDList = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -350,12 +403,12 @@ export default {
 
     // 获取修改站区id
     emitEditID () {
-      this.$emit('editExpertIDList', this.editExpertIDList)
+      this.$emit('editDeviceMaintainRegIDList', this.editDeviceMaintainRegIDList)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.ExpertdataList.map(val => this.editExpertIDList.push(val.id)) : this.editExpertIDList = []
+      this.bCheckAll ? this.DeviceMaintainRegList.map(val => this.editDeviceMaintainRegIDList.push(val.id)) : this.editDeviceMaintainRegIDList = []
       this.emitEditID()
     },
 

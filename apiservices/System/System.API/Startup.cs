@@ -71,7 +71,7 @@ namespace System.API
                 //                        .AllowAnyHeader()
                 //                        .AllowAnyMethod();
                 //});
-            options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+                options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -79,11 +79,11 @@ namespace System.API
             {
                 c.SwaggerDoc("v1", new Info { Title = "MySystem API", Version = "v1" });
                 // 为 Swagger JSON and UI设置xml文档注释路径
-                var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
-                var xmlPath = Path.Combine(basePath, "MySystem.xml");//和项目名对应
-                c.IncludeXmlComments(xmlPath);
+                //var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
+                //var xmlPath = Path.Combine(basePath, "MySystem.xml");//和项目名对应
+                //c.IncludeXmlComments(xmlPath);
             });
-            
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -92,10 +92,11 @@ namespace System.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
+            app.UseAuthentication();
+            //else
+            //{
+            //    app.UseHsts();
+            //}
             //启用中间件服务生成Swagger作为JSON终结点
             app.UseSwagger();
             //启用中间件服务对swagger-ui，指定Swagger JSON终结点

@@ -4,17 +4,14 @@ using System.Runtime.Serialization;
 using System.Text;
 
 namespace MSS.API.Model.Data
-{ 
+{
     [DataContract]
-   public class DeviceType
+    public  class DeviceInfo
     {
         [DataMember]
         public int id { get; set; }
 
         [DataMember]
-        public string deviceTypeName { get; set; }
-
-        [DataMember]
-        public List<DeviceInfo> children { get; set; }
+        public string deviceName { get; set; }
     }
 }

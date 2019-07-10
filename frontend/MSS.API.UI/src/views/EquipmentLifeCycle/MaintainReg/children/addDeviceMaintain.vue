@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'ExpertDataList' }">返回</router-link></x-button>
+      <x-button class="active"><router-link :to="{ name: 'DeviceMaintainList' }">返回</router-link></x-button>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -15,25 +15,9 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">请输入关键字<em class="validate-mark">*</em></span>
-              <div class="inp">
-              <el-input placeholder="请输入关键字" v-model="keyword.text" @keyup.native="validateInput(keyword)"></el-input>
-            </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">标题<em class="validate-mark">*</em></span>
-              <div class="inp">
-              <el-input placeholder="请输入标题" v-model="Experttitle.text" @keyup.native="validateInput(Experttitle)"></el-input>
-            </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">设备类型<em class="validate-mark">*</em></span>
-              <div class="inp">
-              <el-select v-model="deviceType.id" clearable placeholder="请选择" @change="validatedeviceTypeSelect()">
+            <span class="text">设备类别<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <!-- <el-select v-model="deviceType.text" clearable placeholder="请选择" @change="validatechildSelect(deviceType.text)">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deviceTypeList"
@@ -41,52 +25,94 @@
                  :value="item.id"
                  :label="item.deviceTypeName">
                  </el-option>
-              </el-select>
+              </el-select> -->
+              <el-cascader clearable
+                :show-all-levels="true"
+                :options="deviceTypeList"
+                v-model="deviceType.text">
+              </el-cascader>
             </div>
             </div>
-            <p class="validate-tips">{{ deviceType.tips }}</p>
+             <p class="validate-tips">{{ deviceType.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">所属部门<em class="validate-mark">*</em></span>
-              <div class="inp">
-              <el-select v-model="dept.id" clearable placeholder="请选择" @change="validatedeptSelect()">
+               <span class="text">设备名称<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-select v-model="device.text" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
-                 v-for="item in deptList"
+                 v-for="item in devicelist"
                  :key="item.key"
                  :value="item.id"
-                 :label="item.deptName">
+                 :label="item.deviceName">
                  </el-option>
               </el-select>
             </div>
             </div>
-            <p class="validate-tips">{{ dept.tips }}</p>
+             <p class="validate-tips">{{ device.tips }}</p>
+          </li>
+        </ul>
+        <ul class="con-padding-horizontal input-group">
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">负责班组<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-select v-model="team_group.text" clearable placeholder="请选择">
+                <option disabled value="" selected>请选择</option>
+                 <el-option
+                 v-for="item in TeamGroupList"
+                 :key="item.key"
+                 :value="item.id"
+                 :label="item.teamGroupName">
+                 </el-option>
+              </el-select>
+            </div>
+            </div>
+            <p class="validate-tips">{{ team_group.tips }}</p>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">维护负责人<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-select v-model="director" clearable placeholder="请选择">
+                <option disabled value="" selected>请选择</option>
+                 <el-option
+                 v-for="item in directorList"
+                 :key="item.key"
+                 :value="item.id"
+                 :label="item.directorName">
+                 </el-option>
+              </el-select>
+            </div>
+            </div>
+            <p class="validate-tips">{{ director.tips }}</p>
+          </li>
+        </ul>
+        <ul class="con-padding-horizontal input-group">
+           <li class="list">
+             <div class="inp-wrap">
+              <span class="text">维护日期<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-date-picker
+                  v-model="maintain_date.text"
+                  type="datetime"
+                  @keyup.native="validateInput(maintain_date.text)"
+                  prefix-icon="el-icon-date"
+                  :unlink-panels="true"
+                  placeholder="选择日期"
+                  value-format="yyyy-MM-dd">
+                </el-date-picker>
+            </div>
+            </div>
           </li>
         </ul>
         <div class="con-padding-horizontal cause">
-          <span class="lable">内容</span>
-          <el-input type="textarea" v-model="content.text" placeholder="请输入内容"></el-input>
-          <p class="validate-tips">{{ content.tips }}</p>
+          <span class="text">备件更换过程记录<em class="validate-mark">*</em></span>
+          <el-input type="textarea" v-model="detail_desc.text" placeholder="请输入内容"></el-input>
+          <p class="validate-tips">{{ detail_desc.tips }}</p>
         </div>
         <!-- 上传图片列表 -->
-        <br/>
-        <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">视频上传</span>
-          <el-upload
-            ref="uploadvedioing"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.vedioing"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadvedio"
-            :on-change="onChangevedio"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
-        </div>
         <br/>
         <div class="upload-wrap con-padding-horizontal">
           <span class="lable">附件上传</span>
@@ -107,7 +133,7 @@
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
-            <router-link :to="{name: 'ExpertDataList'}">取消</router-link>
+            <router-link :to="{name: 'DeviceMaintainList'}">取消</router-link>
           </x-button>
           <x-button class="active" @click.native="enter">保存</x-button>
         </div>
@@ -125,10 +151,10 @@
 </template>
 <script>
 import { validateInputCommon, vInput, PDF_IMAGE } from '@/common/js/utils.js'
-import api from '@/api/ExpertApi'
+import api from '@/api/DeviceMaintainRegApi.js'
 import XButton from '@/components/button'
 export default {
-  name: 'AddExpertData',
+  name: 'addDeviceMaintain',
   components: {
     XButton
   },
@@ -136,65 +162,83 @@ export default {
     return {
       loading: false,
       isShow: this.$route.params.mark,
-      editExpertID: this.$route.params.id,
-      keyword: {
+      editID: this.$route.params.id,
+      maintain_date: {
         text: '',
         tips: ''
       },
-      Experttitle: {
+      device: {
         text: '',
         tips: ''
       },
-      content: {
+      devicelist: [],
+      detail_desc: {
         text: '',
         tips: ''
       },
-      dept: {
-        id: '',
+      team_group: {
+        text: '',
         tips: ''
       },
-      deptList: [], // 场区类型: 车站\正线轨行区\保护区\车场生产区
+      TeamGroupList: [],
+      director: {
+        text: '',
+        tips: ''
+      },
+      directorList: [],
       deviceType: {
-        id: '',
+        text: '',
         tips: ''
       },
-      deviceTypeList: [], // 场区类型: 车站\正线轨行区\保护区\车场生产区
-      videofile: {},
-      attchfile: {},
-      ExpertID: '',
+      deviceTypeList: [],
       centerDialogVisible: false,
       fileList: {
-        vedioing: [],
         attaching: []
       },
       needUpload: {
-        vedioing: [],
         attaching: []
       },
       previewUrl: {
-        vedioing: '',
         attaching: ''
       },
       pageType: ''
     }
   },
+  props: {
+    random: Number
+  },
   created () {
     if (this.isShow === 'add') {
       this.loading = false
-      this.title = '| 添加专家库'
+      this.title = '| 添加设备维修记录'
     } else if (this.isShow === 'edit') {
       this.loading = true
-      this.title = '| 修改专家库'
-      this.getExpertData()
+      this.title = '| 修改设备维修记录'
+      this.getEditData()
     }
     // 设备配置类型列表
-    api.GetDeviceTypeList().then(res => {
-      this.deviceTypeList = res.data
+    api.GetEquipmentTypeList().then(res => {
+      res.data.map((e, i) => {
+        if(e.children != null && e.children.length > 0) {
+        this.deviceTypeList.push({value: e.id, label: e.deviceTypeName, children: []
+        })
+        e.children.map((item) => {
+          this.deviceTypeList[i].children.push({value: item.id, label: item.deviceName})
+        })}
+        else
+        {
+          this.deviceTypeList.push({value: e.id, label: e.deviceTypeName
+        })
+        }
+      })
     }).catch(err => console.log(err))
-
+    // 设备配置类型列表
+    api.GetDirectorList().then(res => {
+      this.directorList = res.data
+    }).catch(err => console.log(err))
     // 部门列表
-    api.GetdeptList().then(res => {
-      this.deptList = res.data
+    api.GetTeamGroupList().then(res => {
+      this.TeamGroupList = res.data
     }).catch(err => console.log(err))
   },
   methods: { // 添加权限组
@@ -207,13 +251,6 @@ export default {
         return
       }
       let fd = new FormData()
-      if (this.$refs.uploadvedioing.uploadFiles.length > 0) {
-        if (this.$refs.uploadvedioing.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadvedioing.submit()
-          fd.append('file', this.needUpload.vedioing[0])
-          fd.append('Pvedioing', this.needUpload.vedioing[0].name)
-        }
-      }
       if (this.$refs.uploadattaching.uploadFiles.length > 0) {
         if (this.$refs.uploadattaching.uploadFiles[0].status !== 'success') {
           this.$refs.uploadattaching.submit()
@@ -221,29 +258,26 @@ export default {
           fd.append('Pattaching', this.needUpload.attaching[0].name)
         }
       }
-      let tbexpertdata = {
-        device_type: this.deviceType.id,
-        deptID: this.dept.id,
-        keyword: this.keyword.text,
-        title: this.Experttitle.text,
-        content: this.content.text,
-        video_file: '1',
-        attch_file: '1',
-        sort: 'asc',
-        is_Used: '1',
-        is_Deleted: '0',
-        remark: ''
+      let model = {
+        device_type_id: this.deviceType.text,
+        device_id: this.device.text,
+        team_group_id: this.team_group.text,
+        director_id: this.director.text,
+        detail_desc: this.detail_desc.text,
+        maintain_date: this.maintain_date.text,
+        // attch_file: '1',
+        is_deleted: '0'
       }
       if (this.isShow === 'add') {
         // 添加站区
-        api.Save(tbexpertdata).then(res => {
+        api.Save(model).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '添加成功',
               type: 'success',
               onClose: () => {
                 this.$router.push({
-                  name: 'ExpertDataList'
+                  name: 'DeviceMaintainList'
                 })
               }
             })
@@ -255,16 +289,16 @@ export default {
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
-        tbexpertdata.id = this.ExpertID
+        model.id = this.editID
         // 修改权限组
-        api.Update(tbexpertdata).then(res => {
+        api.Update(model).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '修改成功',
               type: 'success',
               onClose: () => {
                 this.$router.push({
-                  name: 'ExpertDataList'
+                  name: 'DeviceMaintainList'
                 })
               }
             })
@@ -278,17 +312,17 @@ export default {
       }
     },
     // 修改权限组时获取权限组资料
-    getExpertData () {
-      let id = this.editExpertID
-      api.GetExpertDataById(id).then(res => {
+    getEditData () {
+      let id = this.editID
+      api.GetDeviceMaintainRegById(id).then(res => {
         this.loading = false
         let _res = res.data
-        this.ExpertID = _res.id
-        this.keyword.text = _res.keyword
-        this.Experttitle.text = _res.title
-        this.content.text = _res.content
-        this.deviceType.id = _res.device_type
-        this.dept.id = _res.deptid
+        this.deviceType.text = _res.device_type_id
+        this.device.text = _res.device_id
+        this.team_group.text = _res.team_group_id
+        this.director.text = _res.director_id
+        this.detail_desc.text = _res.detail_desc
+        this.maintain_date.text = _res.maintain_date
       }).catch(err => console.log(err))
     },
     // 验证
@@ -307,7 +341,7 @@ export default {
       }
     },
     validatedeviceTypeSelect () {
-      if (this.deviceType.id === '') {
+      if (this.deviceType.text === '') {
         this.deviceType.tips = '此项必选'
         return false
       } else {
@@ -315,25 +349,55 @@ export default {
         return true
       }
     },
-    validatedeptSelect () {
-      if (this.dept.id === '') {
-        this.dept.tips = '此项必选'
+    validateteam_groupSelect () {
+      if (this.team_group.text === '') {
+        this.team_group.tips = '此项必选'
         return false
       } else {
-        this.dept.tips = ''
+        this.team_group.tips = ''
+        return true
+      }
+    },
+    validatedirectorSelect () {
+      if (this.director.text === '') {
+        this.director.tips = '此项必选'
+        return false
+      } else {
+        this.director.tips = ''
+        return true
+      }
+    },
+    validatedeviceSelect () {
+      if (this.device.text === '') {
+        this.device.tips = '此项必选'
+        return false
+      } else {
+        this.device.tips = ''
         return true
       }
     },
     validateNumber () {
       // validateNumberCommon(this.groupOrder)
     },
-
+    validatechildSelect (val) {
+      if (val === '') {
+        this.devicelist = []
+        this.device.text = ''
+      }
+      api.GetDeviceListByTypeId(val).then(res => {
+        this.devicelist = res.data
+        this.device.text = ''
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     validateAll () {
-      if (!validateInputCommon(this.keyword)) return false
-      if (!validateInputCommon(this.Experttitle)) return false
-      if (!validateInputCommon(this.content)) return false
       if (!this.validatedeviceTypeSelect()) return false
-      if (!this.validatedeptSelect()) return false
+      if (!this.validatedeviceSelect()) return false
+      if (!this.validateteam_groupSelect()) return false
+      if (!this.validatedirectorSelect()) return false
+      if (!validateInputCommon(this.maintain_date)) return false
+      if (!validateInputCommon(this.detail_desc)) return false
       return true
     },
     // handleRemove (file, fileList) {
@@ -350,15 +414,6 @@ export default {
       file.url = PDF_IMAGE
       this.fileList.attaching = []
       this.fileList.attaching.push(file)
-    },
-    uploadvedio (file) {
-      this.needUpload.vedioing.push(file.file)
-    },
-    onChangevedio (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.vedioing = []
-      this.fileList.vedioing.push(file)
     }
   }
 }
