@@ -234,7 +234,7 @@
           <ul class="input-group">
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">中修频率{{fileType}}</span>
+                <span class="text">中修频率</span>
                 <div class="inp">
                   <el-input placeholder="请输入中修频率" v-model="mediumRepair.text" @keyup.native="validateNumber(mediumRepair)"></el-input>
                 </div>
@@ -296,7 +296,6 @@ export default {
       fileIDs: '',
       fileIDsEdit: '',
       fileType: FileType.Eqp_Drawings,
-      fileList: [],
       areaParams: {
         label: 'areaName',
         value: 'id',
@@ -472,8 +471,9 @@ export default {
         })
         return
       }
-      for (let i = 0; i < this.fileIDsEdit.length; i++) {
-        if (this.fileIDsEdit[i] === undefined) {
+      let arr = this.fileIDsEdit.split(',')
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === '') {
           this.$message({
             message: '文件还未上传完成，请耐心等待',
             type: 'warning'
@@ -516,13 +516,6 @@ export default {
         eqp.Location = this.area.text[l]
         eqp.LocationBy = l
         eqp.LocationPath = this.area.text.join(',')
-      }
-      if (this.fileList.length > 0) {
-        let drawings = ''
-        this.fileList.map(val => {
-          drawings += val.id + ','
-        })
-        eqp.ids = drawings.substring(0, drawings.length - 1)
       }
       if (this.isShow === 'add') {
         // 添加设备
