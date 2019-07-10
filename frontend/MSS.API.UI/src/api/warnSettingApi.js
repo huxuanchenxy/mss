@@ -1,6 +1,6 @@
 import axios from './interceptors'
-// let api = 'http://127.0.0.1:3851/api/v1'
-let api = 'http://10.89.36.204:5801/orgapi'
+let api = 'http://127.0.0.1:3851/api/v1'
+// let api = 'http://10.89.36.204:5801/orgapi'
 let serviceeqp = 'http://10.89.36.204:5801/eqpapi'
 export default {
   getWarnSetting: (param) => { return axios.get(`${api}/warnsetting`, { params: param }).then(res => res.data) },
