@@ -104,7 +104,7 @@
   </div>
 </template>
 <script>
-import { RESULT, ApiRESULT } from '@/common/js/utils.js'
+import { ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 // import OrgTreeRender from './TreeRenderForUser'
 import api from '@/api/orgApi.js'
@@ -176,7 +176,7 @@ export default {
     },
     getList () {
       api.getOrgUserAll().then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.list = res.data
           this.loading = false
         } else {
@@ -208,7 +208,7 @@ export default {
     dialogEnter () {
       api.delOrgNode(this.obj.data.id).then((res) => {
         this.dialogVisible.isShow = false
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.$refs.tree.remove(this.obj.data)
           this.$message.success('删除成功')
         } else {
@@ -249,7 +249,7 @@ export default {
     },
     updateOrgNode (id) {
       api.getOrgUserByNodeID(id).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           let node = this.$refs.tree.getNode(id)
           // node.setData(res.data)
           // this.$set(node, 'label', res.data[0].label)
