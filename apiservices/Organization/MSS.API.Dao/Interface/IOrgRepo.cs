@@ -27,6 +27,8 @@ namespace MSS.API.Dao.Interface
         Task<List<OrgNodeType>> ListNodeType();
         Task<OrgUser> GetOrgUserByUserID(int userId);
 
+        Task<bool> hasChildren(int id);
+
         // 取出所有已关联组织的用户
         Task<List<OrgUser>> ListAllOrgUser();
         Task<int> DeleteOrgNodeUsers(OrgUserView users);

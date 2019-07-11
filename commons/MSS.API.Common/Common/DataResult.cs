@@ -14,7 +14,11 @@ namespace MSS.API.Common
         DataIsExist = 2,
         [Description("数据不存在")]
         DataIsnotExist = 3,
-
+        // 向不可添加子节点的节点添加节点
+        [Description("数据校验失败")]
+        CheckDataRulesFail= 4,
+        [Description("绑定用户存在冲突")]
+        BindUserConflict = 5
     }
     public class ApiResult
     {

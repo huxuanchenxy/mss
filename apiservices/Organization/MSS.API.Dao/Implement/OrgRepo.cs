@@ -104,6 +104,20 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<bool> hasChildren(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM org_tree WHERE parent_id = @ID and is_del!=1";
+                List<OrgTree> list = (await c.QueryAsync<OrgTree>(sql,
+                new
+                {
+                    ID = id
+                })).ToList();
+                return list.Count > 0 ? true : false;
+            });
+        }
+
         public async Task<OrgTree> GetNode(int id) {
             return await WithConnection(async c =>
             {
