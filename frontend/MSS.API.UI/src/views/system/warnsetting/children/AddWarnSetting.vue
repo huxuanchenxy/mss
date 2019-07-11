@@ -26,7 +26,7 @@
           <div class="inp-wrap">
             <span class="text">设备类型</span>
             <div class="inp">
-              <el-select v-model="equipmentTypeID" :disabled="isShow === 'edit'" @change="chooseEqpType" placeholder="请选择">
+              <el-select v-model="equipmentTypeID" style="height:30px" @change="chooseEqpType" placeholder="请选择">
                 <el-option
                   v-for="item in eqpTypeList"
                   :key="item.key"
@@ -41,7 +41,7 @@
           <div class="inp-wrap">
             <span class="text">设备参数</span>
             <div class="inp">
-              <el-select v-model="paramObj" :disabled="isShow === 'edit'" value-key="_paramID" placeholder="请选择">
+              <el-select v-model="paramObj" value-key="_paramID" placeholder="请选择">
                 <el-option
                   v-for="item in paramList"
                   :key="item.key"
@@ -361,7 +361,7 @@ export default {
         this.loading = false
         if (res.code === ApiRESULT.Success) {
           this.equipmentTypeID = res.data.equipmentTypeID
-          this.paramObj = {_paramID: res.data.paramID, _paramUnit: res.data.paramUnit}
+          this.paramObj = {_paramID: res.data.paramID, _paramName: res.data.paramName, _paramUnit: res.data.paramUnit}
           this.isActived = res.data.isActived
           this.limitUp.text = res.data.paramLimitUpper
           this.limitDown.text = res.data.paramLimitLower
