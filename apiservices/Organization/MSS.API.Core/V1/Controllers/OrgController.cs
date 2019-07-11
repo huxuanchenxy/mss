@@ -9,6 +9,7 @@ using MSS.API.Core.V1.Business;
 using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
 using MSS.API.Core.Common;
+using MSS.API.Common;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -53,7 +54,7 @@ namespace MSS.API.Core.V1.Controllers
 
         // 添加
         [HttpPost]
-        public async Task<ActionResult<DataResult>> AddOrgNode(OrgTree node)
+        public async Task<ActionResult<ApiResult>> AddOrgNode(OrgTree node)
         {
             node.CreatedBy = _userId;
             node.CreatedTime = DateTime.Now;
@@ -64,7 +65,7 @@ namespace MSS.API.Core.V1.Controllers
 
         // 更新
         [HttpPut("{id}")]
-        public async Task<ActionResult<DataResult>> UpdateOrgNode(int id, OrgTree node, [FromHeader]string token)
+        public async Task<ActionResult<ApiResult>> UpdateOrgNode(int id, OrgTree node, [FromHeader]string token)
         {
             node.UpdatedBy = _userId;
             node.UpdatedTime = DateTime.Now;

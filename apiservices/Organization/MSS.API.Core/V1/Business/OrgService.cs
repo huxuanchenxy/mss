@@ -272,83 +272,128 @@ namespace MSS.API.Core.V1.Business
             return node_p;
         }
 
-        public async Task<DataResult> AddOrgNode(OrgTree node)
+        public async Task<ApiResult> AddOrgNode(OrgTree node)
         {
-            DataResult ret = new DataResult();
-            try {
+            ApiResult ret = new ApiResult();
+            try
+            {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    bool isExist = await _orgRepo.CheckNodeExist(node);
-                    if (!isExist)
+                    List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
+                    bool canAdd = true;
+                    // 找到父节点，根据父节点类型判断是否可添加此节点
+                    if (node.ParentID != null)
                     {
-                        var data = await _orgRepo.SaveOrgNode(node);
-
-                        //保存扩展属性
-                        if (node.PropEx != null && node.PropEx.Count > 0)
+                        OrgTree parent = await _orgRepo.GetNode((int)node.ParentID);
+                        if (parent != null)
                         {
-                            bool propSavedOk = await _saveNodeProperty(data);
-                            if (!propSavedOk)
+                            OrgNodeType nodeType = nodeTypes.Where(c => c.ID == parent.NodeType)
+                                .FirstOrDefault();
+                            if (!nodeType.HasChildren)
                             {
-                                throw new Exception("存储节点属性失败");
+                                canAdd = false;
                             }
                         }
-                        
-                        ret.Result = RESULT.OK;
-                        ret.Data = data;
+                    }
+                    if (canAdd)
+                    {
+                        bool isExist = await _orgRepo.CheckNodeExist(node);
+                        if (!isExist)
+                        {
+                            var data = await _orgRepo.SaveOrgNode(node);
+
+                            //保存扩展属性
+                            if (node.PropEx != null && node.PropEx.Count > 0)
+                            {
+                                bool propSavedOk = await _saveNodeProperty(data);
+                                if (!propSavedOk)
+                                {
+                                    throw new Exception("存储节点属性失败");
+                                }
+                            }
+
+                            ret.code = Code.Success;
+                            ret.data = data;
+                        }
+                        else
+                        {
+                            ret.code = Code.DataIsExist;
+                        }
                     }
                     else
                     {
-                        ret.Result = RESULT.REINSERT;
+                        ret.code = Code.CheckDataRulesFail;
                     }
+                    
                     scope.Complete();
                 }
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
             
             return ret;
         }
 
-        public async Task<DataResult> UpdateOrgNode(OrgTree node)
+        public async Task<ApiResult> UpdateOrgNode(OrgTree node)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    bool isExist = await _orgRepo.CheckNodeExist(node);
-                    if (!isExist)
+                    List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
+                    bool canUpdate = true;
+                    // 如果此节点类型有子节点，则不可变为has_children为false的节点
+                    OrgNodeType changeToNodeType = nodeTypes.Where(c => c.ID == node.NodeType)
+                                .FirstOrDefault();
+                    bool hasChildren = await _orgRepo.hasChildren(node.ID);
+
+                    if (hasChildren && changeToNodeType != null && !changeToNodeType.HasChildren)
                     {
-                        var data = await _orgRepo.UpdateOrgNode(node);
-                        //由于节点类型有可能更新，如果更新则节点对应的扩展属性会有不同，
-                        //为了逻辑同一，对属性的更新都先删除再添加
-                        //删除已有属性
-                        await _orgRepo.DeleteOrgNodeProperty(node);
-                        //保存扩展属性
-                        if (node.PropEx.Count > 0)
+                        canUpdate = false;
+                    }
+
+                    if (canUpdate)
+                    {
+                        bool isExist = await _orgRepo.CheckNodeExist(node);
+                        if (!isExist)
                         {
-                            bool propSavedOk = await _saveNodeProperty(data);
-                            if (!propSavedOk)
+                            var data = await _orgRepo.UpdateOrgNode(node);
+                            //由于节点类型有可能更新，如果更新则节点对应的扩展属性会有不同，
+                            //为了逻辑同一，对属性的更新都先删除再添加
+                            //删除已有属性
+                            await _orgRepo.DeleteOrgNodeProperty(node);
+                            //保存扩展属性
+                            if (node.PropEx.Count > 0)
                             {
-                                throw new Exception("存储节点属性失败");
+                                bool propSavedOk = await _saveNodeProperty(data);
+                                if (!propSavedOk)
+                                {
+                                    throw new Exception("存储节点属性失败");
+                                }
                             }
+                            ret.code = Code.Success;
+                            ret.data = data;
                         }
-                        ret.Result = RESULT.OK;
-                        ret.Data = data;
+                        else
+                        {
+                            ret.code = Code.DataIsExist;
+                        }
                     }
                     else
                     {
-                        ret.Result = RESULT.REINSERT;
+                        ret.code = Code.CheckDataRulesFail;
                     }
+                    
                     scope.Complete();
                 }
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
             
             return ret;
