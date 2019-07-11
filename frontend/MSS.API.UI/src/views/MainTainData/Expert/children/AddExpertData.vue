@@ -76,10 +76,10 @@
                       label="视频上传"
                       :fileIDs="filevedioIDs"
                       @getFileIDs="getvedioFileID"></upload-pdf> -->
-               <upload-vedio :fileType="filevedioType" 
+               <upload-vedio :fileType="filevedioType"
                              label="视频上传"
                              :fileIDs="filevedioIDs"
-                             @getFileIDs="getvedioFileID" ></upload-vedio>       
+                             @getFileIDs="getvedioFileID" ></upload-vedio>
         </div>
         <br/>
         <div class="upload-wrap con-padding-horizontal">
