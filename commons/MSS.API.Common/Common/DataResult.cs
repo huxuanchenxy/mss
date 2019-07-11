@@ -58,7 +58,13 @@ namespace MSS.API.Common
         //设备中的设备图纸
         Eqp_Drawings = 5,
         //设备生命周期维护的附件
-        DeviceMaintain_attach = 6
+        DeviceMaintain_attach = 6,
+        
+        //专家库视频资料
+        ExpertData_vedio = 7,
+
+        //专家库附件资料
+        ExpertData_attach = 8
     }
     #endregion
 

@@ -1,5 +1,5 @@
 import axios from './interceptors'
-let api = 'http://10.89.36.204:5801/maintainapi' // 'http://localhost:3851/api/v1'
+let api = 'http://localhost:3851/api/v1' // 'http://10.89.36.204:5801/maintainapi'
 export default {
   getAllUsers: () => { return {} },
   Save: data => { return axios.post(`${api}/DeviceMaintainReg/Save`, data).then(res => res.data) },

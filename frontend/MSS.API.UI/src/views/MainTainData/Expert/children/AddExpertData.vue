@@ -72,37 +72,21 @@
         <!-- 上传图片列表 -->
         <br/>
         <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">视频上传</span>
-          <el-upload
-            ref="uploadvedioing"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.vedioing"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadvedio"
-            :on-change="onChangevedio"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
+          <!-- <upload-pdf :fileType="filevedioType"
+                      label="视频上传"
+                      :fileIDs="filevedioIDs"
+                      @getFileIDs="getvedioFileID"></upload-pdf> -->
+               <upload-vedio :fileType="filevedioType" 
+                             label="视频上传"
+                             :fileIDs="filevedioIDs"
+                             @getFileIDs="getvedioFileID" ></upload-vedio>       
         </div>
         <br/>
         <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">附件上传</span>
-          <el-upload
-            ref="uploadattaching"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.attaching"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadattaching"
-            :on-change="onChangeattaching"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
+          <upload-pdf :fileType="fileattachType"
+                      label="附件上传"
+                      :fileIDs="fileattachIDs"
+                      @getFileIDs="getattachFileID"></upload-pdf>
         </div>
         <!-- 按钮 -->
         <div class="btn-group">
@@ -124,19 +108,29 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, PDF_IMAGE } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, FileType } from '@/common/js/utils.js'
 import api from '@/api/ExpertApi'
 import XButton from '@/components/button'
+import UploadPDF from '@/components/UploadPDF'
+import UploadVedio from '@/components/UploadVideo'
 export default {
   name: 'AddExpertData',
   components: {
-    XButton
+    XButton,
+    'upload-pdf': UploadPDF,
+    'upload-vedio': UploadVedio
   },
   data () {
     return {
       loading: false,
       isShow: this.$route.params.mark,
       editExpertID: this.$route.params.id,
+      filevedioIDs: '',
+      filevedioIDsEdit: '',
+      filevedioType: FileType.ExpertData_vedio,
+      fileattachIDs: '',
+      fileattachIDsEdit: '',
+      fileattachType: FileType.ExpertData_attach,
       keyword: {
         text: '',
         tips: ''
@@ -153,28 +147,14 @@ export default {
         id: '',
         tips: ''
       },
-      deptList: [], // 场区类型: 车站\正线轨行区\保护区\车场生产区
+      deptList: [],
       deviceType: {
         id: '',
         tips: ''
       },
-      deviceTypeList: [], // 场区类型: 车站\正线轨行区\保护区\车场生产区
-      videofile: {},
-      attchfile: {},
+      deviceTypeList: [],
       ExpertID: '',
       centerDialogVisible: false,
-      fileList: {
-        vedioing: [],
-        attaching: []
-      },
-      needUpload: {
-        vedioing: [],
-        attaching: []
-      },
-      previewUrl: {
-        vedioing: '',
-        attaching: ''
-      },
       pageType: ''
     }
   },
@@ -206,29 +186,14 @@ export default {
         })
         return
       }
-      let fd = new FormData()
-      if (this.$refs.uploadvedioing.uploadFiles.length > 0) {
-        if (this.$refs.uploadvedioing.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadvedioing.submit()
-          fd.append('file', this.needUpload.vedioing[0])
-          fd.append('Pvedioing', this.needUpload.vedioing[0].name)
-        }
-      }
-      if (this.$refs.uploadattaching.uploadFiles.length > 0) {
-        if (this.$refs.uploadattaching.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadattaching.submit()
-          fd.append('file', this.needUpload.attaching[0])
-          fd.append('Pattaching', this.needUpload.attaching[0].name)
-        }
-      }
       let tbexpertdata = {
         device_type: this.deviceType.id,
         deptID: this.dept.id,
         keyword: this.keyword.text,
         title: this.Experttitle.text,
         content: this.content.text,
-        video_file: '1',
-        attch_file: '1',
+        video_file: this.filevedioIDsEdit,
+        attch_file: this.fileattachIDsEdit,
         sort: 'asc',
         is_Used: '1',
         is_Deleted: '0',
@@ -279,6 +244,7 @@ export default {
     },
     // 修改权限组时获取权限组资料
     getExpertData () {
+      debugger
       let id = this.editExpertID
       api.GetExpertDataById(id).then(res => {
         this.loading = false
@@ -289,6 +255,8 @@ export default {
         this.content.text = _res.content
         this.deviceType.id = _res.device_type
         this.dept.id = _res.deptid
+        this.filevedioIDs = _res.video_file
+        this.fileattachIDs = _res.attch_file
       }).catch(err => console.log(err))
     },
     // 验证
@@ -336,30 +304,14 @@ export default {
       if (!this.validatedeptSelect()) return false
       return true
     },
-    // handleRemove (file, fileList) {
-    //   console.log(file, fileList)
-    // },
-    // handlePreview (file) {
-    //   console.log(file)
-    // },
-    uploadattaching (file) {
-      this.needUpload.attaching.push(file.file)
+    getvedioFileID (val) {
+      debugger
+      this.filevedioIDsEdit = val
     },
-    onChangeattaching (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.attaching = []
-      this.fileList.attaching.push(file)
-    },
-    uploadvedio (file) {
-      this.needUpload.vedioing.push(file.file)
-    },
-    onChangevedio (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.vedioing = []
-      this.fileList.vedioing.push(file)
+    getattachFileID (val) {
+      this.fileattachIDsEdit = val
     }
+
   }
 }
 </script>

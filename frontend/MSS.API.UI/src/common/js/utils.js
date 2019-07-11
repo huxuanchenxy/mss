@@ -166,5 +166,7 @@ export const FileType = {
   EqpType_Installation_Manual: 2,
   EqpType_Regulations: 4,
   Eqp_Drawings: 5,
-  DeviceMaintain_attach: 6
+  DeviceMaintain_attach: 6,
+  ExpertData_vedio: 7,
+  ExpertData_attach: 8
 }
