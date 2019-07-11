@@ -158,7 +158,8 @@ export const ApiRESULT = {
   Success: 0,
   Failure: 1,
   DataIsExist: 2,
-  DataIsnotExist: 3
+  DataIsnotExist: 3,
+  CheckDataRulesFail: 4
 }
 export const FileType = {
   EqpType_Working_Instruction: 0,

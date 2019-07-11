@@ -197,7 +197,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vPhone, validateNumberCommon, RESULT } from '@/common/js/utils.js'
+import { validateInputCommon, vPhone, validateNumberCommon, RESULT, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/orgApi'
 // import eventBus from '@/components/Bus'
@@ -394,7 +394,7 @@ export default {
         // eventBus.$emit('submit', orgNode)
         if ((orgNode.ID + '') === '0') {
           api.addOrgNode(orgNode).then((res) => {
-            if (res.result === RESULT.Success) {
+            if (res.code === ApiRESULT.Success) {
             // this.$refs.tree.append({
             //   id: res.data.id,
             //   label: res.data.name,
@@ -404,8 +404,10 @@ export default {
               this.$router.push({
                 name: 'OrgList'
               })
-            } else if (res.result === RESULT.Reinsert) {
+            } else if (res.code === ApiRESULT.DataIsExist) {
               this.$message.error('名称重复')
+            } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+              this.$message.error('父节点类型不能添加子节点')
             } else {
               this.$message.error('保存失败')
             }
