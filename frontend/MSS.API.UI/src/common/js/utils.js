@@ -56,6 +56,16 @@ export const transformDate = str => {
   return str.replace('T', ' ')
 }
 
+// 没有时分秒
+export const transformDateNoTime = str => {
+  // let result = ''
+  // str.replace(/\/\w+\((\d+)\)\//, ($1, $2) => {
+  //   let date = new Date(+$2)
+  //   // result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
+  //   result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  // })
+  return str.slice(0, 10)
+}
 // 转换内容区域中间的时间 "/Date(1523845477000)/" 有时分秒
 // export const transformTime = str => {
 //   let result = ''
@@ -71,53 +81,6 @@ export const addDate = (date, days) => {
   d.setDate(d.getDate() + days)
   var m = d.getMonth() + 1
   return d.getFullYear() + '-' + m + '-' + d.getDate()
-}
-
-// 系统监控根据参数获取对应的名称
-export const getSysControlName = val => {
-  let res = ''
-  switch (val) {
-    case 'main':
-      res = '管廊总貌图'
-      break
-    case 'environment':
-      res = '环境监控'
-      break
-    case 'fas':
-      res = '消防监控'
-      break
-    case 'pump':
-      res = '排水监控'
-      break
-    case 'fan':
-      res = '通风监控'
-      break
-    case 'cover':
-      res = '井盖监控'
-      break
-    case 'telephone':
-      res = '电话监控'
-      break
-    case 'power':
-      res = '配电柜监控'
-      break
-    case 'lighting':
-      res = '照明监控'
-      break
-    case 'UPS':
-      res = 'UPS监控'
-      break
-    case 'EPS':
-      res = 'EPS监控'
-      break
-    case 'emergencylighting':
-      res = '应急照明监控'
-      break
-    case 'intrusion':
-      res = '入侵报警监控'
-      break
-  }
-  return res
 }
 
 // 非法字符验证

@@ -2,6 +2,7 @@
   <div>
     <el-upload
       action="http://10.89.36.204:5801/eqpapi/Upload"
+      :disabled="readOnly"
       :multiple="true"
       :data="myFileType"
       :headers="uploadHeaders"
@@ -13,8 +14,7 @@
       :on-remove="onRemove"
       :on-preview="preview">
       <span class="text">{{label}}</span>
-      <x-button class="active upload-btn">点击上传</x-button>
-      <!--<i class="iconfont icon-pdf"></i>-->
+      <x-button class="active upload-btn" v-show="!readOnly">点击上传</x-button>
     </el-upload>
     <el-dialog
       :visible.sync="centerDialogVisible"
@@ -37,7 +37,8 @@ export default {
   props: {
     label: String,
     fileType: Number,
-    fileIDs: String
+    fileIDs: String,
+    readOnly: Boolean
   },
   data () {
     return {
@@ -76,7 +77,9 @@ export default {
       //   })
       //   return res.code === 0
       // }).catch(err => console.log(err))
-      this.returnFileIDs(fileList)
+      if (!this.readOnly) {
+        this.returnFileIDs(fileList)
+      }
     },
     preview (item) {
       if (item.status === 'success') {

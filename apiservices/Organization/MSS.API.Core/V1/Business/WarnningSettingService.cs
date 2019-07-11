@@ -30,7 +30,8 @@ namespace MSS.API.Core.V1.Business
             try {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    bool isExist = await _warnRepo.CheckWarnExist(setting);
+                    // bool isExist = await _warnRepo.CheckWarnExist(setting);
+                    bool isExist = false; // 设备类型和预警参数不做唯一检查
                     if (!isExist)
                     {
                         var data = await _warnRepo.SaveWarnningSetting(setting);
@@ -80,28 +81,21 @@ namespace MSS.API.Core.V1.Business
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    bool isExist = await _warnRepo.CheckWarnExist(setting);
-                    if (isExist)
+                    var data = await _warnRepo.UpdateWarnningSetting(setting);
+                    //删除已有属性
+                    await _warnRepo.DeleteWarnningSettingEx(setting);
+                    //保存扩展属性
+                    if (setting.SettingEx != null && setting.SettingEx.Count > 0)
                     {
-                        var data = await _warnRepo.UpdateWarnningSetting(setting);
-                        //删除已有属性
-                        await _warnRepo.DeleteWarnningSettingEx(setting);
-                        //保存扩展属性
-                        if (setting.SettingEx != null && setting.SettingEx.Count > 0)
+                        bool propSavedOk = await _saveSettingEx(data);
+                        if (!propSavedOk)
                         {
-                            bool propSavedOk = await _saveSettingEx(data);
-                            if (!propSavedOk)
-                            {
-                                throw new Exception("存储节点属性失败");
-                            }
+                            throw new Exception("存储节点属性失败");
                         }
-                        ret.code = Code.Success;
-                        ret.data = data;
                     }
-                    else
-                    {
-                        ret.code = Code.DataIsnotExist;
-                    }
+                    ret.code = Code.Success;
+                    ret.data = data;
+                    
                     scope.Complete();
                 }
             }

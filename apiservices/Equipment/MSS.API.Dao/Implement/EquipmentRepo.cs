@@ -35,18 +35,22 @@ namespace MSS.API.Dao.Implement
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, eqp,trans);
                     eqp.ID = newid;
-                    sql = "delete from upload_file_eqp where eqp_id=@id";
-                    int ret = await c.ExecuteAsync(sql, new { id = newid}, trans);
-                    List<object> objs = new List<object>();
-                    foreach (var item in eqp.FileIDs.Split(','))
+                    if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
                     {
-                        objs.Add(new {
-                            eqpID=newid,
-                            fileID=Convert.ToInt32(item)
-                        });
+                        sql = "delete from upload_file_eqp where eqp_id=@id";
+                        int ret = await c.ExecuteAsync(sql, new { id = newid }, trans);
+                        List<object> objs = new List<object>();
+                        foreach (var item in eqp.FileIDs.Split(','))
+                        {
+                            objs.Add(new
+                            {
+                                eqpID = newid,
+                                fileID = Convert.ToInt32(item)
+                            });
+                        }
+                        sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
+                        ret = await c.ExecuteAsync(sql, objs, trans);
                     }
-                    sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
-                    ret = await c.ExecuteAsync(sql, objs, trans);
                     trans.Commit();
                     return eqp;
                 }
@@ -73,19 +77,22 @@ namespace MSS.API.Dao.Implement
                         " location=@Location,location_by=@LocationBy,location_path=@LocationPath,online_date=@Online,life=@Life, " +
                         " medium_repair=@MediumRepair,large_repair=@LargeRepair,online_again=@OnlineAgain, " +
                         " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
-                    string sql = "delete from upload_file_eqp where eqp_id=@id";
-                    int ret = await c.ExecuteAsync(sql, new { id = eqp.ID }, trans);
-                    List<object> objs = new List<object>();
-                    foreach (var item in eqp.FileIDs.Split(','))
+                    if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
                     {
-                        objs.Add(new
+                        string sql = "delete from upload_file_eqp where eqp_id=@id";
+                        int ret = await c.ExecuteAsync(sql, new { id = eqp.ID }, trans);
+                        List<object> objs = new List<object>();
+                        foreach (var item in eqp.FileIDs.Split(','))
                         {
-                            eqpID = eqp.ID,
-                            fileID = Convert.ToInt32(item)
-                        });
+                            objs.Add(new
+                            {
+                                eqpID = eqp.ID,
+                                fileID = Convert.ToInt32(item)
+                            });
+                        }
+                        sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
+                        ret = await c.ExecuteAsync(sql, objs, trans);
                     }
-                    sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
-                    ret = await c.ExecuteAsync(sql, objs, trans);
                     trans.Commit();
                     return result;
                 }
@@ -114,7 +121,7 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT distinct a.*,u1.user_name as created_name,u2.user_name as updated_name, ")
-                .Append(" et.type_name,d.sub_code_name,ot.name,f1.name as sname,f2.name as mname ")
+                .Append(" et.type_name,d.sub_code_name,ot.name,f1.name as supplierName,f2.name as manufacturerName ")
                 .Append(" FROM (equipment a,dictionary d) ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id ")
@@ -166,6 +173,27 @@ namespace MSS.API.Dao.Implement
                 return result;
             });
         }
+
+        public async Task<Equipment> GetDetailByID(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT distinct a.*,u1.user_name as created_name,u2.user_name as updated_name, ")
+                .Append(" et.type_name,d.sub_code_name,ot.name,f1.name as supplierName,f2.name as manufacturerName ")
+                .Append(" FROM (equipment a,dictionary d) ")
+                .Append(" left join user u1 on a.created_by=u1.id ")
+                .Append(" left join user u2 on a.updated_by=u2.id ")
+                .Append(" left join equipment_type et on et.id=a.eqp_type ")
+                .Append(" left join org_tree ot on ot.id=a.team ")
+                .Append(" left join firm f1 on f1.id=a.Supplier ")
+                .Append(" left join firm f2 on f2.id=a.Manufacturer ")
+                .Append(" where d.sub_code=a.sub_system and d.code='" + STR_SUB_SYSTEM + "' and ")
+                .Append(" a.is_del=" + (int)IsDeleted.no+ " and a.id="+id);
+                return await c.QueryFirstOrDefaultAsync<Equipment>(sql.ToString());
+            });
+        }
+
 
         public async Task<List<UploadFileEqp>> ListByEqp(int id)
         {
