@@ -90,19 +90,19 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电压</span>
+                <span class="text">额定电压(V)</span>
                 <div class="inp">{{eqp.ratedVoltage}}</div>
               </div>
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电流</span>
+                <span class="text">额定电流(A)</span>
                 <div class="inp">{{eqp.ratedCurrent}}</div>
               </div>
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电压</span>
+                <span class="text">额定功率(KW)</span>
                 <div class="inp">{{eqp.ratedPower}}</div>
               </div>
             </li>
@@ -159,7 +159,7 @@
   </div>
 </template>
 <script>
-import { FileType, transformDate } from '@/common/js/utils.js'
+import { FileType, transformDateNoTime } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
 import api from '@/api/eqpApi'
@@ -207,9 +207,10 @@ export default {
   methods: {
     // 修改设备时获取设备资料
     getEqp () {
-      api.getEqpByID(this.eqp.id).then(res => {
+      api.getEqpDetailByID(this.eqp.id).then(res => {
         this.loading = false
         let _res = res.data
+        console.log(_res)
         this.eqp.eqpCode = _res.code
         this.eqp.eqpName = _res.name
         this.eqp.eqpType = _res.tName
@@ -226,13 +227,12 @@ export default {
         this.eqp.ratedCurrent = _res.ratedCurrent
         this.eqp.ratedPower = _res.ratedPower
         this.eqp.area = _res.locationName
-        this.eqp.time = transformDate(_res.online)
+        this.eqp.time = transformDateNoTime(_res.online)
         this.eqp.life = _res.life
         this.eqp.mediumRepair = _res.mediumRepair
         this.eqp.largeRepair = _res.largeRepair
-        this.eqp.timeAgain = transformDate(_res.onlineAgain)
+        this.eqp.timeAgain = transformDateNoTime(_res.onlineAgain)
         this.eqp.fileIDs = _res.fileIDs
-        debugger
       }).catch(err => console.log(err))
     }
   }

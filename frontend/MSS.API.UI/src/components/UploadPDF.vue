@@ -2,6 +2,7 @@
   <div>
     <el-upload
       action="http://10.89.36.204:5801/eqpapi/Upload"
+      :disabled="readOnly"
       :multiple="true"
       :data="myFileType"
       :headers="uploadHeaders"
@@ -76,7 +77,9 @@ export default {
       //   })
       //   return res.code === 0
       // }).catch(err => console.log(err))
-      this.returnFileIDs(fileList)
+      if (!this.readOnly) {
+        this.returnFileIDs(fileList)
+      }
     },
     preview (item) {
       if (item.status === 'success') {
