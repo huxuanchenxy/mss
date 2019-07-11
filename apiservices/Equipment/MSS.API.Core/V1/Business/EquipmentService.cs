@@ -118,13 +118,36 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
-
         public async Task<ApiResult> GetByID(int id)
         {
             ApiResult ret = new ApiResult();
             try
             {
                 Equipment e = await _eqpRepo.GetByID(id);
+                var list = await _eqpRepo.ListByEqp(e.ID);
+                if (list != null)
+                {
+                    e.FileIDs = string.Join(",", list.Select(a => a.FileID).ToArray());
+                    ret.data = e;
+                }
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+        public async Task<ApiResult> GetDetailByID(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                Equipment e = await _eqpRepo.GetDetailByID(id);
+                List<AllArea> laa = await _eqpRepo.GetAllArea();
+                e.LocationName = laa.Where(a => a.Tablename == e.LocationBy && a.ID == e.Location)
+                    .FirstOrDefault().AreaName;
                 var list = await _eqpRepo.ListByEqp(e.ID);
                 if (list!=null)
                 {
