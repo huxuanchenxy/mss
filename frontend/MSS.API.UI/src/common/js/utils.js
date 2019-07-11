@@ -202,5 +202,6 @@ export const FileType = {
   EqpType_Technical_Drawings: 1,
   EqpType_Installation_Manual: 2,
   EqpType_Regulations: 4,
-  Eqp_Drawings: 5
+  Eqp_Drawings: 5,
+  DeviceMaintain_attach: 6
 }

@@ -57,6 +57,8 @@ namespace MSS.API.Common
         EqpType_Regulations = 4,
         //设备中的设备图纸
         Eqp_Drawings = 5,
+        //设备生命周期维护的附件
+        DeviceMaintain_attach = 6
     }
     #endregion
 
