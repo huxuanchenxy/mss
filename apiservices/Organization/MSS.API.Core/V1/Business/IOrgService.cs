@@ -15,12 +15,12 @@ namespace MSS.API.Core.V1.Business
         Task<DataResult> GetOrgByUserID(int userId);
         Task<DataResult> GetOrgUserByUserID(int userId);
         Task<DataResult> GetOrgUserByNodeID(int id);
-        Task<DataResult> AddOrgNode(OrgTree node);
-        Task<DataResult> UpdateOrgNode(OrgTree node);
+        Task<ApiResult> AddOrgNode(OrgTree node);
+        Task<ApiResult> UpdateOrgNode(OrgTree node);
         Task<DataResult> DeleteOrgNode(OrgTree node);
         Task<DataResult> GetOrgNodeUsers(int id);
         Task<DataResult> GetCanSelectedUsers(int id);
-        Task<DataResult> BindOrgNodeUsers(OrgUserView nodeView);
+        Task<ApiResult> BindOrgNodeUsers(OrgUserView nodeView);
         Task<DataResult> GetNodeType();
         Task<DataResult> GetOrgNode(int id);
 
