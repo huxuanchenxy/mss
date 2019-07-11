@@ -143,9 +143,22 @@ export default {
       return data.label.indexOf(value) !== -1
     },
     canShow (data) {
-      if (data.node_type && data.node_type !== 0) {
-        return true
+      let ret = true
+      if (data.node_type && data.node_type !== 0) { // 组织节点
+        if (!data.type.hasUsers) {
+          ret = false
+        }
+        if (data.type.hasUsers && data.type.hasUsersLeafOnly) {
+          if (data.children.length > 0) {
+            if (data.children[0].node_type) {
+              ret = false
+            }
+          }
+        }
+      } else {
+        ret = false
       }
+      return ret
     },
     canDelBtnShow (data) {
       if (!data.node_type && data.node_type !== 0) {
@@ -220,11 +233,15 @@ export default {
         data.UserIDs.push(id)
       })
       api.BindOrgUser(data).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           // 关联后更新节点、更新用户列表
           this.checkedID = []
           this.updateOrgNode(data.ID)
           this.getAllUsers()
+        } else if (res.code === ApiRESULT.BindUserConflict) {
+          this.$message.error('所选用户已被其他节点关联')
+        } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+          this.$message.error('改节点不能绑定用户')
         } else {
           this.$message.error('关联人员失败')
         }
