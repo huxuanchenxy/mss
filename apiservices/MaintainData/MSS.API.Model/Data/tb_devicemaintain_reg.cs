@@ -9,11 +9,17 @@ namespace MSS.API.Model.Data
     {
         //public int id { get; set; }
         public int device_type_id { get; set; }
+        public string device_type_name { get; set; }
         public int device_id { get; set; }
+        public string device_name { get; set; }
         public int team_group_id { get; set; }
+        public string team_group_name { get; set; }
         public int director_id { get; set; }
+        public string director_name { get; set; }
         public DateTime maintain_date { get; set; }
-
+        
+       
+       
         public string detail_desc { get; set; }
         //public int is_deleted { get; set; }
         //public DateTime create_time { get; set; }
