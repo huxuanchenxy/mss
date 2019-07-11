@@ -32,6 +32,7 @@ namespace MSS.API.Core.V1.Business
             DataResult ret = new DataResult();
             try
             {
+                List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
                 List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
                 // 获取顶级节点
                 List<OrgTree> nodes_org = nodes_all.Where(c => c.ParentID == null).ToList();
@@ -41,7 +42,7 @@ namespace MSS.API.Core.V1.Business
                 {
                     if (!node.IsDel)
                     {
-                        var obj = _parseOrgTree(node, nodes_all);
+                        var obj = _parseOrgTree(node, nodes_all, nodeTypes);
                         orgs.Add(obj);
                     }
                 }
@@ -62,6 +63,7 @@ namespace MSS.API.Core.V1.Business
             DataResult ret = new DataResult();
             try
             {
+                List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
                 List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
                 // 获取顶级节点
                 List<OrgTree> nodes_org = nodes_all.Where(c => ids.Contains(c.ID)).ToList();
@@ -71,7 +73,7 @@ namespace MSS.API.Core.V1.Business
                 {
                     if (!node.IsDel)
                     {
-                        var obj = _parseOrgTree(node, nodes_all);
+                        var obj = _parseOrgTree(node, nodes_all, nodeTypes);
                         orgs.Add(obj);
                     }
                 }
@@ -164,6 +166,7 @@ namespace MSS.API.Core.V1.Business
                 int id = Convert.ToInt32(node.GetType().GetProperty("id").GetValue(node));
                 string label = node.GetType().GetProperty("label").GetValue(node).ToString();
                 int node_type = Convert.ToInt32(node.GetType().GetProperty("node_type").GetValue(node));
+                object type = node.GetType().GetProperty("type").GetValue(node);
                 PropertyInfo pChildInfo = node.GetType().GetProperty("children");
                 object children = null;
                 if (pChildInfo != null)
@@ -187,6 +190,7 @@ namespace MSS.API.Core.V1.Business
                             id = id,
                             label = label,
                             node_type = node_type,
+                            type = type,
                             children = nodeusers
                         };
                     }
@@ -198,7 +202,7 @@ namespace MSS.API.Core.V1.Business
                             var newNode = new
                             {
                                 id = id + "_0",
-                                label = "未分配人员",
+                                label = "内部人员",
                                 node_type = 0,
                                 disabled = true,
                                 children = nodeusers
@@ -209,6 +213,7 @@ namespace MSS.API.Core.V1.Business
                                 id = id,
                                 label = label,
                                 node_type = node_type,
+                                type = type,
                                 children = nodeChildren
                             };
                         }
@@ -220,6 +225,7 @@ namespace MSS.API.Core.V1.Business
                         id = id,
                         label = label,
                         node_type = node_type,
+                        type = type,
                         children = nodeusers
                     };
                 }
@@ -240,13 +246,17 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        private object _parseOrgTree(OrgTree parentNode, List<OrgTree> nodes)
+        private object _parseOrgTree(OrgTree parentNode, List<OrgTree> nodes
+            , List<OrgNodeType> nodeTypes)
         {
+            OrgNodeType nodeType = nodeTypes.Where(c => c.ID == parentNode.NodeType)
+                .FirstOrDefault();
             var node_p = new
             {
                 id = parentNode.ID,
                 label = parentNode.Name,
                 node_type = parentNode.NodeType,
+                type = nodeType,
                 children = new List<object>()
             };
             List<OrgTree> nodes_children = nodes.Where(c => c.ParentID == parentNode.ID).ToList();
@@ -256,7 +266,7 @@ namespace MSS.API.Core.V1.Business
                 {
                     if (!child.IsDel)
                     {
-                        var node_c = _parseOrgTree(child, nodes);
+                        var node_c = _parseOrgTree(child, nodes, nodeTypes);
                         node_p.children.Add(node_c);
                     }
                 }
@@ -266,6 +276,7 @@ namespace MSS.API.Core.V1.Business
                 return new {
                     id = parentNode.ID,
                     label = parentNode.Name,
+                    type = nodeType,
                     node_type = parentNode.NodeType,
                 };
             }
@@ -282,6 +293,7 @@ namespace MSS.API.Core.V1.Business
                     List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
                     bool canAdd = true;
                     // 找到父节点，根据父节点类型判断是否可添加此节点
+                    // 如果父节点可以有子节点，但属性为has_users_leafonly为true，且已关联人员则不能添加
                     if (node.ParentID != null)
                     {
                         OrgTree parent = await _orgRepo.GetNode((int)node.ParentID);
@@ -292,6 +304,13 @@ namespace MSS.API.Core.V1.Business
                             if (!nodeType.HasChildren)
                             {
                                 canAdd = false;
+                            }
+                            if (nodeType.HasUsersLeafOnly)
+                            {
+                                List<OrgUser> users = await _orgRepo.ListOrgNodeUsers(parent.ID);
+                                if (users.Count > 0) {
+                                    canAdd = false;
+                                }
                             }
                         }
                     }
@@ -354,9 +373,15 @@ namespace MSS.API.Core.V1.Business
                     {
                         canUpdate = false;
                     }
+                    // 如果此节点有用户，不可变为has_users 为false的节点
+                    List<OrgUser> users = await _orgRepo.ListOrgNodeUsers(node.ID);
+                    if (users.Count > 0 && changeToNodeType !=null && !changeToNodeType.HasUsers) {
+                        canUpdate = false;
+                    }
 
                     if (canUpdate)
                     {
+                        // 检查是否存在同名节点
                         bool isExist = await _orgRepo.CheckNodeExist(node);
                         if (!isExist)
                         {
@@ -453,8 +478,21 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<DataResult> BindOrgNodeUsers(OrgUserView nodeView) {
-            DataResult ret = new DataResult();
+        public async Task<OrgNodeType> _getOrgNodeTypeByNodeID (int id)
+        {
+            List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
+            OrgTree node = await _orgRepo.GetNode(id);
+            OrgNodeType changeToNodeType = null;
+            if (node != null)
+            {
+                changeToNodeType = nodeTypes.Where(c => c.ID == node.NodeType)
+                                .FirstOrDefault();
+            }
+            return changeToNodeType;
+        }
+
+        public async Task<ApiResult> BindOrgNodeUsers(OrgUserView nodeView) {
+            ApiResult ret = new ApiResult();
             try
             {
                 using (TransactionScope scope = new TransactionScope())
@@ -465,29 +503,63 @@ namespace MSS.API.Core.V1.Business
                     // node.UpdatedBy = nodeView.CreatedBy;
                     // node.UpdatedTime = nodeView.CreatedTime;
                     // await _orgRepo.UnbindOrgNodeUsers(node);
-                    //bind新用户
-                    List<OrgUser> users = new List<OrgUser>();
-                    foreach (int id in nodeView.UserIDs)
+
+                    // 判断此节点是否可绑定人员
+                    bool canBind = true;
+                    OrgNodeType nodeType = await _getOrgNodeTypeByNodeID(nodeView.ID);
+                    if (nodeType != null && !nodeType.HasUsers)
                     {
-                        OrgUser user = new OrgUser();
-                        user.UserID = id;
-                        user.NodeID = nodeView.ID;
-                        user.CreatedBy = nodeView.CreatedBy;
-                        user.CreatedTime = nodeView.CreatedTime;
-
-                        users.Add(user);
+                        canBind = false;
                     }
-                    await _orgRepo.BindOrgNodeUsers(users);
+                    if (nodeType != null && nodeType.HasUsers && nodeType.HasUsersLeafOnly)
+                    {
+                        // 假如该节点目前为叶子节点后期有可能添加子节点，要提示不能添加
+                        bool hasChildren = await _orgRepo.hasChildren(nodeView.ID);
+                        if (hasChildren)
+                        {
+                            canBind = false;
+                        }
+                    }
+                    if (canBind)
+                    {
+                        // 绑定前检查用户是否已被绑定
+                        List<OrgUser> selectedUsers = await _orgRepo.ListAllOrgUser();
+                        List<OrgUser> conflictUsers = selectedUsers
+                            .Where(c => nodeView.UserIDs.Contains(c.UserID)).ToList();
+                        if (conflictUsers.Count ==0)
+                        {
+                            //bind新用户
+                            List<OrgUser> users = new List<OrgUser>();
+                            foreach (int id in nodeView.UserIDs)
+                            {
+                                OrgUser user = new OrgUser();
+                                user.UserID = id;
+                                user.NodeID = nodeView.ID;
+                                user.CreatedBy = nodeView.CreatedBy;
+                                user.CreatedTime = nodeView.CreatedTime;
 
-                    ret.Result = RESULT.OK;
+                                users.Add(user);
+                            }
+                            await _orgRepo.BindOrgNodeUsers(users);
 
+                            ret.code = Code.Success;
+                        }
+                        else
+                        {
+                            ret.code =Code.BindUserConflict;
+                        }
+                    }
+                    else
+                    {
+                        ret.code = Code.CheckDataRulesFail;
+                    }
                     scope.Complete();
                 }
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;

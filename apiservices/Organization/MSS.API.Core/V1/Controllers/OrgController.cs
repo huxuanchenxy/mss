@@ -88,7 +88,7 @@ namespace MSS.API.Core.V1.Controllers
 
         // 组织节点绑定用户
         [HttpPost("user")]
-        public async Task<ActionResult<DataResult>> BindOrgUser(OrgUserView nodeView)
+        public async Task<ActionResult<ApiResult>> BindOrgUser(OrgUserView nodeView)
         {
             nodeView.CreatedBy = _userId;
             nodeView.CreatedTime = DateTime.Now;

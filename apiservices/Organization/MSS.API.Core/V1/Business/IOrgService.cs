@@ -20,7 +20,7 @@ namespace MSS.API.Core.V1.Business
         Task<DataResult> DeleteOrgNode(OrgTree node);
         Task<DataResult> GetOrgNodeUsers(int id);
         Task<DataResult> GetCanSelectedUsers(int id);
-        Task<DataResult> BindOrgNodeUsers(OrgUserView nodeView);
+        Task<ApiResult> BindOrgNodeUsers(OrgUserView nodeView);
         Task<DataResult> GetNodeType();
         Task<DataResult> GetOrgNode(int id);
 
