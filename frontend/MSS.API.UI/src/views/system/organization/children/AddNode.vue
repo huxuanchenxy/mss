@@ -407,14 +407,14 @@ export default {
             } else if (res.code === ApiRESULT.DataIsExist) {
               this.$message.error('名称重复')
             } else if (res.code === ApiRESULT.CheckDataRulesFail) {
-              this.$message.error('父节点类型不能添加子节点')
+              this.$message.error('父节点类型不能添加子节点，或用户关联规则冲突')
             } else {
               this.$message.error('保存失败')
             }
           })
         } else {
           api.updateOrgNode(orgNode.ID, orgNode).then((res) => {
-            if (res.result === RESULT.Success) {
+            if (res.code === ApiRESULT.Success) {
             // let node = this.$refs.tree.getNode(orgNode.ID)
             // node.setData({
             //   id: res.data.id,
@@ -426,10 +426,12 @@ export default {
               this.$router.push({
                 name: 'OrgList'
               })
-            } else if (res.result === RESULT.Reinsert) {
+            } else if (res.code === ApiRESULT.DataIsExist) {
               this.$message.error('名称重复')
+            } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+              this.$message.error('此节点有子节点，不能修改为非父节点类型，或用户关联规则冲突')
             } else {
-              this.$message.error('保存失败')
+              this.$message.error('更新失败')
             }
           })
         }

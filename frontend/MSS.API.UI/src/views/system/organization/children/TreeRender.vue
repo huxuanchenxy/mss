@@ -8,7 +8,7 @@
       </template>
       <template>
         <div class="right">
-          <el-button size="mini" @click="addOrgNode(data, node)">添加</el-button>
+          <el-button size="mini" v-show="data.type.hasChildren" @click="addOrgNode(data, node)">添加</el-button>
           <el-button size="mini" @click="delOrgNode(data, node)">删除</el-button>
           <el-button size="mini" @click="updateOrgNode(data)">修改</el-button>
           <el-button size="mini" @click="seeOrgNode(data)">查看</el-button>

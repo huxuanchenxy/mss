@@ -159,7 +159,8 @@ export const ApiRESULT = {
   Failure: 1,
   DataIsExist: 2,
   DataIsnotExist: 3,
-  CheckDataRulesFail: 4
+  CheckDataRulesFail: 4,
+  BindUserConflict: 5
 }
 export const FileType = {
   EqpType_Working_Instruction: 0,

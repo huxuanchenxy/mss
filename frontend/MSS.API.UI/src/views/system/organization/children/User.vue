@@ -42,7 +42,7 @@
 </template>
 <script>
 import XButton from '@/components/button'
-import {RESULT} from '@/common/js/utils.js'
+import {RESULT, ApiRESULT} from '@/common/js/utils.js'
 import api from '@/api/orgApi'
 export default {
   name: 'OrgSee',
@@ -73,7 +73,7 @@ export default {
         data.UserIDs.push(id)
       })
       api.BindOrgUser(data).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.$router.push({
             name: 'OrgList'
           })
