@@ -27,9 +27,9 @@ namespace MSS.API.Core.V1.Business
             _orgRepo = orgRepo;
         }
 
-        public async Task<DataResult> GetAllOrg()
+        public async Task<ApiResult> GetAllOrg()
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
@@ -46,21 +46,21 @@ namespace MSS.API.Core.V1.Business
                         orgs.Add(obj);
                     }
                 }
-                ret.Result = RESULT.OK;
-                ret.Data = orgs;
+                ret.code = Code.Success;
+                ret.data = orgs;
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
         }
 
-        public async Task<DataResult> GetOrgByIDs(List<int> ids)
+        public async Task<ApiResult> GetOrgByIDs(List<int> ids)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 List<OrgNodeType> nodeTypes = await _orgRepo.ListNodeType();
@@ -77,21 +77,21 @@ namespace MSS.API.Core.V1.Business
                         orgs.Add(obj);
                     }
                 }
-                ret.Result = RESULT.OK;
-                ret.Data = orgs;
+                ret.code = Code.Success;
+                ret.data = orgs;
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
         }
 
-        public async Task<DataResult> GetOrgByUserID(int userId)
+        public async Task<ApiResult> GetOrgByUserID(int userId)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 
@@ -106,16 +106,16 @@ namespace MSS.API.Core.V1.Business
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
         }
 
-        public async Task<DataResult> GetOrgUserByUserID(int userId)
+        public async Task<ApiResult> GetOrgUserByUserID(int userId)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
 
@@ -129,30 +129,30 @@ namespace MSS.API.Core.V1.Business
                     ret = await GetAllOrg();
                 }
                 List<OrgUser> users = await _orgRepo.ListAllOrgUser();
-                ret.Data = _mountUsers(ret.Data as List<object>, users);
+                ret.data = _mountUsers(ret.data as List<object>, users);
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
         }
 
-        public async Task<DataResult> GetOrgUserByNodeID(int id)
+        public async Task<ApiResult> GetOrgUserByNodeID(int id)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 ret = await GetOrgByIDs(new List<int> { id });
                 List<OrgUser> users = await _orgRepo.ListAllOrgUser();
-                ret.Data = _mountUsers(ret.Data as List<object>, users);
+                ret.data = _mountUsers(ret.data as List<object>, users);
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
@@ -454,25 +454,25 @@ namespace MSS.API.Core.V1.Business
             return false;
         }
 
-        public async Task<DataResult> DeleteOrgNode(OrgTree node)
+        public async Task<ApiResult> DeleteOrgNode(OrgTree node)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 OrgTree exist = await _orgRepo.GetNode(node.ID);
                 if (exist == null)
                 {
-                    ret.Result = RESULT.NOTFOUNT;
+                    ret.code = Code.DataIsnotExist;
                     return ret;
                 }
                 await _orgRepo.DeleteOrgNode(node);
                 await _orgRepo.UnbindOrgNodeUsers(node);
-                ret.Result = RESULT.OK;
+                ret.code = Code.Success;
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
             
             return ret;
@@ -587,9 +587,9 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<DataResult> GetOrgNodeUsers(int id)
+        public async Task<ApiResult> GetOrgNodeUsers(int id)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 // 获取此节点已选择的用户
@@ -598,72 +598,72 @@ namespace MSS.API.Core.V1.Business
                 // 获取此节点之外已选择的用户，此节点不可再选
                 List<OrgUser> usersNotThisNode = await _orgRepo.ListUnOrgNodeUsers(id);
                 
-                ret.Result = RESULT.OK;
-                ret.Data = new {
+                ret.code = Code.Success;
+                ret.data = new {
                     users = users,
                     disabledUsers = usersNotThisNode
                 };
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Success;
+                ret.msg = ex.Message;
             }
 
             return ret;
         }
 
-        public async Task<DataResult> GetCanSelectedUsers(int id)
+        public async Task<ApiResult> GetCanSelectedUsers(int id)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 List<User> users = await _orgRepo.ListUsersNotThisNode(id);
 
-                ret.Result = RESULT.OK;
-                ret.Data = users;
+                ret.code = Code.Success;
+                ret.data = users;
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
         }
 
-        public async Task<DataResult> GetNodeType() {
-            DataResult ret = new DataResult();
+        public async Task<ApiResult> GetNodeType() {
+            ApiResult ret = new ApiResult();
             try
             {
                 List<OrgNodeType> type = await _orgRepo.ListNodeType();
 
-                ret.Result = RESULT.OK;
-                ret.Data = type;
+                ret.code = Code.Success;
+                ret.data = type;
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
         }
 
-        public async Task<DataResult> GetOrgNode(int id)
+        public async Task<ApiResult> GetOrgNode(int id)
         {
-            DataResult ret = new DataResult();
+            ApiResult ret = new ApiResult();
             try
             {
                 OrgTree node = await _orgRepo.GetNodeView(id);
 
-                ret.Result = RESULT.OK;
-                ret.Data = node;
+                ret.code = Code.Success;
+                ret.data = node;
             }
             catch (Exception ex)
             {
-                ret.Result = RESULT.FAIL;
-                ret.Message = ex.Message;
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
 
             return ret;
