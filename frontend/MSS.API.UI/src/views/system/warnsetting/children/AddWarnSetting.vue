@@ -26,7 +26,7 @@
           <div class="inp-wrap">
             <span class="text">设备类型</span>
             <div class="inp">
-              <el-select v-model="equipmentTypeID" :disabled="isShow === 'edit'" @change="chooseEqpType" placeholder="请选择">
+              <el-select v-model="equipmentTypeID" style="height:30px" @change="chooseEqpType" placeholder="请选择">
                 <el-option
                   v-for="item in eqpTypeList"
                   :key="item.key"
@@ -41,7 +41,7 @@
           <div class="inp-wrap">
             <span class="text">设备参数</span>
             <div class="inp">
-              <el-select v-model="paramObj" :disabled="isShow === 'edit'" value-key="_paramID" placeholder="请选择">
+              <el-select v-model="paramObj" value-key="_paramID" placeholder="请选择">
                 <el-option
                   v-for="item in paramList"
                   :key="item.key"
@@ -49,6 +49,7 @@
                   :value="item">
                 </el-option>
               </el-select>
+              <span>{{paramObj ? paramObj._paramUnit : ''}}</span>
             </div>
           </div>
         </li>
@@ -66,6 +67,7 @@
             <div class="inp">
               <el-input placeholder="预阀值上线" v-model.trim="limitUp.text" @keyup.native="validateInputDouble3(limitUp)"></el-input>
             </div>
+            <span style="padding-left:10px">%</span>
           </div>
           <p class="validate-tips">{{ limitUp.tips }}</p>
         </li>
@@ -75,6 +77,7 @@
             <div class="inp">
               <el-input placeholder="预阀值下线" v-model.trim="limitDown.text" @keyup.native="validateInputDouble3(limitDown)"></el-input>
             </div>
+            <span style="padding-left:10px">%</span>
           </div>
           <p class="validate-tips">{{ limitDown.tips }}</p>
         </li>
@@ -92,12 +95,12 @@
             <el-row>
               <el-col :span="2">条件{{index+1}}</el-col>
               <el-col :span="5">
-                <el-select v-model="item.paramID" placeholder="环境条件">
+                <el-select v-model="item.paramID" @change="onExChange(item)" placeholder="环境条件">
                   <el-option
-                    v-for="item in settingExTypeList"
-                    :key="item.key"
-                    :label="item.pidName"
-                    :value="item.id">
+                    v-for="itemtype in settingExTypeList"
+                    :key="itemtype.key"
+                    :label="itemtype.pidName"
+                    :value="itemtype.id">
                   </el-option>
                 </el-select>
               </el-col>
@@ -114,6 +117,9 @@
               <el-col :span="3">
                 <el-input placeholder="值" v-model="item.paramLimitValue"
                   style="margin-left:10px"  @keyup.native="validateInputDouble3(limitDown)"></el-input>
+              </el-col>
+              <el-col :span="1">
+                <span style="margin-left:15px">{{item.paramUnit}}</span>
               </el-col>
               <el-col :span="5">
                 <x-button style="margin-left:30px" class="active" @click.native="DelThisSetting(index)">删除</x-button>
@@ -197,6 +203,13 @@ export default {
     }
   },
   methods: {
+    onExChange (item) {
+      for (let i = 0; i < this.settingExTypeList.length; ++i) {
+        if (this.settingExTypeList[i].id === item.paramID) {
+          item.paramUnit = this.settingExTypeList[i].paramUnit
+        }
+      }
+    },
     getSettingExType () {
       api.getSettingExType().then(res => {
         this.settingExTypeList = res.data
@@ -229,7 +242,8 @@ export default {
       this.settingEx.push({
         paramID: '',
         paramLimitType: '',
-        paramLimitValue: null
+        paramLimitValue: null,
+        paramUnit: ''
       })
     },
     DelThisSetting (idx) {
@@ -238,10 +252,11 @@ export default {
     validateAll () {
       if (!this.validateInputDouble3(this.limitUp)) return false
       if (!this.validateInputDouble3(this.limitDown)) return false
-      if (parseFloat(this.limitDown.text) > parseFloat(this.limitUp.text)) {
-        this.$message.error('下限值必须小于上限值')
-        return false
-      }
+
+      // if (parseFloat(this.limitDown.text) > parseFloat(this.limitUp.text)) {
+      //   this.$message.error('下限值必须小于上限值')
+      //   return false
+      // }
       // if (!this.validateSelect()) return false
       // 验证扩展条件
       for (let i = 0; i < this.settingEx.length; ++i) {
@@ -252,6 +267,47 @@ export default {
             message: '条件' + (i + 1) + '输入不合格',
             type: 'error'
           })
+          return false
+        }
+      }
+      // 验证是否扩展条件相同
+      let i, j
+      for (i = 0; i < this.settingEx.length; ++i) {
+        let item = this.settingEx[i]
+        let isSame = false
+        for (j = 0; j < this.settingEx.length; ++j) {
+          let item2 = this.settingEx[j]
+          if (i !== j) {
+            if (item.paramID === item2.paramID && item.paramLimitType === item2.paramLimitType) {
+              isSame = true
+              break
+            }
+          }
+        }
+        if (isSame) {
+          this.$message.error(`条件(${i + 1}, ${j + 1})设定重复`)
+          return false
+        }
+      }
+      // 验证同一条件大于、小于是否有分歧，比如大于8 且小于10
+      i = 0
+      j = 0
+      for (i = 0; i < this.settingEx.length; ++i) {
+        let _item = this.settingEx[i]
+        let isConflict = false
+        for (j = 0; j < this.settingEx.length; ++j) {
+          let _item2 = this.settingEx[j]
+          if (i !== j) {
+            if (_item.paramID === _item2.paramID && _item.paramLimitType === 1 &&
+              _item2.paramLimitType === 3 &&
+              (parseFloat(_item.paramLimitValue) > parseFloat(_item2.paramLimitValue))) {
+              isConflict = true
+              break
+            }
+          }
+        }
+        if (isConflict) {
+          this.$message.error(`条件(${i + 1}, ${j + 1})设定值存在冲突`)
           return false
         }
       }
@@ -305,10 +361,18 @@ export default {
         this.loading = false
         if (res.code === ApiRESULT.Success) {
           this.equipmentTypeID = res.data.equipmentTypeID
-          this.paramObj = {_paramID: res.data.paramID}
+          this.paramObj = {_paramID: res.data.paramID, _paramName: res.data.paramName, _paramUnit: res.data.paramUnit}
           this.isActived = res.data.isActived
           this.limitUp.text = res.data.paramLimitUpper
           this.limitDown.text = res.data.paramLimitLower
+          // res.data.settingEx
+          res.data.settingEx.map((e) => {
+            for (let i = 0; i < this.settingExTypeList.length; ++i) {
+              if (this.settingExTypeList[i].id === e.paramID) {
+                e.paramUnit = this.settingExTypeList[i].paramUnit
+              }
+            }
+          })
           this.settingEx = res.data.settingEx
         }
       }).catch(err => console.log(err))
@@ -341,7 +405,7 @@ export default {
       width: 30%;
       margin-top: PXtoEm(25);
 
-      span{
+      .text{
         width: 28%;
       }
 

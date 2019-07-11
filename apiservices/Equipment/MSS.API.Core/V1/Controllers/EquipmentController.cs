@@ -64,6 +64,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
+        [HttpGet("Detail/{id}")]
+        public ActionResult GetDetailByID(int id)
+        {
+            var resp = _eqpService.GetDetailByID(id);
+            return Ok(resp.Result);
+        }
+
         [HttpGet("All")]
         public ActionResult GetAll()
         {

@@ -159,7 +159,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电压</span>
+                <span class="text">额定电压(v)</span>
                 <div class="inp">
                   <el-input placeholder="请输入额定电压" v-model="ratedVoltage.text" @keyup.native="validateDouble(ratedVoltage)"></el-input>
                 </div>
@@ -168,7 +168,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电流</span>
+                <span class="text">额定电流(A)</span>
                 <div class="inp">
                   <el-input placeholder="请输入额定电流" v-model="ratedCurrent.text" @keyup.native="validateDouble(ratedCurrent)"></el-input>
                 </div>
@@ -177,9 +177,9 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电压</span>
+                <span class="text">额定功率(KW)</span>
                 <div class="inp">
-                  <el-input placeholder="请输入额定电压" v-model="ratedPower.text" @keyup.native="validateDouble(ratedPower)"></el-input>
+                  <el-input placeholder="请输入额定功率" v-model="ratedPower.text" @keyup.native="validateDouble(ratedPower)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ ratedPower.tips }}</p>
@@ -224,7 +224,7 @@
             </li>
             <li class="list upload-list">
               <div>
-                <upload-pdf :fileType="fileType" label="设备图纸"></upload-pdf>
+                <upload-pdf :fileType="fileType" label="设备图纸" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
               </div>
             </li>
           </ul>
@@ -274,13 +274,6 @@
         </div>
       </el-scrollbar>
     </div>
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -300,11 +293,9 @@ export default {
   },
   data () {
     return {
+      fileIDs: '',
+      fileIDsEdit: '',
       fileType: FileType.Eqp_Drawings,
-      uploadHeaders: {Authorization: ''},
-      fileList: [],
-      centerDialogVisible: false,
-      previewUrl: '',
       areaParams: {
         label: 'areaName',
         value: 'id',
@@ -444,40 +435,8 @@ export default {
     }).catch(err => console.log(err))
   },
   methods: {
-    // onSuccess (response, file, fileList) {
-    //   this.fileList = fileList
-    //   this.fileList.map(val => {
-    //     if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
-    //       val.id = val.response.data.id
-    //     }
-    //   })
-    //   console.log(this.fileList)
-    // },
-    // beforeRemove (file, fileList) {
-    //   api.deleteUploadFile(file.id).then(res => {
-    //     this.fileList = fileList
-    //     this.fileList.map(val => {
-    //       if (val.status === 'success') {
-    //         val.id = val.response.data.id
-    //       }
-    //     })
-    //     return res.code === 0
-    //   }).catch(err => console.log(err))
-    // },
-    // preview (item) {
-    //   this.centerDialogVisible = true
-    //   if (item.status === 'success') {
-    //     if (item.url.indexOf('blob:') !== -1) {
-    //       this.previewUrl = PDF_BLOB_VIEW_URL + item.url
-    //     } else {
-    //       this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
-    //     }
-    //   } else {
-    //     this.previewUrl = PDF_BLOB_VIEW_URL + item.url
-    //   }
-    // },
-    preview (url) {
-      this.previewUrl = url
+    getFileIDs (ids) {
+      this.fileIDsEdit = ids
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
@@ -512,6 +471,18 @@ export default {
         })
         return
       }
+      if (this.fileIDsEdit !== '') {
+        let arr = this.fileIDsEdit.split(',')
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i] === '') {
+            this.$message({
+              message: '文件还未上传完成，请耐心等待',
+              type: 'warning'
+            })
+            return
+          }
+        }
+      }
       let eqp = {
         Code: this.eqpCode.text,
         Name: this.eqpName.text,
@@ -530,7 +501,8 @@ export default {
         Life: this.life.text,
         MediumRepair: this.mediumRepair.text,
         LargeRepair: this.largeRepair.text,
-        OnlineAgain: this.timeAgain.text
+        OnlineAgain: this.timeAgain.text,
+        FileIDs: this.fileIDsEdit
       }
       if (this.ratedVoltage.text !== '') {
         eqp.RatedVoltage = this.ratedVoltage.text
@@ -546,13 +518,6 @@ export default {
         eqp.Location = this.area.text[l]
         eqp.LocationBy = l
         eqp.LocationPath = this.area.text.join(',')
-      }
-      if (this.fileList.length > 0) {
-        let drawings = ''
-        this.fileList.map(val => {
-          drawings += val.id + ','
-        })
-        eqp.ids = drawings.substring(0, drawings.length - 1)
       }
       if (this.isShow === 'add') {
         // 添加设备
@@ -622,16 +587,7 @@ export default {
         this.mediumRepair.text = _res.mediumRepair.toString()
         this.largeRepair.text = _res.largeRepair.toString()
         this.timeAgain.text = nullToEmpty(_res.onlineAgain)
-        if (_res.drawings !== null) {
-          _res.drawings.map(val => {
-            this.fileList.push({
-              id: val.id,
-              url: val.filePath,
-              name: val.fileName,
-              status: 'success'
-            })
-          })
-        }
+        this.fileIDs = _res.fileIDs
       }).catch(err => console.log(err))
     },
     strToIntArr (str) {
@@ -759,9 +715,6 @@ export default {
       margin-bottom: PXtoEm(25);
     }
   }
-}
-.upload-btn{
-  margin-left:50px!important;
 }
 .btn-enter{
   margin: 15px 0;

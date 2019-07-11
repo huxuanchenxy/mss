@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
 using MSS.API.Utility;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -15,13 +16,14 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<UserService> _logger;
         private readonly IUserRepo<User> _UserRepo;
         private readonly IActionRepo<ActionInfo> _ActionRepo;
-        
+        private readonly IAuthHelper _auth;
 
-        public UserService(IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo)
+        public UserService(IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _UserRepo = userRepo;
             _ActionRepo = actionRepo;
+            _auth = auth;
         }
         public async Task<MSSResult<UserView>> GetPageByParm(UserQueryParm parm)
         {

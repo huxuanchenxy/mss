@@ -38,5 +38,12 @@ namespace MSS.API.Core.V1.Controllers
             var ret = _uploadService.Delete(id);
             return Ok(ret.Result);
         }
+
+        [HttpGet("{ids}")]
+        public ActionResult ListByIDs(string ids)
+        {
+            var ret = _uploadService.ListByIDs(ids);
+            return Ok(ret.Result);
+        }
     }
 }

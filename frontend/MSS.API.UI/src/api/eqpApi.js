@@ -12,6 +12,7 @@ export default {
 
   getEqp: parm => { return axios.get(`${api}/Equipment`, {params: parm}).then(res => res.data) },
   getEqpByID: id => { return axios.get(`${api}/Equipment/${id}`).then(res => res.data) },
+  getEqpDetailByID: id => { return axios.get(`${api}/Equipment/Detail/${id}`).then(res => res.data) },
   addEqp: (fd, config) => { return axios.post(`${api}/Equipment`, fd, config).then(res => res.data) },
   updateEqp: (fd, config) => { return axios.put(`${api}/Equipment`, fd, config).then(res => res.data) },
   delEqp: ids => { return axios.delete(`${api}/Equipment/${ids}`).then(res => res.data) },
@@ -24,5 +25,6 @@ export default {
   delFirm: ids => { return axios.delete(`${api}/Firm/${ids}`).then(res => res.data) },
   getFirmAll: () => { return axios.get(`${api}/Firm/All`).then(res => res.data) },
 
-  deleteUploadFile: id => { return axios.delete(`${api}/Upload/${id}`).then(res => res.data) }
+  // deleteUploadFile: id => { return axios.delete(`${api}/Upload/${id}`).then(res => res.data) },
+  getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) }
 }

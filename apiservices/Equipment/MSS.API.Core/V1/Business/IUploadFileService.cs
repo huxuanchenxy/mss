@@ -14,6 +14,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> Save(int type, List<IFormFile> file);
         Task<ApiResult> Delete(int id);
         Task<ApiResult> GetByID(int id);
+        Task<ApiResult> ListByIDs(string ids);
         Task<ApiResult> ListAll();
     }
 }

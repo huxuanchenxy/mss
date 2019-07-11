@@ -39,8 +39,8 @@ namespace MSS.API.Common
         /// <summary>
         /// 基础绝对路径
         /// </summary>
-        public static string BASEFILE = "D:/bin/eqp/";//"F:/mssAll/MSS/apiservices/Equipment/MSS.API.Core/V1/"; 
-        public static string SHAREFILE = "File/";//"F:/mssAll/MSS/apiservices/Equipment/MSS.API.Core/V1/"; 
+        public static string BASEFILE = "D:/bin/eqp/";
+        public static string SHAREFILE = "File/";
     }
 
     public enum FileType

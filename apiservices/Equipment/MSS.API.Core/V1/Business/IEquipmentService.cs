@@ -16,6 +16,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> Delete(string ids, int userID);
         Task<ApiResult> GetPageByParm(EqpQueryParm parm);
         Task<ApiResult> GetByID(int id);
+        Task<ApiResult> GetDetailByID(int id);
         Task<ApiResult> GetAll();
     }
 }
