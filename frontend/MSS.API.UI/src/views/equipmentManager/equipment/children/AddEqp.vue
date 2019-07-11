@@ -159,7 +159,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电压</span>
+                <span class="text">额定电压(v)</span>
                 <div class="inp">
                   <el-input placeholder="请输入额定电压" v-model="ratedVoltage.text" @keyup.native="validateDouble(ratedVoltage)"></el-input>
                 </div>
@@ -168,7 +168,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电流</span>
+                <span class="text">额定电流(A)</span>
                 <div class="inp">
                   <el-input placeholder="请输入额定电流" v-model="ratedCurrent.text" @keyup.native="validateDouble(ratedCurrent)"></el-input>
                 </div>
@@ -177,9 +177,9 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">额定电压</span>
+                <span class="text">额定功率(KW)</span>
                 <div class="inp">
-                  <el-input placeholder="请输入额定电压" v-model="ratedPower.text" @keyup.native="validateDouble(ratedPower)"></el-input>
+                  <el-input placeholder="请输入额定功率" v-model="ratedPower.text" @keyup.native="validateDouble(ratedPower)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ ratedPower.tips }}</p>
@@ -471,14 +471,16 @@ export default {
         })
         return
       }
-      let arr = this.fileIDsEdit.split(',')
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i] === '') {
-          this.$message({
-            message: '文件还未上传完成，请耐心等待',
-            type: 'warning'
-          })
-          return
+      if (this.fileIDsEdit !== '') {
+        let arr = this.fileIDsEdit.split(',')
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i] === '') {
+            this.$message({
+              message: '文件还未上传完成，请耐心等待',
+              type: 'warning'
+            })
+            return
+          }
         }
       }
       let eqp = {
