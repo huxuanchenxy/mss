@@ -14,7 +14,7 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="">设备类别</label>
+            <label for="">设备名称</label>
             <div class="inp">
               <!-- <el-select v-model="deviceType" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>

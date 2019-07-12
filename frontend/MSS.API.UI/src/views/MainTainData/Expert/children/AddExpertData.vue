@@ -15,7 +15,7 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">请输入关键字<em class="validate-mark">*</em></span>
+              <span class="text">关键字<em class="validate-mark">*</em></span>
               <div class="inp">
               <el-input placeholder="请输入关键字" v-model="keyword.text" @keyup.native="validateInput(keyword)"></el-input>
             </div>
@@ -48,7 +48,7 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">所属部门<em class="validate-mark">*</em></span>
+              <span class="text">上传部门<em class="validate-mark">*</em></span>
               <div class="inp">
               <el-select v-model="dept.id" clearable placeholder="请选择" @change="validatedeptSelect()">
                 <option disabled value="" selected>请选择</option>
