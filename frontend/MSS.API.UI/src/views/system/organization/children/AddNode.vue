@@ -5,7 +5,8 @@
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal operation">
-      <el-form ref="form" :rules="rules" label-position="left" :model="form" label-width="80px">
+      <el-form ref="form" :rules="rules" label-position="left" :model="form"
+        class="custom-form" label-width="80px">
         <el-row >
           <el-col>
             <el-form-item label="节点类型">
@@ -21,7 +22,7 @@
           <el-row :gutter="40">
             <el-col :span="8">
               <el-form-item label="公司名称" prop="Name">
-                <el-input v-model="form.Name" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
+                <el-input v-model="form.Name" :disabled="this.ReadOnly" ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -60,8 +61,8 @@
         <div v-if="form.NodeType==='2'">
           <el-row :gutter="40">
             <el-col :span="8">
-              <el-form-item label="部门名称">
-                <el-input v-model="form.Name" prop="Name" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
+              <el-form-item label="部门名称" prop="Name">
+                <el-input v-model="form.Name" :disabled="this.ReadOnly" ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -88,8 +89,8 @@
         <div v-if="form.NodeType==='3'">
           <el-row :gutter="40">
             <el-col :span="8">
-              <el-form-item label="班组名称">
-                <el-input v-model="form.Name" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
+              <el-form-item label="班组名称" prop="Name">
+                <el-input v-model="form.Name" :disabled="this.ReadOnly" ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -107,13 +108,15 @@
           </el-row>
           <el-row :gutter="40">
             <el-col :span="8">
-              <el-form-item label="电话">
-                <el-input v-model="form.PhoneNum" prop="PhoneNum" :disabled="this.ReadOnly"></el-input>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="电话" prop="PhoneNum">
+                <el-input v-model="form.PhoneNum" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row >
-            <el-col>
+            <el-col :span="24">
               <el-form-item label="描述">
                 <el-input type="textarea" v-model="form.Desc" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
@@ -159,7 +162,7 @@ export default {
       },
       rules: {
         Name: [
-          { validator: this.validateName, message: '该字段不能为空,或含有非法字符', trigger: 'blur' }
+          { required: true, validator: this.validateName, message: '该字段不能为空,或含有非法字符', trigger: 'blur' }
         ],
         PhoneNum: [
           { validator: this.validatePhone, trigger: 'blur' }
@@ -215,13 +218,19 @@ export default {
         callback(new Error('该字段不能空'))
       } else if (!vInput(value)) {
         callback(new Error('此项含有非法字符'))
+      } else {
+        callback()
       }
     },
     validatePhone (rule, value, callback) {
       if (value) {
         if (!vPhone(value)) {
           callback(new Error('电话号码验证错误'))
+        } else {
+          callback()
         }
+      } else {
+        callback()
       }
     },
     getAllUsers () {
@@ -230,20 +239,20 @@ export default {
       // }
       api.getAllUsers().then((res) => {
         this.Users = res.data
-        if ((this.ID + '') !== '0') {
-          this.getOrgNode(this.ID)
+        if ((this.form.ID + '') !== '0') {
+          this.getOrgNode(this.form.ID)
         }
       })
     },
     getOrgNode (id) {
       api.getOrgNode(id).then((res) => {
         if (res.code === ApiRESULT.Success) {
-          this.NodeType = res.data.nodeType + ''
-          if (this.NodeType === '1') {
+          this.form.NodeType = res.data.nodeType + ''
+          if (this.form.NodeType === '1') {
             this.initcomForm(res.data)
-          } else if (this.NodeType === '2') {
+          } else if (this.form.NodeType === '2') {
             this.initsecForm(res.data)
-          } else if (this.NodeType === '3') {
+          } else if (this.form.NodeType === '3') {
             this.initteamForm(res.data)
           }
         } else {
@@ -252,69 +261,69 @@ export default {
       })
     },
     initcomForm (data) {
-      this.ParentID = data.parentID
-      this.Name.text = data.name
+      this.form.ParentID = data.parentID
+      this.form.Name = data.name
       let props = data.propEx
       if (props) {
         for (var prop in props) {
           switch (props[prop].nodeAttr) {
             case 'Code':
-              this.Code.text = props[prop].attrValue
+              this.form.Code = props[prop].attrValue
               break
             case 'Leader':
-              this.Leader.text = this.parseLeader(props[prop].attrValue)
+              this.form.Leader = this.parseLeader(props[prop].attrValue)
               break
             case 'Address':
-              this.Address.text = props[prop].attrValue
+              this.form.Address = props[prop].attrValue
               break
             case 'PhoneNum':
-              this.PhoneNum.text = props[prop].attrValue
+              this.form.PhoneNum = props[prop].attrValue
               break
             case 'Desc':
-              this.Desc.text = props[prop].attrValue
+              this.form.Desc = props[prop].attrValue
               break
           }
         }
       }
     },
     initsecForm (data) {
-      this.ParentID = data.parentID
-      this.Name.text = data.name
+      this.form.ParentID = data.parentID
+      this.form.Name = data.name
       let props = data.propEx
       if (props) {
         for (var prop in props) {
           switch (props[prop].nodeAttr) {
             case 'Code':
-              this.Code.text = props[prop].attrValue
+              this.form.Code = props[prop].attrValue
               break
             case 'Leader':
-              this.Leader.text = this.parseLeader(props[prop].attrValue)
+              this.form.Leader = this.parseLeader(props[prop].attrValue)
               break
             case 'Desc':
-              this.Desc.text = props[prop].attrValue
+              this.form.Desc = props[prop].attrValue
               break
           }
         }
       }
     },
     initteamForm (data) {
-      this.ParentID = data.parentID
-      this.Name.text = data.name
+      this.form.ParentID = data.parentID
+      this.form.Name = data.name
       let props = data.propEx
       if (props) {
         for (var prop in props) {
           switch (props[prop].nodeAttr) {
             case 'Leader':
-              this.Leader.text = this.parseLeader(props[prop].attrValue)
+              this.form.Leader = this.parseLeader(props[prop].attrValue)
               break
             case 'Address':
-              this.Address.text = props[prop].attrValue
+              this.form.Address = props[prop].attrValue
               break
             case 'PhoneNum':
-              this.PhoneNum.text = props[prop].attrValue
+              this.form.PhoneNum = props[prop].attrValue
               break
             case 'Desc':
-              this.Desc.text = props[prop].attrValue
+              this.form.Desc = props[prop].attrValue
               break
           }
         }
@@ -322,7 +331,15 @@ export default {
     },
     parseLeader (val) {
       if (val) {
-        return parseInt(val)
+        let leaderid = parseInt(val)
+        let exist = this.Users.filter(user => {
+          return user.id === leaderid
+        })
+        if (exist.length > 0) {
+          return leaderid
+        } else {
+          return ''
+        }
       } else {
         return ''
       }
@@ -453,11 +470,6 @@ export default {
   justify-content: space-between;
 }
 
-.el-col-my{
-  align-items: center;
-  height:100%;
-}
-
 // 功能区
 .operation{
   .input-group{
@@ -496,5 +508,18 @@ export default {
     border-color: $color-main-btn;
     background: $color-main-btn;
   }
+}
+// 表单验证
+.custom-form /deep/ .el-form-item.is-success .el-input__inner{
+  border-color: #fff
+}
+.custom-form /deep/ .el-form-item.is-error .el-input__inner{
+  border-color: #ffffff
+}
+.custom-form /deep/ .el-form-item__error{
+  color: red;
+}
+.custom-form /deep/ .el-form-item__label{
+  color: #fff
 }
 </style>
