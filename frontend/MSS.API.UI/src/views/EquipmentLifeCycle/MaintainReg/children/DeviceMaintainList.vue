@@ -162,7 +162,7 @@
                 <div class="number">{{ item.director_name }}</div>
                 <div class="number">{{ item.maintain_date }}</div>
                 <div class="number">{{ item.detail_desc }}</div>
-                <div class="number">{{ '...' }}</div>
+                <div class="number">{{ item.attch_file }}</div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
                 <div class="last-maintainer">{{ '管理员' }}</div>
               </div>

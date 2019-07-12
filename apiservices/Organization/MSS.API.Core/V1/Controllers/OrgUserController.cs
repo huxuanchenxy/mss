@@ -27,13 +27,13 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DataResult>> Get()
+        public async Task<ActionResult<ApiResult>> Get()
         {
             var ret = await _orgService.GetOrgUserByUserID(_userId);
             return ret;
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<DataResult>> Get(int id)
+        public async Task<ActionResult<ApiResult>> Get(int id)
         {
             var ret = await _orgService.GetOrgUserByNodeID(id);
             return ret;

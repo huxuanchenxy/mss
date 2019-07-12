@@ -14,7 +14,11 @@ namespace MSS.API.Common
         DataIsExist = 2,
         [Description("数据不存在")]
         DataIsnotExist = 3,
-
+        // 向不可添加子节点的节点添加节点
+        [Description("数据校验失败")]
+        CheckDataRulesFail= 4,
+        [Description("绑定用户存在冲突")]
+        BindUserConflict = 5
     }
     public class ApiResult
     {
@@ -57,6 +61,14 @@ namespace MSS.API.Common
         EqpType_Regulations = 4,
         //设备中的设备图纸
         Eqp_Drawings = 5,
+        //设备生命周期维护的附件
+        DeviceMaintain_attach = 6,
+        
+        //专家库视频资料
+        ExpertData_vedio = 7,
+
+        //专家库附件资料
+        ExpertData_attach = 8
     }
     #endregion
 

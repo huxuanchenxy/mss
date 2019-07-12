@@ -158,7 +158,9 @@ export const ApiRESULT = {
   Success: 0,
   Failure: 1,
   DataIsExist: 2,
-  DataIsnotExist: 3
+  DataIsnotExist: 3,
+  CheckDataRulesFail: 4,
+  BindUserConflict: 5
 }
 export const FileType = {
   EqpType_Working_Instruction: 0,
@@ -166,5 +168,8 @@ export const FileType = {
   EqpType_Installation_Manual: 2,
   EqpType_User_Guide: 3,
   EqpType_Regulations: 4,
-  Eqp_Drawings: 5
+  Eqp_Drawings: 5,
+  DeviceMaintain_attach: 6,
+  ExpertData_vedio: 7,
+  ExpertData_attach: 8
 }
