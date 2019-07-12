@@ -37,8 +37,6 @@ namespace MSS.API.Dao.Implement
                     eqp.ID = newid;
                     if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
                     {
-                        sql = "delete from upload_file_eqp where eqp_id=@id";
-                        int ret = await c.ExecuteAsync(sql, new { id = newid }, trans);
                         List<object> objs = new List<object>();
                         foreach (var item in eqp.FileIDs.Split(','))
                         {
@@ -49,7 +47,7 @@ namespace MSS.API.Dao.Implement
                             });
                         }
                         sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
-                        ret = await c.ExecuteAsync(sql, objs, trans);
+                        int ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     trans.Commit();
                     return eqp;
@@ -201,7 +199,14 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.QueryAsync<UploadFileEqp>(
                     "SELECT * FROM upload_file_eqp WHERE eqp_id = @id", new { id = id });
-                return result.ToList();
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
 
@@ -212,7 +217,14 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.QueryAsync<Equipment>(
                     "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids });
-                return result.ToList();
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
 
@@ -221,8 +233,15 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = (await c.QueryAsync<Equipment>(
-                    "SELECT * FROM equipment")).ToList();
-                return result;
+                    "SELECT * FROM equipment"));
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
 
@@ -234,8 +253,15 @@ namespace MSS.API.Dao.Implement
                 "from dictionary where code='metro_area' UNION " +
                 "select AreaName,id,1 as TableName from tb_config_bigarea UNION " +
                 "select AreaName,id,2 as TableName from tb_config_midarea";
-                var result = (await c.QueryAsync<AllArea>(sql)).ToList();
-                return result;
+                var result = await c.QueryAsync<AllArea>(sql);
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
     }

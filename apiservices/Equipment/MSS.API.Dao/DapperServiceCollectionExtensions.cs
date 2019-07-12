@@ -33,6 +33,7 @@ namespace MSS.API.Dao
                 config.AddMap(new FirmMap());
                 config.AddMap(new UploadFileMap());
                 config.AddMap(new UploadFileEqpMap());
+                config.AddMap(new UploadFileEqpTypeMap());
             });
             return services;
         }
