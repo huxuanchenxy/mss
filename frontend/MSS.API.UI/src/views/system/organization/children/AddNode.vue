@@ -5,199 +5,137 @@
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal operation">
-      <ul class="input-group">
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">节点类型</span>
-            <div class="inp">
-              <el-select v-model="NodeType" :disabled="this.ReadOnly"  placeholder="请选择">
+      <el-form ref="form" :rules="rules" label-position="left" :model="form" label-width="80px">
+        <el-row >
+          <el-col>
+            <el-form-item label="节点类型">
+              <el-select v-model="form.NodeType" :disabled="this.ReadOnly"  placeholder="请选择">
                 <el-option value="1" label="公司" selected></el-option>
                 <el-option value="2" label="部门" selected></el-option>
                 <el-option value="3" label="班组" selected></el-option>
               </el-select>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <div v-if="NodeType==='1'">
-    <div class="con-padding-horizontal operation">
-      <ul class="input-group">
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">公司名称<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-input v-model="Name.text" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Name.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">公司编码</span>
-            <div class="inp">
-              <el-input v-model="Code.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Code.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">负责人</span>
-            <div class="inp">
-              <el-select v-model="Leader.text" :disabled="this.ReadOnly" placeholder="请选择">
-                <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Leader.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">地址</span>
-            <div class="inp">
-              <el-input v-model="Address.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Address.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">电话</span>
-            <div class="inp">
-              <el-input v-model="PhoneNum.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ PhoneNum.tips }}</p>
-        </li>
-        <li class="list"></li>
-      </ul>
-    </div>
-    <div class="con-padding-horizontal operation">
-      <ul class="input-group">
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">描述</span>
-            <div class="inp">
-              <el-input type="textarea" :disabled="this.ReadOnly" v-model="Desc.text"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Desc.tips }}</p>
-        </li>
-      </ul>
-    </div>
-    </div>
-    <div v-if="NodeType==='2'">
-    <div class="con-padding-horizontal operation">
-      <ul class="input-group">
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">部门名称<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-input v-model="Name.text" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Name.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">部门编码</span>
-            <div class="inp">
-              <el-input v-model="Code.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Code.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">负责人</span>
-            <div class="inp">
-              <el-select v-model="Leader.text" :disabled="this.ReadOnly" placeholder="请选择">
-                <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Leader.tips }}</p>
-        </li>
-      </ul>
-    </div>
-    <div class="con-padding-horizontal operation">
-      <ul class="input-group">
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">描述</span>
-            <div class="inp">
-              <el-input type="textarea" v-model="Desc.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Desc.tips }}</p>
-        </li>
-      </ul>
-    </div>
-    </div>
-    <div v-if="NodeType==='3'">
-    <div class="con-padding-horizontal operation">
-      <ul class="input-group">
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">班组名称<em class="validate-mark">*</em></span>
-            <div class="inp">
-              <el-input v-model="Name.text" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Name.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">负责人</span>
-            <div class="inp">
-              <el-select v-model="Leader.text" :disabled="this.ReadOnly" placeholder="请选择">
-                <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Leader.tips }}</p>
-        </li>
-        <li class="list" >
-          <div class="inp-wrap">
-            <span class="text">地点</span>
-            <div class="inp">
-              <el-input v-model="Address.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Address.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">电话</span>
-            <div class="inp">
-              <el-input v-model="PhoneNum.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ PhoneNum.tips }}</p>
-        </li>
-        <li class="list">
-          <div class="inp-wrap">
-            <span class="text">描述</span>
-            <div class="inp">
-              <el-input type="textarea" v-model="Desc.text" :disabled="this.ReadOnly"></el-input>
-            </div>
-          </div>
-          <p class="validate-tips">{{ Desc.tips }}</p>
-        </li>
-      </ul>
-    </div>
-    </div>
-    <div class="btn-group" v-if="!ReadOnly">
-      <x-button class="close">
-        <router-link :to="{ name: 'OrgList' }">取消</router-link>
-      </x-button>
-      <x-button class="active" @click.native="submitForm">保存</x-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <div v-if="form.NodeType==='1'">
+          <el-row :gutter="40">
+            <el-col :span="8">
+              <el-form-item label="公司名称" prop="Name">
+                <el-input v-model="form.Name" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="公司编码">
+                <el-input v-model="form.Code" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="负责人">
+                <el-select v-model="form.Leader" :disabled="this.ReadOnly" style="width:100%" placeholder="请选择">
+                  <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="40">
+            <el-col :span="8">
+              <el-form-item label="地址">
+                <el-input v-model="form.Address" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="电话" prop="PhoneNum">
+                <el-input v-model="form.PhoneNum" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row >
+            <el-col>
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="form.Desc" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+        <div v-if="form.NodeType==='2'">
+          <el-row :gutter="40">
+            <el-col :span="8">
+              <el-form-item label="部门名称">
+                <el-input v-model="form.Name" prop="Name" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="部门编码">
+                <el-input v-model="form.Code" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="负责人">
+                <el-select v-model="form.Leader" :disabled="this.ReadOnly" style="width:100%" placeholder="请选择">
+                  <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row >
+            <el-col>
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="form.Desc" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+        <div v-if="form.NodeType==='3'">
+          <el-row :gutter="40">
+            <el-col :span="8">
+              <el-form-item label="班组名称">
+                <el-input v-model="form.Name" :disabled="this.ReadOnly" @keyup.native="validateInput(Name)"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="负责人">
+                <el-select v-model="form.Leader" :disabled="this.ReadOnly" style="width:100%" placeholder="请选择">
+                  <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="地址">
+                <el-input v-model="form.Address" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="40">
+            <el-col :span="8">
+              <el-form-item label="电话">
+                <el-input v-model="form.PhoneNum" prop="PhoneNum" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row >
+            <el-col>
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="form.Desc" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+        <el-row>
+          <el-col align="center">
+            <el-form-item>
+              <x-button class="close">
+                <router-link :to="{ name: 'OrgList' }">取消</router-link>
+              </x-button>
+              <x-button class="active" @click.native="submitForm">保存</x-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
     </div>
   </div>
 </template>
 <script>
-import { validateInputCommon, vPhone, validateNumberCommon, RESULT, ApiRESULT } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, vPhone, validateNumberCommon, RESULT, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/orgApi'
 // import eventBus from '@/components/Bus'
@@ -208,46 +146,38 @@ export default {
   },
   data () {
     return {
+      form: {
+        ID: '0',
+        ParentID: null,
+        NodeType: '1',
+        Name: '',
+        Code: '',
+        Leader: '',
+        Address: '',
+        PhoneNum: '',
+        Desc: ''
+      },
+      rules: {
+        Name: [
+          { validator: this.validateName, message: '该字段不能为空,或含有非法字符', trigger: 'blur' }
+        ],
+        PhoneNum: [
+          { validator: this.validatePhone, trigger: 'blur' }
+        ]
+      },
       title: '',
       loading: true,
       Users: [],
-      ReadOnly: false,
-      ID: '0',
-      ParentID: null,
-      NodeType: '1',
-      Name: {
-        text: '',
-        tips: ''
-      },
-      Code: {
-        text: '',
-        tips: ''
-      },
-      Leader: {
-        text: '',
-        tips: ''
-      },
-      Address: {
-        text: '',
-        tips: ''
-      },
-      PhoneNum: {
-        text: '',
-        tips: ''
-      },
-      Desc: {
-        text: '',
-        tips: ''
-      }
+      ReadOnly: false
     }
   },
   created () {
     this.loading = false
     if (this.$route.query.id !== 0) {
-      this.ID = this.$route.query.id
+      this.form.ID = this.$route.query.id
     }
     if (this.$route.query.parentID) {
-      this.ParentID = this.$route.query.parentID
+      this.form.ParentID = this.$route.query.parentID
     }
     if (this.$route.query.readonly) {
       this.ReadOnly = true
@@ -278,6 +208,21 @@ export default {
       }
 
       return true
+    },
+    validateName (rule, value, callback) {
+      value = value.replace(/\s*/g, '')
+      if (value === '') {
+        callback(new Error('该字段不能空'))
+      } else if (!vInput(value)) {
+        callback(new Error('此项含有非法字符'))
+      }
+    },
+    validatePhone (rule, value, callback) {
+      if (value) {
+        if (!vPhone(value)) {
+          callback(new Error('电话号码验证错误'))
+        }
+      }
     },
     getAllUsers () {
       // if ((this.ID + '') !== '0') {
@@ -383,115 +328,117 @@ export default {
       }
     },
     submitForm () {
-      if (this.validateAll()) {
-        var orgNode = {
-          ID: this.ID,
-          ParentID: this.ParentID,
-          Name: this.Name.text,
-          NodeType: this.NodeType,
-          propEx: this.getPropEx()
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          var orgNode = {
+            ID: this.form.ID,
+            ParentID: this.form.ParentID,
+            Name: this.form.Name,
+            NodeType: this.form.NodeType,
+            propEx: this.getPropEx()
+          }
+          // eventBus.$emit('submit', orgNode)
+          if ((orgNode.ID + '') === '0') {
+            api.addOrgNode(orgNode).then((res) => {
+              if (res.code === ApiRESULT.Success) {
+              // this.$refs.tree.append({
+              //   id: res.data.id,
+              //   label: res.data.name,
+              //   node_type: res.data.nodeType
+              // }, res.data.parentID)
+                this.$message.success('保存成功')
+                this.$router.push({
+                  name: 'OrgList'
+                })
+              } else if (res.code === ApiRESULT.DataIsExist) {
+                this.$message.error('名称重复')
+              } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+                this.$message.error('父节点类型不能添加子节点，或用户关联规则冲突')
+              } else {
+                this.$message.error('保存失败')
+              }
+            })
+          } else {
+            api.updateOrgNode(orgNode.ID, orgNode).then((res) => {
+              if (res.code === ApiRESULT.Success) {
+              // let node = this.$refs.tree.getNode(orgNode.ID)
+              // node.setData({
+              //   id: res.data.id,
+              //   label: res.data.name,
+              //   node_type: res.data.nodeType
+              // })
+              // this.$set(this.data, 'label', node.name)
+                this.$message.success('更新成功')
+                this.$router.push({
+                  name: 'OrgList'
+                })
+              } else if (res.code === ApiRESULT.DataIsExist) {
+                this.$message.error('名称重复')
+              } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+                this.$message.error('此节点有子节点，不能修改为非父节点类型，或用户关联规则冲突')
+              } else {
+                this.$message.error('更新失败')
+              }
+            })
+          }
         }
-        // eventBus.$emit('submit', orgNode)
-        if ((orgNode.ID + '') === '0') {
-          api.addOrgNode(orgNode).then((res) => {
-            if (res.code === ApiRESULT.Success) {
-            // this.$refs.tree.append({
-            //   id: res.data.id,
-            //   label: res.data.name,
-            //   node_type: res.data.nodeType
-            // }, res.data.parentID)
-              this.$message.success('保存成功')
-              this.$router.push({
-                name: 'OrgList'
-              })
-            } else if (res.code === ApiRESULT.DataIsExist) {
-              this.$message.error('名称重复')
-            } else if (res.code === ApiRESULT.CheckDataRulesFail) {
-              this.$message.error('父节点类型不能添加子节点，或用户关联规则冲突')
-            } else {
-              this.$message.error('保存失败')
-            }
-          })
-        } else {
-          api.updateOrgNode(orgNode.ID, orgNode).then((res) => {
-            if (res.code === ApiRESULT.Success) {
-            // let node = this.$refs.tree.getNode(orgNode.ID)
-            // node.setData({
-            //   id: res.data.id,
-            //   label: res.data.name,
-            //   node_type: res.data.nodeType
-            // })
-            // this.$set(this.data, 'label', node.name)
-              this.$message.success('更新成功')
-              this.$router.push({
-                name: 'OrgList'
-              })
-            } else if (res.code === ApiRESULT.DataIsExist) {
-              this.$message.error('名称重复')
-            } else if (res.code === ApiRESULT.CheckDataRulesFail) {
-              this.$message.error('此节点有子节点，不能修改为非父节点类型，或用户关联规则冲突')
-            } else {
-              this.$message.error('更新失败')
-            }
-          })
-        }
-      }
+      })
     },
     getPropEx (obj) {
       var propEx = []
-      switch (this.NodeType + '') {
+      switch (this.form.NodeType + '') {
         case '1':
           propEx.push({
             NodeAttr: 'Code',
-            AttrValue: this.Code.text
+            AttrValue: this.form.Code
           })
           propEx.push({
             NodeAttr: 'Leader',
-            AttrValue: this.Leader.text
+            AttrValue: this.form.Leader
           })
           propEx.push({
             NodeAttr: 'Address',
-            AttrValue: this.Address.text
+            AttrValue: this.form.Address
           })
           propEx.push({
             NodeAttr: 'PhoneNum',
-            AttrValue: this.PhoneNum.text
+            AttrValue: this.form.PhoneNum
           })
           propEx.push({
             NodeAttr: 'Desc',
-            AttrValue: this.Desc.text
+            AttrValue: this.form.Desc
           })
           break
         case '2':
           propEx.push({
             NodeAttr: 'Code',
-            AttrValue: this.Code.text
+            AttrValue: this.form.Code
           })
           propEx.push({
             NodeAttr: 'Leader',
-            AttrValue: this.Leader.text
+            AttrValue: this.form.Leader
           })
           propEx.push({
             NodeAttr: 'Desc',
-            AttrValue: this.Desc.text
+            AttrValue: this.form.Desc
           })
           break
         case '3':
           propEx.push({
             NodeAttr: 'Leader',
-            AttrValue: this.Leader.text
+            AttrValue: this.form.Leader
           })
           propEx.push({
             NodeAttr: 'Address',
-            AttrValue: this.Address.text
+            AttrValue: this.form.Address
           })
           propEx.push({
             NodeAttr: 'PhoneNum',
-            AttrValue: this.PhoneNum.text
+            AttrValue: this.form.PhoneNum
           })
           propEx.push({
             NodeAttr: 'Desc',
-            AttrValue: this.Desc.text
+            AttrValue: this.form.Desc
           })
           break
       }
@@ -505,6 +452,12 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
+.el-col-my{
+  align-items: center;
+  height:100%;
+}
+
 // 功能区
 .operation{
   .input-group{
