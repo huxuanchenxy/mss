@@ -54,10 +54,15 @@
                 </el-button>
             </el-aside>
             <el-main style="padding:0px">
+               <ul class="content-header">
+                <el-input placeholder="输入关键字进行过滤" clearable v-model="keyUser"> </el-input>
+              </ul>
               <el-scrollbar>
                 <div class="content-wrap">
                   <ul class="content-header">
-                    <li class="list checkbox"><el-checkbox v-model="bCheckAll" @change="checkAll"></el-checkbox></li>
+                    <li class="list checkbox">
+                      <el-checkbox v-model="bCheckAll" @change="checkAll"></el-checkbox>
+                    </li>
                     <li class="list number">
                       工号
                     </li>
@@ -118,6 +123,7 @@ export default {
     return {
       loading: true,
       filterText: '',
+      keyUser: '',
       list: [],
       treeCheckedID: [],
       dialogVisible: {
@@ -129,15 +135,26 @@ export default {
       bCheckAll: false,
       checkedID: [],
       Users: [],
-      AvailableUsers: []
+      AvailableUsers: [],
+      originAvailabelUsers: []
     }
   },
   watch: {
     filterText (val) {
       this.$refs.tree.filter(val)
+    },
+    keyUser (val) {
+      this.checkedID = []
+      this.AvailableUsers = this.keyUser ? this.originAvailableUsers
+        .filter(this.createStateFilter(this.keyUser)) : this.originAvailableUsers
     }
   },
   methods: {
+    createStateFilter (queryString) {
+      return (state) => {
+        return (state.user_name.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
+      }
+    },
     filterNode (value, data) {
       if (!value) return true
       return data.label.indexOf(value) !== -1
@@ -232,6 +249,10 @@ export default {
       this.checkedID.forEach(id => {
         data.UserIDs.push(id)
       })
+      if (data.UserIDs.length === 0) {
+        this.$message.error('请选择人员')
+        return false
+      }
       api.BindOrgUser(data).then((res) => {
         if (res.code === ApiRESULT.Success) {
           // 关联后更新节点、更新用户列表
@@ -291,6 +312,7 @@ export default {
               this.AvailableUsers.push(user)
             }
           }
+          this.originAvailableUsers = this.AvailableUsers
         } else {
           this.$message.error('获取节点用户失败')
         }
