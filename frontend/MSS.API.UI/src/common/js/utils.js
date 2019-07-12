@@ -164,6 +164,7 @@ export const FileType = {
   EqpType_Working_Instruction: 0,
   EqpType_Technical_Drawings: 1,
   EqpType_Installation_Manual: 2,
+  EqpType_User_Guide: 3,
   EqpType_Regulations: 4,
   Eqp_Drawings: 5
 }
