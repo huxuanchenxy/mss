@@ -104,7 +104,7 @@
   </div>
 </template>
 <script>
-import { RESULT, ApiRESULT } from '@/common/js/utils.js'
+import { ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 // import OrgTreeRender from './TreeRenderForUser'
 import api from '@/api/orgApi.js'
@@ -143,9 +143,22 @@ export default {
       return data.label.indexOf(value) !== -1
     },
     canShow (data) {
-      if (data.node_type && data.node_type !== 0) {
-        return true
+      let ret = true
+      if (data.node_type && data.node_type !== 0) { // 组织节点
+        if (!data.type.hasUsers) {
+          ret = false
+        }
+        if (data.type.hasUsers && data.type.hasUsersLeafOnly) {
+          if (data.children.length > 0) {
+            if (data.children[0].node_type) {
+              ret = false
+            }
+          }
+        }
+      } else {
+        ret = false
       }
+      return ret
     },
     canDelBtnShow (data) {
       if (!data.node_type && data.node_type !== 0) {
@@ -163,7 +176,7 @@ export default {
     },
     getList () {
       api.getOrgUserAll().then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.list = res.data
           this.loading = false
         } else {
@@ -195,7 +208,7 @@ export default {
     dialogEnter () {
       api.delOrgNode(this.obj.data.id).then((res) => {
         this.dialogVisible.isShow = false
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.$refs.tree.remove(this.obj.data)
           this.$message.success('删除成功')
         } else {
@@ -220,11 +233,15 @@ export default {
         data.UserIDs.push(id)
       })
       api.BindOrgUser(data).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           // 关联后更新节点、更新用户列表
           this.checkedID = []
           this.updateOrgNode(data.ID)
           this.getAllUsers()
+        } else if (res.code === ApiRESULT.BindUserConflict) {
+          this.$message.error('所选用户已被其他节点关联')
+        } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+          this.$message.error('改节点不能绑定用户')
         } else {
           this.$message.error('关联人员失败')
         }
@@ -232,7 +249,7 @@ export default {
     },
     updateOrgNode (id) {
       api.getOrgUserByNodeID(id).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           let node = this.$refs.tree.getNode(id)
           // node.setData(res.data)
           // this.$set(node, 'label', res.data[0].label)

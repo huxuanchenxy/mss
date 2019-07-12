@@ -42,7 +42,7 @@
 </template>
 <script>
 import XButton from '@/components/button'
-import {RESULT} from '@/common/js/utils.js'
+import {ApiRESULT} from '@/common/js/utils.js'
 import api from '@/api/orgApi'
 export default {
   name: 'OrgSee',
@@ -73,7 +73,7 @@ export default {
         data.UserIDs.push(id)
       })
       api.BindOrgUser(data).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.$router.push({
             name: 'OrgList'
           })
@@ -86,7 +86,7 @@ export default {
     },
     getCanSelectedUser (id) {
       api.getCanSelectedUser(id).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.Users = res.data
           this.getOrgUser(id)
         } else {
@@ -107,7 +107,7 @@ export default {
     },
     getOrgUser (id) {
       api.getOrgUser(id).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           // 剔除其他节点已选用户
           this.AvailableUsers = []
           let disabledUser = res.data.disabledUsers

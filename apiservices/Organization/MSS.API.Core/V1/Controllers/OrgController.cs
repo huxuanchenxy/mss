@@ -9,6 +9,7 @@ using MSS.API.Core.V1.Business;
 using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
 using MSS.API.Core.Common;
+using MSS.API.Common;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -30,14 +31,14 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<DataResult>> Get()
+        public async Task<ActionResult<ApiResult>> Get()
         {
             var ret = await _orgService.GetAllOrg();
             return ret;
         }
 
         [HttpGet("curorg")]
-        public async Task<ActionResult<DataResult>> GetByUserID()
+        public async Task<ActionResult<ApiResult>> GetByUserID()
         {
             int userId = _userId;
             var ret = await _orgService.GetOrgByUserID(userId);
@@ -45,7 +46,7 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<DataResult>> Get(int id)
+        public async Task<ActionResult<ApiResult>> Get(int id)
         {
             var ret = await _orgService.GetOrgByIDs(new List<int>{id});
             return ret;
@@ -53,7 +54,7 @@ namespace MSS.API.Core.V1.Controllers
 
         // 添加
         [HttpPost]
-        public async Task<ActionResult<DataResult>> AddOrgNode(OrgTree node)
+        public async Task<ActionResult<ApiResult>> AddOrgNode(OrgTree node)
         {
             node.CreatedBy = _userId;
             node.CreatedTime = DateTime.Now;
@@ -64,7 +65,7 @@ namespace MSS.API.Core.V1.Controllers
 
         // 更新
         [HttpPut("{id}")]
-        public async Task<ActionResult<DataResult>> UpdateOrgNode(int id, OrgTree node, [FromHeader]string token)
+        public async Task<ActionResult<ApiResult>> UpdateOrgNode(int id, OrgTree node, [FromHeader]string token)
         {
             node.UpdatedBy = _userId;
             node.UpdatedTime = DateTime.Now;
@@ -74,7 +75,7 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<DataResult>> Delete(int id)
+        public async Task<ActionResult<ApiResult>> Delete(int id)
         {
             OrgTree node = new OrgTree();
             node.UpdatedBy = _userId;
@@ -87,7 +88,7 @@ namespace MSS.API.Core.V1.Controllers
 
         // 组织节点绑定用户
         [HttpPost("user")]
-        public async Task<ActionResult<DataResult>> BindOrgUser(OrgUserView nodeView)
+        public async Task<ActionResult<ApiResult>> BindOrgUser(OrgUserView nodeView)
         {
             nodeView.CreatedBy = _userId;
             nodeView.CreatedTime = DateTime.Now;
@@ -95,25 +96,25 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
         [HttpGet("user/{id}")]
-        public async Task<ActionResult<DataResult>> getOrgUser(int id)
+        public async Task<ActionResult<ApiResult>> getOrgUser(int id)
         {
             var ret = await _orgService.GetOrgNodeUsers(id);
             return ret;
         }
         [HttpGet("user/all/{id}")]
-        public async Task<ActionResult<DataResult>> getCanSelectedUser(int id)
+        public async Task<ActionResult<ApiResult>> getCanSelectedUser(int id)
         {
             var ret = await _orgService.GetCanSelectedUsers(id);
             return ret;
         }
         [HttpGet("nodetype")]
-        public async Task<ActionResult<DataResult>> getNodeType()
+        public async Task<ActionResult<ApiResult>> getNodeType()
         {
             var ret = await _orgService.GetNodeType();
             return ret;
         }
         [HttpGet("node/{id}")]
-        public async Task<ActionResult<DataResult>> getOrgNode(int id)
+        public async Task<ActionResult<ApiResult>> getOrgNode(int id)
         {
             var ret = await _orgService.GetOrgNode(id);
             return ret;

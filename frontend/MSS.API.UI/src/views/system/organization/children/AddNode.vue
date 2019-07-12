@@ -197,7 +197,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vPhone, validateNumberCommon, RESULT } from '@/common/js/utils.js'
+import { validateInputCommon, vPhone, validateNumberCommon, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/orgApi'
 // import eventBus from '@/components/Bus'
@@ -292,7 +292,7 @@ export default {
     },
     getOrgNode (id) {
       api.getOrgNode(id).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.NodeType = res.data.nodeType + ''
           if (this.NodeType === '1') {
             this.initcomForm(res.data)
@@ -394,7 +394,7 @@ export default {
         // eventBus.$emit('submit', orgNode)
         if ((orgNode.ID + '') === '0') {
           api.addOrgNode(orgNode).then((res) => {
-            if (res.result === RESULT.Success) {
+            if (res.code === ApiRESULT.Success) {
             // this.$refs.tree.append({
             //   id: res.data.id,
             //   label: res.data.name,
@@ -404,15 +404,17 @@ export default {
               this.$router.push({
                 name: 'OrgList'
               })
-            } else if (res.result === RESULT.Reinsert) {
+            } else if (res.code === ApiRESULT.DataIsExist) {
               this.$message.error('名称重复')
+            } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+              this.$message.error('父节点类型不能添加子节点，或用户关联规则冲突')
             } else {
               this.$message.error('保存失败')
             }
           })
         } else {
           api.updateOrgNode(orgNode.ID, orgNode).then((res) => {
-            if (res.result === RESULT.Success) {
+            if (res.code === ApiRESULT.Success) {
             // let node = this.$refs.tree.getNode(orgNode.ID)
             // node.setData({
             //   id: res.data.id,
@@ -424,10 +426,12 @@ export default {
               this.$router.push({
                 name: 'OrgList'
               })
-            } else if (res.result === RESULT.Reinsert) {
+            } else if (res.code === ApiRESULT.DataIsExist) {
               this.$message.error('名称重复')
+            } else if (res.code === ApiRESULT.CheckDataRulesFail) {
+              this.$message.error('此节点有子节点，不能修改为非父节点类型，或用户关联规则冲突')
             } else {
-              this.$message.error('保存失败')
+              this.$message.error('更新失败')
             }
           })
         }
