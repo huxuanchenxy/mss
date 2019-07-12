@@ -49,6 +49,7 @@
         </li>
         <li class="list name">型号</li>
         <li class="list url">描述</li>
+        <li class="list upload-cascader">上传文件</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -57,11 +58,6 @@
           最后更新人
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
-        <li class="list">作业指导书</li>
-        <li class="list">技术图纸</li>
-        <li class="list">安装手册</li>
-        <li class="list">使用手册</li>
-        <li class="list">维护规程</li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -77,23 +73,15 @@
                 </div>
                 <div class="name word-break">{{ item.model }}</div>
                 <div class="url word-break">{{ item.desc }}</div>
+                <div class="upload-cascader">
+                  <el-cascader clearable
+                    @change="preview"
+                    :show-all-levels="false"
+                    :options="item.uploadFileArr">
+                  </el-cascader>
+                </div>
                 <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
                 <div class="last-update-time word-break">{{ item.updatedName }}</div>
-                <div class="list pdf-btn">
-                  <div class="box" @click="preview(item.pWorking)"></div>
-                </div>
-                <div class="list pdf-btn">
-                  <div class="box" @click="preview(item.pDrawings)"></div>
-                </div>
-                <div class="list pdf-btn">
-                  <div class="box" @click="preview(item.pInstall)"></div>
-                </div>
-                <div class="list pdf-btn">
-                  <div class="box" @click="preview(item.pUser)"></div>
-                </div>
-                <div class="list pdf-btn">
-                  <div class="box" @click="preview(item.pRegulations)"></div>
-                </div>
               </div>
             </li>
           </ul>
@@ -171,6 +159,7 @@ export default {
         updated_by: 0
       },
       centerDialogVisible: false,
+      previewPartUrl: [],
       previewUrl: ''
     }
   },
@@ -191,9 +180,9 @@ export default {
       this.currentPage = 1
       // this.searchResult(1)
     },
-    preview (item) {
+    preview (val) {
       this.centerDialogVisible = true
-      this.previewUrl = PDF_UPLOADED_VIEW_URL + item
+      this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
       // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
     },
     // 改变排序
@@ -235,6 +224,7 @@ export default {
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
+            item.uploadFileArr = JSON.parse(item.uploadFiles)
           })
           this.eqpTypeList = res.data.rows
         }
@@ -426,12 +416,12 @@ $con-height: $content-height - 145 - 56;
   }
 
   .number{
-    width: 10%;
+    width: 4%;
   }
 
   .name,
   .btn-wrap{
-    width: 10%;
+    width: 8%;
   }
 
   .last-update-time{
@@ -441,6 +431,10 @@ $con-height: $content-height - 145 - 56;
 
   .last-maintainer{
     width: 10%;
+  }
+
+  .upload-cascader{
+    width: 13%;
   }
 
   .url{

@@ -11,8 +11,10 @@ namespace MSS.API.Dao.Interface
         Task<EquipmentType> Save(EquipmentType eqpType);
         Task<int> Update(EquipmentType eqpType);
         Task<int> Delete(string[] ids, int userID);
-        Task<object> GetPageByParm(EqpTypeQueryParm parm);
+        Task<EqpTypeView> GetPageByParm(EqpTypeQueryParm parm);
         Task<EquipmentType> GetByID(int id);
+        Task<List<UploadFileEqpType>> UploadFileListByEqpType(int[] id);
+        Task<List<object>> RelationListByEqpType(int id);
         Task<List<EquipmentType>> GetAll();
     }
 }
