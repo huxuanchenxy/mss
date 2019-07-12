@@ -135,7 +135,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, vPhone, validateNumberCommon, RESULT, ApiRESULT } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, vPhone, validateNumberCommon, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/orgApi'
 // import eventBus from '@/components/Bus'
@@ -237,7 +237,7 @@ export default {
     },
     getOrgNode (id) {
       api.getOrgNode(id).then((res) => {
-        if (res.result === RESULT.Success) {
+        if (res.code === ApiRESULT.Success) {
           this.NodeType = res.data.nodeType + ''
           if (this.NodeType === '1') {
             this.initcomForm(res.data)

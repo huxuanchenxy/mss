@@ -46,7 +46,9 @@ export default {
       uploadHeaders: {Authorization: ''},
       fileList: [],
       previewUrl: '',
-      centerDialogVisible: false
+      centerDialogVisible: false,
+      isDeleted: false,
+      isAdd: false
     }
   },
   watch: {
@@ -65,6 +67,7 @@ export default {
   },
   methods: {
     onSuccess (response, file, fileList) {
+      this.isAdd = true
       this.returnFileIDs(fileList)
     },
     onRemove (file, fileList) {
@@ -77,9 +80,8 @@ export default {
       //   })
       //   return res.code === 0
       // }).catch(err => console.log(err))
-      if (!this.readOnly) {
-        this.returnFileIDs(fileList)
-      }
+      this.isDeleted = true
+      this.returnFileIDs(fileList)
     },
     preview (item) {
       if (item.status === 'success') {
@@ -107,6 +109,10 @@ export default {
         }
         ids.push(val.id)
       })
+      // 有新增但没有删除过的时候 必须把原来上传的关系加上 这样 后台才能先把原有的关系删除 再加上修改的 就不会遗漏了
+      if (this.isAdd && !this.isDeleted && this.fileIDs !== '') {
+        ids.push(this.fileIDs)
+      }
       this.$emit('getFileIDs', ids.join(','))
     }
   }
@@ -116,4 +122,50 @@ export default {
 .upload-btn{
   margin-left:50px!important;
 }
+
+// 图片预览
+  /deep/ .show-list-wrap{
+    width: 100% !important;
+    height: 100%;
+
+    .el-dialog__header{
+      display: block;
+      padding: 0;
+
+      .el-dialog__headerbtn{
+        top: 0!important;
+        right: 0!important;
+        z-index: 999;
+        width: 27px;
+        height: 27px;
+        background: url(../common/images/icon-close.png) no-repeat 0 0/100% 100%;
+      }
+
+      .el-dialog__close{
+        display: none;
+      }
+    }
+
+    .el-dialog__body{
+      width: 100%;
+      height: 100%;
+      padding: 0 !important;
+
+      img{
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+
+    .el-carousel__item.is-animating{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    // 左右箭头
+    .el-carousel__arrow i{
+      font-size: 20px;
+    }
+  }
 </style>

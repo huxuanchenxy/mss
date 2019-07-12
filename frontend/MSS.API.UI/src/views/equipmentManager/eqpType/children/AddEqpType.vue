@@ -39,92 +39,47 @@
             </div>
             <p class="validate-tips">{{ model.tips }}</p>
           </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <div class="inp">
+                <upload-pdf :fileType="fileType.EqpType_Working_Instruction" label="作业指导" :fileIDs="fileIDs.working" @getFileIDs="getWorkingFileIDs"></upload-pdf>
+              </div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <div class="inp">
+                <upload-pdf :fileType="fileType.EqpType_Technical_Drawings" label="技术图纸" :fileIDs="fileIDs.drawings" @getFileIDs="getDrawingsFileIDs"></upload-pdf>
+              </div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <div class="inp">
+                <upload-pdf :fileType="fileType.EqpType_Installation_Manual" label="安装手册" :fileIDs="fileIDs.install" @getFileIDs="getInstallFileIDs"></upload-pdf>
+              </div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <div class="inp">
+                <upload-pdf :fileType="fileType.EqpType_User_Guide" label="使用手册" :fileIDs="fileIDs.user" @getFileIDs="getUserFileIDs"></upload-pdf>
+              </div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <div class="inp">
+                <upload-pdf :fileType="fileType.EqpType_Regulations" label="维护规程" :fileIDs="fileIDs.regulations" @getFileIDs="getRegulationsFileIDs"></upload-pdf>
+              </div>
+            </div>
+          </li>
+          <li class="list"/>
         </ul>
         <div class="con-padding-horizontal cause">
           <span class="lable">设备类型描述：</span>
           <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述"></el-input>
           <p class="validate-tips">{{ eqpTypeDesc.tips }}</p>
-        </div>
-        <!-- 上传图片列表 -->
-        <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">作业指导书：</span>
-          <el-upload
-            ref="uploadWorking"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.working"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadWorking"
-            :on-change="onChangeWorking"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
-        </div>
-        <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">技术图纸：</span>
-          <el-upload
-            ref="uploadDrawings"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.drawings"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadDrawings"
-            :on-change="onChangeDrawings"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
-        </div>
-        <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">安装手册：</span>
-          <el-upload
-            ref="uploadInstall"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.install"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadInstall"
-            :on-change="onChangeInstall"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
-        </div>
-        <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">使用手册：</span>
-          <el-upload
-            ref="uploadUser"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.user"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadUser"
-            :on-change="onChangeUser"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
-        </div>
-        <div class="upload-wrap con-padding-horizontal">
-          <span class="lable">维护规程：</span>
-          <el-upload
-            ref="uploadRegulations"
-            :action="``"
-            accept="application/pdf"
-            :file-list="fileList.regulations"
-            :show-file-list="true"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadRegulations"
-            :on-change="onChangeRegulations"
-            :on-preview="preview">
-            <i class="iconfont icon-pdf"></i>
-          </el-upload>
         </div>
         <!-- 按钮 -->
         <div class="btn-group">
@@ -135,24 +90,18 @@
         </div>
       </el-scrollbar>
     </div>
-
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
-    </el-dialog>
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, PDF_IMAGE, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, nullToEmpty, FileType } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
+import MyUploadPDF from '@/components/UploadPDF'
 export default {
   name: 'AddEqpType',
   components: {
-    XButton
+    XButton,
+    'upload-pdf': MyUploadPDF
   },
   data () {
     return {
@@ -162,28 +111,37 @@ export default {
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
-      centerDialogVisible: false,
-      fileList: {
-        working: [],
-        drawings: [],
-        install: [],
-        user: [],
-        regulations: []
+      fileIDs: {
+        working: '',
+        drawings: '',
+        install: '',
+        user: '',
+        regulations: ''
       },
-      needUpload: {
-        working: [],
-        drawings: [],
-        install: [],
-        user: [],
-        regulations: []
-      },
+      fileIDsEdit: [{
+        Type: '',
+        FileIDs: ''
+      }, {
+        Type: '',
+        FileIDs: ''
+      }, {
+        Type: '',
+        FileIDs: ''
+      }, {
+        Type: '',
+        FileIDs: ''
+      }, {
+        Type: '',
+        FileIDs: ''
+      }],
+      fileType: FileType,
       previewUrl: '',
       pageType: ''
     }
   },
   created () {
     // this.pageType = this.$route.query.type
-    this.title = this.pageType === 'Add' ? '| 添加设备类型' : '| 修改设备类型'
+    // this.title = this.pageType === 'Add' ? '| 添加设备类型' : '| 修改设备类型'
     this.init()
   },
   methods: {
@@ -194,6 +152,26 @@ export default {
         this.getEqpType()
       }
     },
+    getWorkingFileIDs (val) {
+      this.fileIDsEdit[0].Type = FileType.EqpType_Working_Instruction
+      this.fileIDsEdit[0].FileIDs = val
+    },
+    getDrawingsFileIDs (val) {
+      this.fileIDsEdit[1].Type = FileType.EqpType_Technical_Drawings
+      this.fileIDsEdit[1].FileIDs = val
+    },
+    getInstallFileIDs (val) {
+      this.fileIDsEdit[2].Type = FileType.EqpType_Installation_Manual
+      this.fileIDsEdit[2].FileIDs = val
+    },
+    getUserFileIDs (val) {
+      this.fileIDsEdit[3].Type = FileType.EqpType_User_Guide
+      this.fileIDsEdit[3].FileIDs = val
+    },
+    getRegulationsFileIDs (val) {
+      this.fileIDsEdit[4].Type = FileType.EqpType_Regulations
+      this.fileIDsEdit[4].FileIDs = val
+    },
     getEqpType () {
       api.getEqpTypeByID(this.$route.query.id).then(res => {
         if (res.code === 0) {
@@ -202,46 +180,34 @@ export default {
           this.eqpTypeName.text = data.tName
           this.model.text = nullToEmpty(data.model)
           this.eqpTypeDesc.text = data.desc
-          if (data.pWorking !== null) {
-            this.fileList.working.push({
-              url: PDF_IMAGE,
-              pdfUrl: data.pWorking,
-              status: 'success'
+          if (data.uploadFiles !== null) {
+            let obj = JSON.parse(data.uploadFiles)
+            let tmp = {
+              working: [],
+              drawings: [],
+              install: [],
+              user: [],
+              regulations: []
+            }
+            obj.map(val => {
+              if (val.type === FileType.EqpType_Working_Instruction) {
+                tmp.working.push(val.file_id)
+              } else if (val.type === FileType.EqpType_Technical_Drawings) {
+                tmp.drawings.push(val.file_id)
+              } else if (val.type === FileType.EqpType_Installation_Manual) {
+                tmp.install.push(val.file_id)
+              } else if (val.type === FileType.EqpType_User_Guide) {
+                tmp.user.push(val.file_id)
+              } else if (val.type === FileType.EqpType_Regulations) {
+                tmp.regulations.push(val.file_id)
+              }
             })
+            this.fileIDs.working = tmp.working.join(',')
+            this.fileIDs.drawings = tmp.drawings.join(',')
+            this.fileIDs.install = tmp.install.join(',')
+            this.fileIDs.user = tmp.user.join(',')
+            this.fileIDs.regulations = tmp.regulations.join(',')
           }
-          if (data.pDrawings !== null) {
-            this.fileList.drawings.push({
-              url: PDF_IMAGE,
-              pdfUrl: data.pDrawings,
-              status: 'success'
-            })
-          }
-          if (data.pInstall !== null) {
-            this.fileList.install.push({
-              url: PDF_IMAGE,
-              pdfUrl: data.pInstall,
-              status: 'success'
-            })
-          }
-          if (data.pUser !== null) {
-            this.fileList.user.push({
-              url: PDF_IMAGE,
-              pdfUrl: data.pUser,
-              status: 'success'
-            })
-          }
-          if (data.pRegulations !== null) {
-            this.fileList.regulations.push({
-              url: PDF_IMAGE,
-              pdfUrl: data.pRegulations,
-              status: 'success'
-            })
-          }
-        } else {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
         }
         this.loading = false
       }).catch(err => console.log(err))
@@ -268,58 +234,28 @@ export default {
       if (!this.validateInput()) {
         return
       }
-      let fd = new FormData()
-      if (this.$refs.uploadWorking.uploadFiles.length > 0) {
-        if (this.$refs.uploadWorking.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadWorking.submit()
-          fd.append('file', this.needUpload.working[0])
-          fd.append('PWorking', this.needUpload.working[0].name)
+      for (let j = 0; j < this.fileIDsEdit.length; j++) {
+        if (this.fileIDsEdit[j].FileIDs !== '') {
+          let arr = this.fileIDsEdit[j].FileIDs.split(',')
+          for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === '') {
+              this.$message({
+                message: '文件还未上传完成，请耐心等待',
+                type: 'warning'
+              })
+              return
+            }
+          }
         }
       }
-      if (this.$refs.uploadDrawings.uploadFiles.length > 0) {
-        if (this.$refs.uploadDrawings.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadDrawings.submit()
-          fd.append('file', this.needUpload.drawings[0])
-          fd.append('PDrawings', this.needUpload.drawings[0].name)
-        }
-      }
-      if (this.$refs.uploadInstall.uploadFiles.length > 0) {
-        if (this.$refs.uploadInstall.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadInstall.submit()
-          fd.append('file', this.needUpload.install[0])
-          fd.append('PInstall', this.needUpload.install[0].name)
-        }
-      }
-      if (this.$refs.uploadUser.uploadFiles.length > 0) {
-        if (this.$refs.uploadUser.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadUser.submit()
-          fd.append('file', this.needUpload.user[0])
-          fd.append('PUser', this.needUpload.user[0].name)
-        }
-      }
-      if (this.$refs.uploadRegulations.uploadFiles.length > 0) {
-        if (this.$refs.uploadRegulations.uploadFiles[0].status !== 'success') {
-          this.$refs.uploadRegulations.submit()
-          fd.append('file', this.needUpload.regulations[0])
-          fd.append('PRegulations', this.needUpload.regulations[0])
-        }
-      }
-      fd.append('TName', this.eqpTypeName.text)
-      fd.append('Desc', this.eqpTypeDesc.text)
-      fd.append('Model', this.model.text)
-      // for (let i = 0; i < this.needUpload.length; i++) {
-      //   fd.append('file', this.needUpload[i])
-      // }
-      let config = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        transformRequest: function (data, headers) {
-          return data
-        }
+      let eqpType = {
+        TName: this.eqpTypeName.text,
+        Desc: this.eqpTypeDesc.text,
+        Model: this.model.text,
+        UploadFiles: JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
-        api.addEqpType(fd, config).then(res => {
+        api.addEqpType(eqpType).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
             // this.$message({
@@ -334,8 +270,8 @@ export default {
           }
         }).catch(err => console.log(err))
       } else {
-        fd.append('ID', this.eqpTypeID)
-        api.updateEqpType(fd, config).then(res => {
+        eqpType.ID = this.eqpTypeID
+        api.updateEqpType(eqpType).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
             // this.$message({
@@ -350,68 +286,6 @@ export default {
           }
         }).catch(err => console.log(err))
       }
-    },
-    uploadWorking (file) {
-      this.needUpload.working.push(file.file)
-    },
-    uploadDrawings (file) {
-      this.needUpload.drawings.push(file.file)
-    },
-    uploadInstall (file) {
-      this.needUpload.install.push(file.file)
-    },
-    uploadUser (file) {
-      this.needUpload.user.push(file.file)
-    },
-    uploadRegulations (file) {
-      this.needUpload.regulations.push(file.file)
-    },
-    onChangeWorking (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.working = []
-      this.fileList.working.push(file)
-    },
-    onChangeDrawings (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.drawings = []
-      this.fileList.drawings.push(file)
-    },
-    onChangeInstall (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.install = []
-      this.fileList.install.push(file)
-    },
-    onChangeUser (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.user = []
-      this.fileList.user.push(file)
-    },
-    onChangeRegulations (file, fileList) {
-      file.pdfUrl = file.url
-      file.url = PDF_IMAGE
-      this.fileList.regulations = []
-      this.fileList.regulations.push(file)
-    },
-    preview (item) {
-      this.centerDialogVisible = true
-      // var urlbase = process.env.NODE_ENV === 'production' ? '' : '/api'
-      if (item.status === 'success') {
-        if (item.pdfUrl.indexOf('blob:') !== -1) {
-          this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
-        } else {
-          this.previewUrl = PDF_UPLOADED_VIEW_URL + item.pdfUrl
-        }
-      } else {
-        this.previewUrl = PDF_BLOB_VIEW_URL + item.pdfUrl
-      }
-    },
-    // 关闭图片预览窗口
-    closeDialog () {
-      this.centerDialogVisible = false
     }
   }
 }
