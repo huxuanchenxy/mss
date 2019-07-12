@@ -13,5 +13,7 @@ namespace MSS.API.Model.Data
 
         [DataMember]
         public string deviceName { get; set; }
+
+        public string desc { get; set; }
     }
 }
