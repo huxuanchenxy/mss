@@ -10,19 +10,19 @@ namespace MSS.API.Core.V1.Business
 {
     public interface IOrgService
     {
-        Task<DataResult> GetAllOrg();
-        Task<DataResult> GetOrgByIDs(List<int> ids);
-        Task<DataResult> GetOrgByUserID(int userId);
-        Task<DataResult> GetOrgUserByUserID(int userId);
-        Task<DataResult> GetOrgUserByNodeID(int id);
+        Task<ApiResult> GetAllOrg();
+        Task<ApiResult> GetOrgByIDs(List<int> ids);
+        Task<ApiResult> GetOrgByUserID(int userId);
+        Task<ApiResult> GetOrgUserByUserID(int userId);
+        Task<ApiResult> GetOrgUserByNodeID(int id);
         Task<ApiResult> AddOrgNode(OrgTree node);
         Task<ApiResult> UpdateOrgNode(OrgTree node);
-        Task<DataResult> DeleteOrgNode(OrgTree node);
-        Task<DataResult> GetOrgNodeUsers(int id);
-        Task<DataResult> GetCanSelectedUsers(int id);
+        Task<ApiResult> DeleteOrgNode(OrgTree node);
+        Task<ApiResult> GetOrgNodeUsers(int id);
+        Task<ApiResult> GetCanSelectedUsers(int id);
         Task<ApiResult> BindOrgNodeUsers(OrgUserView nodeView);
-        Task<DataResult> GetNodeType();
-        Task<DataResult> GetOrgNode(int id);
+        Task<ApiResult> GetNodeType();
+        Task<ApiResult> GetOrgNode(int id);
 
         // 获取所有已选用户
         Task<ApiResult> ListAllOrgUsers();
