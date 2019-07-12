@@ -16,6 +16,7 @@ using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 using static MSS.API.Utility.Const;
 using MSS.API.Common;
+using MSS.Common.Consul;
 
 namespace MSS.API.Core
 {
@@ -45,6 +46,8 @@ namespace MSS.API.Core
                 .AddAuthorization()
                 .AddJsonFormatters();
 
+            
+
             services.AddDapper(Configuration);
 
             services.AddCSRedisCache(options =>
@@ -52,6 +55,7 @@ namespace MSS.API.Core
                 options.ConnectionString = this.Configuration["redis:ConnectionString"];
             });
             services.AddEssentialService();
+            services.AddConsulService(Configuration);
 
             //services.AddAuthentication("Bearer")//添加授权模式
             //.AddIdentityServerAuthentication(Options =>
@@ -96,7 +100,7 @@ namespace MSS.API.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
@@ -110,6 +114,9 @@ namespace MSS.API.Core
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            //app.Map("/health", HealthMap);
+            app.RegisterConsul(lifetime,consulService);
             //app.UseSession();
             app.UseCors("AllowAll");
             app.UseMvc();
@@ -121,5 +128,6 @@ namespace MSS.API.Core
             INIT_PASSWORD = Configuration["InitConst:Password"];
             PWD_RANDOM_MAX=Convert.ToInt32(Configuration["InitConst:PwdRandomMax"]);
         }
+
     }
 }
