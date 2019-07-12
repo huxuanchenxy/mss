@@ -68,9 +68,16 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                var result = (await c.QueryAsync<UploadFile>(
-                    "SELECT * FROM upload_file")).ToList();
-                return result;
+                var result = await c.QueryAsync<UploadFile>(
+                    "SELECT * FROM upload_file");
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
     }
