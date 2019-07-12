@@ -11,7 +11,6 @@ using MSS.API.Model.DTO;
 using MSS.API.Core.Common;
 
 using MSS.API.Common;
-using MSS.Common.Consul;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -21,12 +20,10 @@ namespace MSS.API.Core.V1.Controllers
     {
         private readonly IOrgService _orgService;
         private readonly int _userId;
-        private readonly IServiceDiscoveryProvider _consulServiceProvider;
-        public OrgUserController(IOrgService orgService, IServiceDiscoveryProvider consulServiceProvider)
+        public OrgUserController(IOrgService orgService)
         {
             _orgService = orgService;
             _userId = 1;
-            _consulServiceProvider = consulServiceProvider;
         }
 
         [HttpGet]
@@ -38,7 +35,6 @@ namespace MSS.API.Core.V1.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<DataResult>> Get(int id)
         {
-            var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
             var ret = await _orgService.GetOrgUserByNodeID(id);
             return ret;
         }
