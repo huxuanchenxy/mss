@@ -96,6 +96,7 @@ namespace MSS.API.Common
         }
         #endregion
 
+        public const string STR_EQPTYPE_DRAWINGS = "eqp_type_drawings";
     }
     #endregion
 
