@@ -53,17 +53,12 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPost("Add")]
         public ActionResult Add(ActionGroup actionGroup)
         {
-            int userID = 1;
-            actionGroup.created_by = userID;
-            actionGroup.updated_by = userID;
             var resp = _ActionGroupService.Add(actionGroup);
             return Ok(resp.Result);
         }
         [HttpPut("Update")]
         public ActionResult Update(ActionGroup actionGroup)
         {
-            int userID = 1;
-            actionGroup.updated_by = userID;
             var resp = _ActionGroupService.Update(actionGroup);
             return Ok(resp.Result);
         }

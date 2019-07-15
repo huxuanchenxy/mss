@@ -60,10 +60,6 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPost("Add")]
         public ActionResult Add(User user)
         {
-            //int userID = (int)HttpContext.Session.GetInt32("UserID");
-            int userID = 1;
-            user.created_by = userID;
-            user.updated_by = userID;
             var resp = _UserService.Add(user);
             return Ok(resp.Result);
         }
@@ -71,9 +67,6 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPut("Update")]
         public ActionResult Update(User user)
         {
-            //int userID = (int)HttpContext.Session.GetInt32("UserID");
-            int userID = 1;
-            user.updated_by = userID;
             var resp = _UserService.Update(user);
             return Ok(resp.Result);
         }
@@ -81,8 +74,7 @@ namespace MSS.API.Core.V1.Controllers
         [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
-            int userID = 1;
-            var resp = _UserService.Delete(ids,userID);
+            var resp = _UserService.Delete(ids);
             return Ok(resp.Result);
         }
 
@@ -106,9 +98,7 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPut("ResetPwd/{ids}")]
         public ActionResult ResetPwd(string ids)
         {
-            //int userID = (int)HttpContext.Session.GetInt32("UserID");
-            int userID = 1;
-            var resp = _UserService.ResetPwd(ids, userID);
+            var resp = _UserService.ResetPwd(ids);
             return Ok(resp.Result);
         }
 
@@ -116,12 +106,12 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult Login(string acc,string pwd)
         {
             var resp = _UserService.CheckUserLogin(acc,pwd).Result;
-            if (resp.code == (int)ErrType.OK)
-            {
-                User u = (User)resp.relatedData;
-                HttpContext.Session.SetInt32("UserID", u.id);
-                HttpContext.Session.SetString("UserName", u.user_name);
-            }
+            //if (resp.code == (int)ErrType.OK)
+            //{
+            //    User u = (User)resp.relatedData;
+            //    HttpContext.Session.SetInt32("UserID", u.id);
+            //    HttpContext.Session.SetString("UserName", u.user_name);
+            //}
             return Ok(resp);
         }
 
@@ -129,18 +119,19 @@ namespace MSS.API.Core.V1.Controllers
         public string GetMenu()
         {
             //int userID = (int)HttpContext.Session.GetInt32("UserID");
-            int userID = 1;
-            var resp = _UserService.GetByID(userID);
-            User u = (User)resp.Result.data;
-            MSSResult<MenuTree> ret = new MSSResult<MenuTree>();
-            if (u.is_super)
-            {
-                ret = _UserService.GetMenu().Result;
-            }
-            else
-            {
-                ret = _UserService.GetMenu(userID).Result;
-            }
+            //int userID = 1;
+            //var resp = _UserService.GetByID(userID);
+            //User u = (User)resp.Result.data;
+            //MSSResult<MenuTree> ret = new MSSResult<MenuTree>();
+            //if (u.is_super)
+            //{
+            //    ret = _UserService.GetMenu().Result;
+            //}
+            //else
+            //{
+            //    ret = _UserService.GetMenu(userID).Result;
+            //}
+            MSSResult<MenuTree> ret = _UserService.GetMenu().Result;
             StringBuilder strJson = new StringBuilder();
             strJson.Append("{");
             int i = 0;
@@ -153,6 +144,13 @@ namespace MSS.API.Core.V1.Controllers
             }
             strJson.Append("}");
             return strJson.ToString();
+        }
+
+        [HttpGet("GetAction")]
+        public ActionResult GetAction()
+        {
+            var resp = _UserService.GetActionByUser();
+            return Ok(resp);
         }
 
     }

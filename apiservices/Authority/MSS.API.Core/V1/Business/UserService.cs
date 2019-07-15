@@ -8,6 +8,7 @@ using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
 using MSS.API.Utility;
 using MSS.API.Common.Utility;
+using MSS.API.Common;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -16,14 +17,15 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<UserService> _logger;
         private readonly IUserRepo<User> _UserRepo;
         private readonly IActionRepo<ActionInfo> _ActionRepo;
-        private readonly IAuthHelper _auth;
+
+        private readonly int userID;
 
         public UserService(IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _UserRepo = userRepo;
             _ActionRepo = actionRepo;
-            _auth = auth;
+            userID = auth.GetUserId();
         }
         public async Task<MSSResult<UserView>> GetPageByParm(UserQueryParm parm)
         {
@@ -45,24 +47,24 @@ namespace MSS.API.Core.V1.Business
                 return mRet;
             }
         }
-        public async Task<MSSResult> GetByID(int id)
+        public async Task<ApiResult> GetByID(int id)
         {
-            MSSResult mRet = new MSSResult();
+            ApiResult mRet = new ApiResult();
             try
             {
-                if (id == 0)
-                {
-                    mRet.code = (int)ErrType.ErrParm;
-                    mRet.msg = "参数不正确，id不可为0";
-                    return mRet;
-                }
+                //if (id == 0)
+                //{
+                //    mRet.code = ErrType.ErrParm;
+                //    mRet.msg = "参数不正确，id不可为0";
+                //    return mRet;
+                //}
                 mRet.data = await _UserRepo.GetByID(id);
                 mRet.code = (int)ErrType.OK;
                 return mRet;
             }
             catch (Exception ex)
             {
-                mRet.code = (int)ErrType.SystemErr;
+                mRet.code = Code.Failure;
                 mRet.msg = ex.Message;
                 return mRet;
             }
@@ -82,6 +84,8 @@ namespace MSS.API.Core.V1.Business
                     DateTime dt = DateTime.Now;
                     user.updated_time = dt;
                     user.created_time = dt;
+                    user.created_by = userID;
+                    user.updated_by = userID;
                     mRet.data = await _UserRepo.Add(user);
                     mRet.code = (int)ErrType.OK;
                 }
@@ -106,6 +110,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 user.updated_time = DateTime.Now;
+                user.updated_by = userID;
                 mRet.data = await _UserRepo.Update(user);
                 mRet.code = (int)ErrType.OK;
                 return mRet;
@@ -118,7 +123,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<MSSResult> Delete(string ids,int userID)
+        public async Task<MSSResult> Delete(string ids)
         {
             MSSResult mRet = new MSSResult();
             try
@@ -190,7 +195,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<MSSResult> ResetPwd(string ids, int userID)
+        public async Task<MSSResult> ResetPwd(string ids)
         {
             MSSResult mRet = new MSSResult();
             try
@@ -221,29 +226,29 @@ namespace MSS.API.Core.V1.Business
                     {
                         mRet.code = (int)ErrType.ErrPwd;
                         mRet.msg = "密码错误";
-                        return mRet;
+                        //return mRet;
                     }
-                    else
-                    {
-                        //获取此人对应的权限
-                        if (ui.is_super)
-                        {
-                            mRet =await GetMenu();
-                        }
-                        else
-                        {
-                            mRet = await GetMenu(ui.id);
-                        }
-                        mRet.relatedData = ui;
-                        return mRet;
-                    }
+                    //else
+                    //{
+                    //    //获取此人对应的权限
+                    //    if (ui.is_super)
+                    //    {
+                    //        mRet =await GetMenu();
+                    //    }
+                    //    else
+                    //    {
+                    //        mRet = await GetMenu(ui.id);
+                    //    }
+                    //    mRet.relatedData = ui;
+                    //    return mRet;
+                    //}
                 }
                 else
                 {
                     mRet.code =(int)ErrType.NoRecord;
                     mRet.msg = "账号错误";
-                    return mRet;
                 }
+                return mRet;
             }
             catch (Exception ex)
             {
@@ -253,14 +258,15 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<MSSResult<MenuTree>> GetMenu(int? userID=null)
+        public async Task<MSSResult<MenuTree>> GetMenu()
         {
+            User u = await _UserRepo.GetByID(userID);
             MSSResult<MenuTree> mRet = new MSSResult<MenuTree>();
             try
             {
                 List<ActionAll> laa = new List<ActionAll>();
                 //允许勾选和不对外开放的且为菜单的url
-                if (userID==null)
+                if (u.is_super)
                 {
                     laa = await _ActionRepo.GetActionAll();
                     mRet.data = ActionHelper.GetMenuTree(laa.Where(
@@ -270,8 +276,8 @@ namespace MSS.API.Core.V1.Business
                 //根据用户ID获取对应菜单权限
                 else
                 {
-                    laa = await _ActionRepo.GetActionByUser((int)userID);
-                    mRet.data = ActionHelper.GetMenuTree(laa.Where(a=>a.GroupID>0).ToList());
+                    laa = await _ActionRepo.GetActionByUser(userID);
+                    mRet.data = ActionHelper.GetMenuTree(laa.Where(a => a.GroupID > 0).ToList());
                 }
                 mRet.code = (int)ErrType.OK;
                 return mRet;
@@ -279,6 +285,32 @@ namespace MSS.API.Core.V1.Business
             catch (Exception ex)
             {
                 mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
+        public async Task<ApiResult> GetActionByUser()
+        {
+            User u = await _UserRepo.GetByID(userID);
+            ApiResult mRet = new ApiResult();
+            try
+            {
+                List<ActionAll> laa = new List<ActionAll>();
+                if (u.is_super)
+                {
+                    mRet.data = await _ActionRepo.GetActionAll();
+                }
+                //根据用户ID获取对应所有url权限
+                else
+                {
+                    mRet.data = await _ActionRepo.GetActionByUser(userID);
+                }
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = Code.Failure;
                 mRet.msg = ex.Message;
                 return mRet;
             }
