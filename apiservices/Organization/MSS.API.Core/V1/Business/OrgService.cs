@@ -13,18 +13,21 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MSS.API.Common;
-
+using MSS.Common.Consul;
+using MSS.API.Common.Utility;
 namespace MSS.API.Core.V1.Business
 {
     public class OrgService: IOrgService
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IOrgRepo<OrgTree> _orgRepo;
+        private readonly IServiceDiscoveryProvider _consulServiceProvider;
 
-        public OrgService(IOrgRepo<OrgTree> orgRepo)
+        public OrgService(IOrgRepo<OrgTree> orgRepo, IServiceDiscoveryProvider consulServiceProvider)
         {
             //_logger = logger;
             _orgRepo = orgRepo;
+            _consulServiceProvider = consulServiceProvider;
         }
 
         public async Task<ApiResult> GetAllOrg()
@@ -238,6 +241,11 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
+                // // test
+                // var _services = await _consulServiceProvider.GetServiceAsync("OrgService");
+                // IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                // ApiResult result = await httpHelper.GetSingleItemRequest(_services+"/api/v1/org/all");
+
                 OrgTree topNode = await _findTopNode(id);
 
                 ret.code = Code.Success;

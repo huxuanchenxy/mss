@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
-// using MSS.Common.Consul;
+using MSS.Common.Consul;
 using MSS.API.Common;
 
 namespace MSS.API.Core
@@ -47,7 +47,7 @@ namespace MSS.API.Core
                 options.ConnectionString = this.Configuration["redis:ConnectionString"];
             });
             services.AddEssentialService();
-            // services.AddConsulService(Configuration);
+            services.AddConsulService(Configuration);
             //跨域 Cors
             services.AddCors(options =>
             {
@@ -68,7 +68,7 @@ namespace MSS.API.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime/* , IOptions<ConsulServiceEntity> consulService*/)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
@@ -76,7 +76,7 @@ namespace MSS.API.Core
             }
             app.UseAuthentication();
             // app.UseCors(AllowSpecificOrigins);
-            // app.RegisterConsul(lifetime, consulService);
+            app.RegisterConsul(lifetime, consulService);
             app.UseCors();
             app.UseMvc();
         }
