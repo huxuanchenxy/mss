@@ -295,7 +295,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM org_user WHERE user_id = @UserID";
+                string sql = "SELECT * FROM org_user WHERE user_id = @UserID and is_del != 1";
                 OrgUser orguser = await c.QueryFirstOrDefaultAsync<OrgUser>(sql,
                 new
                 {

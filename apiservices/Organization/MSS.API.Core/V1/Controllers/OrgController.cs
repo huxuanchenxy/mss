@@ -27,7 +27,6 @@ namespace MSS.API.Core.V1.Controllers
             _orgService = orgService;
             _authHelper = authHelper;
             _userId = _authHelper.GetUserId();
-
         }
 
         [HttpGet("all")]
@@ -49,7 +48,7 @@ namespace MSS.API.Core.V1.Controllers
         public async Task<ActionResult<ApiResult>> GetTopNodeUserID()
         {
             int userId = _userId;
-            var ret = await _orgService.GetOrgByUserID(userId);
+            var ret = await _orgService.GetTopNodeByUserID(userId);
             return ret;
         }
 
