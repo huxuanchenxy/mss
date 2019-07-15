@@ -146,5 +146,12 @@ namespace MSS.API.Core.V1.Controllers
             return strJson.ToString();
         }
 
+        [HttpGet("GetAction")]
+        public ActionResult GetAction()
+        {
+            var resp = _UserService.GetActionByUser();
+            return Ok(resp);
+        }
+
     }
 }

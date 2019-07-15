@@ -8,6 +8,7 @@ using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
 using MSS.API.Utility;
 using MSS.API.Common.Utility;
+using MSS.API.Common;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -46,24 +47,24 @@ namespace MSS.API.Core.V1.Business
                 return mRet;
             }
         }
-        public async Task<MSSResult> GetByID(int id)
+        public async Task<ApiResult> GetByID(int id)
         {
-            MSSResult mRet = new MSSResult();
+            ApiResult mRet = new ApiResult();
             try
             {
-                if (id == 0)
-                {
-                    mRet.code = (int)ErrType.ErrParm;
-                    mRet.msg = "参数不正确，id不可为0";
-                    return mRet;
-                }
+                //if (id == 0)
+                //{
+                //    mRet.code = ErrType.ErrParm;
+                //    mRet.msg = "参数不正确，id不可为0";
+                //    return mRet;
+                //}
                 mRet.data = await _UserRepo.GetByID(id);
                 mRet.code = (int)ErrType.OK;
                 return mRet;
             }
             catch (Exception ex)
             {
-                mRet.code = (int)ErrType.SystemErr;
+                mRet.code = Code.Failure;
                 mRet.msg = ex.Message;
                 return mRet;
             }
@@ -284,6 +285,32 @@ namespace MSS.API.Core.V1.Business
             catch (Exception ex)
             {
                 mRet.code = (int)ErrType.SystemErr;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
+        public async Task<ApiResult> GetActionByUser()
+        {
+            User u = await _UserRepo.GetByID(userID);
+            ApiResult mRet = new ApiResult();
+            try
+            {
+                List<ActionAll> laa = new List<ActionAll>();
+                if (u.is_super)
+                {
+                    mRet.data = await _ActionRepo.GetActionAll();
+                }
+                //根据用户ID获取对应所有url权限
+                else
+                {
+                    mRet.data = await _ActionRepo.GetActionByUser(userID);
+                }
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = Code.Failure;
                 mRet.msg = ex.Message;
                 return mRet;
             }
