@@ -44,10 +44,10 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
 
-        [HttpGet("topnode")]
-        public async Task<ActionResult<ApiResult>> GetTopNodeUserID()
+        [HttpGet("topnode/{id}")]
+        public async Task<ActionResult<ApiResult>> GetTopNodeUserID(int id)
         {
-            int userId = _userId;
+            int userId = id;
             var ret = await _orgService.GetTopNodeByUserID(userId);
             return ret;
         }
