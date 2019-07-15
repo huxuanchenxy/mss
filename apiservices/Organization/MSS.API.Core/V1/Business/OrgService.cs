@@ -95,9 +95,9 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 
-                OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userId);
-                if (orguser != null) {
-                    ret = await GetOrgByIDs(new List<int> { orguser.NodeID });
+                OrgTree orgTree = await _findTopNode(userId);// await _orgRepo.GetOrgUserByUserID(userId);
+                if (orgTree != null) {
+                    ret = await GetOrgByIDs(new List<int> { orgTree.ID });
                 }
                 else
                 {
@@ -119,10 +119,10 @@ namespace MSS.API.Core.V1.Business
             try
             {
 
-                OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userId);
-                if (orguser != null)
+                OrgTree orgTree = await _findTopNode(userId);// await _orgRepo.GetOrgUserByUserID(userId);
+                if (orgTree != null)
                 {
-                    ret = await GetOrgByIDs(new List<int> { orguser.NodeID });
+                    ret = await GetOrgByIDs(new List<int> { orgTree.ID });
                 }
                 else
                 {
@@ -231,6 +231,36 @@ namespace MSS.API.Core.V1.Business
                 }
             }
             return nodes;
+        }
+
+        public async Task<ApiResult> GetTopNodeByUserID(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                OrgTree topNode = await _findTopNode(id);
+
+                ret.code = Code.Success;
+                ret.data = topNode;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+        private async Task<OrgTree> _findTopNode(int userid)
+        {
+            OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userid);
+
+            OrgTree topNode = null;
+            if (orguser != null) {
+                List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
+                topNode = _findTopNode(orguser.NodeID, nodes_all);
+            }
+            return topNode;
         }
 
         private OrgTree _findTopNode(int nodeId, List<OrgTree> nodes)

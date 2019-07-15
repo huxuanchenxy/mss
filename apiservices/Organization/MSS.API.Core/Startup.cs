@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 // using MSS.Common.Consul;
+using MSS.API.Common;
 
 namespace MSS.API.Core
 {
@@ -41,6 +42,10 @@ namespace MSS.API.Core
                 .AddJsonFormatters();
 
             services.AddDapper(Configuration);
+            services.AddCSRedisCache(options =>
+            {
+                options.ConnectionString = this.Configuration["redis:ConnectionString"];
+            });
             services.AddEssentialService();
             // services.AddConsulService(Configuration);
             //跨域 Cors
