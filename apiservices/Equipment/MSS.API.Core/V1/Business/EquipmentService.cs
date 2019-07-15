@@ -18,15 +18,17 @@ using System.IO;
 
 namespace MSS.API.Core.V1.Business
 {
-    public class EquipmentService : IEquipmentService
+    public class EquipmentService :IEquipmentService
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IEquipmentRepo<Equipment> _eqpRepo;
+        private readonly int userID;
 
-        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo)
+        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _eqpRepo = eqpRepo;
+            userID = auth.GetUserId();
         }
 
         public async Task<ApiResult> Save(Equipment eqp)
@@ -37,6 +39,8 @@ namespace MSS.API.Core.V1.Business
                 DateTime dt = DateTime.Now;
                 eqp.UpdatedTime = dt;
                 eqp.CreatedTime = dt;
+                eqp.UpdatedBy = userID;
+                eqp.CreatedBy = userID;
                 ret.data = await _eqpRepo.Save(eqp);
                 return ret;
             }
@@ -58,6 +62,7 @@ namespace MSS.API.Core.V1.Business
                 {
                     DateTime dt = DateTime.Now;
                     eqp.UpdatedTime = dt;
+                    eqp.UpdatedBy = userID;
                     ret.data = await _eqpRepo.Update(eqp);
                 }
                 else
@@ -75,7 +80,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Delete(string ids,int userID)
+        public async Task<ApiResult> Delete(string ids)
         {
             ApiResult ret = new ApiResult();
             try

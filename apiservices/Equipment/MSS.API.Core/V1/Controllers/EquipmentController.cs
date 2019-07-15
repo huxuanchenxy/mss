@@ -26,10 +26,6 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPost]
         public ActionResult Save(Equipment eqp)
         {
-            eqp.CreatedBy = 1;
-            eqp.UpdatedBy = 1;
-            eqp.IsDel = false;
-
             var ret = _eqpService.Save(eqp);
             return Ok(ret.Result);
         }
@@ -37,7 +33,6 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPut]
         public ActionResult Update(Equipment eqp)
         {
-            eqp.UpdatedBy = 1;
             var ret = _eqpService.Update(eqp);
             return Ok(ret.Result);
         }
@@ -45,8 +40,7 @@ namespace MSS.API.Core.V1.Controllers
         [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
-            int userID = 1;
-            var resp = _eqpService.Delete(ids, userID);
+            var resp = _eqpService.Delete(ids);
             return Ok(resp.Result);
         }
 
