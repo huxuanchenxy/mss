@@ -149,7 +149,7 @@ namespace MSS.API.Dao.Implement
                 }
                 if (parm.SearchTopOrg!=null)
                 {
-                    whereSql.Append(" and a.top_org like '%" + parm.SearchType + "%' ");
+                    whereSql.Append(" and a.top_org=" + parm.SearchType);
                 }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
@@ -203,6 +203,23 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.QueryAsync<UploadFileEqp>(
                     "SELECT * FROM upload_file_eqp WHERE eqp_id = @id", new { id = id });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
+        public async Task<List<Equipment>> ListByPosition(int location,int locationBy)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<Equipment>(
+                    "SELECT * FROM Equipment WHERE location = @location and location_by=@locationBy", 
+                    new { location = location, locationBy= locationBy });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
