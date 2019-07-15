@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
 using MSS.API.Dao.Implement;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -17,12 +18,17 @@ namespace MSS.API.Core.V1.Business
         private readonly IUserRepo<User> _UserRepo;
         private readonly IActionRepo<ActionInfo> _ActionRepo;
 
-        public RoleService(IRoleRepo<Role> roleRepo, IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo)
+        private readonly int userID;
+
+        public RoleService(IRoleRepo<Role> roleRepo, IUserRepo<User> userRepo, 
+            IActionRepo<ActionInfo> actionRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _RoleRepo = roleRepo;
             _UserRepo = userRepo;
             _ActionRepo = actionRepo;
+
+            userID = auth.GetUserId();
         }
         public async Task<MSSResult<RoleView>> GetPageByParm(RoleQueryParm parm)
         {
@@ -86,6 +92,8 @@ namespace MSS.API.Core.V1.Business
                 DateTime dt = DateTime.Now;
                 roleStrActions.updated_time = dt;
                 roleStrActions.created_time = dt;
+                roleStrActions.created_by = userID;
+                roleStrActions.updated_by = userID;
                 bool isRepeat= await _RoleRepo.IsNameRepeat(roleStrActions.role_name);
                 if (isRepeat)
                 {
@@ -113,6 +121,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 roleStrActions.updated_time = DateTime.Now;
+                roleStrActions.updated_by = userID;
                 var role=await _RoleRepo.GetByID(roleStrActions.id);
                 if (role==null)
                 {

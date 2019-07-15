@@ -15,13 +15,13 @@ namespace MSS.API.Core.V1.Business
 
         Task<MSSResult> Add(User User);
         Task<MSSResult> Update(User User);
-        Task<MSSResult> Delete(string ids,int userID);
+        Task<MSSResult> Delete(string ids);
         Task<MSSResult> GetAll();
         Task<MSSResult> ChangePwd(int userID, string oldPwd, string newPwd);
-        Task<MSSResult> ResetPwd(string ids, int userID);
+        Task<MSSResult> ResetPwd(string ids);
 
         Task<MSSResult<MenuTree>> CheckUserLogin(string acc,string password);
 
-        Task<MSSResult<MenuTree>> GetMenu(int? userID = null);
+        Task<MSSResult<MenuTree>> GetMenu();//int? userID = null
     }
 }

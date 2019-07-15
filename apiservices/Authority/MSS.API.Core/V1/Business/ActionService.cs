@@ -6,6 +6,7 @@ using static MSS.API.Utility.Const;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -14,10 +15,13 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<ActionService> _logger;
         private readonly IActionRepo<ActionInfo> _ActionRepo;
 
-        public ActionService(IActionRepo<ActionInfo> actionRepo)
+        private readonly int userID;
+        public ActionService(IActionRepo<ActionInfo> actionRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _ActionRepo = actionRepo;
+
+            userID = auth.GetUserId();
         }
         public async Task<MSSResult<ActionView>> GetPageByParm(ActionQueryParm parm)
         {
@@ -70,6 +74,8 @@ namespace MSS.API.Core.V1.Business
                 DateTime dt = DateTime.Now;
                 action.updated_time = dt;
                 action.created_time = dt;
+                action.updated_by = userID;
+                action.created_by = userID;
                 mRet.data = await _ActionRepo.Add(action);
                 mRet.code = (int)ErrType.OK;
                 return mRet;
@@ -88,6 +94,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 action.updated_time = DateTime.Now;
+                action.updated_by = userID;
                 mRet.data = await _ActionRepo.Update(action);
                 mRet.code = (int)ErrType.OK;
                 return mRet;

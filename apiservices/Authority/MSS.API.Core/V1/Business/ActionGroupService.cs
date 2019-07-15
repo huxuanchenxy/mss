@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -15,11 +16,15 @@ namespace MSS.API.Core.V1.Business
         private readonly IActionGroupRepo<ActionGroup> _ActionGroupRepo;
         private readonly IActionRepo<ActionInfo> _ActionRepo;
 
-        public ActionGroupService(IActionGroupRepo<ActionGroup> actionGroupRepo, IActionRepo<ActionInfo> _actionRepo)
+        private readonly int userID;
+        public ActionGroupService(IActionGroupRepo<ActionGroup> actionGroupRepo, 
+            IActionRepo<ActionInfo> _actionRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _ActionGroupRepo = actionGroupRepo;
             _ActionRepo = _actionRepo;
+
+            userID = auth.GetUserId();
         }
         public async Task<MSSResult<ActionGroupView>> GetPageByParm(ActionGroupQueryParm parm)
         {
@@ -68,10 +73,12 @@ namespace MSS.API.Core.V1.Business
         {
             MSSResult mRet = new MSSResult();
             try
-            { 
+            {
                 DateTime dt = DateTime.Now;
                 actionGroup.updated_time = dt;
                 actionGroup.created_time = dt;
+                actionGroup.created_by = userID;
+                actionGroup.updated_by = userID;
                 mRet.data = await _ActionGroupRepo.Add(actionGroup);
                 mRet.code = (int)ErrType.OK;
                 return mRet;
@@ -90,6 +97,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 actionGroup.updated_time = DateTime.Now;
+                actionGroup.updated_by = userID;
                 mRet.data = await _ActionGroupRepo.Update(actionGroup);
                 mRet.code = (int)ErrType.OK;
                 return mRet;
