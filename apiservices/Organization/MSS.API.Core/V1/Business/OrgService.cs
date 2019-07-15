@@ -233,6 +233,25 @@ namespace MSS.API.Core.V1.Business
             return nodes;
         }
 
+        public async Task<ApiResult> GetTopNodeByUserID(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                OrgUser orguser = await _orgRepo.GetOrgUserByUserID(id);
+                List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
+                OrgTree topNode = _findTopNode(orguser.NodeID, nodes_all);
+
+                ret.code = Code.Success;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
         private OrgTree _findTopNode(int nodeId, List<OrgTree> nodes)
         {
             OrgTree node = nodes.Where(c => c.ID == nodeId).First();

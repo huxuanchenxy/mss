@@ -29,5 +29,8 @@ namespace MSS.API.Core.V1.Business
 
         // 删除节点关联的用户
         Task<ApiResult> DeleteOrgNodeUsers(OrgUserView nodeView);
+
+        // 根据用户ID获取所在顶级组织节点
+        Task<ApiResult> GetTopNodeByUserID(int id);
     }
 }
