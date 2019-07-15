@@ -42,35 +42,35 @@
           <li class="list">
             <div class="inp-wrap">
               <div class="inp">
-                <upload-pdf :fileType="fileType.EqpType_Working_Instruction" label="作业指导" :fileIDs="fileIDs.working" @getFileIDs="getWorkingFileIDs"></upload-pdf>
+                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Working_Instruction" label="作业指导" :fileIDs="fileIDs.working" @getFileIDs="getWorkingFileIDs"></upload-pdf>
               </div>
             </div>
           </li>
           <li class="list">
             <div class="inp-wrap">
               <div class="inp">
-                <upload-pdf :fileType="fileType.EqpType_Technical_Drawings" label="技术图纸" :fileIDs="fileIDs.drawings" @getFileIDs="getDrawingsFileIDs"></upload-pdf>
+                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Technical_Drawings" label="技术图纸" :fileIDs="fileIDs.drawings" @getFileIDs="getDrawingsFileIDs"></upload-pdf>
               </div>
             </div>
           </li>
           <li class="list">
             <div class="inp-wrap">
               <div class="inp">
-                <upload-pdf :fileType="fileType.EqpType_Installation_Manual" label="安装手册" :fileIDs="fileIDs.install" @getFileIDs="getInstallFileIDs"></upload-pdf>
+                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Installation_Manual" label="安装手册" :fileIDs="fileIDs.install" @getFileIDs="getInstallFileIDs"></upload-pdf>
               </div>
             </div>
           </li>
           <li class="list">
             <div class="inp-wrap">
               <div class="inp">
-                <upload-pdf :fileType="fileType.EqpType_User_Guide" label="使用手册" :fileIDs="fileIDs.user" @getFileIDs="getUserFileIDs"></upload-pdf>
+                <upload-pdf ext="pdf" :fileType="fileType.EqpType_User_Guide" label="使用手册" :fileIDs="fileIDs.user" @getFileIDs="getUserFileIDs"></upload-pdf>
               </div>
             </div>
           </li>
           <li class="list">
             <div class="inp-wrap">
               <div class="inp">
-                <upload-pdf :fileType="fileType.EqpType_Regulations" label="维护规程" :fileIDs="fileIDs.regulations" @getFileIDs="getRegulationsFileIDs"></upload-pdf>
+                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Regulations" label="维护规程" :fileIDs="fileIDs.regulations" @getFileIDs="getRegulationsFileIDs"></upload-pdf>
               </div>
             </div>
           </li>

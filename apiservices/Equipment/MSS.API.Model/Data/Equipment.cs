@@ -17,6 +17,7 @@ namespace MSS.API.Model.Data
         public string SubSystemName { get; set; }
         public int Team { get; set; }
         public string TeamPath { get; set; }
+        public int TopOrg { get; set; }
         public string TeamName { get; set; }
         public string BarCode { get; set; }
         public string Desc { get; set; }
@@ -63,6 +64,7 @@ namespace MSS.API.Model.Data
             Map(o => o.SubSystemName).ToColumn("sub_code_name");
             Map(o => o.Team).ToColumn("team");
             Map(o => o.TeamPath).ToColumn("team_path");
+            Map(o => o.TopOrg).ToColumn("top_org");
             Map(o => o.TeamName).ToColumn("name");
             Map(o => o.BarCode).ToColumn("bar_code");
             Map(o => o.Desc).ToColumn("discription");
@@ -106,6 +108,7 @@ namespace MSS.API.Model.Data
         public int? SearchLocation { get; set; }
 
         public int? SearchLocationBy { get; set; }
+        public int? SearchTopOrg { get; set; }
     }
 
     public class AllArea

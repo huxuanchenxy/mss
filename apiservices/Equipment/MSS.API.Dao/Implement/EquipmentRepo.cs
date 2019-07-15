@@ -29,7 +29,7 @@ namespace MSS.API.Dao.Implement
                         " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
                         " @SubSystem,@Team,@TeamPath,@BarCode,@Desc,@Supplier,@Manufacturer, " +
                         " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
-                        " @Location,@LocationBy,@LocationPath,@Online,@Life, " +
+                        " @Location,@LocationBy,@LocationPath,@TopOrg,@Online,@Life, " +
                         " @MediumRepair,@LargeRepair,@OnlineAgain, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                     sql += "SELECT LAST_INSERT_ID()";
@@ -72,9 +72,9 @@ namespace MSS.API.Dao.Implement
                         " eqp_model=@Model,sub_system=@SubSystem,team=@Team,team_path=@TeamPath,bar_code=@BarCode, " +
                         " discription=@Desc,supplier=@Supplier,manufacturer=@Manufacturer,serial_number=@SerialNo, " +
                         " rated_voltage=@RatedVoltage,rated_current=@RatedCurrent,team=@Team,rated_power=@RatedPower, " +
-                        " location=@Location,location_by=@LocationBy,location_path=@LocationPath,online_date=@Online,life=@Life, " +
-                        " medium_repair=@MediumRepair,large_repair=@LargeRepair,online_again=@OnlineAgain, " +
-                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
+                        " location=@Location,location_by=@LocationBy,location_path=@LocationPath,top_org@TopOrg, " +
+                        " online_date=@Online,life=@Life,medium_repair=@MediumRepair,large_repair=@LargeRepair, " +
+                        " online_again=@OnlineAgain,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
                     if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
                     {
                         string sql = "delete from upload_file_eqp where eqp_id=@id";
@@ -146,6 +146,10 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and a.location=" + parm.SearchLocation)
                     .Append(" and a.location_by =" + parm.SearchLocationBy);
+                }
+                if (parm.SearchTopOrg!=null)
+                {
+                    whereSql.Append(" and a.top_org like '%" + parm.SearchType + "%' ");
                 }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)

@@ -10,6 +10,7 @@
       :file-list="fileList"
       :show-file-list="true"
       list-type="text"
+      :before-upload="beforeUpload"
       :on-success="onSuccess"
       :on-remove="onRemove"
       :on-preview="preview">
@@ -38,7 +39,8 @@ export default {
     label: String,
     fileType: Number,
     fileIDs: String,
-    readOnly: Boolean
+    readOnly: Boolean,
+    ext: String
   },
   data () {
     return {
@@ -66,6 +68,21 @@ export default {
     }
   },
   methods: {
+    beforeUpload (file) {
+      if (this.ext !== undefined && this.ext !== '') {
+        let tmp = file.name.split('.')
+        let myExt = tmp[tmp.length - 1]
+        let arr = this.ext.split(',')
+        for (let i = 0; i < arr.length; i++) {
+          if (myExt === arr[i]) return true
+        }
+        this.$message({
+          message: '不支持扩展名为' + myExt + '的文件上传',
+          type: 'warning'
+        })
+        return false
+      }
+    },
     onSuccess (response, file, fileList) {
       this.isAdd = true
       this.returnFileIDs(fileList)

@@ -43,6 +43,10 @@ namespace MSS.API.Core
                 .AddJsonFormatters();
 
             services.AddDapper(Configuration);
+            services.AddCSRedisCache(options =>
+            {
+                options.ConnectionString = this.Configuration["redis:ConnectionString"];
+            });
             services.AddEssentialService();
 
             //跨域 Cors

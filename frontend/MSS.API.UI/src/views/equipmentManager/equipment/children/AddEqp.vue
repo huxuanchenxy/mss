@@ -224,7 +224,7 @@
             </li>
             <li class="list upload-list">
               <div>
-                <upload-pdf :fileType="fileType" label="设备图纸" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+                <upload-pdf ext="pdf" :fileType="fileType" label="设备图纸" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
               </div>
             </li>
           </ul>
