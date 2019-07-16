@@ -27,6 +27,7 @@ namespace MSS.API.Dao.Implement
                 .Append(" FROM Role a ")
                 .Append(" left join user u1 on a.created_by=u1.id left join user u2 on a.updated_by=u2.id ")
                 .Append(" left join role_action ra on a.id=ra.role_id ")
+                .Append(" left join action_info act on act.id=ra.action_id ")
                 .Append(" WHERE 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
                 if (!string.IsNullOrWhiteSpace(parm.searchName))
@@ -35,15 +36,24 @@ namespace MSS.API.Dao.Implement
                 }
                 if (parm.searchAction != null)
                 {
-                    whereSql.Append(" and ra.action_id=" + parm.searchAction);
+                    whereSql.Append(" and act.action_id=" + parm.searchAction);
+                }
+                if (parm.searchActionGroup != null)
+                {
+                    whereSql.Append(" and act.group_id=" + parm.searchActionGroup);
                 }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
-                mRet.data = (await c.QueryAsync<RoleView>(sql.ToString())).ToList();
+                var tmp = await c.QueryAsync<RoleView>(sql.ToString());
+                if (tmp!=null)
+                {
+                    mRet.data = tmp.ToList();
+                }
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
                     "select count(*) from role a " +
-                    "left join role_action ra on a.id = ra.role_id where 1=1 " + whereSql.ToString());
+                    " left join role_action ra on a.id = ra.role_id " +
+                    " left join action_info act on act.id=ra.action_id where 1=1 " + whereSql.ToString());
                 return mRet;
             });
         }
