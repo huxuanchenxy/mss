@@ -9,7 +9,8 @@ namespace MSS.API.Model.Data
     {
         public EmReminder Reminder { get; set; }
         public int BeforeDead { get; set; }
-        public int BeforeMaintain { get; set; }
+        public int BeforeMaintainMiddle { get; set; }
+        public int BeforeMaintainBig { get; set; }
 
         public string TextTemplate { get; set; }
 
@@ -33,7 +34,8 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.Reminder).ToColumn("reminder");
             Map(o => o.BeforeDead).ToColumn("before_dead");
-            Map(o => o.BeforeMaintain).ToColumn("before_maintain");
+            Map(o => o.BeforeMaintainMiddle).ToColumn("before_maintain_middle");
+            Map(o => o.BeforeMaintainBig).ToColumn("before_maintain_big");
             Map(o => o.TextTemplate).ToColumn("text_template");
             Map(o => o.Published).ToColumn("published");
             Map(o => o.CreatedBy).ToColumn("created_by");

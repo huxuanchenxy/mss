@@ -21,7 +21,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = " INSERT INTO equipment_config " +
-                    " values (0,@Reminder,@BeforeDead,@BeforeMaintain,@TextTemplate,@Published, " +
+                    " values (0,@Reminder,@BeforeDead,@BeforeMaintainMiddle,@BeforeMaintainBig,@TextTemplate,@Published, " +
                     " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                 sql += "SELECT LAST_INSERT_ID()";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, obj);
@@ -35,7 +35,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.ExecuteAsync(" UPDATE equipment_config " +
-                    " set reminder=@Reminder,before_dead=@BeforeDead,before_maintain=@BeforeMaintain,text_template=@TextTemplate, " +
+                    " set reminder=@Reminder,before_dead=@BeforeDead,before_maintain_middle=@BeforeMaintainMiddle,before_maintain_big=@BeforeMaintainBig,text_template=@TextTemplate, " +
                     " published=@Published,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", obj);
                 return result;
             });
