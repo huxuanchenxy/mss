@@ -36,6 +36,7 @@ namespace MSS.API.Common
     public class Const
     {
         public static int PAGESIZE = 10;
+        public static string AUTHSERVICE = "http://10.89.36.103:8081/";
     }
 
     public static class FilePath

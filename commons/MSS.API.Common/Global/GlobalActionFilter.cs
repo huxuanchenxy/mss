@@ -10,6 +10,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using MSS.API.Common.Utility;
+using static MSS.API.Common.Const;
+using Newtonsoft.Json.Linq;
 
 namespace MSS.API.Common.Global
 {
@@ -27,13 +29,24 @@ namespace MSS.API.Common.Global
             string methodname = context.HttpContext.Request.Method.ToString();
 
             var userid = _authhelper.GetUserId();
+
+            string url = "/" + controllername + "/" + actionname;
+            //ApiResult api = HttpClientHelper.GetResponse<ApiResult>(AUTHSERVICE + "api/v1/user/" + userid);
+            //JObject jobj = JsonConvert.DeserializeObject<JObject>(api.data.ToString());
+            //if (!(bool)jobj["is_super"])
+            //{
+            //    //白名单
+            //    ApiResult api = HttpClientHelper.GetResponse<ApiResult>(AUTHSERVICE + "api/v1/user/GetAction");
+            //    JArray arr = JsonConvert.DeserializeObject<JArray>(api.data.ToString());
+            //    //if (arr.SelectToken()
+            //}
+
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
             
         }
-
 
 
         
