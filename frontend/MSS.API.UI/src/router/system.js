@@ -197,6 +197,23 @@ const routes = [
           }
         ]
       }
+      ,
+        {
+          path: 'MaintainConfig',
+          component: () => import( '@/views/system/operlog/index.vue'),
+          children: [
+            {
+              path: '/',
+              name: 'MaintainConfig',
+              redirect: 'addMaintainConfig'
+            }, 
+            {
+              path: 'addMaintainConfig/:mark?/:id?',
+              name: 'addMaintainConfig',
+              component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
+            }
+          ]
+        }
     ]
   }
 ]
