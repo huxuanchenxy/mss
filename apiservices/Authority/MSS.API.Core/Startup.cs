@@ -15,8 +15,10 @@ using MSS.API.Utility;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 using static MSS.API.Utility.Const;
+using static MSS.API.Common.Const;
 using MSS.API.Common;
 using MSS.Common.Consul;
+using MSS.API.Common.Global;
 
 namespace MSS.API.Core
 {
@@ -56,7 +58,7 @@ namespace MSS.API.Core
             });
             services.AddEssentialService();
             services.AddConsulService(Configuration);
-
+            
             //services.AddAuthentication("Bearer")//添加授权模式
             //.AddIdentityServerAuthentication(Options =>
             //{
@@ -74,12 +76,14 @@ namespace MSS.API.Core
 
             services.AddDistributedMemoryCache();
             //services.AddSession();
+
+            services.AddSingleton<GlobalActionFilter>();
             services.AddMvc(
-            //options =>
-            //{
-            //    options.Filters.Add<GlobalActionFilter>();
-            //}
-).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            options =>
+            {
+                options.Filters.Add<GlobalActionFilter>();
+            }
+            ).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -124,9 +128,10 @@ namespace MSS.API.Core
 
         private void InitConst()
         {
-            PAGESIZE = Convert.ToInt32(Configuration["InitConst:PageSize"]);
+            Common.Const.PAGESIZE = Convert.ToInt32(Configuration["InitConst:PageSize"]);
             INIT_PASSWORD = Configuration["InitConst:Password"];
             PWD_RANDOM_MAX=Convert.ToInt32(Configuration["InitConst:PwdRandomMax"]);
+            AUTHSERVICE = "http://" + Configuration["ConsulServiceEntity:IP"] + ":" + Configuration["ConsulServiceEntity:Port"] + "/";
         }
 
     }
