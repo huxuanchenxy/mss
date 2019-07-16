@@ -13,6 +13,7 @@ using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 using MSS.Common.Consul;
 using MSS.API.Common;
+using MSS.API.Core.EventServer;
 
 namespace MSS.API.Core
 {
@@ -58,12 +59,16 @@ namespace MSS.API.Core
                     builder.WithOrigins("http://localhost:8080",
                                         "http://www.contoso.com")
                                         .AllowAnyHeader()
-                                        .AllowAnyMethod();
+                                        .AllowAnyMethod()
+                                        .AllowCredentials();
                 });
                 // options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
 
-            
+            services.AddSignalR();
+            // 注册定时服务
+            services.AddScoped<AlarmDataJob>();
+            services.AddHostedService<ScheduleService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -78,6 +83,10 @@ namespace MSS.API.Core
             // app.UseCors(AllowSpecificOrigins);
             app.RegisterConsul(lifetime, consulService);
             app.UseCors();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<MssEventHub>("/eventHub");
+            });
             app.UseMvc();
         }
     }

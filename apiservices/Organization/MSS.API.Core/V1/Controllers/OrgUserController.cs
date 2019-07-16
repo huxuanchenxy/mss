@@ -11,6 +11,7 @@ using MSS.API.Model.DTO;
 using MSS.API.Core.Common;
 
 using MSS.API.Common;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -20,10 +21,12 @@ namespace MSS.API.Core.V1.Controllers
     {
         private readonly IOrgService _orgService;
         private readonly int _userId;
-        public OrgUserController(IOrgService orgService)
+        private readonly IAuthHelper _authHelper;
+        public OrgUserController(IOrgService orgService, IAuthHelper authHelper)
         {
             _orgService = orgService;
-            _userId = 1;
+            _authHelper = authHelper;
+            _userId = _authHelper.GetUserId();
         }
 
         [HttpGet]
