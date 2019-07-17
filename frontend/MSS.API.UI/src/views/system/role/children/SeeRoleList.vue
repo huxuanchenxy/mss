@@ -17,6 +17,7 @@
             <label for="">使用权限</label>
             <div class="inp">
               <el-cascader clearable
+                change-on-select
                 :props="defaultParams"
                 :show-all-levels="true"
                 :options="actionInfo"
@@ -284,13 +285,22 @@ export default {
       this.$emit('title', '| 角色管理')
       this.currentPage = page
       this.loading = true
+      let act = null
+      let actionGroup = null
+      let l = this.authority.length
+      if (l === 1) {
+        actionGroup = this.authority[0]
+      } else if (l > 1) {
+        act = this.authority[l - 1]
+      }
       api.getRole({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
         searchName: this.roleName,
-        searchAction: this.authority[1]
+        searchAction: act,
+        searchActionGroup: actionGroup
       }).then(res => {
         this.loading = false
         res.data.rows.map(val => {

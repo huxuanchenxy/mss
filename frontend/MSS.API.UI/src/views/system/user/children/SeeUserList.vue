@@ -186,6 +186,9 @@ export default {
     }
   },
   created () {
+    api.getActionByUser().then(res => {
+      console.log(res)
+    })
     this.$emit('title', '| 用户')
     if (this.$route.params.roleID !== '' && this.$route.params.roleID !== null) {
       this.role = this.$route.params.roleID

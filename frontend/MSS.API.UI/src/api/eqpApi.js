@@ -1,7 +1,7 @@
 import axios from './interceptors'
 // 'http://10.89.36.204:5801/eqpapi'
 // 'http://localhost:3851/api/v1'
-let api = 'http://10.89.36.204:5801/eqpapi'
+let api = 'http://localhost:3851/api/v1'
 export default {
   getEqpType: parm => { return axios.get(`${api}/EquipmentType`, {params: parm}).then(res => res.data) },
   getEqpTypeByID: id => { return axios.get(`${api}/EquipmentType/${id}`).then(res => res.data) },
@@ -26,5 +26,6 @@ export default {
   getFirmAll: () => { return axios.get(`${api}/Firm/All`).then(res => res.data) },
 
   // deleteUploadFile: id => { return axios.delete(`${api}/Upload/${id}`).then(res => res.data) },
-  getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) }
+  getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) },
+  getListByPosition: (location, locationBy, eqpType) => { return axios.get(`${api}/Upload/ListByPosition/${location}/${locationBy}/${eqpType}`).then(res => res.data) }
 }

@@ -160,12 +160,12 @@ export default {
           if (res.code === 0) {
             this.$message({
               message: '添加成功',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeActionList'
-                })
-              }
+              type: 'success'
+              // onClose: () => {
+              //   this.$router.push({
+              //     name: 'SeeActionList'
+              //   })
+              // }
             })
           } else {
             this.$message({
