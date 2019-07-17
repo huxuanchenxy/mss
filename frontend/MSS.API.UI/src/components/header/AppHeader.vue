@@ -36,7 +36,8 @@
   </div>
 </template>
 <script>
-import { getDate } from '@/common/js/utils.js'
+import { getDate, ApiRESULT } from '@/common/js/utils.js'
+import api from '@/api/loginApi'
 export default {
   name: 'myHeader',
   data () {
@@ -49,21 +50,25 @@ export default {
     }
   },
   methods: {
-    getComName () {
-      window.axios.post('/UtilityTunnel/ReadCompanyName').then(res => {
-        this.comName = res.data
-      }).catch(err => console.log(err))
+    getUserInfo () {
+      api.getUserInfo().then((res) => {
+        if (res.code === ApiRESULT.Success) {
+          this.userName = res.data.user_name
+          window.sessionStorage.setItem('UserInfo', res.data)
+        }
+      })
     },
-    getTunnelNum () {
-      window.axios.post('/UtilityTunnel/GetUtilityTunnel').then(res => {
-        this.number = res.data.length
-      }).catch(err => console.log(err))
+    getUserAction () {
+      api.getUserAction().then((res) => {
+        if (res.code === ApiRESULT.Success) {
+          window.sessionStorage.setItem('UserAction', res.data)
+        }
+      })
     }
   },
   created () {
-    this.userName = window.sessionStorage.getItem('UserName')
-    this.getComName()
-    this.getTunnelNum()
+    this.getUserInfo()
+    this.getUserAction()
   }
 }
 </script>
