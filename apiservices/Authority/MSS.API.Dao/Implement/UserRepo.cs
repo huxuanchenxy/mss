@@ -41,7 +41,11 @@ namespace MSS.API.Dao.Implement
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
-                mRet.data = (await c.QueryAsync<UserView>(sql.ToString())).ToList();
+                var tmp = await c.QueryAsync<UserView>(sql.ToString());
+                if (tmp!=null)
+                {
+                    mRet.data = tmp.ToList();
+                }
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
                     "select count(*) from user a " + whereSql.ToString());
                 return mRet;
@@ -121,6 +125,17 @@ namespace MSS.API.Dao.Implement
                 return result;
             });
         }
+
+        public async Task<List<User>> GetAllContainSuper()
+        {
+            return await WithConnection(async c =>
+            {
+                var result = (await c.QueryAsync<User>(
+                    "select * from user where is_del=" + (int)IsDeleted.no)).ToList();
+                return result;
+            });
+        }
+
 
         public async Task<int> ChangePwd(User user)
         {
