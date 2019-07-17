@@ -28,25 +28,25 @@
         <div>
           <el-row :gutter="40">
             <el-col :span="8">
-              <el-form-item label="寿命提醒提前">
-                <el-input v-model="form.beforeDead" :disabled="this.ReadOnly" ></el-input>
+              <el-form-item label="寿命提醒提前"><em class="validate-mark">*</em>
+                <el-input v-model="form.beforeDead" :disabled="this.ReadOnly" type="number"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="中修提醒提前">
-                <el-input v-model="form.beforeMaintainMiddle" :disabled="this.ReadOnly"></el-input>
+              <el-form-item label="中修提醒提前"><em class="validate-mark">*</em>
+                <el-input v-model="form.beforeMaintainMiddle" :disabled="this.ReadOnly" type="number"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="大修提醒提前">
-                <el-input v-model="form.beforeMaintainBig" :disabled="this.ReadOnly"></el-input>
+              <el-form-item label="大修提醒提前"><em class="validate-mark">*</em>
+                <el-input v-model="form.beforeMaintainBig" :disabled="this.ReadOnly" type="number"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row >
             <el-col>
               <el-form-item label="提醒内容格式模板">
-                <el-input type="textarea" v-model="form.textTemplate" :disabled="this.ReadOnly"></el-input>
+                <el-input type="textarea" v-model="form.textTemplate" :disabled="this.ReadOnly" :rows="7"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -92,7 +92,7 @@ export default {
         mark: this.$route.params.mark,
         editID: this.$route.params.id,
         reminder: [],
-        Name: '',
+        NumberCheck: '',
         published: '',
         beforeDead: '',
         beforeMaintainMiddle: '',
@@ -100,9 +100,7 @@ export default {
         textTemplate: ''
       },
       rules: {
-        Name: [
-          { required: true, validator: this.validateName, message: '该字段不能为空,或含有非法字符', trigger: 'blur' }
-        ],
+        // NumberCheck: [{required: true, message: '不能为空', trigger: 'blur'}, {type: 'number', message: '必须为数字值', trigger: 'blur'}],
         PhoneNum: [
           { validator: this.validatePhone, trigger: 'blur' }
         ]
