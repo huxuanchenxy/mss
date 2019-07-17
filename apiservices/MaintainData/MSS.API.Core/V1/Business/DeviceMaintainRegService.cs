@@ -163,6 +163,7 @@ namespace MSS.API.Core.V1.Business
                     {
                         foreach (var v in list)
                         {
+                            v.maintain_date = v.maintain_date.Substring(0, 10);
                             v.device_name = GetdeviceName(v.device_id.ToString());
                             v.device_type_name = GetDeviceTypeNameByID(v.device_type_id.ToString());
                             v.director_name = GetderoctName(v.director_id.ToString());

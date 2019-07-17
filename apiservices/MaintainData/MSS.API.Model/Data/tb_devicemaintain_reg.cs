@@ -16,12 +16,14 @@ namespace MSS.API.Model.Data
         public string team_group_name { get; set; }
         public int director_id { get; set; }
         public string director_name { get; set; }
-        public DateTime maintain_date { get; set; }
+        public string maintain_date { get; set; }
         
         public string attch_file { get; set; }
 
-
+        public string file_type { get; set; }
         public string detail_desc { get; set; }
+
+        public string arr { get; set; }
         //public int is_deleted { get; set; }
         //public DateTime create_time { get; set; }
         //public int create_by { get; set; }
@@ -44,6 +46,7 @@ namespace MSS.API.Model.Data
             Map(o => o.director_id).ToColumn("director_id");
             Map(o => o.maintain_date).ToColumn("maintain_date");
             Map(o => o.attch_file).ToColumn("attch_file");
+            Map(o => o.file_type).ToColumn("file_type");
             Map(o => o.detail_desc).ToColumn("detail_desc"); 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedTime).ToColumn("created_time");

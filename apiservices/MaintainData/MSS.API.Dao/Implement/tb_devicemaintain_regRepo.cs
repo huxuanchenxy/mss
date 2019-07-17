@@ -20,8 +20,8 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(
                 async c =>
                 {
-                    string sql = "INSERT INTO tb_devicemaintain_reg (device_type_id, device_id, team_group_id, director_id, maintain_date,attch_file, detail_desc,Is_deleted, created_time, created_by,updated_time,updated_by)"
-                                                  + " Values (@device_type_id, @device_id, @team_group_id, @director_id, @maintain_date,@attch_file, @detail_desc,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy) "; 
+                    string sql = "INSERT INTO tb_devicemaintain_reg (device_type_id, device_id, team_group_id, director_id, maintain_date,attch_file,file_type,detail_desc,Is_deleted, created_time, created_by,updated_time,updated_by)"
+                                                  + " Values (@device_type_id, @device_id, @team_group_id, @director_id, @maintain_date,@attch_file,@file_type,@detail_desc,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy) "; 
                     return await c.QueryFirstOrDefaultAsync<int>(sql, model);
                 });
         }
@@ -133,7 +133,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "UPDATE tb_devicemaintain_reg SET device_type_id=@device_type_id, device_id=@device_id, attch_file=@attch_file, team_group_id=@team_group_id, director_id=@director_id, maintain_date=@maintain_date, detail_desc=@detail_desc,Is_deleted=@Is_deleted, updated_by = @UpdatedBy, updated_time = @UpdatedTime  WHERE id = @id  ";
+                string sql = "UPDATE tb_devicemaintain_reg SET device_type_id=@device_type_id, device_id=@device_id, attch_file=@attch_file,file_type=@file_type, team_group_id=@team_group_id, director_id=@director_id, maintain_date=@maintain_date, detail_desc=@detail_desc,Is_deleted=@Is_deleted, updated_by = @UpdatedBy, updated_time = @UpdatedTime  WHERE id = @id  ";
                 return await c.ExecuteAsync(sql, model); ;
             });
         } 
