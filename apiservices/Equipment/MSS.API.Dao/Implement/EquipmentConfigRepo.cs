@@ -21,7 +21,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = " INSERT INTO equipment_config " +
-                    " values (0,@Reminder,@BeforeDead,@BeforeMaintainMiddle,@BeforeMaintainBig,@TextTemplate,@Published, " +
+                    " values (0,@Reminder,@BeforeDead,@BeforeMaintainMiddle,@BeforeMaintainBig,@TextTemplate,@Published,@EqpId " +
                     " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                 sql += "SELECT LAST_INSERT_ID()";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, obj);
@@ -35,7 +35,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.ExecuteAsync(" UPDATE equipment_config " +
-                    " set reminder=@Reminder,before_dead=@BeforeDead,before_maintain_middle=@BeforeMaintainMiddle,before_maintain_big=@BeforeMaintainBig,text_template=@TextTemplate, " +
+                    " set reminder=@Reminder,before_dead=@BeforeDead,before_maintain_middle=@BeforeMaintainMiddle,before_maintain_big=@BeforeMaintainBig,text_template=@TextTemplate,eqpid=@EqpId, " +
                     " published=@Published,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", obj);
                 return result;
             });
@@ -71,6 +71,36 @@ namespace MSS.API.Dao.Implement
                 var result = (await c.QueryAsync<EquipmentConfig>(
                     "SELECT * FROM equipment_config WHERE is_del = 0 ")).ToList();
                 return result;
+            });
+        }
+
+        public async Task<EquipmentConfigView> GetPageByParm(EquipmentConfigParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT distinct a.*,u2.user_name as UpdatedName FROM equipment_config a ")
+                .Append(" left join user u2 on a.updated_by=u2.id ")
+                ;
+                StringBuilder whereSql = new StringBuilder();
+                whereSql.Append(" WHERE a.is_del=" + (int)IsDeleted.no);
+                if (parm.SearchEqpId != null)
+                {
+                    whereSql.Append(" and a.eqpid =" + parm.SearchEqpId);
+                }
+                
+                sql.Append(whereSql)
+                .Append(" order by a." + parm.sort + " " + parm.order)
+                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
+                List<EquipmentConfig> ets = (await c.QueryAsync<EquipmentConfig>(sql.ToString())).ToList();
+                sql.Clear();
+                sql.Append("select count(*) FROM equipment_config a ");
+                int total = await c.QueryFirstOrDefaultAsync<int>(
+                    sql.ToString() + whereSql.ToString());
+                EquipmentConfigView ret = new EquipmentConfigView();
+                ret.rows = ets;
+                ret.total = total;
+                return ret;
             });
         }
     }

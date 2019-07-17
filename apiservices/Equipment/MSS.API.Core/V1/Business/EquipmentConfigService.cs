@@ -7,6 +7,7 @@ using MSS.API.Model.Data;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using static MSS.API.Common.Const;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -30,11 +31,11 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                var data = await _equipmentRepo.GetAll();
-                if (data != null && data.Count > 0)
-                {
-                    throw new Exception("只能添加一条配置");
-                }
+                //var data = await _equipmentRepo.GetAll();
+                //if (data != null && data.Count > 0)
+                //{
+                //    throw new Exception("只能添加一条配置");
+                //}
                 DateTime dt = DateTime.Now;
                 obj.UpdatedTime = dt;
                 obj.CreatedTime = dt;
@@ -128,6 +129,26 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 ret.data = await _equipmentRepo.GetAll();
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
+        public async Task<ApiResult> GetPageByParm(EquipmentConfigParm parm)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                parm.page = parm.page == 0 ? 1 : parm.page;
+                parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
+                parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
+                parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
+                ret.data = await _equipmentRepo.GetPageByParm(parm);
                 return ret;
             }
             catch (Exception ex)

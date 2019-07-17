@@ -13,7 +13,7 @@ namespace MSS.API.Model.Data
         public int BeforeMaintainBig { get; set; }
 
         public string TextTemplate { get; set; }
-
+        public int EqpId { get; set; }
         public bool Published { get; set; }
 
         public string CreatedName { get; set; }
@@ -46,11 +46,21 @@ namespace MSS.API.Model.Data
             Map(o => o.UpdatedName).ToColumn("updated_name");
             Map(o => o.UpdatedTime).ToColumn("updated_time");
             Map(o => o.IsDel).ToColumn("is_del");
+            Map(o => o.EqpId).ToColumn("eqpid");
         }
     }
 
 
+    public class EquipmentConfigParm : BaseQueryParm
+    {
+        public int? SearchEqpId { get; set; }
+    }
 
+    public class EquipmentConfigView
+    {
+        public List<EquipmentConfig> rows { get; set; }
+        public int total { get; set; }
+    }
 
 
 }

@@ -205,7 +205,12 @@ const routes = [
             {
               path: '/',
               name: 'MaintainConfig',
-              redirect: 'addMaintainConfig'
+              redirect: 'list'
+            }, 
+            {
+              path: 'list',
+              name: 'SeeMaintainConfig',
+              component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeMaintainConfig.vue')
             }, 
             {
               path: 'addMaintainConfig/:mark?/:id?',

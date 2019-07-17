@@ -64,5 +64,13 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _service.GetAll();
             return Ok(resp.Result);
         }
+
+
+        [HttpGet]
+        public ActionResult GetPageByParm([FromQuery] EquipmentConfigParm parm)
+        {
+            var resp = _service.GetPageByParm(parm);
+            return Ok(resp.Result);
+        }
     }
 }

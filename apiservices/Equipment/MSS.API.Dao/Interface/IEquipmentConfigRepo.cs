@@ -14,5 +14,6 @@ namespace MSS.API.Dao.Interface
         //Task<object> GetPageByParm(EqpTypeQueryParm parm);
         Task<EquipmentConfig> GetByID(int id);
         Task<List<EquipmentConfig>> GetAll();
+        Task<EquipmentConfigView> GetPageByParm(EquipmentConfigParm parm);
     }
 }

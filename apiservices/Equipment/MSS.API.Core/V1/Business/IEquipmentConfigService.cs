@@ -16,6 +16,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> Delete(string ids, int userID);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> GetAll();
+        Task<ApiResult> GetPageByParm(EquipmentConfigParm parm);
 
     }
 }
