@@ -32,12 +32,12 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
-          <x-button>
+          <x-button :disabled="btn.save">
             <router-link :to="{ name: 'AddRole', query: { t: 'add' } }">添加</router-link>
           </x-button>
         </li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
         <li class="list" @click="shrinkAllSubContent" ><x-button>{{ shrinkAll.text }}</x-button></li>
       </ul>
     </div>
@@ -132,6 +132,7 @@
 </template>
 <script>
 import XButton from '@/components/button'
+import { btn } from '@/element/btn.js'
 import { transformDate } from '@/common/js/utils.js'
 import api from '@/api/authApi'
 export default {
@@ -141,6 +142,11 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false,
+        update: false
+      },
       defaultParams: {
         label: 'text',
         value: 'id',
@@ -182,6 +188,19 @@ export default {
     random: Number
   },
   created () {
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btn.save = !actions.some((item, index) => {
+        return item.actionID === btn.role.save
+      })
+      this.btn.delete = !actions.some((item, index) => {
+        return item.actionID === btn.role.delete
+      })
+      this.btn.update = !actions.some((item, index) => {
+        return item.actionID === btn.role.update
+      })
+    }
     this.init()
     // this.$emit('title', '| 角色定义')
     // 权限列表

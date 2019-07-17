@@ -51,10 +51,10 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
-          <x-button><router-link :to="{ name: 'AddAction', params: { mark: 'add' } }">添加</router-link></x-button>
+          <x-button :disabled="btn.save"><router-link :to="{ name: 'AddAction', params: { mark: 'add' } }">添加</router-link></x-button>
         </li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="remove" :disabled="btn.delete"><x-button>删除</x-button></li>
+        <li class="list" @click="edit" :disabled="btn.update"><x-button>修改</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -143,6 +143,7 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
+import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/authApi'
 export default {
@@ -152,6 +153,11 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false,
+        update: false
+      },
       title: ' | 权限定义',
       actionName: '',
       searchActionGroup: '',
@@ -186,6 +192,19 @@ export default {
     }
   },
   created () {
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btn.save = !actions.some((item, index) => {
+        return item.actionID === btn.action.save
+      })
+      this.btn.delete = !actions.some((item, index) => {
+        return item.actionID === btn.action.delete
+      })
+      this.btn.update = !actions.some((item, index) => {
+        return item.actionID === btn.action.update
+      })
+    }
     this.$emit('title', '| 权限定义')
     if (this.$route.params.id !== '' && this.$route.params.id !== null) {
       this.searchActionGroup = this.$route.params.id
