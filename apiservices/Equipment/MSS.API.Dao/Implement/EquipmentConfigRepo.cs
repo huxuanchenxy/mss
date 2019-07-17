@@ -20,10 +20,10 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = " INSERT INTO equipment_config " +
-                    " values (0,@Reminder,@BeforeDead,@BeforeMaintainMiddle,@BeforeMaintainBig,@TextTemplate,@Published,@EqpId " +
-                    " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
-                sql += "SELECT LAST_INSERT_ID()";
+                string sql = $@" INSERT INTO `equipment_config`( `reminder`, `before_dead`, `before_maintain_middle`, `before_maintain_big`, `text_template`, `eqpid`, `published`, `created_time`, `created_by`, `updated_time`, `updated_by`, `is_del`) VALUES 
+                ( @Reminder, @BeforeDead, @BeforeMaintainMiddle, @BeforeMaintainBig, @TextTemplate, @EqpId, @Published, @CreatedTime, @CreatedBy, @UpdatedTime, @UpdatedBy, 0);
+                    ";
+                sql += "SELECT LAST_INSERT_ID() ";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, obj);
                 obj.ID = newid;
                 return obj;

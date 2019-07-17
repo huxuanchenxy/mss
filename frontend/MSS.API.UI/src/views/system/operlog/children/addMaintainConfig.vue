@@ -9,7 +9,7 @@
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
       <x-button class="active">
-        <router-link :to="{name:'SeeUserList'}">返回</router-link>
+        <router-link :to="{name:'SeeMaintainConfig'}">返回</router-link>
       </x-button>
     </div>
     <div class="con-padding-horizontal operation">
@@ -17,116 +17,46 @@
         class="custom-form" label-width="80px">
         <el-row >
           <el-col>
-            <el-form-item label="节点类型">
-              <el-select v-model="form.NodeType" :disabled="this.ReadOnly"  placeholder="请选择">
-                <el-option value="1" label="公司" selected></el-option>
-                <el-option value="2" label="部门" selected></el-option>
-                <el-option value="3" label="班组" selected></el-option>
-              </el-select>
+            <el-form-item label="提醒方式">
+              <el-checkbox-group v-model="form.reminder">
+                <el-checkbox label="短信"></el-checkbox>
+                <el-checkbox label="邮件"></el-checkbox>
+              </el-checkbox-group>
             </el-form-item>
           </el-col>
         </el-row>
-        <div v-if="form.NodeType==='1'">
+        <div>
           <el-row :gutter="40">
             <el-col :span="8">
-              <el-form-item label="公司名称" prop="Name">
-                <el-input v-model="form.Name" :disabled="this.ReadOnly" ></el-input>
+              <el-form-item label="寿命提醒提前">
+                <el-input v-model="form.beforeDead" :disabled="this.ReadOnly" ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="公司编码">
-                <el-input v-model="form.Code" :disabled="this.ReadOnly"></el-input>
+              <el-form-item label="中修提醒提前">
+                <el-input v-model="form.beforeMaintainMiddle" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="负责人">
-                <el-select v-model="form.Leader" :disabled="this.ReadOnly" style="width:100%" placeholder="请选择">
-                  <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="40">
-            <el-col :span="8">
-              <el-form-item label="地址">
-                <el-input v-model="form.Address" :disabled="this.ReadOnly"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="电话" prop="PhoneNum">
-                <el-input v-model="form.PhoneNum" :disabled="this.ReadOnly"></el-input>
+              <el-form-item label="大修提醒提前">
+                <el-input v-model="form.beforeMaintainBig" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row >
             <el-col>
-              <el-form-item label="描述">
-                <el-input type="textarea" v-model="form.Desc" :disabled="this.ReadOnly"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-        <div v-if="form.NodeType==='2'">
-          <el-row :gutter="40">
-            <el-col :span="8">
-              <el-form-item label="部门名称" prop="Name">
-                <el-input v-model="form.Name" :disabled="this.ReadOnly" ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="部门编码">
-                <el-input v-model="form.Code" :disabled="this.ReadOnly"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="负责人">
-                <el-select v-model="form.Leader" :disabled="this.ReadOnly" style="width:100%" placeholder="请选择">
-                  <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
-                </el-select>
+              <el-form-item label="提醒内容格式模板">
+                <el-input type="textarea" v-model="form.textTemplate" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row >
             <el-col>
-              <el-form-item label="描述">
-                <el-input type="textarea" v-model="form.Desc" :disabled="this.ReadOnly"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-        <div v-if="form.NodeType==='3'">
-          <el-row :gutter="40">
-            <el-col :span="8">
-              <el-form-item label="班组名称" prop="Name">
-                <el-input v-model="form.Name" :disabled="this.ReadOnly" ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="负责人">
-                <el-select v-model="form.Leader" :disabled="this.ReadOnly" style="width:100%" placeholder="请选择">
-                  <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="地址">
-                <el-input v-model="form.Address" :disabled="this.ReadOnly"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="40">
-            <el-col :span="8">
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="电话" prop="PhoneNum">
-                <el-input v-model="form.PhoneNum" :disabled="this.ReadOnly"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row >
-            <el-col :span="24">
-              <el-form-item label="描述">
-                <el-input type="textarea" v-model="form.Desc" :disabled="this.ReadOnly"></el-input>
+              <el-form-item label="是否启用规则">
+                <el-radio-group v-model="form.published">
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">禁用</el-radio>
+              </el-radio-group>
               </el-form-item>
             </el-col>
           </el-row>
@@ -135,7 +65,7 @@
           <el-col align="center">
             <el-form-item>
               <x-button class="close">
-                <router-link :to="{ name: 'OrgList' }">取消</router-link>
+                <router-link :to="{ name: 'SeeMaintainConfig' }">取消</router-link>
               </x-button>
               <x-button class="active" @click.native="submitForm">保存</x-button>
             </el-form-item>
@@ -148,7 +78,7 @@
 <script>
 import { validateInputCommon, vInput, vPhone, validateNumberCommon, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/orgApi'
+import api from '@/api/operlogApi'
 // import eventBus from '@/components/Bus'
 export default {
   name: 'addMaintainConfig',
@@ -159,14 +89,15 @@ export default {
     return {
       form: {
         ID: '0',
-        ParentID: null,
-        NodeType: '1',
+        mark: this.$route.params.mark,
+        editID: this.$route.params.id,
+        reminder: [],
         Name: '',
-        Code: '',
-        Leader: '',
-        Address: '',
-        PhoneNum: '',
-        Desc: ''
+        published: '',
+        beforeDead: '',
+        beforeMaintainMiddle: '',
+        beforeMaintainBig: '',
+        textTemplate: ''
       },
       rules: {
         Name: [
@@ -187,18 +118,17 @@ export default {
     if (this.$route.query.id !== 0) {
       this.form.ID = this.$route.query.id
     }
-    if (this.$route.query.parentID) {
-      this.form.ParentID = this.$route.query.parentID
-    }
     if (this.$route.query.readonly) {
       this.ReadOnly = true
     }
-    this.getAllUsers()
-    let subTitle = this.ReadOnly ? '节点查看' : '节点配置'
+    if (this.$route.params.mark === 'edit') {
+      this.getobj()
+    }
+    let subTitle = this.ReadOnly ? '寿命查看' : '寿命配置'
     this.$emit('pageInfo', {
-      title: ' | 组织架构 | ' + subTitle,
+      title: ' | 寿命配置 | ' + subTitle,
       isShowBackBtn: true,
-      url: 'OrgList'
+      url: 'SeeMaintainConfig'
     })
   },
   methods: {
@@ -241,130 +171,38 @@ export default {
         callback()
       }
     },
-    getAllUsers () {
-      // if ((this.ID + '') !== '0') {
-      //   this.getOrgNode(this.ID)
-      // }
-      api.getAllUsers().then((res) => {
-        this.Users = res.data
-        if ((this.form.ID + '') !== '0') {
-          this.getOrgNode(this.form.ID)
-        }
-      })
-    },
-    getOrgNode (id) {
-      api.getOrgNode(id).then((res) => {
-        if (res.code === ApiRESULT.Success) {
-          this.form.NodeType = res.data.nodeType + ''
-          if (this.form.NodeType === '1') {
-            this.initcomForm(res.data)
-          } else if (this.form.NodeType === '2') {
-            this.initsecForm(res.data)
-          } else if (this.form.NodeType === '3') {
-            this.initteamForm(res.data)
-          }
-        } else {
-          this.$message.error('获取节点信息失败')
-        }
-      })
-    },
-    initcomForm (data) {
-      this.form.ParentID = data.parentID
-      this.form.Name = data.name
-      let props = data.propEx
-      if (props) {
-        for (var prop in props) {
-          switch (props[prop].nodeAttr) {
-            case 'Code':
-              this.form.Code = props[prop].attrValue
-              break
-            case 'Leader':
-              this.form.Leader = this.parseLeader(props[prop].attrValue)
-              break
-            case 'Address':
-              this.form.Address = props[prop].attrValue
-              break
-            case 'PhoneNum':
-              this.form.PhoneNum = props[prop].attrValue
-              break
-            case 'Desc':
-              this.form.Desc = props[prop].attrValue
-              break
-          }
-        }
-      }
-    },
-    initsecForm (data) {
-      this.form.ParentID = data.parentID
-      this.form.Name = data.name
-      let props = data.propEx
-      if (props) {
-        for (var prop in props) {
-          switch (props[prop].nodeAttr) {
-            case 'Code':
-              this.form.Code = props[prop].attrValue
-              break
-            case 'Leader':
-              this.form.Leader = this.parseLeader(props[prop].attrValue)
-              break
-            case 'Desc':
-              this.form.Desc = props[prop].attrValue
-              break
-          }
-        }
-      }
-    },
-    initteamForm (data) {
-      this.form.ParentID = data.parentID
-      this.form.Name = data.name
-      let props = data.propEx
-      if (props) {
-        for (var prop in props) {
-          switch (props[prop].nodeAttr) {
-            case 'Leader':
-              this.form.Leader = this.parseLeader(props[prop].attrValue)
-              break
-            case 'Address':
-              this.form.Address = props[prop].attrValue
-              break
-            case 'PhoneNum':
-              this.form.PhoneNum = props[prop].attrValue
-              break
-            case 'Desc':
-              this.form.Desc = props[prop].attrValue
-              break
-          }
-        }
-      }
-    },
-    parseLeader (val) {
-      if (val) {
-        let leaderid = parseInt(val)
-        let exist = this.Users.filter(user => {
-          return user.id === leaderid
-        })
-        if (exist.length > 0) {
-          return leaderid
-        } else {
-          return ''
-        }
-      } else {
-        return ''
-      }
-    },
     submitForm () {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          var orgNode = {
-            ID: this.form.ID,
-            ParentID: this.form.ParentID,
-            Name: this.form.Name,
-            NodeType: this.form.NodeType,
-            propEx: this.getPropEx()
+          var _reminder
+          if (this.form.reminder.length === 0) {
+            this.$message({
+              message: '验证失败，请选择提醒方式',
+              type: 'error'
+            })
+            return
+          } else if (this.form.reminder.length === 2) {
+            _reminder = 3
+          } else if (this.form.reminder[0] === '短信') {
+            _reminder = 1
+          } else if (this.form.reminder[0] === '邮件') {
+            _reminder = 2
           }
-          // eventBus.$emit('submit', orgNode)
-          if ((orgNode.ID + '') === '0') {
-            api.addOrgNode(orgNode).then((res) => {
+          var obj = {
+            ID: this.$route.params.id,
+            reminder: _reminder,
+            beforeDead: this.form.beforeDead,
+            beforeMaintainMiddle: this.form.beforeMaintainMiddle,
+            beforeMaintainBig: this.form.beforeMaintainBig,
+            published: this.form.published,
+            eqpid: -1,
+            textTemplate: this.form.textTemplate
+          }
+          alert(obj.ID)
+          // alert(this.form.mark)
+          // eventBus.$emit('submit', obj)
+          if (this.form.mark === 'add') {
+            api.addEquipmentConfig(obj).then((res) => {
               if (res.code === ApiRESULT.Success) {
               // this.$refs.tree.append({
               //   id: res.data.id,
@@ -373,34 +211,19 @@ export default {
               // }, res.data.parentID)
                 this.$message.success('保存成功')
                 this.$router.push({
-                  name: 'OrgList'
+                  name: 'SeeMaintainConfig'
                 })
-              } else if (res.code === ApiRESULT.DataIsExist) {
-                this.$message.error('名称重复')
-              } else if (res.code === ApiRESULT.CheckDataRulesFail) {
-                this.$message.error('父节点类型不能添加子节点，或用户关联规则冲突')
               } else {
                 this.$message.error('保存失败')
               }
             })
           } else {
-            api.updateOrgNode(orgNode.ID, orgNode).then((res) => {
+            api.updateEquipmentConfig(obj).then((res) => {
               if (res.code === ApiRESULT.Success) {
-              // let node = this.$refs.tree.getNode(orgNode.ID)
-              // node.setData({
-              //   id: res.data.id,
-              //   label: res.data.name,
-              //   node_type: res.data.nodeType
-              // })
-              // this.$set(this.data, 'label', node.name)
                 this.$message.success('更新成功')
                 this.$router.push({
-                  name: 'OrgList'
+                  name: 'SeeMaintainConfig'
                 })
-              } else if (res.code === ApiRESULT.DataIsExist) {
-                this.$message.error('名称重复')
-              } else if (res.code === ApiRESULT.CheckDataRulesFail) {
-                this.$message.error('此节点有子节点，不能修改为非父节点类型，或用户关联规则冲突')
               } else {
                 this.$message.error('更新失败')
               }
@@ -409,65 +232,28 @@ export default {
         }
       })
     },
-    getPropEx (obj) {
-      var propEx = []
-      switch (this.form.NodeType + '') {
-        case '1':
-          propEx.push({
-            NodeAttr: 'Code',
-            AttrValue: this.form.Code
-          })
-          propEx.push({
-            NodeAttr: 'Leader',
-            AttrValue: this.form.Leader
-          })
-          propEx.push({
-            NodeAttr: 'Address',
-            AttrValue: this.form.Address
-          })
-          propEx.push({
-            NodeAttr: 'PhoneNum',
-            AttrValue: this.form.PhoneNum
-          })
-          propEx.push({
-            NodeAttr: 'Desc',
-            AttrValue: this.form.Desc
-          })
-          break
-        case '2':
-          propEx.push({
-            NodeAttr: 'Code',
-            AttrValue: this.form.Code
-          })
-          propEx.push({
-            NodeAttr: 'Leader',
-            AttrValue: this.form.Leader
-          })
-          propEx.push({
-            NodeAttr: 'Desc',
-            AttrValue: this.form.Desc
-          })
-          break
-        case '3':
-          propEx.push({
-            NodeAttr: 'Leader',
-            AttrValue: this.form.Leader
-          })
-          propEx.push({
-            NodeAttr: 'Address',
-            AttrValue: this.form.Address
-          })
-          propEx.push({
-            NodeAttr: 'PhoneNum',
-            AttrValue: this.form.PhoneNum
-          })
-          propEx.push({
-            NodeAttr: 'Desc',
-            AttrValue: this.form.Desc
-          })
-          break
-      }
-      return propEx
+    // 修改用户时获取用户资料
+    getobj () {
+      var id = this.$route.params.id
+      api.getEquipmentConfigByID(id).then(res => {
+        this.loading = false
+        let _res = res.data
+        // this.userID = _res.id
+        var r = _res.reminder
+        if (r === 1) {
+          this.form.reminder = ['短信']
+        } else if (r === 2) {
+          this.form.reminder = ['邮件']
+        } else if (r === 3) {
+          this.form.reminder = ['短信', '邮件']
+        }
+        var p = _res.published
+        this.form.published = p
+        this.form.beforeDead = _res.beforeDead
+        this.form.beforeMaintainMiddle = _res.beforeMaintainMiddle
+        this.form.beforeMaintainBig = _res.beforeMaintainBig
+        this.form.textTemplate = _res.textTemplate
+      }).catch(err => console.log(err))
     }
   }
 }

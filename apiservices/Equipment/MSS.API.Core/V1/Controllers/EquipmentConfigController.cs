@@ -32,6 +32,7 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult Save(EquipmentConfig obj)
         {
             obj.CreatedBy = _userId;
+            obj.UpdatedBy = _userId;
             var ret = _service.Save(obj);
             return Ok(ret.Result);
         }

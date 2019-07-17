@@ -179,9 +179,9 @@ export default {
     },
     transformpublish (obj) {
       var r
-      if (obj === true) {
+      if (obj === 1) {
         r = '启用'
-      } else if (obj === false) {
+      } else if (obj === 0) {
         r = '禁用'
       }
       return r

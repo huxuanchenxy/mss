@@ -7,14 +7,14 @@ namespace MSS.API.Model.Data
 {
     public class EquipmentConfig : BaseEntity
     {
-        public EmReminder Reminder { get; set; }
+        public int Reminder { get; set; }
         public int BeforeDead { get; set; }
         public int BeforeMaintainMiddle { get; set; }
         public int BeforeMaintainBig { get; set; }
 
         public string TextTemplate { get; set; }
         public int EqpId { get; set; }
-        public bool Published { get; set; }
+        public int Published { get; set; }
 
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
