@@ -18,13 +18,12 @@
           <div class="inp-wrap">
             <span class="text">提醒方式<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-checkbox-group v-model="Reminder">
+              <el-checkbox-group v-model="reminder" @change="reminderclick">
               <el-checkbox label="短信"></el-checkbox>
               <el-checkbox label="邮件"></el-checkbox>
             </el-checkbox-group>
             </div>
           </div>
-          <p class="validate-tips">{{ accName.tips }}</p>
         </li>
       </ul>
       <ul class="input-group">
@@ -32,31 +31,54 @@
           <div class="inp-wrap">
             <span class="text">寿命提醒提前<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入寿命提醒提前" v-model.trim="userName.text" @keyup.native="validateInput(userName)"></el-input>
+              <el-input placeholder="请输入寿命提醒提前" v-model.trim="beforeDead.text" @keyup.native="validateInput(beforeDead)"></el-input>
             </div>
             <span>(天)</span>
           </div>
-          <p class="validate-tips">{{ userName.tips }}</p>
+          <p class="validate-tips">{{ beforeDead.tips }}</p>
         </li>
         <li class="list" >
           <div class="inp-wrap">
             <span class="text">中修提醒提前<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入中修提醒提前" v-model.trim="userName.text" @keyup.native="validateInput(userName)"></el-input>
+              <el-input placeholder="请输入中修提醒提前" v-model.trim="beforeMaintainMiddle.text" @keyup.native="validateInput(beforeMaintainMiddle)"></el-input>
             </div>
             <span>(天)</span>
           </div>
-          <p class="validate-tips">{{ userName.tips }}</p>
+          <p class="validate-tips">{{ beforeMaintainMiddle.tips }}</p>
         </li>
         <li class="list" >
           <div class="inp-wrap">
             <span class="text">大修提醒提前<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入大修提醒提前" v-model.trim="userName.text" @keyup.native="validateInput(userName)"></el-input>
+              <el-input placeholder="请输入大修提醒提前" v-model.trim="beforeMaintainBig.text" @keyup.native="validateInput(beforeMaintainBig)"></el-input>
             </div>
             <span>(天)</span>
           </div>
-          <p class="validate-tips">{{ userName.tips }}</p>
+          <p class="validate-tips">{{ beforeMaintainBig.tips }}</p>
+        </li>
+      </ul>
+      <ul class="input-group">
+        <li class="list1">
+          <div class="inp-wrap">
+            <span class="text">提醒内容格式模板</span>
+            <div class="inp" style="width:86.5%;">
+              <el-input type="textarea" v-model="textTemplate"  :rows="7" ></el-input>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <ul class="input-group">
+        <li class="list" >
+          <div class="inp-wrap">
+            <span class="text">是否启用规则<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-radio-group v-model="published">
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">禁用</el-radio>
+              </el-radio-group>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
@@ -64,7 +86,7 @@
       <x-button class="close">
         <router-link :to="{ name: 'SeeUserList' }">取消</router-link>
       </x-button>
-      <x-button class="active" @click.native="enter">保存</x-button>
+      <x-button class="active" @click.native="enter">设定</x-button>
     </div>
   </div>
 </template>
@@ -84,40 +106,24 @@ export default {
       isShow: 'add',
       editUserID: this.$route.params.id,
       userID: '',
-      accName: {
+      beforeDead: {
         text: '',
         tips: ''
       },
-      userName: {
+      beforeMaintainMiddle: {
         text: '',
         tips: ''
       },
-      jobNumber: {
+      beforeMaintainBig: {
         text: '',
         tips: ''
       },
-      role: '',
-      roleList: [],
-      position: {
-        text: '',
-        tips: ''
-      },
-      mobile: {
-        text: '',
-        tips: ''
-      },
-      email: {
-        text: '',
-        tips: ''
-      },
-      Reminder: []
+      reminder: [],
+      published: 0,
+      textTemplate: ''
     }
   },
   created () {
-    // 角色列表
-    // api.getRoleAll().then(res => {
-    //   this.roleList = res.data
-    // }).catch(err => console.log(err))
     this.isShow = 'add'
     this.title = '| 寿命提醒配置'
   },
@@ -138,6 +144,22 @@ export default {
   methods: {
     // 添加用户
     enter () {
+      alert(this.reminder)
+      var _reminder
+      if (this.reminder.length === 0) {
+        this.$message({
+          message: '验证失败，请选择提醒方式',
+          type: 'error'
+        })
+        return
+      } else if (this.reminder.length === 2) {
+        _reminder = 3
+      } else if (this.reminder[0] === '短信') {
+        _reminder = 1
+      } else if (this.reminder[0] === '邮件') {
+        _reminder = 2
+      }
+      alert('aaa' + _reminder)
       if (!this.validateAll()) {
         this.$message({
           message: '验证失败，请查看提示信息',
@@ -145,18 +167,12 @@ export default {
         })
         return
       }
-      let user = {
-        acc_name: this.accName.text,
-        user_name: this.userName.text,
-        role_id: this.role,
-        job_number: this.jobNumber.text,
-        position: this.position.text,
-        mobile: this.mobile.text,
-        email: this.email.text
+      let obj = {
+        Reminder: _reminder
       }
       if (this.isShow === 'add') {
         // 添加用户
-        api.addUser(user).then(res => {
+        api.addUser(obj).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '添加成功',
@@ -175,9 +191,9 @@ export default {
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
-        user.id = this.userID
+        // user.id = this.userID
         // 修改用户
-        api.updateUser(user).then(res => {
+        api.updateUser(obj).then(res => {
           if (res.code === 0) {
             this.$message({
               message: '修改成功',
@@ -267,6 +283,9 @@ export default {
       if (!this.validateInputPhone(this.mobile)) return false
       // if (!this.validateSelect()) return false
       return true
+    },
+    reminderclick () {
+      // alert(333)
     }
   }
 }
@@ -300,6 +319,21 @@ export default {
         // justify-content: flex-end;
       }
     }
+
+    .list1{
+      width: 100%;
+      margin-top: PXtoEm(25);
+
+      span{
+        width: 8.3%;
+      }
+
+      .inp-wrap{
+        display: flex;
+        align-items: center;
+      }
+
+    }
   }
 }
 .btn-enter{
@@ -311,4 +345,9 @@ export default {
     background: $color-main-btn;
   }
 }
+</style>
+<style>
+  .el-textarea .el-textarea__inner{
+    resize: none;
+  }
 </style>
