@@ -61,6 +61,8 @@
 // import { transformDate } from '@/common/js/utils.js'
 import Bus from '@/components/Bus'
 import api from '@/api/authApi'
+// import * as signalR from '@/common/js/signalr/signalr'
+import * as signalR from '@aspnet/signalr'
 export default {
   name: 'sidebar',
   data () {
@@ -83,7 +85,7 @@ export default {
   },
   created () {
     this.getMenu()
-    this.getAlarms()
+    this.initEvents()
   },
   methods: {
     gotoAlarmHandle (index) {
@@ -104,20 +106,20 @@ export default {
       })
     },
 
-    getAlarms () {
-      // window.axios.get('/Alarm/GetIndexAlarm').then(res => {
-      //   res.data.rows.map((item, index) => {
-      //     this.warningMsg.push({
-      //       title: item.TunnelName,
-      //       region: item.RoadName,
-      //       PID: item.PID,
-      //       index: index,
-      //       OriginTime: transformDate(item.OriginTime),
-      //       OriginTime_MS: item.OriginTime_MS,
-      //       state: 'warning'
-      //     })
-      //   })
-      // }).catch(err => console.log(err))
+    initEvents () {
+      let token = window.sessionStorage.getItem('token')
+      var connection = new signalR.HubConnectionBuilder().withUrl('http://localhost:3851/eventHub',
+        { accessTokenFactory: () => token }).build()
+      connection.on('RecieveMsg', function (message) {
+        console.log(message)
+      })
+      connection.start().then(function () {
+        connection.invoke('SendMessage', 'message').catch(function (err) {
+          return console.error(err.toString())
+        })
+      }).catch(function (err) {
+        return console.error(err.toString())
+      })
     },
 
     // 获取菜单
