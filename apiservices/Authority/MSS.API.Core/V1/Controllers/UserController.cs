@@ -157,7 +157,7 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult GetAction()
         {
             var resp = _UserService.GetActionByUser();
-            return Ok(resp);
+            return Ok(resp.Result);
         }
 
     }
