@@ -8,19 +8,16 @@
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
-    <div class="box1">
-      <ul class="con-padding-horizontal btn-group" style="height:54px;">
-        <li class="list" @click="look" style="top:12%;position:absolute;padding-left:146px;"><x-button>查看</x-button></li>
-        <li class="list" style="top:12%;position:absolute;">
+    <div class="box" style="height:68px;">
+<ul class="con-padding-horizontal btn-group" style="padding-top: 20px;">
+        <li class="list">
           <x-button>
             <router-link :to="{ name: 'addMaintainConfig', params: { mark: 'add' } }">添加</router-link>
           </x-button>
         </li>
-        <li class="list" style="top:12%;position:absolute;padding-left:75px;">
-          <x-button>
-            <router-link :to="{ name: 'addMaintainConfig', params: { mark: 'edit' } }">修改</router-link>
-          </x-button>
-        </li>
+        <li class="list" @click="remove"><x-button>删除</x-button></li>
+        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="look"><x-button>查看</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -93,7 +90,20 @@
         </el-scrollbar>
       </div>
     </div>
-
+    <!-- dialog对话框 -->
+    <el-dialog
+      :visible.sync="dialogVisible.isShow"
+      :modal-append-to-body="false"
+      :show-close="false">
+      {{ dialogVisible.text }}
+      <template slot="footer" class="dialog-footer">
+        <template v-if="dialogVisible.btn">
+          <el-button @click="dialogVisible.isShow = false">否</el-button>
+          <el-button @click="dialogEnter">是</el-button>
+        </template>
+        <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -303,6 +313,39 @@ export default {
           }
         })
       }
+    },
+    remove () {
+      if (!this.lookOperlogID.length) {
+        this.$message({
+          message: '请选择需要删除的配置',
+          type: 'warning'
+        })
+      } else {
+        this.dialogVisible.isShow = true
+        this.dialogVisible.btn = true
+        this.dialogVisible.text = '确定删除该条配置信息?'
+      }
+    },
+    // 弹框确认是否删除
+    dialogEnter () {
+      api.delEquipmentConfig(this.lookOperlogID.join(',')).then(res => {
+        if (res.code === 0) {
+          this.lookOperlogID = []
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.currentPage = 1
+          this.searchResult(1)
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        // 隐藏dialog
+        this.dialogVisible.isShow = false
+      }).catch(err => console.log(err))
     }
   }
 }
@@ -416,6 +459,6 @@ $con-height: $content-height - 145 - 56;
 </style>
 <style>
   .box1{
-    height: 8%;
+    height: 30px;
   }
 </style>

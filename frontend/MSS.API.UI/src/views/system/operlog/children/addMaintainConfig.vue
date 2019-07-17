@@ -151,7 +151,7 @@ import XButton from '@/components/button'
 import api from '@/api/orgApi'
 // import eventBus from '@/components/Bus'
 export default {
-  name: 'Node',
+  name: 'addMaintainConfig',
   components: {
     XButton
   },
