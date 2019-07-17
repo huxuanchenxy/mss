@@ -19,8 +19,8 @@
           <el-col>
             <el-form-item label="提醒方式">
               <el-checkbox-group v-model="form.reminder">
-                <el-checkbox label="短信"></el-checkbox>
-                <el-checkbox label="邮件"></el-checkbox>
+                <el-checkbox label="短信" :disabled="this.ReadOnly"></el-checkbox>
+                <el-checkbox label="邮件" :disabled="this.ReadOnly"></el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </el-col>
@@ -54,14 +54,14 @@
             <el-col>
               <el-form-item label="是否启用规则">
                 <el-radio-group v-model="form.published">
-                <el-radio :label="1">启用</el-radio>
-                <el-radio :label="0">禁用</el-radio>
+                <el-radio :label="1" :disabled="this.ReadOnly">启用</el-radio>
+                <el-radio :label="0" :disabled="this.ReadOnly">禁用</el-radio>
               </el-radio-group>
               </el-form-item>
             </el-col>
           </el-row>
         </div>
-        <el-row>
+        <el-row v-if="this.$route.params.mark!=='look'">
           <el-col align="center">
             <el-form-item>
               <x-button class="close">
@@ -118,8 +118,9 @@ export default {
     if (this.$route.query.id !== 0) {
       this.form.ID = this.$route.query.id
     }
-    if (this.$route.query.readonly) {
+    if (this.$route.params.mark === 'look') {
       this.ReadOnly = true
+      this.getobj()
     }
     if (this.$route.params.mark === 'edit') {
       this.getobj()
@@ -198,7 +199,7 @@ export default {
             eqpid: -1,
             textTemplate: this.form.textTemplate
           }
-          alert(obj.ID)
+          // alert(obj.ID)
           // alert(this.form.mark)
           // eventBus.$emit('submit', obj)
           if (this.form.mark === 'add') {
