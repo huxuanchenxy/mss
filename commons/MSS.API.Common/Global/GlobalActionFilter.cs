@@ -19,49 +19,53 @@ namespace MSS.API.Common.Global
         }
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            string controllername = context.RouteData.Values["Controller"].ToString();
-            string actionname = context.RouteData.Values["Action"].ToString();
-            string methodname = context.HttpContext.Request.Method.ToString();
-
-            var userid = _authhelper.GetUserId();
-            if (userid==-1)
+            var head = context.HttpContext.Request.Headers["Authorization"];
+            if (!string.IsNullOrEmpty(head))
             {
-                context.Result = new JsonResult(new { Code = Code.DataIsnotExist, Msg = "未找到相关信息" });
-            }
+                string controllername = context.RouteData.Values["Controller"].ToString();
+                string actionname = context.RouteData.Values["Action"].ToString();
+                string methodname = context.HttpContext.Request.Method.ToString();
 
-            string url = ("/" + controllername + "/" + actionname).ToLower();
-
-            using (var redis = new CSRedisClient(REDISConn_AUTH))
-            {
-                List<User> users = JsonConvert.DeserializeObject<List<User>>(redis.Get(REDIS_AUTH_KEY_USER));
-                User user = users.Where(a => a.id == userid).FirstOrDefault();
-                //List<ActionInfo> white = new List<ActionInfo>();
-                List<ActionInfo> black = new List<ActionInfo>();
-                if (!user.is_super)
+                var userid = _authhelper.GetUserId();
+                if (userid == -1)
                 {
-                    List<RoleAction> ras = JsonConvert.DeserializeObject<List<RoleAction>>(redis.Get(REDIS_AUTH_KEY_ROLEACTION));
-                    var tmp = ras.Where(a => a.role_id == user.role_id);
-                    if (tmp != null)
+                    context.Result = new JsonResult(new { Code = Code.DataIsnotExist, Msg = "未找到相关信息" });
+                }
+
+                string url = ("/" + controllername + "/" + actionname).ToLower();
+
+                using (var redis = new CSRedisClient(REDISConn_AUTH))
+                {
+                    List<User> users = JsonConvert.DeserializeObject<List<User>>(redis.Get(REDIS_AUTH_KEY_USER));
+                    User user = users.Where(a => a.id == userid).FirstOrDefault();
+                    //List<ActionInfo> white = new List<ActionInfo>();
+                    List<ActionInfo> black = new List<ActionInfo>();
+                    if (!user.is_super)
                     {
-                        List<int> actionIds = tmp.Select(a => a.action_id).ToList();
-                        List<ActionInfo> actions = JsonConvert.DeserializeObject<List<ActionInfo>>(redis.Get(REDIS_AUTH_KEY_ACTIONINFO));
-                        foreach (ActionInfo item in actions)
+                        List<RoleAction> ras = JsonConvert.DeserializeObject<List<RoleAction>>(redis.Get(REDIS_AUTH_KEY_ROLEACTION));
+                        var tmp = ras.Where(a => a.role_id == user.role_id);
+                        if (tmp != null)
                         {
-                            if (actionIds.Where(a=>a==item.id).Count()==0)
-                            //{
-                            //    white.Add(item);
-                            //}
-                            //else
+                            List<int> actionIds = tmp.Select(a => a.action_id).ToList();
+                            List<ActionInfo> actions = JsonConvert.DeserializeObject<List<ActionInfo>>(redis.Get(REDIS_AUTH_KEY_ACTIONINFO));
+                            foreach (ActionInfo item in actions)
                             {
-                                black.Add(item);
+                                if (actionIds.Where(a => a == item.id).Count() == 0)
+                                //{
+                                //    white.Add(item);
+                                //}
+                                //else
+                                {
+                                    black.Add(item);
+                                }
+                            }
+                            if (black.Where(a => (a.request_url).ToLower() == url).Count() == 0)
+                            {
+                                return;
                             }
                         }
-                        if (black.Where(a=>(a.request_url).ToLower() == url).Count()==0)
-                        {
-                            return;
-                        }
+                        context.Result = new JsonResult(new { Code = Code.Failure, Msg = "您没有权限访问" });
                     }
-                    context.Result = new JsonResult(new { Code = Code.Failure, Msg = "您没有权限访问" });
                 }
             }
         }
