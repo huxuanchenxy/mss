@@ -131,7 +131,10 @@ namespace MSS.API.Core
             Common.Const.PAGESIZE = Convert.ToInt32(Configuration["InitConst:PageSize"]);
             INIT_PASSWORD = Configuration["InitConst:Password"];
             PWD_RANDOM_MAX=Convert.ToInt32(Configuration["InitConst:PwdRandomMax"]);
-            AUTHSERVICE = "http://" + Configuration["ConsulServiceEntity:IP"] + ":" + Configuration["ConsulServiceEntity:Port"] + "/";
+            REDISConn_AUTH = Configuration["redis_Auth:ConnectionString"];
+            REDIS_AUTH_KEY_ACTIONINFO = Configuration["redis_Auth:tb_action_info"];
+            REDIS_AUTH_KEY_ROLEACTION = Configuration["redis_Auth:tb_role_action"];
+            REDIS_AUTH_KEY_USER = Configuration["redis_Auth:tb_user"];
         }
 
     }

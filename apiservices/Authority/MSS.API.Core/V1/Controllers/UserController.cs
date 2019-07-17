@@ -57,6 +57,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
+        [HttpGet()]
+        public ActionResult GetByID()
+        {
+            var resp = _UserService.GetByID(0);
+            return Ok(resp.Result);
+        }
+
         [HttpPost("Add")]
         public ActionResult Add(User user)
         {

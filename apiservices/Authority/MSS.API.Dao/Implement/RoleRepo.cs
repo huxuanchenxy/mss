@@ -169,5 +169,15 @@ namespace MSS.API.Dao.Implement
                 return result;
             });
         }
+
+        public async Task<List<RoleAction>> GetRoleActionAll()
+        {
+            return await WithConnection(async c =>
+            {
+                var result = (await c.QueryAsync<RoleAction>("select * from role_action")).ToList();
+                return result;
+            });
+        }
+
     }
 }

@@ -6,9 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
+using static MSS.API.Common.Const;
 using MSS.API.Utility;
 using MSS.API.Common.Utility;
 using MSS.API.Common;
+using Newtonsoft.Json;
+using CSRedis;
+using Microsoft.Extensions.Configuration;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -20,12 +24,16 @@ namespace MSS.API.Core.V1.Business
 
         private readonly int userID;
 
-        public UserService(IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo, IAuthHelper auth)
+        private readonly IConfiguration _configuration;
+        public UserService(IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo, 
+            IAuthHelper auth, IConfiguration configuration)
         {
             //_logger = logger;
             _UserRepo = userRepo;
             _ActionRepo = actionRepo;
             userID = auth.GetUserId();
+
+            _configuration = configuration;
         }
         public async Task<MSSResult<UserView>> GetPageByParm(UserQueryParm parm)
         {
@@ -33,7 +41,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 parm.page = parm.page == 0 ? 1 : parm.page;
-                parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
+                parm.rows = parm.rows == 0 ? Common.Const.PAGESIZE : parm.rows;
                 parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
                 parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
                 mRet = await _UserRepo.GetPageByParm(parm);
@@ -52,14 +60,14 @@ namespace MSS.API.Core.V1.Business
             ApiResult mRet = new ApiResult();
             try
             {
-                //if (id == 0)
-                //{
-                //    mRet.code = ErrType.ErrParm;
-                //    mRet.msg = "参数不正确，id不可为0";
-                //    return mRet;
-                //}
-                mRet.data = await _UserRepo.GetByID(id);
-                mRet.code = (int)ErrType.OK;
+                if (id == 0)
+                {
+                    mRet.data = await _UserRepo.GetByID(userID);
+                }
+                else
+                {
+                    mRet.data = await _UserRepo.GetByID(id);
+                }
                 return mRet;
             }
             catch (Exception ex)
@@ -87,6 +95,7 @@ namespace MSS.API.Core.V1.Business
                     user.created_by = userID;
                     user.updated_by = userID;
                     mRet.data = await _UserRepo.Add(user);
+                    await SaveRedis();
                     mRet.code = (int)ErrType.OK;
                 }
                 else
@@ -112,6 +121,7 @@ namespace MSS.API.Core.V1.Business
                 user.updated_time = DateTime.Now;
                 user.updated_by = userID;
                 mRet.data = await _UserRepo.Update(user);
+                await SaveRedis();
                 mRet.code = (int)ErrType.OK;
                 return mRet;
             }
@@ -129,6 +139,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 mRet.data = await _UserRepo.Delete(ids.Split(','),userID);
+                await SaveRedis();
                 mRet.code = (int)ErrType.OK;
                 return mRet;
             }
@@ -231,14 +242,7 @@ namespace MSS.API.Core.V1.Business
                     //else
                     //{
                     //    //获取此人对应的权限
-                    //    if (ui.is_super)
-                    //    {
-                    //        mRet =await GetMenu();
-                    //    }
-                    //    else
-                    //    {
-                    //        mRet = await GetMenu(ui.id);
-                    //    }
+                    //    mRet = await GetMenu();
                     //    mRet.relatedData = ui;
                     //    return mRet;
                     //}
@@ -314,6 +318,16 @@ namespace MSS.API.Core.V1.Business
                 mRet.msg = ex.Message;
                 return mRet;
             }
+        }
+
+        private async Task SaveRedis()
+        {
+            List<User> users = await _UserRepo.GetAllContainSuper();
+            using (var redis = new CSRedisClient(REDISConn_AUTH))
+            {
+                redis.Set(REDIS_AUTH_KEY_USER, JsonConvert.SerializeObject(users));
+            }
+
         }
     }
 }
