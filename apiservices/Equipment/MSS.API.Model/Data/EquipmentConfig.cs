@@ -23,6 +23,7 @@ namespace MSS.API.Model.Data
 
     public enum EmReminder
     {
+        None = 0,//都不提醒
         MobileText = 1,//短信提醒
         EmailText = 2,//邮件提醒
         MobileEmailText = 3 //同时短信和邮件提醒
