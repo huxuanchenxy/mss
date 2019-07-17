@@ -20,5 +20,6 @@ namespace MSS.API.Dao.Interface
         Task<int> Delete(string[] ids);
 
         Task<List<Role>> GetAll();
+        Task<List<RoleAction>> GetRoleActionAll();
     }
 }
