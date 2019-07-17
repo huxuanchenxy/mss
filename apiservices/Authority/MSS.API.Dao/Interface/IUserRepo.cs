@@ -23,6 +23,7 @@ namespace MSS.API.Dao.Interface
         Task<int> Delete(string[] ids,int userID);
 
         Task<List<User>> GetAll();
+        Task<List<User>> GetAllContainSuper();
         Task<int> ChangePwd(User user);
         Task<int> ResetPwd(string[] ids, int userID);
     }

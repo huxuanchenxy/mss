@@ -6,8 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
+using static MSS.API.Common.Const;
 using MSS.API.Dao.Implement;
 using MSS.API.Common.Utility;
+using Microsoft.Extensions.Configuration;
+using CSRedis;
+using Newtonsoft.Json;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -20,8 +24,10 @@ namespace MSS.API.Core.V1.Business
 
         private readonly int userID;
 
+        private readonly IConfiguration _configuration;
+
         public RoleService(IRoleRepo<Role> roleRepo, IUserRepo<User> userRepo, 
-            IActionRepo<ActionInfo> actionRepo, IAuthHelper auth)
+            IActionRepo<ActionInfo> actionRepo, IAuthHelper auth, IConfiguration configuration)
         {
             //_logger = logger;
             _RoleRepo = roleRepo;
@@ -29,6 +35,8 @@ namespace MSS.API.Core.V1.Business
             _ActionRepo = actionRepo;
 
             userID = auth.GetUserId();
+
+            _configuration = configuration;
         }
         public async Task<MSSResult<RoleView>> GetPageByParm(RoleQueryParm parm)
         {
@@ -36,7 +44,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 parm.page = parm.page == 0 ? 1 : parm.page;
-                parm.rows= parm.rows == 0 ? PAGESIZE : parm.rows;
+                parm.rows= parm.rows == 0 ? Common.Const.PAGESIZE : parm.rows;
                 parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
                 parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
                 mRet = await _RoleRepo.GetPageByParm(parm);
@@ -103,6 +111,7 @@ namespace MSS.API.Core.V1.Business
                 else
                 {
                     mRet.data = await _RoleRepo.Add(roleStrActions);
+                    await SaveRedis();
                     mRet.code = (int)ErrType.OK;
                 }
                 return mRet;
@@ -141,6 +150,7 @@ namespace MSS.API.Core.V1.Business
                         }
                     }
                     mRet.data = await _RoleRepo.Update(roleStrActions);
+                    await SaveRedis();
                     mRet.code = (int)ErrType.OK;
                 }
                 return mRet;
@@ -168,6 +178,7 @@ namespace MSS.API.Core.V1.Business
                 else
                 {
                     mRet.data = await _RoleRepo.Delete(arrIds);
+                    await SaveRedis();
                     mRet.code = (int)ErrType.OK;
                 }
                 return mRet;
@@ -195,6 +206,16 @@ namespace MSS.API.Core.V1.Business
                 mRet.msg = ex.Message;
                 return mRet;
             }
+        }
+
+        private async Task SaveRedis()
+        {
+            List<RoleAction> ras = await _RoleRepo.GetRoleActionAll();
+            using (var redis = new CSRedisClient(REDISConn_AUTH))
+            {
+                redis.Set(REDIS_AUTH_KEY_ROLEACTION, JsonConvert.SerializeObject(ras));
+            }
+
         }
     }
 }
