@@ -15,10 +15,14 @@
       :on-remove="onRemove">
       <span class="text">{{label}}</span>
       <x-button class="active upload-btn" v-show="!readOnly">视频上传</x-button>
-      <video  width="250" height="250" v-if="previewUrl !='' && videoFlag == false" :src="previewUrl" class="avatar" controls="controls">您的浏览器不支持视频播放</video>
-         <!-- <i v-else-if="previewUrl =='' && videoFlag == false" class="el-icon-plus avatar-uploader-icon"></i> -->
-        <!-- <el-progress v-if="videoFlag == true" type="line" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>  -->
+      <!-- <video  width="250" height="250" v-if="previewUrl !='' && videoFlag == false" :src="previewUrl" class="avatar" controls="controls">您的浏览器不支持视频播放</video>
+          <i v-else-if="previewUrl =='' && videoFlag == false" class="el-icon-plus avatar-uploader-icon"></i>
+        <el-progress v-if="videoFlag == true" type="line" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>  -->
     </el-upload>
+    <el-dialog title :visible.sync="vediocenterDialogVisible" width="30%" :modal-append-to-body="false" @close="closeDialog">
+         <video :src="previewUrl" controls autoplay class="video" :ref="dialogVideo"
+         width="100%"></video>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -42,7 +46,9 @@ export default {
       myFileType: {},
       uploadHeaders: {Authorization: ''},
       fileList: [],
-      previewUrl: ''
+      previewPartUrl: [],
+      previewUrl: '',
+      vediocenterDialogVisible: false
     }
   },
   watch: {
@@ -58,6 +64,13 @@ export default {
     if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
       this.uploadHeaders.Authorization = `Bearer ${token}`
     }
+    this.$refs.btn.onclik(function () {
+      if (this.$refs.dialogVideo.paused) {
+        this.$refs.dialogVideo.play()
+      } else {
+        this.$refs.dialogVideo.pause()
+      }
+    })
   },
   methods: {
     onSuccess (response, file, fileList) {
@@ -88,13 +101,18 @@ export default {
       }
     },
     preview (item) {
-      debugger
       if (item.status === 'success') {
-        if (item.url.indexOf('blob:') !== -1) {
+        var aPos = item.url.indexOf('/')
+        var bPos = item.url.substring(aPos + 1).indexOf('/')
+        var val1 = item.url.substring(aPos + 1, aPos + bPos + 1)
+        if (val1 === '') {
           this.previewUrl = item.url
         } else {
-          this.previewUrl = item.url
+          this.previewUrl = 'http://10.89.36.103:8090/' + item.url
         }
+        this.videoFlag = true
+        this.centerDialogVisible = false
+        this.vediocenterDialogVisible = true
       }
     },
     getFile () {
@@ -103,7 +121,6 @@ export default {
       }).catch(err => console.log(err))
     },
     returnFileIDs (fileList) {
-      debugger
       let ids = []
       this.fileList = fileList
       this.fileList.map(val => {

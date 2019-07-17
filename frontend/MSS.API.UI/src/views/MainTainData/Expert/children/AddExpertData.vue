@@ -97,7 +97,6 @@
         </div>
       </el-scrollbar>
     </div>
-
     <el-dialog
       :visible.sync="centerDialogVisible"
       :modal-append-to-body="false"
@@ -244,7 +243,6 @@ export default {
     },
     // 修改权限组时获取权限组资料
     getExpertData () {
-      debugger
       let id = this.editExpertID
       api.GetExpertDataById(id).then(res => {
         this.loading = false
@@ -256,7 +254,9 @@ export default {
         this.deviceType.id = _res.device_type
         this.dept.id = _res.deptid
         this.filevedioIDs = _res.video_file
+        this.filevedioIDsEdit = _res.video_file
         this.fileattachIDs = _res.attch_file
+        this.fileattachIDsEdit = _res.attch_file
       }).catch(err => console.log(err))
     },
     // 验证
@@ -305,7 +305,6 @@ export default {
       return true
     },
     getvedioFileID (val) {
-      debugger
       this.filevedioIDsEdit = val
     },
     getattachFileID (val) {

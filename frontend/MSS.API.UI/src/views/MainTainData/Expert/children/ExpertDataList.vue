@@ -96,12 +96,12 @@
           上传部门
           <i :class="[{ 'el-icon-d-caret': headOrder.deptid === 0 }, { 'el-icon-caret-top': headOrder.deptid === 1 }, { 'el-icon-caret-bottom': headOrder.deptid === 2 }]"></i>
         </li>
-         <li class="list number c-pointer" @click="changeOrder('video_file')">
-          视频上传
+         <!-- <li class="list number c-pointer" @click="changeOrder('video_file')">
+          视频
           <i :class="[{ 'el-icon-d-caret': headOrder.video_file === 0 }, { 'el-icon-caret-top': headOrder.video_file === 1 }, { 'el-icon-caret-bottom': headOrder.video_file === 2 }]"></i>
-        </li>
+        </li> -->
          <li class="list number c-pointer" @click="changeOrder('attch_file')">
-          附件上传
+          附件
           <i :class="[{ 'el-icon-d-caret': headOrder.attch_file === 0 }, { 'el-icon-caret-top': headOrder.attch_file === 1 }, { 'el-icon-caret-bottom': headOrder.attch_file === 2 }]"></i>
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
@@ -124,11 +124,17 @@
                  <div class="number">{{index+1}}</div>
                 <div class="number">{{ item.keyword }}</div>
                 <div class="name">{{ item.title }}</div>
-                <!-- <div class="number">{{ item.content }}</div> -->
                 <div class="number">{{ item.deviceTypeName }}</div>
                 <div class="number">{{ item.deptname }}</div>
-                <div class="number">{{ item.video_file }}</div>
-                <div class="number">{{ item.attch_file }}</div>
+                <!-- <div class="number">{{ item.video_file }}</div> -->
+                <!-- <div class="number">{{ item.attch_file }}</div> -->
+                <div class="upload-cascader">
+                  <el-cascader clearable
+                    @change="preview"
+                    :show-all-levels="false"
+                    :options="item.arr">
+                  </el-cascader>
+                </div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
                 <div class="last-maintainer">{{ '管理员' }}</div>
               </div>
@@ -163,11 +169,23 @@
         <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
       </template>
     </el-dialog>
-  </div>
+    <el-dialog
+      :visible.sync="centerDialogVisible"
+      :modal-append-to-body="false"
+      custom-class="show-list-wrap"
+      center>
+      <iframe v-if="previewUrl !='' && videoFlag == false" :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
+    </el-dialog>
+    <el-dialog title :visible.sync="vediocenterDialogVisible" width="30%" :modal-append-to-body="false" @close="closeDialog">
+         <video :src="previewUrl" controls autoplay class="video" :ref="dialogVideo"
+         width="100%"></video>
+      </el-dialog>
+    </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
+import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import eqpApi from '@/api/eqpApi.js'
 import api from '@/api/ExpertApi'
 export default {
   name: 'ExpertDataList',
@@ -186,6 +204,7 @@ export default {
       ExpertdataList: [],
       editExpertIDList: [],
       bCheckAll: false,
+      videoFlag: false,
       total: 0,
       currentPage: 1,
       loading: false,
@@ -211,7 +230,11 @@ export default {
         Sort: 0,
         updatedTime: 0,
         updatedBy: 0
-      }
+      },
+      centerDialogVisible: false,
+      vediocenterDialogVisible: false,
+      previewPartUrl: [],
+      previewUrl: ''
     }
   },
   created () {
@@ -231,12 +254,38 @@ export default {
   activated () {
     this.searchResult(this.currentPage)
   },
+  mounted () {
+    this.$refs.btn.onclik(function () {
+      if (this.$refs.dialogVideo.paused) {
+        this.$refs.dialogVideo.play()
+      } else {
+        this.$refs.dialogVideo.pause()
+      }
+    })
+  },
   methods: {
     init () {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      this.searchResult(1)
+      // this.searchResult(1)
+    },
+    preview (val) {
+      // http://10.89.36.103:8090/
+      var aPos = val[1].indexOf('/')
+      var bPos = val[1].substring(aPos + 1).indexOf('/')
+      var val1 = val[1].substring(aPos + 1, aPos + bPos + 1)
+      if (val1 === 'ExpertData_vedio') {
+        this.previewUrl = 'http://10.89.36.103:8090/' + val[val.length - 1]
+        this.videoFlag = true
+        this.centerDialogVisible = false
+        this.vediocenterDialogVisible = true
+      } else {
+        this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
+        this.videoFlag = false
+        this.centerDialogVisible = true
+        this.vediocenterDialogVisible = false
+      }
     },
     // 改变排序
     changeOrder (sort) {
@@ -261,6 +310,7 @@ export default {
     },
     // 搜索
     searchResult (page) {
+      this.ExpertdataList = []
       this.currentPage = page
       this.loading = true
       let parm = {
@@ -275,14 +325,87 @@ export default {
       }
       api.GetListByPage(parm).then(res => {
         this.loading = false
-        res.data.list.map(item => {
-          item.updatedTime = transformDate(item.updatedTime)
-        })
-        this.ExpertdataList = res.data.list
-        this.total = res.data.total
+        if (res.code === 0) {
+          res.data.list.map(item => {
+            item.updatedTime = transformDate(item.updatedTime)
+            item.attch_file = this.MearchFileID(item.video_file, item.attch_file)
+            if (item.attch_file != null && item.attch_file !== '') {
+              this.InvokeOutApI(item)
+            } else {
+              this.ExpertdataList.push(item)
+            }
+          })
+          this.total = res.data.total
+        }
       }).catch(err => console.log(err))
     },
-
+    MearchFileID (val, val1) {
+      if (this.IsNUllorEmpty(val) === true && this.IsNUllorEmpty(val1) === true) {
+        return val + ',' + val1
+      }
+      if (this.IsNUllorEmpty(val) === true && this.IsNUllorEmpty(val1) === false) {
+        return val
+      }
+      if (this.IsNUllorEmpty(val) === false && this.IsNUllorEmpty(val1) === true) {
+        return val1
+      }
+      return ''
+    },
+    IsNUllorEmpty (val) {
+      if (val === null || val === '') {
+        return false
+      }
+      return true
+    },
+    InvokeOutApI (item) {
+      eqpApi.getUploadFileByIDs(item.attch_file).then(res => {
+        if (res.code === 0) {
+          item.arr = this.convertDrdlist(res.data)
+          this.ExpertdataList.push(item)
+        }
+      })
+    },
+    convertDrdlist (val) {
+      let arr = []
+      let vediolist = {
+        value: '',
+        label: '',
+        children: []
+      }
+      let attchlist = {
+        value: '',
+        label: '',
+        children: []
+      }
+      for (var i = 0; i < val.length; i++) {
+        // File/ExpertData_attach/
+        var aPos = val[i].url.indexOf('/')
+        var bPos = val[i].url.substring(aPos + 1).indexOf('/')
+        var val1 = val[i].url.substring(aPos + 1, aPos + bPos + 1)
+        switch (val1) {
+          case 'ExpertData_vedio': // 视频
+            if (vediolist.label === '') {
+              vediolist.label = '视频资料'
+              vediolist.value = 7
+              arr.push(vediolist)
+            }
+            vediolist.children.push(this.convertName(val[i]))
+            break
+          case 'ExpertData_attach': // 附件
+            if (attchlist.label === '') {
+              attchlist.label = '附件资料'
+              attchlist.value = 6
+              arr.push(attchlist)
+            }
+            attchlist.children.push(this.convertName(val[i]))
+            break
+        }
+      }
+      return arr
+    },
+    convertName (val) {
+      return { 'value': val.url, 'label': val.name }
+    },
     // 修改站区
     edit () {
       if (!this.editExpertIDList.length) {
@@ -321,7 +444,7 @@ export default {
     },
     // 弹框确认是否删除
     dialogEnter () {
-      api.Delete(this.editExpertIDList.join(',')).then(res => {
+      api.DeleteList(this.editExpertIDList.join(',')).then(res => {
         if (res.code === 0) {
           this.editExpertIDList = []
           this.$message({
@@ -342,7 +465,7 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 站区别')
+      this.$emit('title', '| 专家库')
       this.loading = true
       this.init()
       this.searchResult(1)
