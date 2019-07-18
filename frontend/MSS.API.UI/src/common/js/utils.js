@@ -148,8 +148,6 @@ export const UPLOAD_SIZE = 20
 
 // pdf 缩略图片
 export const PDF_IMAGE = '/static/pdf-icon.png'
-// 服务器地址
-export const UPLOADED_SERVER_URL = 'http://10.89.36.103:8090/'
 
 export const RESULT = {
   Fail: 0,
