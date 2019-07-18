@@ -27,9 +27,9 @@ namespace MSS.API.Dao.Implement
                 {
                     sql = " insert into equipment " +
                         " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
-                        " @SubSystem,@Team,@TeamPath,@BarCode,@Desc,@Supplier,@Manufacturer, " +
+                        " @SubSystem,@Team,@TeamPath,@TopOrg,@BarCode,@Desc,@Supplier,@Manufacturer, " +
                         " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
-                        " @Location,@LocationBy,@LocationPath,@TopOrg,@Online,@Life, " +
+                        " @Location,@LocationBy,@LocationPath,@Online,@Life, " +
                         " @MediumRepair,@LargeRepair,@OnlineAgain, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                     sql += "SELECT LAST_INSERT_ID()";

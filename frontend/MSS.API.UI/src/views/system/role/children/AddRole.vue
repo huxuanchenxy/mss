@@ -73,6 +73,7 @@ export default {
       roleID: '',
       roleActionInfo: [],
       authority: [],
+      currentOpen: -1,
       // authorityIdList: [],
       listCheck: [],
       bCheckAll: false,
@@ -157,7 +158,17 @@ export default {
 
     // 收起、展开
     shrinkChildren (index) {
-      this.authority[index].shrink = !this.authority[index].shrink
+      // this.authority[index].shrink = !this.authority[index].shrink
+      if (this.authority[index].shrink) {
+        this.currentOpen = -1
+        this.authority[index].shrink = false
+      } else {
+        if (this.currentOpen !== -1) {
+          this.authority[this.currentOpen].shrink = false
+        }
+        this.currentOpen = index
+        this.authority[index].shrink = true
+      }
     },
 
     // 修改角色时获取角色资料
