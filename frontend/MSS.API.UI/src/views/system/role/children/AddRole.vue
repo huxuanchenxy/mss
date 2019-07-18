@@ -36,9 +36,9 @@
               </div>
               <div class="list-sub-con" v-for="children in item.children" :key="children.key" v-show="item.shrink">
                 <el-checkbox-group v-model="roleActionInfo">
-                  <el-checkbox :label="children.id">{{ children.text }}</el-checkbox>
+                  <el-checkbox class="chk-col" :label="children.id">{{ children.text }}</el-checkbox>
                   <el-checkbox-group class="chk-list" v-model="roleActionInfo" v-for="operation in children.children" :key="operation.key">
-                    <el-checkbox :label="operation.id">{{ operation.text }}</el-checkbox>
+                    <el-checkbox class="chk-col" :label="operation.id">{{ operation.text }}</el-checkbox>
                   </el-checkbox-group>
                 </el-checkbox-group>
               </div>
@@ -319,6 +319,10 @@ $height: $content-height - 56;
     .chk-list{
       display: inline;
       margin-left: 5%;
+    }
+
+    .chk-col{
+      width: 120px;
     }
   }
 

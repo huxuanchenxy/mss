@@ -90,7 +90,8 @@
                   <div class="left-title">{{ sub.text }}</div>
                   <ul>
                     <li v-for="three in sub.children" :key="three.key">
-                      <ul class="right-wrap">{{ three.text }}
+                      <ul class="right-wrap">
+                        <li class="list">{{ three.text }}</li>
                         <li class="list" v-for="four in three.children" :key="four.key">{{ four.text }}</li>
                       </ul>
                     </li>
@@ -507,8 +508,8 @@ $height: $content-height - 56;
     }
 
     .left-title{
-      width: 100px;
-      margin-left: 5%;
+      width: 50px;
+      margin-left: 2%;
       font-weight: bold;
     }
 
@@ -540,8 +541,8 @@ $height: $content-height - 56;
       }
 
       .list{
-        width: 130px;
-        margin-left: 100px;
+        width: 100px;
+        margin-left: 50px;
       }
     }
   }
