@@ -6,12 +6,13 @@ using System.Text;
 namespace MSS.API.Model.Data
 {
     [DataContract]
-    public  class DeviceInfo
+    public class DeviceInfo
     {
         [DataMember]
         public int id { get; set; }
 
         [DataMember]
         public string deviceName { get; set; }
+ 
     }
 }

@@ -165,7 +165,7 @@ namespace MSS.API.Core.V1.Business
                         foreach (var v in list)
                         {
                           v.deptname= GetDeptNameByID(v.deptid.ToString());
-                          v.deviceTypeName = GetDeviceTypeNameByID(v.device_type.ToString());
+                          v.deviceTypeName = GetDeviceTypeNameByID(v.device_type.ToString());  
                         }
                     }
   
@@ -185,8 +185,7 @@ namespace MSS.API.Core.V1.Business
             }
 
             return ret;
-        }
-
+        } 
         private string GetDeviceTypeNameByID(string device_type)
         {
             string deviceTypeName = string.Empty;
