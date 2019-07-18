@@ -222,6 +222,8 @@ namespace MSS.API.Core.V1.Business
                 using (TransactionScope scope = new TransactionScope())
                 {
                     var model = await _expertRepo.GetModel(id);
+                    model.deptname = GetDeptNameByID(model.deptid.ToString());
+                    model.deviceTypeName = GetDeviceTypeNameByID(model.device_type.ToString());
                     ret.code = Code.Success;
                     ret.data = model;
                     scope.Complete();
