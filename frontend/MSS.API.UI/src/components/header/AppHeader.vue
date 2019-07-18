@@ -54,14 +54,14 @@ export default {
       api.getUserInfo().then((res) => {
         if (res.code === ApiRESULT.Success) {
           this.userName = res.data.user_name
-          window.sessionStorage.setItem('UserInfo', res.data)
+          window.sessionStorage.setItem('UserInfo', JSON.stringify(res.data))
         }
       })
     },
     getUserAction () {
       api.getUserAction().then((res) => {
         if (res.code === ApiRESULT.Success) {
-          window.sessionStorage.setItem('UserAction', res.data)
+          window.sessionStorage.setItem('UserAction', JSON.stringify(res.data))
         }
       })
     }

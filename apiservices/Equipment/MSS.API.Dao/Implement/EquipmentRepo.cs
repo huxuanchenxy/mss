@@ -27,9 +27,9 @@ namespace MSS.API.Dao.Implement
                 {
                     sql = " insert into equipment " +
                         " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
-                        " @SubSystem,@Team,@TeamPath,@BarCode,@Desc,@Supplier,@Manufacturer, " +
+                        " @SubSystem,@Team,@TeamPath,@TopOrg,@BarCode,@Desc,@Supplier,@Manufacturer, " +
                         " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
-                        " @Location,@LocationBy,@LocationPath,@TopOrg,@Online,@Life, " +
+                        " @Location,@LocationBy,@LocationPath,@Online,@Life, " +
                         " @MediumRepair,@LargeRepair,@OnlineAgain, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                     sql += "SELECT LAST_INSERT_ID()";
@@ -213,13 +213,15 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
-        public async Task<List<Equipment>> ListByPosition(int location,int locationBy)
+        public async Task<List<Equipment>> ListByPosition(int location,int locationBy, int eqpType,int? topOrg)
         {
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<Equipment>(
-                    "SELECT * FROM Equipment WHERE location = @location and location_by=@locationBy", 
-                    new { location = location, locationBy= locationBy });
+                    "SELECT * FROM Equipment " +
+                    "WHERE location = @location and location_by=@locationBy " +
+                    "and eqp_type=@eqpType and top_org=@topOrg", 
+                    new { location = location, locationBy= locationBy, eqpType= eqpType, topOrg= topOrg });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();

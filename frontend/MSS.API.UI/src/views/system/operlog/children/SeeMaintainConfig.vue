@@ -109,7 +109,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/operlogApi'
+import api from '@/api/eqpConfigApi'
 export default {
   name: 'SeeMaintainConfig',
   components: {

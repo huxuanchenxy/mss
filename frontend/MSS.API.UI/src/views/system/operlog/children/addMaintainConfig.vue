@@ -78,7 +78,7 @@
 <script>
 import { validateInputCommon, vInput, vPhone, validateNumberCommon, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/operlogApi'
+import api from '@/api/eqpConfigApi'
 // import eventBus from '@/components/Bus'
 export default {
   name: 'addMaintainConfig',

@@ -12,6 +12,7 @@ using MSS.API.Common.Utility;
 using Microsoft.Extensions.Configuration;
 using CSRedis;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -24,10 +25,12 @@ namespace MSS.API.Core.V1.Business
 
         private readonly int userID;
 
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
+        private readonly IDistributedCache _cache;
+
 
         public RoleService(IRoleRepo<Role> roleRepo, IUserRepo<User> userRepo, 
-            IActionRepo<ActionInfo> actionRepo, IAuthHelper auth, IConfiguration configuration)
+            IActionRepo<ActionInfo> actionRepo, IAuthHelper auth, IDistributedCache cache)
         {
             //_logger = logger;
             _RoleRepo = roleRepo;
@@ -36,7 +39,8 @@ namespace MSS.API.Core.V1.Business
 
             userID = auth.GetUserId();
 
-            _configuration = configuration;
+            //_configuration = configuration;
+            _cache = cache;
         }
         public async Task<MSSResult<RoleView>> GetPageByParm(RoleQueryParm parm)
         {
@@ -211,10 +215,7 @@ namespace MSS.API.Core.V1.Business
         private async Task SaveRedis()
         {
             List<RoleAction> ras = await _RoleRepo.GetRoleActionAll();
-            using (var redis = new CSRedisClient(REDISConn_AUTH))
-            {
-                redis.Set(REDIS_AUTH_KEY_ROLEACTION, JsonConvert.SerializeObject(ras));
-            }
+            _cache.SetString(REDIS_AUTH_KEY_ROLEACTION, JsonConvert.SerializeObject(ras));
 
         }
     }

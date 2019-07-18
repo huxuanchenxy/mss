@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
-using MSS.API.Operlog.Common;
 using MSS.API.Common;
 using MSS.Common.Consul;
+using MSS.API.Common.Global;
 
 namespace MSS.API.Core
 {
@@ -66,12 +62,12 @@ namespace MSS.API.Core
                 // options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
 
-            
+            services.AddSingleton<GlobalActionFilter>();
             services.AddMvc(
-                 //options =>
-                 //{
-                 //    options.Filters.Add<GlobalActionFilter>();
-                 //}
+                 options =>
+                 {
+                     options.Filters.Add<GlobalActionFilter>();
+                 }
                 ).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register the Swagger generator, defining 1 or more Swagger documents

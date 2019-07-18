@@ -40,11 +40,7 @@
             <p class="validate-tips">{{ model.tips }}</p>
           </li>
           <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Working_Instruction" label="作业指导" :fileIDs="fileIDs.working" @getFileIDs="getWorkingFileIDs"></upload-pdf>
-              </div>
-            </div>
+            <upload-pdf ext="pdf" :fileType="fileType.EqpType_Working_Instruction" label="作业指导" :fileIDs="fileIDs.working" @getFileIDs="getWorkingFileIDs"></upload-pdf>
           </li>
           <li class="list">
             <div class="inp-wrap">

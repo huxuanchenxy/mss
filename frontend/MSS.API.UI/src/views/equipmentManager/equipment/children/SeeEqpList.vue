@@ -62,9 +62,9 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button>添加</x-button></li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
+        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
     </div>
@@ -154,6 +154,7 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
+import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
@@ -165,6 +166,11 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false,
+        update: false
+      },
       areaParams: {
         label: 'areaName',
         value: 'id',
@@ -206,9 +212,21 @@ export default {
     }
   },
   created () {
-    // this.$emit('title', '| 设备别')
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btn.save = !actions.some((item, index) => {
+        return item.actionID === btn.eqp.save
+      })
+      this.btn.delete = !actions.some((item, index) => {
+        return item.actionID === btn.eqp.delete
+      })
+      this.btn.update = !actions.some((item, index) => {
+        return item.actionID === btn.eqp.update
+      })
+    }
     if (this.$route.params.id !== '' && this.$route.params.id !== null) {
-      this.eqpType = this.$route.params.id
+      this.eqp = this.$route.params.id
     }
     this.init()
 
