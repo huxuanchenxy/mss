@@ -26,6 +26,7 @@
   </div>
 </template>
 <script>
+import { UPLOADED_SERVER_URL } from '@/common/js/utils.js'
 import api from '@/api/eqpApi'
 import XButton from '@/components/button'
 export default {
@@ -108,7 +109,7 @@ export default {
         if (val1 === '') {
           this.previewUrl = item.url
         } else {
-          this.previewUrl = 'http://10.89.36.103:8090/' + item.url
+          this.previewUrl = UPLOADED_SERVER_URL + item.url
         }
         this.videoFlag = true
         this.centerDialogVisible = false

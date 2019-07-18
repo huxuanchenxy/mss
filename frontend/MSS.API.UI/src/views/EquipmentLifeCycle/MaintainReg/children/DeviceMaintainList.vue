@@ -132,7 +132,7 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.device_type_id === 0 }, { 'el-icon-caret-top': headOrder.device_type_id === 1 }, { 'el-icon-caret-bottom': headOrder.device_type_id === 2 }]"></i>
         </li> -->
         <li class="list number c-pointer"
-            @click="changeOrder('device_name')">
+            @click="changeOrder('device_id')">
           设备名称
           <i :class="[{ 'el-icon-d-caret': headOrder.device_id === 0 }, { 'el-icon-caret-top': headOrder.device_id === 1 }, { 'el-icon-caret-bottom': headOrder.device_id === 2 }]"></i>
         </li>
@@ -158,7 +158,7 @@
         </li> -->
         <li class="list number c-pointer"
             @click="changeOrder('attch_file')">
-          附件上传
+          上传文件
           <i :class="[{ 'el-icon-d-caret': headOrder.attch_file === 0 }, { 'el-icon-caret-top': headOrder.attch_file === 1 }, { 'el-icon-caret-bottom': headOrder.attch_file === 2 }]"></i>
         </li>
         <li class="list last-update-time c-pointer"
@@ -188,9 +188,9 @@
                 <div class="number">{{index+1}}</div>
                 <!-- <div class="number">{{ item.device_type_name }}</div> -->
                 <div class="name">{{ item.device_name }}</div>
-                <div class="number">{{ item.team_group_name }}</div>
-                <div class="number">{{ item.director_name }}</div>
-                <div class="number">{{ item.maintain_date }}</div>
+                <div class="name">{{ item.team_group_name }}</div>
+                <div class="name">{{ item.director_name }}</div>
+                <div class="name">{{ item.maintain_date }}</div>
                 <!-- <div class="number">{{ item.detail_desc }}</div> -->
                 <!-- <div class="number">{{ item.arr }}</div> -->
                 <div class="upload-cascader">
@@ -338,6 +338,9 @@ export default {
       // this.searchResult(1)
     },
     preview (val) {
+      if (val.length < 1) {
+        return
+      }
       this.centerDialogVisible = true
       this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
       // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
@@ -374,7 +377,7 @@ export default {
         rows: 10,
         page: page,
         deviceType: '', // this.deviceType.text,
-        deviceId: '', // this.deviceName,
+        deviceId: '',
         TeamGroup: this.teamGroupid,
         Director: this.directorid,
         maintain_date: this.maintain_date
@@ -625,16 +628,23 @@ $con-height: $content-height - 145 - 56;
       }
     }
   }
-
-  .number{
-    width: 4%;
-  }
-
+  // .number{
+  //   width: 4%;
+  // }
+  // .name,
+  // .btn-wrap{
+  //   width: 8%;
+  // }
+.number,
   .name,
   .btn-wrap{
-    width: 8%;
+    width: 10%;
   }
-
+  .name{
+    a{
+      color: #42abfd;
+    }
+  }
   .last-update-time{
     width: 10%;
     color: $color-content-text;
