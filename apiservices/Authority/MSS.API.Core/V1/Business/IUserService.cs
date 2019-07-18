@@ -21,7 +21,7 @@ namespace MSS.API.Core.V1.Business
         Task<MSSResult> ChangePwd(int userID, string oldPwd, string newPwd);
         Task<MSSResult> ResetPwd(string ids);
 
-        Task<MSSResult<MenuTree>> CheckUserLogin(string acc,string password);
+        Task<ApiResult> CheckUserLogin(string acc,string password);
 
         Task<MSSResult<MenuTree>> GetMenu();//int? userID = null
         Task<ApiResult> GetActionByUser();
