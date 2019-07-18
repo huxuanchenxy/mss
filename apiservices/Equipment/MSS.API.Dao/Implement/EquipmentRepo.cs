@@ -213,7 +213,7 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
-        public async Task<List<Equipment>> ListByPosition(int location,int locationBy, int eqpType,int topOrg)
+        public async Task<List<Equipment>> ListByPosition(int location,int locationBy, int eqpType,int? topOrg)
         {
             return await WithConnection(async c =>
             {
