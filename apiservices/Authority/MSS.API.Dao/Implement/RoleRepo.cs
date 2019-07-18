@@ -36,7 +36,7 @@ namespace MSS.API.Dao.Implement
                 }
                 if (parm.searchAction != null)
                 {
-                    whereSql.Append(" and act.action_id=" + parm.searchAction);
+                    whereSql.Append(" and act.id=" + parm.searchAction);
                 }
                 if (parm.searchActionGroup != null)
                 {
