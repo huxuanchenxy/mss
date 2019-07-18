@@ -101,7 +101,7 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.video_file === 0 }, { 'el-icon-caret-top': headOrder.video_file === 1 }, { 'el-icon-caret-bottom': headOrder.video_file === 2 }]"></i>
         </li> -->
          <li class="list number c-pointer" @click="changeOrder('attch_file')">
-          附件
+          上传文件
           <i :class="[{ 'el-icon-d-caret': headOrder.attch_file === 0 }, { 'el-icon-caret-top': headOrder.attch_file === 1 }, { 'el-icon-caret-bottom': headOrder.attch_file === 2 }]"></i>
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
@@ -124,7 +124,7 @@
                  <div class="number">{{index+1}}</div>
                 <div class="number">{{ item.keyword }}</div>
                 <div class="name">{{ item.title }}</div>
-                <div class="number">{{ item.deviceTypeName }}</div>
+                <div class="name">{{ item.deviceTypeName }}</div>
                 <div class="number">{{ item.deptname }}</div>
                 <!-- <div class="number">{{ item.video_file }}</div> -->
                 <!-- <div class="number">{{ item.attch_file }}</div> -->
@@ -183,7 +183,7 @@
     </div>
 </template>
 <script>
-import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { transformDate, PDF_UPLOADED_VIEW_URL, UPLOADED_SERVER_URL } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import eqpApi from '@/api/eqpApi.js'
 import api from '@/api/ExpertApi'
@@ -271,12 +271,15 @@ export default {
       // this.searchResult(1)
     },
     preview (val) {
+      if (val.length < 1) {
+        return
+      }
       // http://10.89.36.103:8090/
       var aPos = val[1].indexOf('/')
       var bPos = val[1].substring(aPos + 1).indexOf('/')
       var val1 = val[1].substring(aPos + 1, aPos + bPos + 1)
       if (val1 === 'ExpertData_vedio') {
-        this.previewUrl = 'http://10.89.36.103:8090/' + val[val.length - 1]
+        this.previewUrl = UPLOADED_SERVER_URL + val[val.length - 1]
         this.videoFlag = true
         this.centerDialogVisible = false
         this.vediocenterDialogVisible = true
