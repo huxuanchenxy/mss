@@ -16,7 +16,7 @@ namespace MSS.API.Dao.Interface
         Task<Equipment> GetDetailByID(int id);
         Task<List<Equipment>> ListByEqpType(string ids);
         Task<List<UploadFileEqp>> ListByEqp(int id);
-        Task<List<Equipment>> ListByPosition(int location, int locationBy);
+        Task<List<Equipment>> ListByPosition(int location, int locationBy, int eqpType,int topOrg);
         Task<List<Equipment>> GetAll();
         Task<List<AllArea>> GetAllArea();
     }

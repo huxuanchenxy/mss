@@ -26,5 +26,6 @@ export default {
   getFirmAll: () => { return axios.get(`${api}/Firm/All`).then(res => res.data) },
 
   // deleteUploadFile: id => { return axios.delete(`${api}/Upload/${id}`).then(res => res.data) },
-  getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) }
+  getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) },
+  getListByPosition: (location, locationBy, eqpType) => { return axios.get(`${api}/Upload/ListByPosition/${location}/${locationBy}/${eqpType}`).then(res => res.data) }
 }

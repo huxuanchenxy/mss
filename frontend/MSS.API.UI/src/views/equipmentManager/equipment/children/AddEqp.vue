@@ -492,6 +492,7 @@ export default {
         SubSystem: this.subSystem.text,
         Team: this.team,
         TeamPath: this.teamPath.text.join(','),
+        TopOrg: this.teamPath.text[0],
         BarCode: this.barCode.text,
         Desc: this.desc.text,
         Supplier: this.supplier,

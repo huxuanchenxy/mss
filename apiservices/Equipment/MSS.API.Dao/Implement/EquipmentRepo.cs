@@ -213,13 +213,15 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
-        public async Task<List<Equipment>> ListByPosition(int location,int locationBy)
+        public async Task<List<Equipment>> ListByPosition(int location,int locationBy, int eqpType,int topOrg)
         {
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<Equipment>(
-                    "SELECT * FROM Equipment WHERE location = @location and location_by=@locationBy", 
-                    new { location = location, locationBy= locationBy });
+                    "SELECT * FROM Equipment " +
+                    "WHERE location = @location and location_by=@locationBy " +
+                    "and eqp_type=@eqpType and top_org=@topOrg", 
+                    new { location = location, locationBy= locationBy, eqpType= eqpType, topOrg= topOrg });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();

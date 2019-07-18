@@ -1,6 +1,6 @@
 import axios from './interceptors'
 // 'http://10.89.36.204:5801/authapi'
-// 'http://127.0.0.1:3851/api/v1'
+// 'http://localhost:3851/api/v1'
 let api = 'http://10.89.36.204:5801/authapi'
 export default {
   login: (acc, pwd) => { return axios.get(`${api}/User/Login/${acc}/${pwd}`).then(res => res.data) },
@@ -13,6 +13,7 @@ export default {
   getUserAll: () => { return axios.get(`${api}/User/All`).then(res => res.data) },
   changePwd: (oldPwd, newPwd) => { return axios.put(`${api}/User/changePwd/${oldPwd}/${newPwd}`).then(res => res.data) },
   ResetPwd: ids => { return axios.put(`${api}/User/ResetPwd/${ids}`).then(res => res.data) },
+  getActionByUser: () => { return axios.get(`${api}/User/GetAction`).then(res => res.data) },
 
   getSubCode: code => { return axios.get(`${api}/Dictionary/SubCode/${code}`).then(res => res.data) },
   getDictionary: parm => { return axios.get(`${api}/Dictionary/QueryList`, {params: parm}).then(res => res.data) },
