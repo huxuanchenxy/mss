@@ -342,6 +342,7 @@ export default {
       if (val.length < 1) {
         return
       }
+      //http://
       this.centerDialogVisible = true
       this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
     },
