@@ -16,9 +16,10 @@ namespace MSS.API.Common.Global
         IAuthHelper _authhelper;
         private readonly IDistributedCache _cache;
 
-        public GlobalActionFilter(IAuthHelper authhelper)
+        public GlobalActionFilter(IAuthHelper authhelper, IDistributedCache cache)
         {
             _authhelper = authhelper;
+            _cache = cache;
         }
         public void OnActionExecuting(ActionExecutingContext context)
         {
