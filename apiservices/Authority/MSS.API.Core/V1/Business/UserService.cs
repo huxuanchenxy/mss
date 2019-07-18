@@ -13,6 +13,7 @@ using MSS.API.Common;
 using Newtonsoft.Json;
 using CSRedis;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -24,16 +25,16 @@ namespace MSS.API.Core.V1.Business
 
         private readonly int userID;
 
-        private readonly IConfiguration _configuration;
+        private readonly IDistributedCache _cache;
         public UserService(IUserRepo<User> userRepo, IActionRepo<ActionInfo> actionRepo, 
-            IAuthHelper auth, IConfiguration configuration)
+            IAuthHelper auth, IDistributedCache cache)
         {
             //_logger = logger;
             _UserRepo = userRepo;
             _ActionRepo = actionRepo;
             userID = auth.GetUserId();
 
-            _configuration = configuration;
+            _cache = cache;
         }
         public async Task<MSSResult<UserView>> GetPageByParm(UserQueryParm parm)
         {
@@ -323,11 +324,7 @@ namespace MSS.API.Core.V1.Business
         private async Task SaveRedis()
         {
             List<User> users = await _UserRepo.GetAllContainSuper();
-            using (var redis = new CSRedisClient(REDISConn_AUTH))
-            {
-                redis.Set(REDIS_AUTH_KEY_USER, JsonConvert.SerializeObject(users));
-            }
-
+            _cache.SetString(REDIS_AUTH_KEY_USER, JsonConvert.SerializeObject(users));
         }
     }
 }
