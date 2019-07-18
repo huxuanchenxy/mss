@@ -63,4 +63,10 @@ export default {
     color: $color-white;
   }
 }
+.btn[disabled]{
+  opacity: .65;
+  border-color: $color-main-btn-border!important;
+  background: none!important;
+  cursor: Default
+}
 </style>

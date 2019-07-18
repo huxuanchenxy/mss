@@ -17,6 +17,7 @@
             <label for="">使用权限</label>
             <div class="inp">
               <el-cascader clearable
+                change-on-select
                 :props="defaultParams"
                 :show-all-levels="true"
                 :options="actionInfo"
@@ -31,12 +32,12 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
-          <x-button>
+          <x-button :disabled="btn.save">
             <router-link :to="{ name: 'AddRole', query: { t: 'add' } }">添加</router-link>
           </x-button>
         </li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
         <li class="list" @click="shrinkAllSubContent" ><x-button>{{ shrinkAll.text }}</x-button></li>
       </ul>
     </div>
@@ -89,7 +90,8 @@
                   <div class="left-title">{{ sub.text }}</div>
                   <ul>
                     <li v-for="three in sub.children" :key="three.key">
-                      <ul class="right-wrap">{{ three.text }}
+                      <ul class="right-wrap">
+                        <li class="list">{{ three.text }}</li>
                         <li class="list" v-for="four in three.children" :key="four.key">{{ four.text }}</li>
                       </ul>
                     </li>
@@ -131,6 +133,7 @@
 </template>
 <script>
 import XButton from '@/components/button'
+import { btn } from '@/element/btn.js'
 import { transformDate } from '@/common/js/utils.js'
 import api from '@/api/authApi'
 export default {
@@ -140,6 +143,11 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false,
+        update: false
+      },
       defaultParams: {
         label: 'text',
         value: 'id',
@@ -171,6 +179,7 @@ export default {
         updated_time: 0,
         updated_by: 0
       },
+      currentOpen: -1,
       shrinkAll: {
         text: '全部展开',
         mark: true
@@ -181,6 +190,19 @@ export default {
     random: Number
   },
   created () {
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btn.save = !actions.some((item, index) => {
+        return item.actionID === btn.role.save
+      })
+      this.btn.delete = !actions.some((item, index) => {
+        return item.actionID === btn.role.delete
+      })
+      this.btn.update = !actions.some((item, index) => {
+        return item.actionID === btn.role.update
+      })
+    }
     this.init()
     // this.$emit('title', '| 角色定义')
     // 权限列表
@@ -284,13 +306,22 @@ export default {
       this.$emit('title', '| 角色管理')
       this.currentPage = page
       this.loading = true
+      let act = null
+      let actionGroup = null
+      let l = this.authority.length
+      if (l === 1) {
+        actionGroup = this.authority[0]
+      } else if (l > 1) {
+        act = this.authority[l - 1]
+      }
       api.getRole({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
         searchName: this.roleName,
-        searchAction: this.authority[1]
+        searchAction: act,
+        searchActionGroup: actionGroup
       }).then(res => {
         this.loading = false
         res.data.rows.map(val => {
@@ -303,8 +334,18 @@ export default {
     },
     // 收起展开权限列表
     shrinkSubContent (index, id, length) {
-      this.RoleList[index].isShowSubCon ? this.RoleList[index].isShowSubCon = true : this.RoleList[index].isShowSubCon = false
-      this.RoleList[index].isShowSubCon = !this.RoleList[index].isShowSubCon
+      // this.RoleList[index].isShowSubCon ? this.RoleList[index].isShowSubCon = true : this.RoleList[index].isShowSubCon = false
+      // this.RoleList[index].isShowSubCon = !this.RoleList[index].isShowSubCon
+      if (this.RoleList[index].isShowSubCon) {
+        this.currentOpen = -1
+        this.RoleList[index].isShowSubCon = false
+      } else {
+        if (this.currentOpen !== -1) {
+          this.RoleList[this.currentOpen].isShowSubCon = false
+        }
+        this.currentOpen = index
+        this.RoleList[index].isShowSubCon = true
+      }
     },
 
     // 全部展开、收起
@@ -478,8 +519,8 @@ $height: $content-height - 56;
     }
 
     .left-title{
-      width: 100px;
-      margin-left: 5%;
+      width: 50px;
+      margin-left: 2%;
       font-weight: bold;
     }
 
@@ -511,8 +552,8 @@ $height: $content-height - 56;
       }
 
       .list{
-        width: 130px;
-        margin-left: 100px;
+        width: 100px;
+        margin-left: 50px;
       }
     }
   }

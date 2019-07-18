@@ -65,10 +65,10 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
-        [HttpGet("ListByPosition/{location}/{locationBy}")]
-        public ActionResult ListByPosition(int location, int locationBy)
+        [HttpGet("ListByPosition/{location}/{locationBy}/{eqpType}")]
+        public ActionResult ListByPosition(int location, int locationBy,int eqpType)
         {
-            var resp = _eqpService.ListByPosition(location, locationBy);
+            var resp = _eqpService.ListByPosition(location, locationBy, eqpType);
             return Ok(resp.Result);
         }
 

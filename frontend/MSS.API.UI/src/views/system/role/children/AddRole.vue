@@ -36,9 +36,9 @@
               </div>
               <div class="list-sub-con" v-for="children in item.children" :key="children.key" v-show="item.shrink">
                 <el-checkbox-group v-model="roleActionInfo">
-                  <el-checkbox :label="children.id">{{ children.text }}</el-checkbox>
+                  <el-checkbox class="chk-col" :label="children.id">{{ children.text }}</el-checkbox>
                   <el-checkbox-group class="chk-list" v-model="roleActionInfo" v-for="operation in children.children" :key="operation.key">
-                    <el-checkbox :label="operation.id">{{ operation.text }}</el-checkbox>
+                    <el-checkbox class="chk-col" :label="operation.id">{{ operation.text }}</el-checkbox>
                   </el-checkbox-group>
                 </el-checkbox-group>
               </div>
@@ -73,6 +73,7 @@ export default {
       roleID: '',
       roleActionInfo: [],
       authority: [],
+      currentOpen: -1,
       // authorityIdList: [],
       listCheck: [],
       bCheckAll: false,
@@ -157,7 +158,17 @@ export default {
 
     // 收起、展开
     shrinkChildren (index) {
-      this.authority[index].shrink = !this.authority[index].shrink
+      // this.authority[index].shrink = !this.authority[index].shrink
+      if (this.authority[index].shrink) {
+        this.currentOpen = -1
+        this.authority[index].shrink = false
+      } else {
+        if (this.currentOpen !== -1) {
+          this.authority[this.currentOpen].shrink = false
+        }
+        this.currentOpen = index
+        this.authority[index].shrink = true
+      }
     },
 
     // 修改角色时获取角色资料
@@ -319,6 +330,10 @@ $height: $content-height - 56;
     .chk-list{
       display: inline;
       margin-left: 5%;
+    }
+
+    .chk-col{
+      width: 120px;
     }
   }
 

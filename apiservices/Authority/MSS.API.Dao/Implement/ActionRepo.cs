@@ -80,7 +80,7 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.ExecuteAsync(" update Action_Info " +
                     " set action_name=@action_name,request_url=@request_url,description=@description,action_order=@action_order,icon=@icon, " +
-                    " level=@level,group_id=@group_id,parent_menu=@parent_menu, " +
+                    " group_id=@group_id,parent_menu=@parent_menu, " +//level=@level,
                     " updated_time=@updated_time,updated_by=@updated_by where id=@id", action);
                 return result;
             });

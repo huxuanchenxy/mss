@@ -105,37 +105,23 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
-                IHttpClientHelper<ApiResult> h = new HttpClientHelper<ApiResult>();
-                ApiResult r = await h.GetSingleItemRequest(_services + "/api/v1/user/"+userID);
-                JObject jobj = JsonConvert.DeserializeObject<JObject>(r.data.ToString());
-                if (!(bool)jobj["is_super"])
+                parm.SearchTopOrg= await getTopOrgByUser();
+                if (parm.SearchTopOrg != 0)
                 {
-                    IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
-                    ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + userID);
-                    if (result.data != null)
+                    parm.page = parm.page == 0 ? 1 : parm.page;
+                    parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
+                    parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
+                    parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
+                    EqpView ev = await _eqpRepo.GetPageByParm(parm);
+                    List<Equipment> eqps = ev.rows;
+                    List<AllArea> laa = await _eqpRepo.GetAllArea();
+                    foreach (var item in eqps)
                     {
-                        JObject obj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
-                        parm.SearchTopOrg = Convert.ToInt32(obj["id"]);
+                        item.LocationName = laa.Where(a => a.Tablename == item.LocationBy && a.ID == item.Location)
+                            .FirstOrDefault().AreaName;
                     }
-                    else
-                    {
-                        return ret;
-                    }
+                    ret.data = ev;
                 }
-                parm.page = parm.page == 0 ? 1 : parm.page;
-                parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
-                parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
-                parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
-                EqpView ev = await _eqpRepo.GetPageByParm(parm);
-                List<Equipment> eqps = ev.rows;
-                List<AllArea> laa = await _eqpRepo.GetAllArea();
-                foreach (var item in eqps)
-                {
-                    item.LocationName = laa.Where(a => a.Tablename == item.LocationBy && a.ID == item.Location)
-                        .FirstOrDefault().AreaName;
-                }
-                ret.data = ev;
                 return ret;
             }
             catch (Exception ex)
@@ -191,12 +177,16 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> ListByPosition(int location, int locationBy)
+        public async Task<ApiResult> ListByPosition(int location, int locationBy,int eqpType)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _eqpRepo.ListByPosition(location, locationBy);
+                int? topOrg = await getTopOrgByUser();
+                if (topOrg != 0)
+                {
+                    ret.data = await _eqpRepo.ListByPosition(location, locationBy, eqpType, topOrg);
+                }
                 return ret;
             }
             catch (Exception ex)
@@ -219,6 +209,29 @@ namespace MSS.API.Core.V1.Business
                 ret.code = Code.Failure;
                 ret.msg = ex.Message;
                 return ret;
+            }
+        }
+
+        private async Task<int?> getTopOrgByUser()
+        {
+            var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
+            IHttpClientHelper<ApiResult> h = new HttpClientHelper<ApiResult>();
+            ApiResult r = await h.GetSingleItemRequest(_services + "/api/v1/user/" + userID);
+            JObject jobj = JsonConvert.DeserializeObject<JObject>(r.data.ToString());
+            if ((bool)jobj["is_super"])
+            {
+                return null;
+            }
+            else
+            {
+                IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + userID);
+                if (result.data != null)
+                {
+                    JObject obj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
+                    return Convert.ToInt32(obj["id"]);
+                }
+                return 0;
             }
         }
     }

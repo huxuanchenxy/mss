@@ -30,9 +30,9 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button>添加</x-button></li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
+        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -125,6 +125,7 @@
 </template>
 <script>
 import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 export default {
@@ -134,6 +135,11 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false,
+        update: false
+      },
       title: ' | 设备类型定义',
       eqpTypeName: '',
       description: '',
@@ -164,10 +170,19 @@ export default {
     }
   },
   created () {
-    // this.$emit('title', '| 设备类型定义')
-    // if (this.$route.params.id !== '' && this.$route.params.id !== null) {
-    //   this.description = this.$route.params.id
-    // }
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btn.save = !actions.some((item, index) => {
+        return item.actionID === btn.eqpType.save
+      })
+      this.btn.delete = !actions.some((item, index) => {
+        return item.actionID === btn.eqpType.delete
+      })
+      this.btn.update = !actions.some((item, index) => {
+        return item.actionID === btn.eqpType.update
+      })
+    }
     this.init()
   },
   activated () {
@@ -232,6 +247,7 @@ export default {
       }).catch(err => console.log(err))
     },
     add () {
+      // 判断权限，符合则允许跳转
       this.$router.push({name: 'AddEqpType', query: { type: 'Add' }})
     },
     // 修改设备类型
