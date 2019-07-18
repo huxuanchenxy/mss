@@ -51,7 +51,7 @@ namespace MSS.API.Dao.Implement
                     mRet.data = tmp.ToList();
                 }
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from role a " +
+                    "select count(DISTINCT a.id) from role a " +
                     " left join role_action ra on a.id = ra.role_id " +
                     " left join action_info act on act.id=ra.action_id where 1=1 " + whereSql.ToString());
                 return mRet;
