@@ -1,7 +1,7 @@
 import axios from './interceptors'
 // 'http://10.89.36.204:5801/authapi'
 // 'http://localhost:3851/api/v1'
-let api = 'http://localhost:3851/api/v1'
+let api = 'http://10.89.36.204:5801/authapi'
 export default {
   login: (acc, pwd) => { return axios.get(`${api}/User/Login/${acc}/${pwd}`).then(res => res.data) },
   getMenu: () => { return axios.get(`${api}/User/GetMenu`).then(res => res.data) },
