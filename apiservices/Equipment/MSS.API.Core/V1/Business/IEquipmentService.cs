@@ -17,7 +17,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetPageByParm(EqpQueryParm parm);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> GetDetailByID(int id);
-        Task<ApiResult> ListByPosition(int location, int locationBy);
+        Task<ApiResult> ListByPosition(int location, int locationBy, int eqpType);
         Task<ApiResult> GetAll();
     }
 }
