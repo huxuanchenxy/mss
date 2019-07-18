@@ -113,6 +113,7 @@
             @click="edit">
           <x-button>修改</x-button>
         </li>
+        <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -470,7 +471,27 @@ export default {
         })
       }
     },
-
+    // 查看设备明细
+    detail () {
+      if (!this.editDeviceMaintainRegIDList.length) {
+        this.$message({
+          message: '请选择需要查看的设备资料',
+          type: 'warning'
+        })
+      } else if (this.editDeviceMaintainRegIDList.length > 1) {
+        this.$message({
+          message: '查看的资料不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailDeviceMaintain',
+          params: {
+            id: this.editDeviceMaintainRegIDList[0]
+          }
+        })
+      }
+    },
     // 删除站区
     remove () {
       if (!this.editDeviceMaintainRegIDList.length) {

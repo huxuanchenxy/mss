@@ -66,6 +66,7 @@
         </li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
+         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -428,7 +429,27 @@ export default {
         })
       }
     },
-
+    // 查看设备明细
+    detail () {
+      if (!this.editExpertIDList.length) {
+        this.$message({
+          message: '请选择需要查看的专家资料',
+          type: 'warning'
+        })
+      } else if (this.editExpertIDList.length > 1) {
+        this.$message({
+          message: '查看的专家资料不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailExpertData',
+          params: {
+            id: this.editExpertIDList[0]
+          }
+        })
+      }
+    },
     // 删除站区
     remove () {
       if (!this.editExpertIDList.length) {

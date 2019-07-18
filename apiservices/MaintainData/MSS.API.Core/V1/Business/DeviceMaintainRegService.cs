@@ -283,6 +283,11 @@ namespace MSS.API.Core.V1.Business
                 using (TransactionScope scope = new TransactionScope())
                 {
                     var model = await _deviceMaintainRegRepo.GetModel(id);
+                    model.maintain_date = model.maintain_date.Substring(0, 10);
+                    model.device_name = GetdeviceName(model.device_id.ToString());
+                    model.device_type_name = GetDeviceTypeNameByID(model.device_type_id.ToString());
+                    model.director_name = GetderoctName(model.director_id.ToString());
+                    model.team_group_name = GettermGroupName(model.team_group_id.ToString());
                     ret.code = Code.Success;
                     ret.data = model;
                     scope.Complete();
