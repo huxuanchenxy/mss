@@ -36,6 +36,7 @@ namespace MSS.API.Dao
                 config.AddMap(new EarlyWarnningSettingMap());
                 config.AddMap(new EarlyWarnningSettingExMap());
                 config.AddMap(new EarlyWarnningExTypeMap());
+                config.AddMap(new EquipmentMap());
             });
             return services;
         }
