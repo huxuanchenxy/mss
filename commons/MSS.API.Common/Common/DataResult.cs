@@ -36,6 +36,11 @@ namespace MSS.API.Common
     public class Const
     {
         public static int PAGESIZE = 10;
+
+        public static string REDISConn_AUTH;
+        public static string REDIS_AUTH_KEY_ACTIONINFO = "ActionInfo";
+        public static string REDIS_AUTH_KEY_ROLEACTION = "RoleAction";
+        public static string REDIS_AUTH_KEY_USER = "User";
     }
 
     public static class FilePath
@@ -96,6 +101,7 @@ namespace MSS.API.Common
         }
         #endregion
 
+        public const string STR_EQPTYPE_DRAWINGS = "eqp_type_drawings";
     }
     #endregion
 

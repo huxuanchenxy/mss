@@ -23,19 +23,27 @@ namespace MSS.API.Common.Utility
         {
             int userid = -1;
 
-            string token = string.Empty;
-            var context = _httpContextAccessor.HttpContext;
-            var head = context.Request.Headers["Authorization"];
-            if (!string.IsNullOrEmpty(head))
+            try
             {
-                if (head.ToString().IndexOf("Bearer") >= 0)
+                string token = string.Empty;
+                var context = _httpContextAccessor.HttpContext;
+                var head = context.Request.Headers["Authorization"];
+                if (!string.IsNullOrEmpty(head))
                 {
-                    token = head.ToString().Replace("Bearer", "").Trim();
+                    if (head.ToString().IndexOf("Bearer") >= 0)
+                    {
+                        token = head.ToString().Replace("Bearer", "").Trim();
 
-                    userid = int.Parse(_cache.GetString(token));
+                        userid = int.Parse(_cache.GetString(token));
 
 
+
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message.ToString());
             }
             return userid;
         }
