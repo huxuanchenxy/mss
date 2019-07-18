@@ -177,7 +177,7 @@ namespace MSS.API.Core.V1.Controllers
         }
 
 
-        [HttpDelete("{ids}")]
+        [HttpDelete("DeleteList/{ids}")]
         public async Task<ActionResult<ApiResult>> DeleteList(string ids)
         {
             ApiResult ret = new ApiResult();

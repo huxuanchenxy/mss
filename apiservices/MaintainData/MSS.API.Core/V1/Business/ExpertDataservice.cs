@@ -16,12 +16,10 @@ namespace MSS.API.Core.V1.Business
 {
     public class ExpertDataService : IExpertDataService
     {
-        //private readonly ILogger<UserService> _logger;
         private readonly Itb_expert_dataRepo<tb_expert_data> _expertRepo;
 
         public ExpertDataService(Itb_expert_dataRepo<tb_expert_data> expertRepo)
         {
-            //_logger = logger;
             _expertRepo = expertRepo;
         }
 
@@ -37,11 +35,6 @@ namespace MSS.API.Core.V1.Business
                     if (!isExist)
                     {
                         var ret = await _expertRepo.Add(model);
-                        //if (ret<1)
-                        //{
-                        //    result.code = Code.Failure;
-                        //    result.data = null;
-                        //}
                         result.code = Code.Success;
                         result.data = true;
                     }
@@ -57,7 +50,6 @@ namespace MSS.API.Core.V1.Business
                 result.code = Code.Failure;
                 result.msg = ex.Message;
             }
-
             return result;
         }
 
@@ -83,7 +75,7 @@ namespace MSS.API.Core.V1.Business
                 }
             }
             catch (Exception ex)
-            { 
+            {
                 ret.code = Code.Failure;
                 ret.data = ex.Message;
             }
@@ -120,7 +112,7 @@ namespace MSS.API.Core.V1.Business
                     string[] strs = ids.Split(",");
                     foreach (var v in strs)
                     {
-                        bool isExist = await _expertRepo.Delete(new tb_expert_data { ID = int.Parse(v),UpdatedTime=DateTime.Now, UpdatedBy=101 });
+                        bool isExist = await _expertRepo.Delete(new tb_expert_data { ID = int.Parse(v), UpdatedTime = DateTime.Now, UpdatedBy = 101 });
                     }
                     ret.code = Code.Success;
                     ret.data = true;
@@ -133,25 +125,14 @@ namespace MSS.API.Core.V1.Business
                 ret.msg = ex.Message;
             }
 
-            return ret;  
+            return ret;
         }
 
-       public Task<ApiResult>  Exists(int id)
+        public Task<ApiResult> Exists(int id)
         {
             throw new NotImplementedException();
         }
-
-        //Task<ApiResult> IExpertDataService.GetList(int id)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //Task<ApiResult> IExpertDataService.GetList(string strWhere)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-       public async Task<ApiResult>  GetListByPage(string strWhere, string orderby, string sort, int page, int size)
+        public async Task<ApiResult> GetListByPage(string strWhere, string orderby, string sort, int page, int size)
         {
             ApiResult ret = new ApiResult();
             try
@@ -159,16 +140,16 @@ namespace MSS.API.Core.V1.Business
                 using (TransactionScope scope = new TransactionScope())
                 {
                     int count = await _expertRepo.GetRecordCount(strWhere);
-                    var list = await _expertRepo.GetListByPage(strWhere , sort, orderby, page, size);
+                    var list = await _expertRepo.GetListByPage(strWhere, sort, orderby, page, size);
                     if (list != null && list.Count > 0)
                     {
                         foreach (var v in list)
                         {
-                          v.deptname= GetDeptNameByID(v.deptid.ToString());
-                          v.deviceTypeName = GetDeviceTypeNameByID(v.device_type.ToString());
+                            v.deptname = GetDeptNameByID(v.deptid.ToString());
+                            v.deviceTypeName = GetDeviceTypeNameByID(v.device_type.ToString());
                         }
                     }
-  
+
                     ret.code = Code.Success;
                     ret.data = new
                     {
@@ -186,7 +167,6 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
-
         private string GetDeviceTypeNameByID(string device_type)
         {
             string deviceTypeName = string.Empty;
@@ -234,20 +214,14 @@ namespace MSS.API.Core.V1.Business
             }
             return deptName;
         }
-
-        //Task<ApiResult> IExpertDataService.GetMaxId()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public async Task<ApiResult>  GetModel(int id)
+        public async Task<ApiResult> GetModel(int id)
         {
             ApiResult ret = new ApiResult();
             try
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    var model = await _expertRepo.GetModel(id);                   
+                    var model = await _expertRepo.GetModel(id);
                     ret.code = Code.Success;
                     ret.data = model;
                     scope.Complete();
@@ -261,11 +235,5 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
-
-        //Task<ApiResult> IExpertDataService.GetRecordCount(string where)
-        //{
-        //    throw new NotImplementedException();
-        //}
- 
     }
 }

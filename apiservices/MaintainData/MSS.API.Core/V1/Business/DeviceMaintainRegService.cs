@@ -14,7 +14,7 @@ using MSS.API.Core.Common;
 
 namespace MSS.API.Core.V1.Business
 {
-    public class DeviceMaintainRegService: IDeviceMaintainRegService
+    public class DeviceMaintainRegService : IDeviceMaintainRegService
     { //private readonly ILogger<UserService> _logger;
         private readonly Itb_devicemaintain_regRepo<tb_devicemaintain_reg> _deviceMaintainRegRepo;
 
@@ -23,8 +23,6 @@ namespace MSS.API.Core.V1.Business
             //_logger = logger;
             _deviceMaintainRegRepo = expertRepo;
         }
-
-
         public async Task<ApiResult> Add(tb_devicemaintain_reg model)
         {
             ApiResult result = new ApiResult();
@@ -56,7 +54,6 @@ namespace MSS.API.Core.V1.Business
                 result.code = Code.Failure;
                 result.msg = ex.Message;
             }
-
             return result;
         }
 
@@ -86,7 +83,6 @@ namespace MSS.API.Core.V1.Business
                 ret.code = Code.Failure;
                 ret.data = ex.Message;
             }
-
             return ret;
         }
 
@@ -135,21 +131,10 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-      public  Task<ApiResult>  Exists(int id)
+        public Task<ApiResult> Exists(int id)
         {
             throw new NotImplementedException();
         }
-
-        //Task<ApiResult> IExpertDataService.GetList(int id)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //Task<ApiResult> IExpertDataService.GetList(string strWhere)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         public async Task<ApiResult> GetListByPage(string strWhere, string orderby, string sort, int page, int size)
         {
             ApiResult ret = new ApiResult();
@@ -163,6 +148,7 @@ namespace MSS.API.Core.V1.Business
                     {
                         foreach (var v in list)
                         {
+                            v.maintain_date = v.maintain_date.Substring(0, 10);
                             v.device_name = GetdeviceName(v.device_id.ToString());
                             v.device_type_name = GetDeviceTypeNameByID(v.device_type_id.ToString());
                             v.director_name = GetderoctName(v.director_id.ToString());
@@ -249,7 +235,7 @@ namespace MSS.API.Core.V1.Business
                     break;
                 case "3":
                     deviceName = "信息班组";
-                    break; 
+                    break;
             }
             return deviceName;
         }
@@ -285,16 +271,10 @@ namespace MSS.API.Core.V1.Business
                     break;
                 case "3":
                     deviceName = "设备C";
-                    break; 
+                    break;
             }
             return deviceName;
         }
-
-        //Task<ApiResult> IExpertDataService.GetMaxId()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         public async Task<ApiResult> GetModel(int id)
         {
             ApiResult ret = new ApiResult();
@@ -316,12 +296,6 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
-
-        //Task<ApiResult> IExpertDataService.GetRecordCount(string where)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
     }
 }
 

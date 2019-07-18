@@ -79,7 +79,7 @@
               <span class="text">维护日期<em class="validate-mark">*</em></span>
               <div class="inp">
                 <el-date-picker v-model="maintain_date.text"
-                                type="datetime"
+                                type="date"
                                 @keyup.native="validateInput(maintain_date.text)"
                                 prefix-icon="el-icon-date"
                                 :unlink-panels="true"
@@ -253,6 +253,7 @@ export default {
         director_id: this.director.text,
         detail_desc: this.detail_desc.text,
         maintain_date: this.maintain_date.text,
+        file_type: this.fileType,
         attch_file: this.fileIDsEdit,
         is_deleted: '0'
       }
