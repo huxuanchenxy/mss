@@ -275,7 +275,6 @@ export default {
       if (val.length < 1) {
         return
       }
-      // http://10.89.36.103:8090/
       var aPos = val[1].indexOf('/')
       var bPos = val[1].substring(aPos + 1).indexOf('/')
       var val1 = val[1].substring(aPos + 1, aPos + bPos + 1)
