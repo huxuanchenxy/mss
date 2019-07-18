@@ -35,24 +35,25 @@
         <i class="iconfont icon-arrow-right"></i>
       </div>
       <div v-if="bMsgShrink" class="right-msg-wrap">
-        <div class="sidebar-title"><i class="iconfont icon-warning"></i> 管廊警报</div>
+        <div class="sidebar-title" @click="test()"><i class="iconfont icon-warning"
+          :style="{ color: activeColor }"></i> 事件中心</div>
         <ul class="msg-wrap">
-          <li class="list" v-for="item in warningMsg" :key="item.key">
-            <p>{{ item.region }}</p>
+          <li class="list" v-for="item in EventTypeList" :key="item.key">
+            <!-- <p>{{ item.region }}</p> -->
             <a @click="gotoAlarmHandle(item.index)" class="list-link">
               <i class="dot" :class="item.state"></i>
               <el-tooltip :content="item.title" :disabled="item.title.length < 4" placement="top">
-                <span>#{{ item.title }}</span>
+                <span>{{ item.title }}</span>
               </el-tooltip>
             </a>
-          </li>
-          <li class="list not-bg">
-            <a @click="gotoAlarmList">查看更多<i class="iconfont icon-arrow-right color-blue"></i></a>
           </li>
         </ul>
       </div>
       <div v-else class="msg-shrink">
-        <p><i class="iconfont icon-warning"></i> 管廊警报收起</p>
+        <p>
+          <i class="iconfont icon-warning" :style="{ color: activeColor }">
+          </i> 管廊警报收起
+        </p>
       </div>
     </div>
   </div>
@@ -69,7 +70,6 @@ export default {
     return {
       navHeight: '360px',
       navMoveNum: 0,
-      timer: null,
       bMsgShrink: true,
       bShowSubNav: false,
       navList: [
@@ -79,8 +79,20 @@ export default {
           url: '/system'
         }
       ],
-      warningMsg: [
-      ]
+      EventTypeList: [{
+        title: '报警',
+        state: ''
+      }, {
+        title: '预警',
+        state: ''
+      }, {
+        title: '通知',
+        state: ''
+      }
+      ],
+      activeColor: '#f91333',
+      timer: null,
+      Conn: null
     }
   },
   created () {
@@ -106,17 +118,52 @@ export default {
       })
     },
 
-    initEvents () {
-      let token = window.sessionStorage.getItem('token')
-      var connection = new signalR.HubConnectionBuilder().withUrl('http://localhost:3851/eventHub',
-        { accessTokenFactory: () => token }).build()
-      connection.on('RecieveMsg', function (message) {
-        console.log(message)
-      })
-      connection.start().then(function () {
-        connection.invoke('SendMessage', 'message').catch(function (err) {
+    test () {
+      if (this.Conn) {
+        this.Conn.invoke('SendMessage', 'message').catch(function (err) {
           return console.error(err.toString())
         })
+      }
+    },
+
+    ChangeColor () {
+      if (this.activeColor === '#f91333') {
+        this.activeColor = '#fff'
+      } else {
+        this.activeColor = '#f91333'
+      }
+    },
+
+    startTimer () {
+      this.timer = setInterval(this.ChangeColor, 1000)
+    },
+
+    StopTimer () {
+      if (this.timer) {
+        clearInterval(this.timer)
+      }
+    },
+
+    initEvents () {
+      let thisObj = this
+      let token = window.sessionStorage.getItem('token')
+      if (this.Conn) {
+        this.Conn.close()
+      }
+      var connection = new signalR.HubConnectionBuilder().withUrl('http://localhost:3851/eventHub',
+        { accessTokenFactory: () => token }).build()
+
+      connection.on('RecieveMsg', function (message) {
+        console.log(message)
+        thisObj.startTimer()
+        switch (message.type) {
+          case 0:
+            thisObj.EventTypeList[0].state = 'warning'
+            break
+        }
+      })
+      connection.start().then(res => {
+        this.Conn = connection
       }).catch(function (err) {
         return console.error(err.toString())
       })
@@ -170,6 +217,12 @@ export default {
   },
   mounted () {
     this.navHeight = this.$refs.nav[0].$el.offsetHeight * 4
+  },
+  destroyed () {
+    if (this.Conn) {
+      console.log('destroyed')
+      this.Conn.stop()
+    }
   },
   watch: {
     $route () {

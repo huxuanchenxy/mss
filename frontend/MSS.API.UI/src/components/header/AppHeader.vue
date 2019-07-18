@@ -5,7 +5,7 @@
         <img src="./images/icon-company.svg" class="vertical-middle icon" width="35" height="40" alt="">
         <p class="inline-block vertical-middle">
           <span class="block title">{{comName}}</span>
-          <span class="sub-title">当前共运营<span class="mark-text"> {{ number }} </span>条管廊</span>
+          <span class="sub-title">当前共运营<span class="mark-text"> {{ number }} </span>条地铁</span>
         </p>
         <p class="inline-block vertical-middle date">
           <span class="block text-left">{{ week }}</span>
@@ -44,7 +44,7 @@ export default {
     return {
       week: getDate(),
       date: `${getDate('date').year}-${getDate('date').month}-${getDate('date').date}`,
-      number: 0,
+      number: 1,
       comName: '',
       userName: ''
     }
