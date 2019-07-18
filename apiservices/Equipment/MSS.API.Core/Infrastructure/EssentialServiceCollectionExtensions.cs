@@ -21,6 +21,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IEquipmentService, EquipmentService>();
             services.AddTransient<IFirmService, FirmService>();
             services.AddTransient<IUploadFileService, UploadFileService>();
+            services.AddTransient<IEquipmentConfigService, EquipmentConfigService>();
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
