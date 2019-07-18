@@ -224,9 +224,9 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<MSSResult<MenuTree>> CheckUserLogin(string acc, string pwd)
+        public async Task<ApiResult> CheckUserLogin(string acc, string pwd)
         {
-            MSSResult<MenuTree> mRet = new MSSResult<MenuTree>();
+            ApiResult mRet = new ApiResult();
             try
             {
                 User ui = await _UserRepo.GetByAcc(acc);
@@ -236,7 +236,7 @@ namespace MSS.API.Core.V1.Business
                     string strPwd = encrypt.DoEncrypt(pwd, ui.random_num);
                     if (ui.password != strPwd)
                     {
-                        mRet.code = (int)ErrType.ErrPwd;
+                        mRet.code = Code.DataIsnotExist;
                         mRet.msg = "密码错误";
                         //return mRet;
                     }
@@ -250,14 +250,15 @@ namespace MSS.API.Core.V1.Business
                 }
                 else
                 {
-                    mRet.code =(int)ErrType.NoRecord;
+                    mRet.code = Code.DataIsnotExist;
                     mRet.msg = "账号错误";
                 }
+                mRet.data = ui.id;
                 return mRet;
             }
             catch (Exception ex)
             {
-                mRet.code = (int)ErrType.SystemErr;
+                mRet.code = Code.Failure;
                 mRet.msg = ex.Message;
                 return mRet;
             }

@@ -182,7 +182,7 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                int topOrg = await getTopOrgByUser();
+                int? topOrg = await getTopOrgByUser();
                 if (topOrg != 0)
                 {
                     ret.data = await _eqpRepo.ListByPosition(location, locationBy, eqpType, topOrg);
@@ -212,13 +212,17 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        private async Task<int> getTopOrgByUser()
+        private async Task<int?> getTopOrgByUser()
         {
             var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
             IHttpClientHelper<ApiResult> h = new HttpClientHelper<ApiResult>();
             ApiResult r = await h.GetSingleItemRequest(_services + "/api/v1/user/" + userID);
             JObject jobj = JsonConvert.DeserializeObject<JObject>(r.data.ToString());
-            if (!(bool)jobj["is_super"])
+            if ((bool)jobj["is_super"])
+            {
+                return null;
+            }
+            else
             {
                 IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
                 ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + userID);
@@ -227,8 +231,8 @@ namespace MSS.API.Core.V1.Business
                     JObject obj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
                     return Convert.ToInt32(obj["id"]);
                 }
+                return 0;
             }
-            return 0;
         }
     }
 }
