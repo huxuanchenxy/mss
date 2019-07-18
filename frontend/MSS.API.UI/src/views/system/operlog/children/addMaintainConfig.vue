@@ -17,7 +17,7 @@
         class="custom-form" label-width="80px">
         <el-row >
           <el-col>
-            <el-form-item label="提醒方式">
+            <el-form-item label="提醒方式" label-width="150px">
               <el-checkbox-group v-model="form.reminder">
                 <el-checkbox label="短信" :disabled="this.ReadOnly"></el-checkbox>
                 <el-checkbox label="邮件" :disabled="this.ReadOnly"></el-checkbox>
@@ -26,33 +26,33 @@
           </el-col>
         </el-row>
         <div>
-          <el-row :gutter="40">
+          <el-row :gutter="32">
             <el-col :span="8">
-              <el-form-item label="寿命提醒提前"><em class="validate-mark">*</em>
-                <el-input v-model="form.beforeDead" :disabled="this.ReadOnly" type="number"></el-input>
+              <el-form-item label="寿命提醒提前天数" label-width="150px" prop="beforeDead">
+                <el-input v-model="form.beforeDead" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="中修提醒提前"><em class="validate-mark">*</em>
-                <el-input v-model="form.beforeMaintainMiddle" :disabled="this.ReadOnly" type="number"></el-input>
+              <el-form-item label="中修提醒提前天数" label-width="150px" prop="beforeMaintainMiddle">
+                <el-input v-model="form.beforeMaintainMiddle" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="大修提醒提前"><em class="validate-mark">*</em>
-                <el-input v-model="form.beforeMaintainBig" :disabled="this.ReadOnly" type="number"></el-input>
+              <el-form-item label="大修提醒提前天数" label-width="150px" prop="beforeMaintainBig">
+                <el-input v-model.number="form.beforeMaintainBig" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row >
+          <el-row>
             <el-col>
-              <el-form-item label="提醒内容格式模板">
+              <el-form-item label="提醒内容格式模板" label-width="150px">
                 <el-input type="textarea" v-model="form.textTemplate" :disabled="this.ReadOnly" :rows="7"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row >
             <el-col>
-              <el-form-item label="是否启用规则">
+              <el-form-item label="是否启用规则" label-width="150px">
                 <el-radio-group v-model="form.published">
                 <el-radio :label="1" :disabled="this.ReadOnly">启用</el-radio>
                 <el-radio :label="0" :disabled="this.ReadOnly">禁用</el-radio>
@@ -92,7 +92,6 @@ export default {
         mark: this.$route.params.mark,
         editID: this.$route.params.id,
         reminder: [],
-        NumberCheck: '',
         published: '',
         beforeDead: '',
         beforeMaintainMiddle: '',
@@ -100,7 +99,9 @@ export default {
         textTemplate: ''
       },
       rules: {
-        // NumberCheck: [{required: true, message: '不能为空', trigger: 'blur'}, {type: 'number', message: '必须为数字值', trigger: 'blur'}],
+        beforeDead: [{ required: true, validator: this.valNumber, trigger: 'blur' }],
+        beforeMaintainMiddle: [{ required: true, validator: this.valNumber, trigger: 'blur' }],
+        beforeMaintainBig: [{ required: true, validator: this.valNumber, trigger: 'blur' }],
         PhoneNum: [
           { validator: this.validatePhone, trigger: 'blur' }
         ]
@@ -123,7 +124,8 @@ export default {
     if (this.$route.params.mark === 'edit') {
       this.getobj()
     }
-    let subTitle = this.ReadOnly ? '寿命查看' : '寿命配置'
+    let subTitle = this.ReadOnly ? ' 设备寿命配置查看' : ' 设备寿命配置'
+    this.title = '| ' + subTitle
     this.$emit('pageInfo', {
       title: ' | 寿命配置 | ' + subTitle,
       isShowBackBtn: true,
@@ -155,6 +157,15 @@ export default {
         callback(new Error('该字段不能空'))
       } else if (!vInput(value)) {
         callback(new Error('此项含有非法字符'))
+      } else {
+        callback()
+      }
+    },
+    valNumber (rule, value, callback) {
+      if (value === '') {
+        callback(new Error('该字段不能空'))
+      } else if (!Number.isInteger(Number(value))) {
+        callback(new Error('请输入整形数字'))
       } else {
         callback()
       }

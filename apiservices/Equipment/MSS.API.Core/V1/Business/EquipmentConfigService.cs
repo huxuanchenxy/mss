@@ -56,7 +56,7 @@ namespace MSS.API.Core.V1.Business
             var redisconfig = _configuration["redis_EQPConfig:ConnectionString"];
             using (var redis = new CSRedisClient(redisconfig))
             {
-                var key = _configuration["redis_EQPConfig:Instance"];
+                var key = _configuration["redis_EQPConfig:Instance"] + obj.EqpId.ToString();
                 redis.Set(key, JsonConvert.SerializeObject(obj));
             }
         }
