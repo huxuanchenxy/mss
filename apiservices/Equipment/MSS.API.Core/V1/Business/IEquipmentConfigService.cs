@@ -9,13 +9,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace MSS.API.Core.V1.Business
 {
-    public interface IEquipmentTypeService
+    public interface IEquipmentConfigService
     {
-        Task<ApiResult> Save(EquipmentType eqpType);
-        Task<ApiResult> Update(EquipmentType eqpType);
-        Task<ApiResult> Delete(string ids);
-        Task<ApiResult> GetPageByParm(EqpTypeQueryParm parm);
+        Task<ApiResult> Save(EquipmentConfig obj);
+        Task<ApiResult> Update(EquipmentConfig obj);
+        Task<ApiResult> Delete(string ids, int userID);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> GetAll();
+        Task<ApiResult> GetPageByParm(EquipmentConfigParm parm);
+
     }
 }

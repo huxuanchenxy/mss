@@ -5,6 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Http;
+using MSS.API.Common.Utility;
+using MSS.Common.Consul;
+
 namespace MSS.API.Core.Infrastructure
 {
     public static class EssentialServiceCollectionExtensions
@@ -15,6 +20,10 @@ namespace MSS.API.Core.Infrastructure
 
             services.AddTransient<IOrgService, OrgService>();
             services.AddTransient<IWarnningSettingService, WarnningSettingService>();
+
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IAuthHelper, AuthHelper>();
+            services.AddTransient<IServiceDiscoveryProvider, ConsulServiceProvider>();
             return services;
         }
     }

@@ -29,7 +29,7 @@ namespace MSS.API.Dao.Implement
                         " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
                         " @SubSystem,@Team,@TeamPath,@BarCode,@Desc,@Supplier,@Manufacturer, " +
                         " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
-                        " @Location,@LocationBy,@LocationPath,@Online,@Life, " +
+                        " @Location,@LocationBy,@LocationPath,@TopOrg,@Online,@Life, " +
                         " @MediumRepair,@LargeRepair,@OnlineAgain, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                     sql += "SELECT LAST_INSERT_ID()";
@@ -37,8 +37,6 @@ namespace MSS.API.Dao.Implement
                     eqp.ID = newid;
                     if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
                     {
-                        sql = "delete from upload_file_eqp where eqp_id=@id";
-                        int ret = await c.ExecuteAsync(sql, new { id = newid }, trans);
                         List<object> objs = new List<object>();
                         foreach (var item in eqp.FileIDs.Split(','))
                         {
@@ -49,7 +47,7 @@ namespace MSS.API.Dao.Implement
                             });
                         }
                         sql = "insert into upload_file_eqp values (0,@eqpID,@fileID)";
-                        ret = await c.ExecuteAsync(sql, objs, trans);
+                        int ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     trans.Commit();
                     return eqp;
@@ -74,9 +72,9 @@ namespace MSS.API.Dao.Implement
                         " eqp_model=@Model,sub_system=@SubSystem,team=@Team,team_path=@TeamPath,bar_code=@BarCode, " +
                         " discription=@Desc,supplier=@Supplier,manufacturer=@Manufacturer,serial_number=@SerialNo, " +
                         " rated_voltage=@RatedVoltage,rated_current=@RatedCurrent,team=@Team,rated_power=@RatedPower, " +
-                        " location=@Location,location_by=@LocationBy,location_path=@LocationPath,online_date=@Online,life=@Life, " +
-                        " medium_repair=@MediumRepair,large_repair=@LargeRepair,online_again=@OnlineAgain, " +
-                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
+                        " location=@Location,location_by=@LocationBy,location_path=@LocationPath,top_org@TopOrg, " +
+                        " online_date=@Online,life=@Life,medium_repair=@MediumRepair,large_repair=@LargeRepair, " +
+                        " online_again=@OnlineAgain,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
                     if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
                     {
                         string sql = "delete from upload_file_eqp where eqp_id=@id";
@@ -149,6 +147,10 @@ namespace MSS.API.Dao.Implement
                     whereSql.Append(" and a.location=" + parm.SearchLocation)
                     .Append(" and a.location_by =" + parm.SearchLocationBy);
                 }
+                if (parm.SearchTopOrg!=null)
+                {
+                    whereSql.Append(" and a.top_org=" + parm.SearchType);
+                }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
@@ -201,7 +203,31 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.QueryAsync<UploadFileEqp>(
                     "SELECT * FROM upload_file_eqp WHERE eqp_id = @id", new { id = id });
-                return result.ToList();
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
+        public async Task<List<Equipment>> ListByPosition(int location,int locationBy)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<Equipment>(
+                    "SELECT * FROM Equipment WHERE location = @location and location_by=@locationBy", 
+                    new { location = location, locationBy= locationBy });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
 
@@ -212,7 +238,14 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.QueryAsync<Equipment>(
                     "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids });
-                return result.ToList();
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
 
@@ -221,8 +254,15 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = (await c.QueryAsync<Equipment>(
-                    "SELECT * FROM equipment")).ToList();
-                return result;
+                    "SELECT * FROM equipment"));
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
 
@@ -234,8 +274,15 @@ namespace MSS.API.Dao.Implement
                 "from dictionary where code='metro_area' UNION " +
                 "select AreaName,id,1 as TableName from tb_config_bigarea UNION " +
                 "select AreaName,id,2 as TableName from tb_config_midarea";
-                var result = (await c.QueryAsync<AllArea>(sql)).ToList();
-                return result;
+                var result = await c.QueryAsync<AllArea>(sql);
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
         }
     }

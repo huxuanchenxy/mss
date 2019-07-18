@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MSS.API.Model.DTO;
 using static MSS.API.Utility.Const;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -14,10 +15,13 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<DictionaryService> _logger;
         private readonly IDictionaryRepo<Dictionary> _DictionaryRepo;
 
-        public DictionaryService(IDictionaryRepo<Dictionary> DictionaryRepo)
+        private readonly int userID;
+        public DictionaryService(IDictionaryRepo<Dictionary> DictionaryRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _DictionaryRepo = DictionaryRepo;
+
+            userID = auth.GetUserId();
         }
         public async Task<MSSResult<DictionaryView>> GetPageByParm(DictionaryQueryParm parm)
         {

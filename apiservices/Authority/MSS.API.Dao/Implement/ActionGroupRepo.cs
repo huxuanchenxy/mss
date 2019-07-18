@@ -38,7 +38,11 @@ namespace MSS.API.Dao.Implement
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
-                mRet.data = (await c.QueryAsync<ActionGroupView>(sql.ToString())).ToList();
+                var tmp = await c.QueryAsync<ActionGroupView>(sql.ToString());
+                if (tmp != null)
+                {
+                    mRet.data = tmp.ToList();
+                }
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
                     "select count(*) from Action_Group a where 1=1 "+whereSql.ToString());
                 return mRet;

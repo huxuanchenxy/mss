@@ -15,7 +15,10 @@ using MSS.API.Utility;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 using static MSS.API.Utility.Const;
+using static MSS.API.Common.Const;
 using MSS.API.Common;
+using MSS.Common.Consul;
+using MSS.API.Common.Global;
 
 namespace MSS.API.Core
 {
@@ -45,6 +48,8 @@ namespace MSS.API.Core
                 .AddAuthorization()
                 .AddJsonFormatters();
 
+            
+
             services.AddDapper(Configuration);
 
             services.AddCSRedisCache(options =>
@@ -52,7 +57,8 @@ namespace MSS.API.Core
                 options.ConnectionString = this.Configuration["redis:ConnectionString"];
             });
             services.AddEssentialService();
-
+            services.AddConsulService(Configuration);
+            
             //services.AddAuthentication("Bearer")//添加授权模式
             //.AddIdentityServerAuthentication(Options =>
             //{
@@ -70,12 +76,14 @@ namespace MSS.API.Core
 
             services.AddDistributedMemoryCache();
             //services.AddSession();
+
+            services.AddSingleton<GlobalActionFilter>();
             services.AddMvc(
-            //options =>
-            //{
-            //    options.Filters.Add<GlobalActionFilter>();
-            //}
-).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            options =>
+            {
+                options.Filters.Add<GlobalActionFilter>();
+            }
+            ).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -96,7 +104,7 @@ namespace MSS.API.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
@@ -110,6 +118,9 @@ namespace MSS.API.Core
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            //app.Map("/health", HealthMap);
+            app.RegisterConsul(lifetime,consulService);
             //app.UseSession();
             app.UseCors("AllowAll");
             app.UseMvc();
@@ -117,9 +128,14 @@ namespace MSS.API.Core
 
         private void InitConst()
         {
-            PAGESIZE = Convert.ToInt32(Configuration["InitConst:PageSize"]);
+            Common.Const.PAGESIZE = Convert.ToInt32(Configuration["InitConst:PageSize"]);
             INIT_PASSWORD = Configuration["InitConst:Password"];
             PWD_RANDOM_MAX=Convert.ToInt32(Configuration["InitConst:PwdRandomMax"]);
+            REDISConn_AUTH = Configuration["redis_Auth:ConnectionString"];
+            REDIS_AUTH_KEY_ACTIONINFO = Configuration["redis_Auth:tb_action_info"];
+            REDIS_AUTH_KEY_ROLEACTION = Configuration["redis_Auth:tb_role_action"];
+            REDIS_AUTH_KEY_USER = Configuration["redis_Auth:tb_user"];
         }
+
     }
 }

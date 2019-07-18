@@ -42,7 +42,11 @@ namespace MSS.API.Dao.Implement
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
-                mRet.data = (await c.QueryAsync<ActionView>(sql.ToString())).ToList();
+                var tmp = await c.QueryAsync<ActionView>(sql.ToString());
+                if (tmp != null)
+                {
+                    mRet.data = tmp.ToList();
+                }
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
                     "select count(*) from Action_Info a where 1=1 "+whereSql.ToString());
                 return mRet;
@@ -142,7 +146,8 @@ namespace MSS.API.Dao.Implement
                 StringBuilder sql = new StringBuilder();
                 sql.Append(" SELECT a.id as ActionID,a.action_name as ActionName,a.request_url as ActionURL,a.Action_Order as ActionOrder,a.Icon as ActionIcon,")
                   .Append(" a.parent_menu as ParentMenu,a.group_id as GroupID, ag.Group_Name as GroupName, ag.Request_Url as GroupURL, ag.Icon as GroupIcon,")
-                  .Append(" a.level as Level FROM Action_Info a")
+                  .Append(" ag.active_icon as GroupActiveIcon,a.level as Level,ag.group_order as GroupOrder")
+                  .Append(" FROM Action_Info a")
                   .Append(" left join Action_Group ag on a.group_id = ag.id")
                   .Append(" right JOIN role_action ra on ra.action_id=a.id")
                   .Append(" right JOIN user u on u.role_id=ra.role_id")

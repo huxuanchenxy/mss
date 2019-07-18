@@ -63,17 +63,12 @@ namespace MSS.API.Core.V1.Controllers
         [HttpPost("Add")]
         public ActionResult Add(RoleStrActions roleStrActions)
         {
-            int userID = 1;
-            roleStrActions.created_by = userID;
-            roleStrActions.updated_by = userID;
             var resp = _RoleService.Add(roleStrActions);
             return Ok(resp.Result);
         }
         [HttpPut("Update")]
         public ActionResult Update(RoleStrActions roleStrActions)
         {
-            int userID = 1;
-            roleStrActions.updated_by = userID;
             var resp = _RoleService.Update(roleStrActions);
             return Ok(resp.Result);
         }

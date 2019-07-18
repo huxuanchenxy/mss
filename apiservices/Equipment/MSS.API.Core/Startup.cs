@@ -13,6 +13,7 @@ using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
 using MSS.API.Operlog.Common;
 using MSS.API.Common;
+using MSS.Common.Consul;
 
 namespace MSS.API.Core
 {
@@ -43,7 +44,12 @@ namespace MSS.API.Core
                 .AddJsonFormatters();
 
             services.AddDapper(Configuration);
+            services.AddCSRedisCache(options =>
+            {
+                options.ConnectionString = this.Configuration["redis:ConnectionString"];
+            });
             services.AddEssentialService();
+            services.AddConsulService(Configuration);
 
             //跨域 Cors
             services.AddCors(options =>
@@ -86,14 +92,14 @@ namespace MSS.API.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
-
+            app.RegisterConsul(lifetime, consulService);
             app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.

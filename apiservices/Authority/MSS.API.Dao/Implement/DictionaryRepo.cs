@@ -38,7 +38,11 @@ namespace MSS.API.Dao.Implement
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
-                mRet.data = (await c.QueryAsync<DictionaryView>(sql.ToString())).ToList();
+                var tmp = await c.QueryAsync<DictionaryView>(sql.ToString());
+                if (tmp != null)
+                {
+                    mRet.data = tmp.ToList();
+                }
                 mRet.relatedData = await c.QueryFirstOrDefaultAsync<int>(
                     "select count(*) from Dictionary a where 1=1 "+whereSql.ToString());
                 return mRet;

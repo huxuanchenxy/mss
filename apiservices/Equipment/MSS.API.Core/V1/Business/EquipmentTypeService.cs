@@ -14,6 +14,7 @@ using static MSS.API.Common.Const;
 using static MSS.API.Common.FilePath;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -22,26 +23,27 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<UserService> _logger;
         private readonly IEquipmentTypeRepo<EquipmentType> _eqpTypeRepo;
         private readonly IEquipmentRepo<Equipment> _eqpRepo;
+        private readonly int userID;
 
         public EquipmentTypeService(IEquipmentTypeRepo<EquipmentType> eqpTypeRepo,
-            IEquipmentRepo<Equipment> eqpRepo)
+            IEquipmentRepo<Equipment> eqpRepo, IAuthHelper auth)
         {
             //_logger = logger;
             _eqpTypeRepo = eqpTypeRepo;
             _eqpRepo = eqpRepo;
+            userID = auth.GetUserId();
         }
 
-        public async Task<ApiResult> Save(EquipmentType eqpType, List<IFormFile> file)
+        public async Task<ApiResult> Save(EquipmentType eqpType)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                //保存文件
-                //SavePDF(file,ref eqpType);
-
                 DateTime dt = DateTime.Now;
                 eqpType.UpdatedTime = dt;
                 eqpType.CreatedTime = dt;
+                eqpType.UpdatedBy = userID;
+                eqpType.CreatedBy = userID;
                 ret.data = await _eqpTypeRepo.Save(eqpType);
                 return ret;
             }
@@ -53,7 +55,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Update(EquipmentType eqpType, List<IFormFile> file)
+        public async Task<ApiResult> Update(EquipmentType eqpType)
         {
             ApiResult ret = new ApiResult();
             try
@@ -61,32 +63,9 @@ namespace MSS.API.Core.V1.Business
                 EquipmentType et = await _eqpTypeRepo.GetByID(eqpType.ID);
                 if (et!=null)
                 {
-                    //保存文件
-                    //SavePDF(file, ref eqpType);
-                    //原来已上传的路径放进来
-                    if (string.IsNullOrWhiteSpace(eqpType.PWorking) && !string.IsNullOrWhiteSpace(et.PWorking))
-                    {
-                        eqpType.PWorking = et.PWorking;
-                    }
-                    if (string.IsNullOrWhiteSpace(eqpType.PDrawings) && !string.IsNullOrWhiteSpace(et.PDrawings))
-                    {
-                        eqpType.PDrawings = et.PDrawings;
-                    }
-                    if (string.IsNullOrWhiteSpace(eqpType.PInstall) && !string.IsNullOrWhiteSpace(et.PInstall))
-                    {
-                        eqpType.PInstall = et.PInstall;
-                    }
-                    if (string.IsNullOrWhiteSpace(eqpType.PUser) && !string.IsNullOrWhiteSpace(et.PUser))
-                    {
-                        eqpType.PUser = et.PUser;
-                    }
-                    if (string.IsNullOrWhiteSpace(eqpType.PRegulations) && !string.IsNullOrWhiteSpace(et.PRegulations))
-                    {
-                        eqpType.PRegulations = et.PRegulations;
-                    }
-
                     DateTime dt = DateTime.Now;
                     eqpType.UpdatedTime = dt;
+                    eqpType.UpdatedBy = userID;
                     ret.data = await _eqpTypeRepo.Update(eqpType);
                 }
                 else
@@ -104,7 +83,7 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Delete(string ids,int userID)
+        public async Task<ApiResult> Delete(string ids)
         {
             ApiResult ret = new ApiResult();
             try
@@ -135,7 +114,17 @@ namespace MSS.API.Core.V1.Business
                 parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
                 parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
                 parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
-                ret.data = await _eqpTypeRepo.GetPageByParm(parm);
+                EqpTypeView etv = await _eqpTypeRepo.GetPageByParm(parm);
+                List<UploadFileEqpType> ufets= await _eqpTypeRepo.UploadFileListByEqpType((etv.rows.Select(a => a.ID)).ToArray());
+                foreach (var item in etv.rows)
+                {
+                    var tmp = ufets.Where(a => a.EqpTypeID == item.ID);
+                    if (tmp!=null)
+                    {
+                        item.UploadFiles = ListToTreeJson(tmp.ToList());
+                    }
+                }
+                ret.data = etv;
                 return ret;
             }
             catch (Exception ex)
@@ -151,7 +140,13 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _eqpTypeRepo.GetByID(id);
+                EquipmentType et = await _eqpTypeRepo.GetByID(id);
+                List<object> list = await _eqpTypeRepo.RelationListByEqpType(id);
+                if (list!=null)
+                {
+                    et.UploadFiles = JsonConvert.SerializeObject(list);
+                }
+                ret.data = et;
                 return ret;
             }
             catch (Exception ex)
@@ -176,6 +171,31 @@ namespace MSS.API.Core.V1.Business
                 ret.msg = ex.Message;
                 return ret;
             }
+        }
+
+        private string ListToTreeJson(List<UploadFileEqpType> ufets)
+        {
+            List<object> objs = new List<object>();
+            IEnumerable<IGrouping<int, UploadFileEqpType>> groups = ufets.GroupBy(a => a.Type);
+            foreach (var group in groups.OrderBy(a=>a.Key))
+            {
+                string label="";
+                List<object> children = new List<object>();
+                foreach (var item in group)
+                {
+                    label = item.TName;
+                    children.Add(new {
+                        value=item.FilePath,
+                        label=item.FileName
+                    });
+                }
+                objs.Add(new {
+                    value=group.Key,
+                    label=label,
+                    children=children
+                });
+            }
+            return JsonConvert.SerializeObject(objs);
         }
     }
 }

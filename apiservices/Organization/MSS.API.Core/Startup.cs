@@ -11,6 +11,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MSS.API.Core.Infrastructure;
 using MSS.API.Dao;
+using MSS.Common.Consul;
+using MSS.API.Common;
+using MSS.API.Core.EventServer;
 
 namespace MSS.API.Core
 {
@@ -40,8 +43,12 @@ namespace MSS.API.Core
                 .AddJsonFormatters();
 
             services.AddDapper(Configuration);
+            services.AddCSRedisCache(options =>
+            {
+                options.ConnectionString = this.Configuration["redis:ConnectionString"];
+            });
             services.AddEssentialService();
-
+            services.AddConsulService(Configuration);
             //跨域 Cors
             services.AddCors(options =>
             {
@@ -52,17 +59,21 @@ namespace MSS.API.Core
                     builder.WithOrigins("http://localhost:8080",
                                         "http://www.contoso.com")
                                         .AllowAnyHeader()
-                                        .AllowAnyMethod();
+                                        .AllowAnyMethod()
+                                        .AllowCredentials();
                 });
                 // options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
 
-            
+            services.AddSignalR();
+            // 注册定时服务
+            services.AddScoped<AlarmDataJob>();
+            services.AddHostedService<ScheduleService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
@@ -70,7 +81,12 @@ namespace MSS.API.Core
             }
             app.UseAuthentication();
             // app.UseCors(AllowSpecificOrigins);
+            app.RegisterConsul(lifetime, consulService);
             app.UseCors();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<MssEventHub>("/eventHub");
+            });
             app.UseMvc();
         }
     }

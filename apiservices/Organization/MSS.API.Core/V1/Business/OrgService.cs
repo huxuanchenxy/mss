@@ -13,18 +13,21 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MSS.API.Common;
-
+using MSS.Common.Consul;
+using MSS.API.Common.Utility;
 namespace MSS.API.Core.V1.Business
 {
     public class OrgService: IOrgService
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IOrgRepo<OrgTree> _orgRepo;
+        private readonly IServiceDiscoveryProvider _consulServiceProvider;
 
-        public OrgService(IOrgRepo<OrgTree> orgRepo)
+        public OrgService(IOrgRepo<OrgTree> orgRepo, IServiceDiscoveryProvider consulServiceProvider)
         {
             //_logger = logger;
             _orgRepo = orgRepo;
+            _consulServiceProvider = consulServiceProvider;
         }
 
         public async Task<ApiResult> GetAllOrg()
@@ -95,9 +98,9 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 
-                OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userId);
-                if (orguser != null) {
-                    ret = await GetOrgByIDs(new List<int> { orguser.NodeID });
+                OrgTree orgTree = await _findTopNode(userId);// await _orgRepo.GetOrgUserByUserID(userId);
+                if (orgTree != null) {
+                    ret = await GetOrgByIDs(new List<int> { orgTree.ID });
                 }
                 else
                 {
@@ -119,10 +122,10 @@ namespace MSS.API.Core.V1.Business
             try
             {
 
-                OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userId);
-                if (orguser != null)
+                OrgTree orgTree = await _findTopNode(userId);// await _orgRepo.GetOrgUserByUserID(userId);
+                if (orgTree != null)
                 {
-                    ret = await GetOrgByIDs(new List<int> { orguser.NodeID });
+                    ret = await GetOrgByIDs(new List<int> { orgTree.ID });
                 }
                 else
                 {
@@ -231,6 +234,41 @@ namespace MSS.API.Core.V1.Business
                 }
             }
             return nodes;
+        }
+
+        public async Task<ApiResult> GetTopNodeByUserID(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                // // test
+                // var _services = await _consulServiceProvider.GetServiceAsync("OrgService");
+                // IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                // ApiResult result = await httpHelper.GetSingleItemRequest(_services+"/api/v1/org/all");
+
+                OrgTree topNode = await _findTopNode(id);
+
+                ret.code = Code.Success;
+                ret.data = topNode;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+        private async Task<OrgTree> _findTopNode(int userid)
+        {
+            OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userid);
+
+            OrgTree topNode = null;
+            if (orguser != null) {
+                List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
+                topNode = _findTopNode(orguser.NodeID, nodes_all);
+            }
+            return topNode;
         }
 
         private OrgTree _findTopNode(int nodeId, List<OrgTree> nodes)

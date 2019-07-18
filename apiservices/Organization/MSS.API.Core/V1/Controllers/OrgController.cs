@@ -10,6 +10,7 @@ using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
 using MSS.API.Core.Common;
 using MSS.API.Common;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -19,15 +20,13 @@ namespace MSS.API.Core.V1.Controllers
     {
         private readonly IOrgService _orgService;
         private readonly int _userId;
-        public OrgController(IOrgService orgService)
+        private readonly IAuthHelper _authHelper;
+        public OrgController(IOrgService orgService, IAuthHelper authHelper)
 
         {
-            //_logger = logger;
-            //_mediator = mediator;
-            //_cache = cache;
             _orgService = orgService;
-            _userId = 1;
-
+            _authHelper = authHelper;
+            _userId = _authHelper.GetUserId();
         }
 
         [HttpGet("all")]
@@ -42,6 +41,14 @@ namespace MSS.API.Core.V1.Controllers
         {
             int userId = _userId;
             var ret = await _orgService.GetOrgByUserID(userId);
+            return ret;
+        }
+
+        [HttpGet("topnode/{id}")]
+        public async Task<ActionResult<ApiResult>> GetTopNodeUserID(int id)
+        {
+            int userId = id;
+            var ret = await _orgService.GetTopNodeByUserID(userId);
             return ret;
         }
 
