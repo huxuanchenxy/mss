@@ -66,6 +66,7 @@
         </li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
         <li class="list" @click="edit"><x-button>修改</x-button></li>
+         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -123,11 +124,9 @@
                 </div>
                  <div class="number">{{index+1}}</div>
                 <div class="number">{{ item.keyword }}</div>
-                <div class="name">{{ item.title }}</div>
+                <div class="number">{{ item.title }}</div>
                 <div class="number">{{ item.deviceTypeName }}</div>
                 <div class="number">{{ item.deptname }}</div>
-                <!-- <div class="number">{{ item.video_file }}</div> -->
-                <!-- <div class="number">{{ item.attch_file }}</div> -->
                 <div class="upload-cascader">
                   <el-cascader clearable
                     @change="preview"
@@ -183,7 +182,7 @@
     </div>
 </template>
 <script>
-import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import eqpApi from '@/api/eqpApi.js'
 import api from '@/api/ExpertApi'
@@ -271,17 +270,19 @@ export default {
       // this.searchResult(1)
     },
     preview (val) {
-      // http://10.89.36.103:8090/
+      if (val.length < 1) {
+        return
+      }
       var aPos = val[1].indexOf('/')
       var bPos = val[1].substring(aPos + 1).indexOf('/')
       var val1 = val[1].substring(aPos + 1, aPos + bPos + 1)
       if (val1 === 'ExpertData_vedio') {
-        this.previewUrl = 'http://10.89.36.103:8090/' + val[val.length - 1]
+        this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
         this.videoFlag = true
         this.centerDialogVisible = false
         this.vediocenterDialogVisible = true
       } else {
-        this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
+        this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
         this.videoFlag = false
         this.centerDialogVisible = true
         this.vediocenterDialogVisible = false
@@ -428,7 +429,27 @@ export default {
         })
       }
     },
-
+    // 查看设备明细
+    detail () {
+      if (!this.editExpertIDList.length) {
+        this.$message({
+          message: '请选择需要查看的专家资料',
+          type: 'warning'
+        })
+      } else if (this.editExpertIDList.length > 1) {
+        this.$message({
+          message: '查看的专家资料不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailExpertData',
+          params: {
+            id: this.editExpertIDList[0]
+          }
+        })
+      }
+    },
     // 删除站区
     remove () {
       if (!this.editExpertIDList.length) {

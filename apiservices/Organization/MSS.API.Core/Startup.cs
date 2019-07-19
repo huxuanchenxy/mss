@@ -15,6 +15,10 @@ using MSS.Common.Consul;
 using MSS.API.Common;
 using MSS.API.Core.EventServer;
 
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
+using Microsoft.AspNetCore.SignalR;
 namespace MSS.API.Core
 {
     public class Startup
@@ -66,9 +70,15 @@ namespace MSS.API.Core
             });
 
             services.AddSignalR();
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             // 注册定时服务
-            services.AddScoped<AlarmDataJob>();
+            services.AddTransient<MsgQueueWatcher>();
             services.AddHostedService<ScheduleService>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();//注册ISchedulerFactory的实例。
+            services.AddSingleton<IJobFactory, MssJobFactory>();
+            services.AddSingleton<EventQueues>();
+            services.AddSingleton<GlobalDataManager>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

@@ -18,14 +18,14 @@ namespace MSS.API.Core.V1.Controllers
     public class EquipmentConfigController : ControllerBase
     {
         private readonly IEquipmentConfigService _service;
-        //private readonly IAuthHelper _auth;
+        private readonly IAuthHelper _auth;
         private int _userId;
-        public EquipmentConfigController(IEquipmentConfigService service/*, IAuthHelper auth*/)
+        public EquipmentConfigController(IEquipmentConfigService service, IAuthHelper auth)
         {
             _service = service;
-            //_auth = auth;
-            //_userId = _auth.GetUserId();
-            _userId = 1;
+            _auth = auth;
+            _userId = _auth.GetUserId();
+            // _userId = 1;
         }
 
         [HttpPost]

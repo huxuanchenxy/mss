@@ -27,6 +27,10 @@ const routes = [
               path: 'addDeviceMaintain/:mark?/:id?',
               name: 'addDeviceMaintain',
               component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/MaintainReg/children/addDeviceMaintain.vue')
+            }, {
+              path: 'detail/:mark?/:id?',
+              name: 'DetailDeviceMaintain',
+              component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/EquipmentLifeCycle/MaintainReg/children/DetailDeviceMaintain.vue')
             }
           ]
         }

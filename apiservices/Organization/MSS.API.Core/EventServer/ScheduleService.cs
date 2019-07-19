@@ -7,16 +7,21 @@ using System.Threading.Tasks;
 using System.Collections.Specialized;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Spi;
 namespace MSS.API.Core.EventServer
 {
     internal class ScheduleService : IHostedService, IDisposable
     {
         private readonly ILogger _logger;
         private readonly ISchedulerFactory _schedulerFactory;
+        private readonly IJobFactory _mssJobFactory;
+        private readonly GlobalDataManager _globalDataManager;
         private IScheduler _scheduler;
-        public ScheduleService(ILogger<ScheduleService> logger)
+        public ScheduleService(ILogger<ScheduleService> logger, IJobFactory mssJobFactory, GlobalDataManager globalDataManager)
         {
             _logger = logger;
+            _mssJobFactory = mssJobFactory;
+            _globalDataManager = globalDataManager;
             NameValueCollection props = new NameValueCollection
             {
                 { "quartz.serializer.type", "binary" }
@@ -26,26 +31,27 @@ namespace MSS.API.Core.EventServer
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            //初始化设备列表及公司人员
+            await _globalDataManager.initEquipment();
+            await _globalDataManager.initTopOrg();
+
             _logger.LogInformation("定时服务启动.");
             _scheduler = await _schedulerFactory.GetScheduler();
+            _scheduler.JobFactory = _mssJobFactory;
             await _scheduler.Start();
-            //3、创建一个触发器
-            // var trigger = TriggerBuilder.Create()
-            //     .WithSimpleSchedule(x => x.WithIntervalInSeconds(2).RepeatForever())//每两秒执行一次
-            //     .Build();
+
+            // 消息队列监听
+            IJobDetail job = JobBuilder.Create<MsgQueueWatcher>()
+                .WithIdentity("myJob", "group1")
+                .Build();
             ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity("trigger1", "group1")
                 .StartNow()
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(1)
+                    .WithInterval(TimeSpan.FromTicks(1000000)) //1秒 = 10000000 ticks
                     .RepeatForever())
                 .Build();
-            //4、创建任务
-            var jobDetail = JobBuilder.Create<AlarmDataJob>()
-                .WithIdentity("job", "group")
-                .Build();
-            //5、将触发器和任务器绑定到调度器中
-            await _scheduler.ScheduleJob(jobDetail, trigger);
+            await _scheduler.ScheduleJob(job, trigger);
 
             
         }

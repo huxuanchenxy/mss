@@ -27,6 +27,10 @@ const routes = [
                   path: 'AddExpertData/:mark?/:id?',
                   name: 'AddExpertData',
                   component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/Expert/children/AddExpertData.vue')
+                }, {
+                  path: 'detail/:mark?/:id?',
+                  name: 'DetailExpertData',
+                  component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/MainTainData/Expert/children/DetailExpertData.vue')
                 }
               ]
             }
