@@ -42,8 +42,8 @@
                     <el-option
                       v-for="item in subSystemList"
                       :key="item.key"
-                      :label="item.sub_code_name"
-                      :value="item.sub_code">
+                      :label="item.name"
+                      :value="item.id">
                     </el-option>
                   </el-select>
                 </div>
@@ -279,6 +279,7 @@
 <script>
 // import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
 import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { dictionary, subDictionary } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
 import apiAuth from '@/api/authApi'
@@ -409,7 +410,7 @@ export default {
       this.getEqp()
     }
     // 子系统加载
-    apiAuth.getSubCode('sub_system').then(res => {
+    apiAuth.getSubCode(dictionary.subSystem).then(res => {
       this.subSystemList = res.data
     }).catch(err => console.log(err))
 
@@ -425,8 +426,8 @@ export default {
 
     // 供应商/制造商加载
     api.getFirmAll().then(res => {
-      this.supplierList = res.data.filter((item) => { return item.type === 0 })
-      this.manufacturerList = res.data.filter((item) => { return item.type === 1 })
+      this.supplierList = res.data.filter((item) => { return item.type === subDictionary.supplier })
+      this.manufacturerList = res.data.filter((item) => { return item.type === subDictionary.manufacturer })
     }).catch(err => console.log(err))
 
     // 安装位置加载
