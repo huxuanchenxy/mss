@@ -21,5 +21,6 @@ namespace MSS.API.Dao.Interface
 
         //Task<List<Dictionary>> GetSubByCode(string code);
         Task<List<DictionaryTree>> GetSubByCode(int pid);
+        Task<List<DictionaryRelation>> GetByParent(int pid);
     }
 }

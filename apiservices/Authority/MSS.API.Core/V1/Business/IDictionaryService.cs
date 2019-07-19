@@ -12,6 +12,7 @@ namespace MSS.API.Core.V1.Business
     public interface IDictionaryService
     {
         Task<ApiResult> GetSubByCode(int pid);
+        Task<ApiResult> GetByParent(int pid);
         //Task<MSSResult<DictionaryView>> GetPageByParm(DictionaryQueryParm parm);
         //Task<MSSResult> GetByID(int id);
 

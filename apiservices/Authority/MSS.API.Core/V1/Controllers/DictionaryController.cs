@@ -34,6 +34,13 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _DictionaryService.GetSubByCode(code);
             return Ok(resp.Result);
         }
+
+        [HttpGet("BusinessType/{code}")]
+        public ActionResult GetByParent(int code)
+        {
+            var resp = _DictionaryService.GetByParent(code);
+            return Ok(resp.Result);
+        }
         //[HttpGet("QueryList")]
         //public ActionResult GetPageByParm([FromQuery] DictionaryQueryParm parm)
         //{

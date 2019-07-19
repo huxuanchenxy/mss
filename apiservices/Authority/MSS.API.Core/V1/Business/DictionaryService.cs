@@ -39,6 +39,22 @@ namespace MSS.API.Core.V1.Business
                 return mRet;
             }
         }
+
+        public async Task<ApiResult> GetByParent(int pid)
+        {
+            ApiResult mRet = new ApiResult();
+            try
+            {
+                mRet.data = await _DictionaryRepo.GetByParent(pid);
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = Code.Failure;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
         //public async Task<MSSResult<DictionaryView>> GetPageByParm(DictionaryQueryParm parm)
         //{
         //    MSSResult<DictionaryView> mRet = new MSSResult<DictionaryView>();

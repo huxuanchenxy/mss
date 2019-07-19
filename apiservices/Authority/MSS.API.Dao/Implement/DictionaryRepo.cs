@@ -24,6 +24,15 @@ namespace MSS.API.Dao.Implement
                 return result;
             });
         }
+
+        public async Task<List<DictionaryRelation>> GetByParent(int pid)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = (await c.QueryAsync<DictionaryRelation>("select * from dictionary_relation where parent_business_type=@pid", new { pid = pid })).ToList();
+                return result;
+            });
+        }
         //public async Task<MSSResult<DictionaryView>> GetPageByParm(DictionaryQueryParm parm)
         //{
         //    return await WithConnection(async c =>

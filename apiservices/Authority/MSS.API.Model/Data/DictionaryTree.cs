@@ -8,6 +8,11 @@ namespace MSS.API.Model.Data
     {
         public string parent_id { get; set; }
         public string name { get; set; }
-        public int node_type { get; set; }
+    }
+    public class DictionaryRelation
+    {
+        public int id { get; set; }
+        public string parent_business_type { get; set; }
+        public string business_type { get; set; }
     }
 }
