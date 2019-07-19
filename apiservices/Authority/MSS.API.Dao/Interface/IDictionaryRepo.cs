@@ -10,15 +10,16 @@ namespace MSS.API.Dao.Interface
 {
     public interface IDictionaryRepo<T> where T:BaseEntity
     {
-        Task<MSSResult<DictionaryView>> GetPageByParm(DictionaryQueryParm parm);
-        Task<Dictionary> GetByID(int Id);
+        //Task<MSSResult<DictionaryView>> GetPageByParm(DictionaryQueryParm parm);
+        //Task<Dictionary> GetByID(int Id);
 
-        Task<int> Add(Dictionary Dictionary);
+        //Task<int> Add(Dictionary Dictionary);
 
-        Task<int> Update(Dictionary Dictionary);
+        //Task<int> Update(Dictionary Dictionary);
 
-        Task<int> Delete(string[] ids);
+        //Task<int> Delete(string[] ids);
 
-        Task<List<Dictionary>> GetSubByCode(string code);
+        //Task<List<Dictionary>> GetSubByCode(string code);
+        Task<List<DictionaryTree>> GetSubByCode(int pid);
     }
 }
