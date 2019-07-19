@@ -179,6 +179,7 @@ export default {
         updated_time: 0,
         updated_by: 0
       },
+      currentOpen: -1,
       shrinkAll: {
         text: '全部展开',
         mark: true
@@ -333,8 +334,18 @@ export default {
     },
     // 收起展开权限列表
     shrinkSubContent (index, id, length) {
-      this.RoleList[index].isShowSubCon ? this.RoleList[index].isShowSubCon = true : this.RoleList[index].isShowSubCon = false
-      this.RoleList[index].isShowSubCon = !this.RoleList[index].isShowSubCon
+      // this.RoleList[index].isShowSubCon ? this.RoleList[index].isShowSubCon = true : this.RoleList[index].isShowSubCon = false
+      // this.RoleList[index].isShowSubCon = !this.RoleList[index].isShowSubCon
+      if (this.RoleList[index].isShowSubCon) {
+        this.currentOpen = -1
+        this.RoleList[index].isShowSubCon = false
+      } else {
+        if (this.currentOpen !== -1) {
+          this.RoleList[this.currentOpen].isShowSubCon = false
+        }
+        this.currentOpen = index
+        this.RoleList[index].isShowSubCon = true
+      }
     },
 
     // 全部展开、收起

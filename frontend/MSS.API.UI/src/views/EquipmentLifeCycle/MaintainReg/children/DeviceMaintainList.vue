@@ -339,9 +339,12 @@ export default {
       // this.searchResult(1)
     },
     preview (val) {
+      if (val.length < 1) {
+        return
+      }
+      //http
       this.centerDialogVisible = true
       this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
-      // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
     },
     // 改变排序
     changeOrder (sort) {
