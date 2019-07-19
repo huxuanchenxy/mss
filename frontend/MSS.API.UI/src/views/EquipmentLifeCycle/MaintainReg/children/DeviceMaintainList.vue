@@ -187,13 +187,10 @@
                          @change="emitEditID">
                 </div>
                 <div class="number">{{index+1}}</div>
-                <!-- <div class="number">{{ item.device_type_name }}</div> -->
-                <div class="name">{{ item.device_name }}</div>
+                <div class="number">{{ item.device_name }}</div>
                 <div class="number">{{ item.team_group_name }}</div>
                 <div class="number">{{ item.director_name }}</div>
                 <div class="number">{{ item.maintain_date }}</div>
-                <!-- <div class="number">{{ item.detail_desc }}</div> -->
-                <!-- <div class="number">{{ item.arr }}</div> -->
                 <div class="upload-cascader">
                   <el-cascader clearable
                              @change="preview"
@@ -246,7 +243,7 @@
   </div>
 </template>
 <script>
-import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
 import eqpApi from '@/api/eqpApi.js'
@@ -342,9 +339,8 @@ export default {
       if (val.length < 1) {
         return
       }
-      //http
       this.centerDialogVisible = true
-      this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
+      this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
     },
     // 改变排序
     changeOrder (sort) {
@@ -650,13 +646,16 @@ $con-height: $content-height - 145 - 56;
     }
   }
 
-  .number{
-    width: 4%;
-  }
-
+  .number,
   .name,
   .btn-wrap{
-    width: 8%;
+    width: 10%;
+  }
+
+  .name{
+    a{
+      color: #42abfd;
+    }
   }
 
   .last-update-time{
