@@ -124,11 +124,9 @@
                 </div>
                  <div class="number">{{index+1}}</div>
                 <div class="number">{{ item.keyword }}</div>
-                <div class="name">{{ item.title }}</div>
+                <div class="number">{{ item.title }}</div>
                 <div class="number">{{ item.deviceTypeName }}</div>
                 <div class="number">{{ item.deptname }}</div>
-                <!-- <div class="number">{{ item.video_file }}</div> -->
-                <!-- <div class="number">{{ item.attch_file }}</div> -->
                 <div class="upload-cascader">
                   <el-cascader clearable
                     @change="preview"
@@ -184,7 +182,7 @@
     </div>
 </template>
 <script>
-import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import eqpApi from '@/api/eqpApi.js'
 import api from '@/api/ExpertApi'
@@ -279,12 +277,12 @@ export default {
       var bPos = val[1].substring(aPos + 1).indexOf('/')
       var val1 = val[1].substring(aPos + 1, aPos + bPos + 1)
       if (val1 === 'ExpertData_vedio') {
-        this.previewUrl = 'http://10.89.36.103:8090/' + val[val.length - 1]
+        this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
         this.videoFlag = true
         this.centerDialogVisible = false
         this.vediocenterDialogVisible = true
       } else {
-        this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
+        this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
         this.videoFlag = false
         this.centerDialogVisible = true
         this.vediocenterDialogVisible = false

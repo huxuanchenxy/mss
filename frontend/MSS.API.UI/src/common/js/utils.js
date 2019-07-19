@@ -148,6 +148,8 @@ export const UPLOAD_SIZE = 20
 
 // pdf 缩略图片
 export const PDF_IMAGE = '/static/pdf-icon.png'
+// 服务器路径
+export const FILE_SERVER_PATH = 'http://10.89.36.103:8090/'
 
 export const RESULT = {
   Fail: 0,
