@@ -15,6 +15,7 @@ namespace MSS.API.Model.Data
         public string deviceTypeName { get; set; }
 
         public int deptid { get; set; }
+        public string dept_path { get; set; }
         public string deptname { get; set; }
 
         public string keyword { get; set; }
@@ -35,6 +36,7 @@ namespace MSS.API.Model.Data
             Map(o => o.ID).ToColumn("id");
             Map(o => o.device_type).ToColumn("device_type");
             Map(o => o.deptid).ToColumn("deptid");
+            Map(o => o.dept_path).ToColumn("dept_path");
             Map(o => o.keyword).ToColumn("keyword");
             Map(o => o.title).ToColumn("title");
             Map(o => o.content).ToColumn("content");

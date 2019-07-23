@@ -28,7 +28,7 @@
           <div class="input-group">
             <label for="">设备类型</label>
             <div class="inp">
-              <el-select v-model="deviceType" clearable placeholder="请选择">
+              <!-- <el-select v-model="deviceType" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deviceTypeList"
@@ -36,13 +36,21 @@
                  :value="item.id"
                  :label="item.deviceTypeName">
                  </el-option>
+              </el-select> -->
+              <el-select v-model="deviceType" clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in deviceTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
               </el-select>
             </div>
           </div>
            <div class="input-group">
             <label for="">部门</label>
             <div class="inp">
-              <el-select v-model="deptid" clearable placeholder="请选择">
+              <!-- <el-select v-model="deptid" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deptList"
@@ -50,7 +58,15 @@
                  :value="item.id"
                  :label="item.deptName">
                  </el-option>
-              </el-select>
+              </el-select> -->
+              <el-cascader class="cascader_width" clearable
+                    :props="defaultParams"
+                    change-on-select
+                    @change="cascader_change_copy"
+                    :show-all-levels="true"
+                    :options="teamList"
+                    v-model="teamPath.text">
+                  </el-cascader>
             </div>
           </div>
         </div>
@@ -73,7 +89,7 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('id')">
+        <li class="list indexkey c-pointer" @click="changeOrder('id')">
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
@@ -81,7 +97,7 @@
           关键字
           <i :class="[{ 'el-icon-d-caret': headOrder.keyword === 0 }, { 'el-icon-caret-top': headOrder.keyword === 1 }, { 'el-icon-caret-bottom': headOrder.keyword === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('title')">
+        <li class="list title c-pointer" @click="changeOrder('title')">
           标题
           <i :class="[{ 'el-icon-d-caret': headOrder.title === 0 }, { 'el-icon-caret-top': headOrder.title === 1 }, { 'el-icon-caret-bottom': headOrder.title === 2 }]"></i>
         </li>
@@ -94,14 +110,14 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.device_type === 0 }, { 'el-icon-caret-top': headOrder.device_type === 1 }, { 'el-icon-caret-bottom': headOrder.device_type === 2 }]"></i>
         </li>
          <li class="list number c-pointer" @click="changeOrder('deptid')">
-          上传部门
+          录入部门
           <i :class="[{ 'el-icon-d-caret': headOrder.deptid === 0 }, { 'el-icon-caret-top': headOrder.deptid === 1 }, { 'el-icon-caret-bottom': headOrder.deptid === 2 }]"></i>
         </li>
          <!-- <li class="list number c-pointer" @click="changeOrder('video_file')">
           视频
           <i :class="[{ 'el-icon-d-caret': headOrder.video_file === 0 }, { 'el-icon-caret-top': headOrder.video_file === 1 }, { 'el-icon-caret-bottom': headOrder.video_file === 2 }]"></i>
         </li> -->
-         <li class="list number c-pointer" @click="changeOrder('attch_file')">
+         <li class="list upload-cascader c-pointer" @click="changeOrder('attch_file')">
           附件
           <i :class="[{ 'el-icon-d-caret': headOrder.attch_file === 0 }, { 'el-icon-caret-top': headOrder.attch_file === 1 }, { 'el-icon-caret-bottom': headOrder.attch_file === 2 }]"></i>
         </li>
@@ -122,9 +138,9 @@
                 <div class="checkbox">
                   <input type="checkbox" v-model="editExpertIDList" :value="item.id" @change="emitEditID">
                 </div>
-                 <div class="number">{{index+1}}</div>
+                <div class="indexkey">{{index+1}}</div>
                 <div class="number">{{ item.keyword }}</div>
-                <div class="number">{{ item.title }}</div>
+                <div class="title">{{ item.title }}</div>
                 <div class="number">{{ item.deviceTypeName }}</div>
                 <div class="number">{{ item.deptname }}</div>
                 <div class="upload-cascader">
@@ -185,6 +201,7 @@
 import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import eqpApi from '@/api/eqpApi.js'
+import apiOrg from '@/api/orgApi'
 import api from '@/api/ExpertApi'
 export default {
   name: 'ExpertDataList',
@@ -202,6 +219,22 @@ export default {
       deviceTypeList: [],
       ExpertdataList: [],
       editExpertIDList: [],
+      nodeType: '',
+      team: '',
+      teamPath: {
+        text: [],
+        tips: ''
+      },
+      teamList: [],
+      assetNo: {
+        text: '',
+        tips: ''
+      },
+      defaultParams: {
+        label: 'label',
+        value: 'id',
+        children: 'children'
+      },
       bCheckAll: false,
       videoFlag: false,
       total: 0,
@@ -239,18 +272,17 @@ export default {
   created () {
     this.$emit('title', '| 专家库配置')
     this.init()
-
-    // 设备配置类型列表
-    api.GetDeviceTypeList().then(res => {
+    // 设备类型列表
+    eqpApi.getEqpTypeAll().then(res => {
       this.deviceTypeList = res.data
     }).catch(err => console.log(err))
-
     // 部门列表
-    api.GetdeptList().then(res => {
-      this.deptList = res.data
+    apiOrg.getOrgAll().then(res => {
+      this.teamList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
+    setTimeout(null, 1000)
     this.searchResult(this.currentPage)
   },
   mounted () {
@@ -288,6 +320,12 @@ export default {
         this.vediocenterDialogVisible = false
       }
     },
+    // 班组下拉选中，过滤非班组
+    cascader_change_copy (val) {
+      var arr = this.teamPath.text
+      let id = arr[arr.length - 1]
+      this.deptid = id
+    },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
@@ -324,12 +362,15 @@ export default {
         deptid: this.deptid,
         deviceType: this.deviceType
       }
+      setTimeout(null, 2000)
       api.GetListByPage(parm).then(res => {
         this.loading = false
-        if (res.code === 0) {
+        if (res.code === 0 && this.deviceTypeList.length > 0 && this.teamList.length > 0) {
           res.data.list.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
             item.attch_file = this.MearchFileID(item.video_file, item.attch_file)
+            item.deviceTypeName = this.getdeviceTypeName(item.device_type)
+            item.deptname = this.getdeptName(item.deptid)
             if (item.attch_file != null && item.attch_file !== '') {
               this.InvokeOutApI(item)
             } else {
@@ -339,6 +380,31 @@ export default {
           this.total = res.data.total
         }
       }).catch(err => console.log(err))
+    },
+    getdeviceTypeName (val) {
+      for (var i = 0; i < this.deviceTypeList.length; i++) {
+        if (this.deviceTypeList[i].id === val) {
+          var deviceTypeName = this.deviceTypeList[i].tName
+          break
+        }
+      }
+      return deviceTypeName
+    },
+    getdeptName (val) {
+      var flag = false
+      for (var i = 0; i < this.teamList.length; i++) {
+        if (flag) {
+          break
+        }
+        for (var j = 0; j < this.teamList[i].children.length; j++) {
+          if (this.teamList[i].children[j].id === val) {
+            var deptName = this.teamList[i].children[j].label
+            flag = true
+            break
+          }
+        }
+      }
+      return deptName
     },
     MearchFileID (val, val1) {
       if (this.IsNUllorEmpty(val) === true && this.IsNUllorEmpty(val1) === true) {
@@ -615,13 +681,20 @@ $con-height: $content-height - 145 - 56;
   .btn-wrap{
     width: 10%;
   }
-
+  .indexkey{
+    width: 5%;
+  }
+  .title{
+    width: 15%;
+  }
   .name{
     a{
       color: #42abfd;
     }
   }
-
+  .upload-cascader{
+    width: 15%;
+  }
   .last-update-time{
     width: 18%;
     color: $color-content-text;

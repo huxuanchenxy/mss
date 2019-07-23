@@ -20,6 +20,7 @@
               <el-input placeholder="请输入关键字" v-model="keyword.text" @keyup.native="validateInput(keyword)"></el-input>
             </div>
             </div>
+            <p class="validate-tips">{{ keyword.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
@@ -28,12 +29,13 @@
               <el-input placeholder="请输入标题" v-model="Experttitle.text" @keyup.native="validateInput(Experttitle)"></el-input>
             </div>
             </div>
+             <p class="validate-tips">{{ Experttitle.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">设备类型<em class="validate-mark">*</em></span>
               <div class="inp">
-              <el-select v-model="deviceType.id" clearable placeholder="请选择" @change="validatedeviceTypeSelect()">
+              <!-- <el-select v-model="deviceType.id" clearable placeholder="请选择" @change="validatedeviceTypeSelect()">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deviceTypeList"
@@ -41,6 +43,15 @@
                  :value="item.id"
                  :label="item.deviceTypeName">
                  </el-option>
+              </el-select> -->
+              <el-select v-model="deviceType.id" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect()">
+                <option disabled value="" selected>请选择</option>
+                <el-option
+                  v-for="item in deviceTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
               </el-select>
             </div>
             </div>
@@ -48,20 +59,27 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">上传部门<em class="validate-mark">*</em></span>
+              <span class="text">录入部门<em class="validate-mark">*</em></span>
               <div class="inp">
-              <el-select v-model="dept.id" clearable placeholder="请选择" @change="validatedeptSelect()">
+              <!-- <el-select v-model="teamPath.text" clearable placeholder="请选择" @change="validatedeptSelect()">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deptList"
                  :key="item.key"
                  :value="item.id"
                  :label="item.deptName">
-                 </el-option>
-              </el-select>
+                 </el-option> </el-select>-->
+               <el-cascader class="cascader_width" clearable
+                    :props="defaultParams"
+                    change-on-select
+                    @change="cascader_change_copy"
+                    :show-all-levels="true"
+                    :options="teamList"
+                    v-model="teamPath.text">
+                  </el-cascader>
             </div>
             </div>
-            <p class="validate-tips">{{ dept.tips }}</p>
+            <p class="validate-tips">{{ teamPath.tips }}</p>
           </li>
         </ul>
         <div class="con-padding-horizontal cause">
@@ -109,6 +127,9 @@
 <script>
 import { validateInputCommon, vInput, FileType } from '@/common/js/utils.js'
 import api from '@/api/ExpertApi'
+import axios from '@/api/interceptors'
+import eqpApi from '@/api/eqpApi.js'
+import apiOrg from '@/api/orgApi'
 import XButton from '@/components/button'
 import UploadPDF from '@/components/UploadPDF'
 import UploadVedio from '@/components/UploadVideo'
@@ -130,6 +151,7 @@ export default {
       fileattachIDs: '',
       fileattachIDsEdit: '',
       fileattachType: FileType.ExpertData_attach,
+      nodeType: '',
       keyword: {
         text: '',
         tips: ''
@@ -151,6 +173,17 @@ export default {
         id: '',
         tips: ''
       },
+      team: '',
+      teamPath: {
+        text: [],
+        tips: ''
+      },
+      teamList: [],
+      defaultParams: {
+        label: 'label',
+        value: 'id',
+        children: 'children'
+      },
       deviceTypeList: [],
       ExpertID: '',
       centerDialogVisible: false,
@@ -166,14 +199,20 @@ export default {
       this.title = '| 修改专家库'
       this.getExpertData()
     }
-    // 设备配置类型列表
-    api.GetDeviceTypeList().then(res => {
+    // // 设备类型列表
+    // api.GetDeviceTypeList().then(res => {
+    //   this.deviceTypeList = res.data
+    // }).catch(err => console.log(err))
+    eqpApi.getEqpTypeAll().then(res => {
       this.deviceTypeList = res.data
     }).catch(err => console.log(err))
-
     // 部门列表
-    api.GetdeptList().then(res => {
-      this.deptList = res.data
+    // api.GetdeptList().then(res => {
+    //   this.deptList = res.data
+    // }).catch(err => console.log(err))
+    // 部门加载
+    apiOrg.getOrgAll().then(res => {
+      this.teamList = res.data
     }).catch(err => console.log(err))
   },
   methods: { // 添加权限组
@@ -188,6 +227,7 @@ export default {
       let tbexpertdata = {
         device_type: this.deviceType.id,
         deptID: this.dept.id,
+        dept_path: this.teamPath.text.join(','),
         keyword: this.keyword.text,
         title: this.Experttitle.text,
         content: this.content.text,
@@ -253,17 +293,76 @@ export default {
         this.content.text = _res.content
         this.deviceType.id = _res.device_type
         this.dept.id = _res.deptid
+        this.teamPath.text = this.strToIntArr(_res.dept_path)
+        this.nodeType = 2
         this.filevedioIDs = _res.video_file
         this.filevedioIDsEdit = _res.video_file
         this.fileattachIDs = _res.attch_file
         this.fileattachIDsEdit = _res.attch_file
       }).catch(err => console.log(err))
     },
+    strToIntArr (str) {
+      let arr = str.split(',')
+      let ret = []
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === 0) {
+          continue
+        }
+        ret.push(parseInt(arr[i]))
+      }
+      return ret
+    },
     // 验证
     validateInput (val) {
       validateInputCommon(val)
     },
-
+    cascader_change_copy (val) {
+      var arr = this.teamPath.text
+      let id = arr[arr.length - 1]
+      this.dept.id = id
+      let pmObj = new Promise((resolve, reject) => {
+        axios(
+          {
+            url: `http://10.89.36.204:5801/orgapi/org/node/${id}`,
+            method: 'get'
+          })
+          .then(res => {
+            resolve(res.data)
+          })
+          .catch(function (error) {
+            reject(error)
+          })
+      })
+      pmObj.then(data => {
+        if (data.code === 0) {
+          this.nodeType = data.data.nodeType
+        }
+      })
+    },
+    // 班组下拉选中，过滤非班组
+    cascader_change (val) {
+      this.teamPath.tips = ''
+      let selectedTeam = val[val.length - 1]
+      let obj = this.getCascaderObj(selectedTeam, this.teamList)
+      if (obj.node_type === 2) {
+        this.team = val[val.length - 1]
+      }
+    },
+    getCascaderObj (val, opt) {
+      for (let i = 0; i < opt.length; ++i) {
+        let item = opt[i]
+        if (val === item.id) {
+          return item
+        } else {
+          if (item.children) {
+            let ret = this.getCascaderObj(val, item.children)
+            if (ret) {
+              return ret
+            }
+          }
+        }
+      }
+    },
     // 验证非法字符串，但允许为空
     validateInputNull (val) {
       if (!vInput(val.text)) {
@@ -284,24 +383,29 @@ export default {
       }
     },
     validatedeptSelect () {
-      if (this.dept.id === '') {
-        this.dept.tips = '此项必选'
+      if (this.teamPath.text.length === 0) {
+        this.teamPath.tips = '此项必选'
+        return false
+      }
+      if (this.nodeType !== 2) {
+        this.teamPath.tips = '您选的并非是部门，请选择部门'
         return false
       } else {
-        this.dept.tips = ''
+        this.teamPath.tips = ''
         return true
       }
     },
     validateNumber () {
       // validateNumberCommon(this.groupOrder)
     },
-
     validateAll () {
       if (!validateInputCommon(this.keyword)) return false
       if (!validateInputCommon(this.Experttitle)) return false
       if (!validateInputCommon(this.content)) return false
       if (!this.validatedeviceTypeSelect()) return false
-      if (!this.validatedeptSelect()) return false
+      if (!this.validatedeptSelect()) {
+        return false
+      }
       return true
     },
     getvedioFileID (val) {
