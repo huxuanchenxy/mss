@@ -14,6 +14,7 @@ using MSS.API.Dao;
 using System.IO; 
 using Microsoft.AspNetCore.HttpsPolicy; 
 using Swashbuckle.AspNetCore.Swagger;
+using MSS.Common.Consul;
 
 
 
@@ -32,7 +33,7 @@ namespace MSS.API.Core
             Configuration = builder.Build();
         }
 
-        readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
+        //readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -46,8 +47,8 @@ namespace MSS.API.Core
 
             services.AddDapper(Configuration);
             services.AddEssentialService();
-
-             
+            //services.AddConsulService(Configuration);
+            services.AddConsulService(Configuration);
             //跨域 Cors
             services.AddCors(options =>
             {
@@ -75,7 +76,7 @@ namespace MSS.API.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
@@ -92,6 +93,7 @@ namespace MSS.API.Core
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MySystem V1");
             });
             app.UseHttpsRedirection();
+            app.RegisterConsul(lifetime, consulService);
             app.UseCors("AllowAll");
             app.UseMvc();
         }
