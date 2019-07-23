@@ -43,8 +43,14 @@
             <a @click="gotoMonitor(item.type)" class="list-link">
               <i class="dot" :class="item.state"></i>
               <el-tooltip :content="item.title" :disabled="item.title.length < 4" placement="top">
-                <span>{{ item.title }}({{item.type === 'alarm' ? (item.count1 +
-                    '/' + item.count2) : item.count}})</span>
+                <span v-if="item.type === 'alarm'">
+                  {{ item.title }}(
+                  <font style="color:red;">{{item.type === 'alarm' ? item.count1 : ''}}</font>
+                  <font>{{item.type === 'alarm' ? '| ' + item.count2 : item.count}}</font> )
+                </span>
+                <span v-else>
+                  {{ item.title }} ( {{item.count}} )
+                </span>
               </el-tooltip>
             </a>
           </li>
