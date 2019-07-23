@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MSS.API.Model.DTO
 {
-    public class BasePageParm
+    public class BasePageParam
     {
         /// <summary>
         /// 当前页

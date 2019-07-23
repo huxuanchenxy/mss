@@ -61,7 +61,7 @@ namespace MSS.API.Core
                 {
 
                     builder.WithOrigins("http://localhost:8080",
-                                        "http://www.contoso.com")
+                                        "http://10.89.36.103")
                                         .AllowAnyHeader()
                                         .AllowAnyMethod()
                                         .AllowCredentials();
