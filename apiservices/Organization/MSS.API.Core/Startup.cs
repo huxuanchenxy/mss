@@ -34,7 +34,7 @@ namespace MSS.API.Core
             Configuration = builder.Build();
         }
 
-        readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
+        // readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

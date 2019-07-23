@@ -36,6 +36,7 @@ namespace MSS.API.Core.V1.Controllers
             _orgService = orgService;
             _config = config;
             _userId = _authHelper.GetUserId();
+            _consulServiceProvider = consulServiceProvider;
         }
 
         [HttpGet("config")]
