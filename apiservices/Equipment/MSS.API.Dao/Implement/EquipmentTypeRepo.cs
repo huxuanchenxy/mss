@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
 using MSS.API.Common;
-using static MSS.API.Common.MyDictionary;
 using System.Data;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
@@ -202,7 +201,7 @@ namespace MSS.API.Dao.Implement
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT distinct u.*,a.eqp_type_id,a.type,d.sub_code_name ")
                 .Append(" FROM (upload_file_eqp_type a,dictionary d,upload_file u) ")
-                .Append(" where d.sub_code=a.type and d.code='" + STR_EQPTYPE_DRAWINGS + "'")
+                //.Append(" where d.sub_code=a.type and d.code='" + STR_EQPTYPE_DRAWINGS + "'")
                 .Append(" and u.id=a.file_id")
                 .Append(" and a.eqp_type_id in @id");
                 var result = await c.QueryAsync<UploadFileEqpType>(sql.ToString(),new { id=id});

@@ -2,6 +2,7 @@
 bin/
 obj/
 logs/
+ConsolLogs/
 File/
 .vs/
 .vscode/

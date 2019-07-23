@@ -19,8 +19,8 @@
                 <el-option
                   v-for="item in subSystemList"
                   :key="item.key"
-                  :label="item.sub_code_name"
-                  :value="item.sub_code">
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
@@ -154,6 +154,7 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
+import { dictionary } from '@/common/js/dictionary.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import apiAuth from '@/api/authApi'
@@ -231,7 +232,7 @@ export default {
     this.init()
 
     // 子系统加载
-    apiAuth.getSubCode('sub_system').then(res => {
+    apiAuth.getSubCode(dictionary.subSystem).then(res => {
       this.subSystemList = res.data
     }).catch(err => console.log(err))
 

@@ -25,13 +25,17 @@ namespace MSS.API.Core.V1.Controllers
 
         }
         [HttpPost]
-        public ActionResult Save([FromForm]int type,List<IFormFile> file)
+        public ActionResult Save([FromForm]MyData myData,List<IFormFile> file)
         {
-            var ret = _uploadService.Save(type, file);
+            var ret = _uploadService.Save(myData.type, myData.systemResource, file);
             return Ok(ret.Result);
             //return Ok("");
         }
-
+        public class MyData
+        {
+            public int type { get; set; }
+            public int systemResource { get; set; }
+        }
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {

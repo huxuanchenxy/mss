@@ -24,7 +24,7 @@ namespace MSS.API.Dao
             services.AddTransient<IActionGroupRepo<ActionGroup>, ActionGroupRepo>();
             services.AddTransient<IRoleRepo<Role>, RoleRepo>();
             services.AddTransient<IActionRepo<ActionInfo>, ActionRepo>();
-            services.AddTransient<IDictionaryRepo<Dictionary>, DictionaryRepo>();
+            services.AddTransient<IDictionaryRepo<DictionaryTree>, DictionaryRepo>();
             
             return services;
         }

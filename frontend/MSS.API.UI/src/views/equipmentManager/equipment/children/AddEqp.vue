@@ -42,8 +42,8 @@
                     <el-option
                       v-for="item in subSystemList"
                       :key="item.key"
-                      :label="item.sub_code_name"
-                      :value="item.sub_code">
+                      :label="item.name"
+                      :value="item.id">
                     </el-option>
                   </el-select>
                 </div>
@@ -90,8 +90,8 @@
                 <div class="inp">
                   <el-cascader class="cascader_width" clearable
                     :props="defaultParams"
-                    change-on-select
                     @change="cascader_change"
+                    @visible-change="visibleChange"
                     :show-all-levels="true"
                     :options="teamList"
                     v-model="teamPath.text">
@@ -222,11 +222,9 @@
               </div>
               <p class="validate-tips">{{ life.tips }}</p>
             </li>
-            <li class="list upload-list">
-              <div>
-                <upload-pdf ext="pdf" :fileType="fileType" label="设备图纸" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
-              </div>
-            </li>
+            <div class="upload-list">
+              <upload-pdf ext="pdf" :fileType="fileType" label="设备图纸" :fileIDs="fileIDs" :systemResource="systemResource" @getFileIDs="getFileIDs"></upload-pdf>
+            </div>
           </ul>
         </div>
         <div class="con-padding-horizontal header"/>
@@ -279,6 +277,7 @@
 <script>
 // import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
 import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { dictionary, firmType, systemResource } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
 import apiAuth from '@/api/authApi'
@@ -293,8 +292,9 @@ export default {
   },
   data () {
     return {
+      systemResource: systemResource.eqp,
       fileIDs: '',
-      fileIDsEdit: '',
+      fileIDsEdit: [],
       fileType: FileType.Eqp_Drawings,
       areaParams: {
         label: 'areaName',
@@ -400,16 +400,8 @@ export default {
     }
   },
   created () {
-    if (this.isShow === 'add') {
-      this.loading = false
-      this.title = '| 添加设备'
-    } else if (this.isShow === 'edit') {
-      this.loading = true
-      this.title = '| 修改设备'
-      this.getEqp()
-    }
     // 子系统加载
-    apiAuth.getSubCode('sub_system').then(res => {
+    apiAuth.getSubCode(dictionary.subSystem).then(res => {
       this.subSystemList = res.data
     }).catch(err => console.log(err))
 
@@ -425,16 +417,28 @@ export default {
 
     // 供应商/制造商加载
     api.getFirmAll().then(res => {
-      this.supplierList = res.data.filter((item) => { return item.type === 0 })
-      this.manufacturerList = res.data.filter((item) => { return item.type === 1 })
+      this.supplierList = res.data.filter((item) => { return item.type === firmType.supplier })
+      this.manufacturerList = res.data.filter((item) => { return item.type === firmType.manufacturer })
     }).catch(err => console.log(err))
 
     // 安装位置加载
     apiArea.SelectConfigAreaData().then(res => {
       this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
+
+    if (this.isShow === 'add') {
+      this.loading = false
+      this.title = '| 添加设备'
+    } else if (this.isShow === 'edit') {
+      this.loading = true
+      this.title = '| 修改设备'
+      this.getEqp()
+    }
   },
   methods: {
+    visibleChange (parm) {
+      console.log(parm)
+    },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
@@ -471,18 +475,19 @@ export default {
         })
         return
       }
-      if (this.fileIDsEdit !== '') {
-        let arr = this.fileIDsEdit.split(',')
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i] === '') {
+      this.fileIDsEdit.some(item => {
+        let arr = item.ids.split(',')
+        return arr.some(me => {
+          if (me === '') {
             this.$message({
               message: '文件还未上传完成，请耐心等待',
               type: 'warning'
             })
-            return
+            return true
           }
-        }
-      }
+          return false
+        })
+      })
       let eqp = {
         Code: this.eqpCode.text,
         Name: this.eqpName.text,
@@ -503,7 +508,7 @@ export default {
         MediumRepair: this.mediumRepair.text,
         LargeRepair: this.largeRepair.text,
         OnlineAgain: this.timeAgain.text,
-        FileIDs: this.fileIDsEdit
+        FileIDs: JSON.stringify(this.fileIDsEdit)
       }
       if (this.ratedVoltage.text !== '') {
         eqp.RatedVoltage = this.ratedVoltage.text
@@ -573,6 +578,8 @@ export default {
         this.eqpType.text = _res.type
         this.subSystem.text = _res.subSystem
         this.team = _res.team
+        this.supplier = _res.supplier
+        this.manufacturer = _res.manufacturer
         this.teamPath.text = this.strToIntArr(_res.teamPath)
         this.assetNo.text = nullToEmpty(_res.assetNo)
         this.model.text = nullToEmpty(_res.model)
@@ -713,7 +720,9 @@ export default {
       }
     }
     .upload-list{
+      margin-top: PXtoEm(25);
       margin-bottom: PXtoEm(25);
+      width: -webkit-fill-available;
     }
   }
 }

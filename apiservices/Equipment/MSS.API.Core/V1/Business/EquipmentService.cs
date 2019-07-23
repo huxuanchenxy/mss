@@ -23,15 +23,18 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IEquipmentRepo<Equipment> _eqpRepo;
+        private readonly IUploadFileRepo<UploadFile> _uploadFileRepo;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
 
         private readonly int userID;
 
-        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo, IAuthHelper auth, IServiceDiscoveryProvider consulServiceProvider)
+        public EquipmentService(IEquipmentRepo<Equipment> eqpRepo, IAuthHelper auth, 
+            IServiceDiscoveryProvider consulServiceProvider, IUploadFileRepo<UploadFile> uploadFileRepo)
         {
             //_logger = logger;
             _eqpRepo = eqpRepo;
             _consulServiceProvider = consulServiceProvider;
+            _uploadFileRepo = uploadFileRepo;
             userID = auth.GetUserId();
         }
 
@@ -40,6 +43,11 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
+                if (await _eqpRepo.CodeIsRepeat(eqp.Code))
+                {
+                    ret.code = Code.DataIsExist;
+                    ret.msg = "设备图纸编号不可重复";
+                }
                 DateTime dt = DateTime.Now;
                 eqp.UpdatedTime = dt;
                 eqp.CreatedTime = dt;
@@ -64,6 +72,11 @@ namespace MSS.API.Core.V1.Business
                 Equipment et = await _eqpRepo.GetByID(eqp.ID);
                 if (et!=null)
                 {
+                    if (eqp.Code!=et.Code && await _eqpRepo.CodeIsRepeat(eqp.Code))
+                    {
+                        ret.code = Code.DataIsExist;
+                        ret.msg = "设备图纸编号不可重复";
+                    }
                     DateTime dt = DateTime.Now;
                     eqp.UpdatedTime = dt;
                     eqp.UpdatedBy = userID;
@@ -137,12 +150,12 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 Equipment e = await _eqpRepo.GetByID(id);
-                var list = await _eqpRepo.ListByEqp(e.ID);
+                var list = await _uploadFileRepo.ListByEntity(e.ID);
                 if (list != null)
                 {
-                    e.FileIDs = string.Join(",", list.Select(a => a.FileID).ToArray());
-                    ret.data = e;
+                    e.FileIDs = JsonConvert.SerializeObject(UploadFileHelper.MyList(list));
                 }
+                ret.data = e;
                 return ret;
             }
             catch (Exception ex)
@@ -161,12 +174,12 @@ namespace MSS.API.Core.V1.Business
                 List<AllArea> laa = await _eqpRepo.GetAllArea();
                 e.LocationName = laa.Where(a => a.Tablename == e.LocationBy && a.ID == e.Location)
                     .FirstOrDefault().AreaName;
-                var list = await _eqpRepo.ListByEqp(e.ID);
+                var list = await _uploadFileRepo.ListByEntity(e.ID);
                 if (list!=null)
                 {
-                    e.FileIDs = string.Join(",", list.Select(a => a.FileID).ToArray());
-                    ret.data = e;
+                    e.FileIDs = JsonConvert.SerializeObject(UploadFileHelper.MyList(list));
                 }
+                ret.data = e;
                 return ret;
             }
             catch (Exception ex)
