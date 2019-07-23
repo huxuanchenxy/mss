@@ -20,8 +20,8 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(
                 async c =>
                 {
-                    string sql = "INSERT INTO tb_expert_data (device_type, deptID, keyword, title, content, video_file, attch_file,Is_deleted, created_time, created_by,updated_time,updated_by, remark)"
-                                                  + " Values (@device_type, @deptID, @keyword, @title, @content, @video_file, @attch_file,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy, @remark) ";
+                    string sql = "INSERT INTO tb_expert_data (device_type, deptID,dept_path, keyword, title, content, video_file, attch_file,Is_deleted, created_time, created_by,updated_time,updated_by, remark)"
+                                                  + " Values (@device_type, @deptID,@dept_path, @keyword, @title, @content, @video_file, @attch_file,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy, @remark) ";
                     // sql += "SELECT LAST_INSERT_ID()";
                     // int newid = await c.QueryFirstOrDefaultAsync<int>(sql, model);
                     // model.ID = newid; 
@@ -136,7 +136,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "UPDATE tb_expert_data SET device_type=@device_type, deptID=@deptID, keyword=@keyword, title=@title, content=@content, video_file=@video_file, attch_file=@attch_file,Is_deleted=@Is_deleted, updated_by = @UpdatedBy, updated_time = @UpdatedTime,remark=@remark WHERE id = @id  ";
+                string sql = "UPDATE tb_expert_data SET device_type=@device_type, deptID=@deptID, dept_path=@dept_path,keyword=@keyword, title=@title, content=@content, video_file=@video_file, attch_file=@attch_file,Is_deleted=@Is_deleted, updated_by = @UpdatedBy, updated_time = @UpdatedTime,remark=@remark WHERE id = @id  ";
                return await c.ExecuteAsync(sql, model); ;
             });
         }

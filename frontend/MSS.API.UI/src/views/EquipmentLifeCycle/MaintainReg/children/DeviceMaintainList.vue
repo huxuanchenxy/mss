@@ -51,7 +51,7 @@
           <div class="input-group">
             <label for="">负责班组</label>
             <div class="inp">
-              <el-select v-model="teamGroupid"
+              <!-- <el-select v-model="teamGroupid"
                          clearable
                          placeholder="请选择">
                 <option disabled
@@ -62,7 +62,15 @@
                            :value="item.id"
                            :label="item.teamGroupName">
                 </el-option>
-              </el-select>
+              </el-select> -->
+               <el-cascader class="cascader_width" clearable
+                    :props="defaultParams"
+                    change-on-select
+                    @change="cascader_change_copy"
+                    :show-all-levels="true"
+                    :options="teamList"
+                    v-model="teamPath.text">
+                  </el-cascader>
             </div>
           </div>
           <div class="input-group">
@@ -147,7 +155,7 @@
           维护负责人
           <i :class="[{ 'el-icon-d-caret': headOrder.director_id === 0 }, { 'el-icon-caret-top': headOrder.director_id === 1 }, { 'el-icon-caret-bottom': headOrder.director_id === 2 }]"></i>
         </li>
-        <li class="list number c-pointer"
+        <li class="list name c-pointer"
             @click="changeOrder('maintain_date')">
           维护日期
           <i :class="[{ 'el-icon-d-caret': headOrder.maintain_date === 0 }, { 'el-icon-caret-top': headOrder.maintain_date === 1 }, { 'el-icon-caret-bottom': headOrder.maintain_date === 2 }]"></i>
@@ -157,7 +165,7 @@
           过程记录
           <i :class="[{ 'el-icon-d-caret': headOrder.detail_desc === 0 }, { 'el-icon-caret-top': headOrder.detail_desc === 1 }, { 'el-icon-caret-bottom': headOrder.detail_desc === 2 }]"></i>
         </li> -->
-        <li class="list number c-pointer"
+        <li class="list upload-cascader c-pointer"
             @click="changeOrder('attch_file')">
           附件上传
           <i :class="[{ 'el-icon-d-caret': headOrder.attch_file === 0 }, { 'el-icon-caret-top': headOrder.attch_file === 1 }, { 'el-icon-caret-bottom': headOrder.attch_file === 2 }]"></i>
@@ -190,7 +198,7 @@
                 <div class="number">{{ item.device_name }}</div>
                 <div class="number">{{ item.team_group_name }}</div>
                 <div class="number">{{ item.director_name }}</div>
-                <div class="number">{{ item.maintain_date }}</div>
+                <div class="name">{{ item.maintain_date }}</div>
                 <div class="upload-cascader">
                   <el-cascader clearable
                              @change="preview"
@@ -247,6 +255,7 @@ import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
 import eqpApi from '@/api/eqpApi.js'
+import apiOrg from '@/api/orgApi'
 export default {
   name: 'DeviceMaintainList',
   components: {
@@ -268,6 +277,21 @@ export default {
       DeviceMaintainRegList: [],
       editDeviceMaintainRegIDList: [],
       bCheckAll: false,
+      teamgroupname: '',
+      teamPath: {
+        text: [],
+        tips: ''
+      },
+      teamList: [],
+      assetNo: {
+        text: '',
+        tips: ''
+      },
+      defaultParams: {
+        label: 'label',
+        value: 'id',
+        children: 'children'
+      },
       total: 0,
       currentPage: 1,
       loading: false,
@@ -299,8 +323,11 @@ export default {
     }
   },
   created () {
-    // this.$emit('title', '| 设备维修')
     this.init()
+    // this.$emit('title', '| 设备维修')
+    apiOrg.getOrgAll().then(res => {
+      this.teamList = res.data
+    }).catch(err => console.log(err))
     // 设备配置类型列表
     api.GetEquipmentTypeList().then(res => {
       res.data.map((e, i) => {
@@ -320,12 +347,9 @@ export default {
     api.GetDirectorList().then(res => {
       this.directorList = res.data
     }).catch(err => console.log(err))
-    // 部门列表
-    api.GetTeamGroupList().then(res => {
-      this.TeamGroupList = res.data
-    }).catch(err => console.log(err))
   },
   activated () {
+    setTimeout(null, 200)
     this.searchResult(this.currentPage)
   },
   methods: {
@@ -341,6 +365,12 @@ export default {
       }
       this.centerDialogVisible = true
       this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
+    },
+    // 班组下拉选中，过滤非班组
+    cascader_change_copy (val) {
+      var arr = this.teamPath.text
+      let id = arr[arr.length - 1]
+      this.teamGroupid = id
     },
     // 改变排序
     changeOrder (sort) {
@@ -395,11 +425,12 @@ export default {
         }
       }
       api.GetListByPage(parm).then(res8 => {
+        setTimeout(null, 2000)
         this.loading = false
         if (res8.code === 0) {
           res8.data.list.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
-            // this.InvokeOutApI(item)
+            item.team_group_name = this.Getteamgroupname(item.team_group_id)
             if (item.attch_file !== null && item.attch_file !== '') {
               this.InvokeOutApI(item)
             } else {
@@ -410,6 +441,26 @@ export default {
         }
       }).catch(err => console.log(err))
     },
+    Getteamgroupname (val) {
+      let obj = this.getCascaderObj(val, this.teamList)
+      return obj.label
+    },
+    getCascaderObj (val, opt) {
+      for (let i = 0; i < opt.length; i++) {
+        let item = opt[i]
+        if (val === item.id) {
+          return item
+        } else {
+          if (item.children) {
+            let ret = this.getCascaderObj(val, item.children)
+            if (ret) {
+              return ret
+            }
+          }
+        }
+      }
+    },
+
     InvokeOutApI (item) {
       // this.DeviceMaintainRegList = []
       eqpApi.getUploadFileByIDs(item.attch_file).then(res => {
@@ -662,7 +713,10 @@ $con-height: $content-height - 145 - 56;
     width: 10%;
     color: $color-content-text;
   }
-
+  .maintain-date{
+    width: 8%;
+    color: $color-content-text;
+  }
   .last-maintainer{
     width: 10%;
   }

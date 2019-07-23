@@ -20,7 +20,7 @@
         <el-progress v-if="videoFlag == true" type="line" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>  -->
     </el-upload>
     <el-dialog title :visible.sync="vediocenterDialogVisible" width="30%" :modal-append-to-body="false" @close="closeDialog">
-         <video :src="previewUrl" controls autoplay class="video" :ref="dialogVideo"
+         <video :src="previewUrl" controls autoplay class="avatar" :ref="dialogVideo"
          width="100%"></video>
       </el-dialog>
   </div>
@@ -120,6 +120,9 @@ export default {
       api.getUploadFileByIDs(this.fileIDs).then(res => {
         this.fileList = res.data
       }).catch(err => console.log(err))
+    },
+    closeDialog () {
+      this.previewUrl = '' // 清空数据 关闭视频播放
     },
     returnFileIDs (fileList) {
       let ids = []
