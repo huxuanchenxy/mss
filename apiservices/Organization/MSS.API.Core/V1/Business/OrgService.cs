@@ -726,5 +726,46 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
+
+        // 获取所有顶级节点下所有用户，包括子级节点的用户
+        public async Task<ApiResult> ListTopNodeWithUsers()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
+                List<OrgUser> users = await _orgRepo.ListAllOrgUser();
+                Dictionary<int, OrgUserView> orgs = new Dictionary<int, OrgUserView>();
+                foreach (OrgUser user in users)
+                {
+                    OrgTree topNode = _findTopNode(user.NodeID, nodes_all);
+                    if (topNode != null)
+                    {
+                        if (orgs.ContainsKey(topNode.ID))
+                        {
+                            orgs[topNode.ID].UserIDs.Add(user.UserID);
+                        }
+                        else
+                        {
+                            OrgUserView org = new OrgUserView();
+                            org.ID = topNode.ID;
+                            org.UserIDs = new List<int>();
+                            org.UserIDs.Add(user.UserID);
+                            orgs.Add(org.ID, org);
+                        }
+                    }
+                }
+                List<OrgUserView> data = orgs.Select(c => c.Value).ToList();
+
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
     }
 }

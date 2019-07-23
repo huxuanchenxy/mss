@@ -32,5 +32,8 @@ namespace MSS.API.Core.V1.Business
 
         // 根据用户ID获取所在顶级组织节点
         Task<ApiResult> GetTopNodeByUserID(int id);
+
+        // 获取所有顶级节点下所有用户，包括子级节点的用户
+        Task<ApiResult> ListTopNodeWithUsers();
     }
 }
