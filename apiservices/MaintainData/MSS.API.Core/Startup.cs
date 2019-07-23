@@ -48,7 +48,7 @@ namespace MSS.API.Core
             services.AddDapper(Configuration);
             services.AddEssentialService();
             //services.AddConsulService(Configuration);
-
+            services.AddConsulService(Configuration);
             //跨域 Cors
             services.AddCors(options =>
             {
