@@ -56,7 +56,7 @@
       <div v-else class="msg-shrink">
         <p>
           <i class="iconfont icon-warning" :style="{ color: activeColor }">
-          </i> 管廊警报收起
+          </i> 事件中心
         </p>
       </div>
     </div>
@@ -190,6 +190,7 @@ export default {
     StopTimer () {
       if (this.timer) {
         clearInterval(this.timer)
+        this.activeColor = '#f91333'
       }
     },
     getConfig () {
