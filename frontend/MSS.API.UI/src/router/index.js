@@ -28,12 +28,17 @@ let routes = [
 import system from './system'
 import MainTainData from './MainTainData'
 import EquipmentLifeCycle from './EquipmentLifeCycle'
+import EventCenter from './EventCenter'
+
 routes = routes.concat(system)
 routes = routes.concat(MainTainData)
 routes = routes.concat(EquipmentLifeCycle)
 // 设备台账
 import equipmentManager from './equipmentManager'
 routes = routes.concat(equipmentManager)
+
+//事件中心
+routes = routes.concat(EventCenter)
 
 // // 基础数据
 // import dataBasic from './dataBasic'

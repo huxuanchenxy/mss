@@ -430,3 +430,15 @@
     border-top-color: #666 !important;
   }
 }
+
+// el-tabs 样式覆盖
+.el-tabs__item {
+    color: #fff !important;
+}
+.el-tabs__nav-wrap:after {
+  height: 0px !important;
+  background-color: #1E3B57 !important;
+}
+.el-tabs__header {
+    margin: 0 0 1px !important;
+}
