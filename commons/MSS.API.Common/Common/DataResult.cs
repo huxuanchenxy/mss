@@ -80,28 +80,13 @@ namespace MSS.API.Common
     #region 字典
     public static class MyDictionary
     {
-        #region 子系统
-        public const string STR_SUB_SYSTEM = "sub_system";
-        public enum SUB_SYSTEM
+        public enum SystemResource
         {
-            ISCS,
-            FAS,
-            OCS,
-            PIS
+            EqpType = 25,
+            Eqp=26,
+            Expert=27,
+            MaintainReg=28
         }
-        #endregion
-
-        #region 区域类型（表和ID的关系）
-        public const string STR_AREA_TYPE = "area_table_id";
-        public enum AREA_TYPE
-        {
-            dictionary,
-            tb_config_bigarea,
-            tb_config_midarea
-        }
-        #endregion
-
-        public const string STR_EQPTYPE_DRAWINGS = "eqp_type_drawings";
     }
     #endregion
 

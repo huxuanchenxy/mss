@@ -45,8 +45,7 @@
             <span class="text">权限组类型<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-select v-model="groupType.text" clearable placeholder="请选择" @change="validateSelect()">
-                <el-option value="" label="请选择"></el-option>
-                <el-option v-for="item in groupTypeList" :key="item.key" :value="item.sub_code" :label="item.sub_code_name"></el-option>
+                <el-option v-for="item in groupTypeList" :key="item.key" :value="item.id" :label="item.name"></el-option>
               </el-select>
             </div>
           </div>
@@ -91,6 +90,7 @@
 </template>
 <script>
 import { validateInputCommon, validateNumberCommon, vInput } from '@/common/js/utils.js'
+import { dictionary } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/authApi'
 export default {
@@ -145,7 +145,7 @@ export default {
       this.getActionGroup()
     }
     // 权限组类型列表
-    api.getSubCode('group_type').then(res => {
+    api.getSubCode(dictionary.actionGroupType).then(res => {
       this.groupTypeList = res.data
     }).catch(err => console.log(err))
   },

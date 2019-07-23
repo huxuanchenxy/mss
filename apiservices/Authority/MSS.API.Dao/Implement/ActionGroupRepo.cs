@@ -22,10 +22,11 @@ namespace MSS.API.Dao.Implement
             {
                 MSSResult<ActionGroupView> mRet = new MSSResult<ActionGroupView>();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,u1.user_name as created_name,u2.user_name as updated_name,d.sub_code_name as group_type_name ")
-                .Append(" FROM (Action_Group a,dictionary d) ")
+                sql.Append("SELECT a.*,u1.user_name as created_name,u2.user_name as updated_name,d.name as group_type_name ")
+                .Append(" FROM Action_Group a ")
                 .Append(" left join user u1 on a.created_by=u1.id left join user u2 on a.updated_by=u2.id ")
-                .Append(" WHERE d.code='" + STR_GROUP_TYPE + "' and d.sub_code=a.group_type ");
+                .Append(" left join dictionary_tree d on a.group_type=d.id ")
+                .Append(" WHERE 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
                 if (!string.IsNullOrWhiteSpace(parm.searchName))
                 {
