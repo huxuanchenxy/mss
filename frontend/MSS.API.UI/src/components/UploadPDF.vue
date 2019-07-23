@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="http://localhost:3851/api/v1/Upload"
+      action="http://10.89.36.204:5801/eqpapi/Upload"
       :disabled="readOnly"
       :multiple="true"
       :data="myData"
