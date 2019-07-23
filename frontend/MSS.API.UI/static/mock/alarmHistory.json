@@ -1,0 +1,31 @@
+{
+    "code": 0,
+    "data": {
+        "rows": [{
+            "eqpCode": "aaa",
+            "eqpName": "设备1",
+            "eqpTypeName": "风机",
+            "level": 1,
+            "content":"甲烷超标",
+            "createdTime": "2017-07-19T14:00:00"
+        },
+        {
+            "eqpCode": "aaa",
+            "eqpName": "设备2",
+            "eqpTypeName": "风机",
+            "level": 2,
+            "content": "甲烷超标",
+            "createdTime": "2017-07-19T14:00:00"
+        },
+        {
+            "eqpCode": "aaa",
+            "eqpName": "设备3",
+            "eqpTypeName": "风机",
+            "level": 3,
+            "content": "甲烷超标",
+            "createdTime": "2017-07-19T14:00:00"
+        }],
+        "total": 3
+    }
+    
+}
