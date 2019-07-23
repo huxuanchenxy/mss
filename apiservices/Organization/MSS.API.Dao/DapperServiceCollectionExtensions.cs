@@ -22,6 +22,7 @@ namespace MSS.API.Dao
             services.AddSingleton<DapperOptions>(options);
             services.AddTransient<IOrgRepo<OrgTree>, OrgRepo>();
             services.AddTransient<IWarnningSettingRepo<EarlyWarnningSetting>, WarnningSettingRepo>();
+            services.AddTransient<IWarnningRepo<EarlyWarnning>, WarnningRepo>();
 
             // 配置列名映射
             FluentMapper.Initialize(config =>
@@ -37,6 +38,8 @@ namespace MSS.API.Dao
                 config.AddMap(new EarlyWarnningSettingExMap());
                 config.AddMap(new EarlyWarnningExTypeMap());
                 config.AddMap(new EquipmentMap());
+                config.AddMap(new EarlyWarnningMap());
+                config.AddMap(new NotificationMap());
             });
             return services;
         }

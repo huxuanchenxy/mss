@@ -14,6 +14,7 @@ namespace MSS.API.Model.Data
         public string device_name { get; set; }
         public int team_group_id { get; set; }
         public string team_group_name { get; set; }
+        public string team_group_path { get; set; }
         public int director_id { get; set; }
         public string director_name { get; set; }
         public string maintain_date { get; set; }
@@ -43,6 +44,7 @@ namespace MSS.API.Model.Data
             Map(o => o.device_type_id).ToColumn("device_type_id");
             Map(o => o.device_id).ToColumn("device_id");
             Map(o => o.team_group_id).ToColumn("team_group_id");
+            Map(o => o.team_group_path).ToColumn("team_group_path");
             Map(o => o.director_id).ToColumn("director_id");
             Map(o => o.maintain_date).ToColumn("maintain_date");
             Map(o => o.attch_file).ToColumn("attch_file");

@@ -9,6 +9,7 @@ using MSS.API.Core.V1.Business;
 using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
 using MSS.API.Common;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -18,10 +19,12 @@ namespace MSS.API.Core.V1.Controllers
     {
         private readonly IWarnningSettingService  _warnService;
         private readonly int _userId;
-        public WarnSettingController(IWarnningSettingService warnService)
+        private readonly IAuthHelper _authHelper;
+        public WarnSettingController(IWarnningSettingService warnService, IAuthHelper authHelper)
         {
             _warnService = warnService;
-            _userId = 1;
+            _authHelper = authHelper;
+            _userId = _authHelper.GetUserId();
         }
 
         // 添加

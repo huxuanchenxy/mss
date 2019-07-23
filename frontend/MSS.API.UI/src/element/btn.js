@@ -33,5 +33,19 @@ export const btn = {
     save: 5,
     delete: 6,
     update: 7
+  },
+  org: {
+    save: 59,
+    delete: 61,
+    update: 60
+  },
+  orguser: {
+    save: 62,
+    delete: 63
+  },
+  warnsetting: {
+    save: 64,
+    delete: 65,
+    update: 66
   }
 }

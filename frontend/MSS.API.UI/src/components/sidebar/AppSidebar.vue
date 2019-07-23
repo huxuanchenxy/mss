@@ -36,23 +36,27 @@
       </div>
       <div v-if="bMsgShrink" class="right-msg-wrap">
         <div class="sidebar-title" @click="test()"><i class="iconfont icon-warning"
-          :style="{ color: activeColor }"></i> 事件中心</div>
+          style="color:#f91333;"></i> 事件中心</div>
         <ul class="msg-wrap">
           <li class="list" v-for="item in EventTypeList" :key="item.key">
             <!-- <p>{{ item.region }}</p> -->
-            <a @click="gotoAlarmHandle(item.index)" class="list-link">
+            <a @click="gotoMonitor(item.type)" class="list-link">
               <i class="dot" :class="item.state"></i>
               <el-tooltip :content="item.title" :disabled="item.title.length < 4" placement="top">
-                <span>{{ item.title }}</span>
+                <span>{{ item.title }}({{item.type === 'alarm' ? (item.count1 +
+                    '/' + item.count2) : item.count}})</span>
               </el-tooltip>
             </a>
+          </li>
+          <li class="list not-bg">
+            <a @click="gotoAlarmHistory">查看历史<i class="iconfont icon-arrow-right color-blue"></i></a>
           </li>
         </ul>
       </div>
       <div v-else class="msg-shrink">
         <p>
           <i class="iconfont icon-warning" :style="{ color: activeColor }">
-          </i> 管廊警报收起
+          </i> 事件中心
         </p>
       </div>
     </div>
@@ -60,9 +64,10 @@
 </template>
 <script>
 // import { transformDate } from '@/common/js/utils.js'
+import { ApiRESULT } from '@/common/js/utils.js'
 import Bus from '@/components/Bus'
 import api from '@/api/authApi'
-// import * as signalR from '@/common/js/signalr/signalr'
+import apiEvent from '@/api/eventCenterApi'
 import * as signalR from '@aspnet/signalr'
 export default {
   name: 'sidebar',
@@ -80,14 +85,21 @@ export default {
         }
       ],
       EventTypeList: [{
+        type: 'alarm',
         title: '报警',
-        state: ''
+        state: '',
+        count1: 0, // 严重警报
+        count2: 0
       }, {
+        type: 'warnning',
         title: '预警',
-        state: ''
+        state: '',
+        count: 0
       }, {
+        type: 'notification',
         title: '通知',
-        state: ''
+        state: '',
+        count: 0
       }
       ],
       activeColor: '#f91333',
@@ -97,24 +109,61 @@ export default {
   },
   created () {
     this.getMenu()
-    this.initEvents()
+    this.getConfig()
+    this.getAlarm()
+    this.getWarnning()
+    this.getNotification()
   },
   methods: {
-    gotoAlarmHandle (index) {
-      // this.$router.push({
-      //   name: 'Handle'
-      // })
-      // let obj = this.warningMsg[index]
-      // sessionStorage.setItem('alarm_goToHandle', JSON.stringify({
-      //   AlarmPID: obj.PID,
-      //   OriginTime: obj.OriginTime,
-      //   OriginTime_MS: obj.OriginTime_MS
-      // }))
+    refresh (type) {
+      switch (type) {
+        case 'alarm':
+          this.getAlarm()
+          break
+        case 'warnning':
+          this.getWarnning()
+          break
+        case 'notification':
+          this.getNotification()
+          break
+      }
     },
-
-    gotoAlarmList () {
+    getWarnning () {
+      apiEvent.getAllWarning().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          this.EventTypeList[1].count = res.data.length
+        }
+      }).catch(err => console.log(err))
+    },
+    getNotification () {
+      apiEvent.getAllNotification().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          this.EventTypeList[2].count = res.data.length
+        }
+      }).catch(err => console.log(err))
+    },
+    getAlarm () {
+      apiEvent.getAlarm().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          this.EventTypeList[0].count1 = res.data.filter(item => item.level < 2).length
+          this.EventTypeList[0].count2 = res.data.filter(item => item.level >= 2).length
+        }
+      }).catch(err => console.log(err))
+    },
+    gotoMonitor (type) {
       this.$router.push({
-        name: 'List'
+        name: 'alarm',
+        params: {
+          type: type
+        }
+      })
+    },
+    gotoAlarmHistory () {
+      this.$router.push({
+        name: 'alarmHistory',
+        params: {
+          type: 'alarm'
+        }
       })
     },
 
@@ -141,26 +190,43 @@ export default {
     StopTimer () {
       if (this.timer) {
         clearInterval(this.timer)
+        this.activeColor = '#f91333'
       }
     },
-
-    initEvents () {
+    getConfig () {
+      apiEvent.getConfig().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          this.initEvents(res.data.hub)
+        }
+      }).catch(err => console.log(err))
+    },
+    initEvents (hub) {
       let thisObj = this
       let token = window.sessionStorage.getItem('token')
       if (this.Conn) {
         this.Conn.close()
       }
-      var connection = new signalR.HubConnectionBuilder().withUrl('http://localhost:3851/eventHub',
+      // let ip = 'http://localhost:3851/eventHub'
+      let ip = hub
+      var connection = new signalR.HubConnectionBuilder().withUrl(ip,
         { accessTokenFactory: () => token }).build()
 
       connection.on('RecieveMsg', function (message) {
         console.log(message)
         thisObj.startTimer()
-        switch (message.type) {
-          case 0:
-            thisObj.EventTypeList[0].state = 'warning'
-            break
+        // switch (message.type) {
+        //   case 0:
+        //     thisObj.EventTypeList[0].state = 'warning'
+        //     break
+        // }
+        if (message.type === 0) {
+          thisObj.refresh('alarm')
+        } else if (message.type === 1) {
+          thisObj.refresh('warnning')
+        } else {
+          thisObj.refresh('notification')
         }
+        Bus.$emit('monitor', message)
       })
       connection.start().then(res => {
         this.Conn = connection
@@ -213,6 +279,9 @@ export default {
         oWrap.className = oWrap.className.replace('shrink', '')
       }
       this.bMsgShrink = !this.bMsgShrink
+      if (this.bMsgShrink && this.timer) {
+        this.StopTimer()
+      }
     }
   },
   mounted () {
@@ -220,7 +289,6 @@ export default {
   },
   destroyed () {
     if (this.Conn) {
-      console.log('destroyed')
       this.Conn.stop()
     }
   },

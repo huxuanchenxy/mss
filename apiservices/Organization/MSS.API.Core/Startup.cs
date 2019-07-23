@@ -34,7 +34,7 @@ namespace MSS.API.Core
             Configuration = builder.Build();
         }
 
-        readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
+        // readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -61,7 +61,7 @@ namespace MSS.API.Core
                 {
 
                     builder.WithOrigins("http://localhost:8080",
-                                        "http://www.contoso.com")
+                                        "http://10.89.36.103")
                                         .AllowAnyHeader()
                                         .AllowAnyMethod()
                                         .AllowCredentials();

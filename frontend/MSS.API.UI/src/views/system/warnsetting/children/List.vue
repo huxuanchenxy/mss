@@ -45,13 +45,9 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list">
-          <x-button>
-            <router-link :to="{ name: 'WarnSetting', params: { mark: 'add' } }">添加</router-link>
-          </x-button>
-        </li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
+        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -146,6 +142,7 @@
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/warnSettingApi'
+import { btn } from '@/element/btn.js'
 export default {
   name: 'SeeUserList',
   components: {
@@ -153,6 +150,11 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false,
+        update: false
+      },
       title: ' | 预警设置',
       eqpTypeList: [],
       paramList: [],
@@ -193,6 +195,7 @@ export default {
   created () {
     this.getAllEqpType()
     this.init()
+    this.initBtn()
   },
   activated () {
     this.search()
@@ -274,8 +277,16 @@ export default {
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
-
-    // 修改用户
+    // 新增预警
+    add () {
+      this.$router.push({
+        name: 'WarnSetting',
+        params: {
+          mark: 'add'
+        }
+      })
+    },
+    // 修改预警
     edit () {
       if (!this.checkedID.length) {
         this.$message({
@@ -364,6 +375,21 @@ export default {
       this.checkAll()
       this.currentPage = val
       this.search()
+    },
+    initBtn () {
+      let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+      if (!user.is_super) {
+        let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+        this.btn.save = !actions.some((item, index) => {
+          return item.actionID === btn.warnsetting.save
+        })
+        this.btn.delete = !actions.some((item, index) => {
+          return item.actionID === btn.warnsetting.delete
+        })
+        this.btn.update = !actions.some((item, index) => {
+          return item.actionID === btn.warnsetting.update
+        })
+      }
     }
   }
 }

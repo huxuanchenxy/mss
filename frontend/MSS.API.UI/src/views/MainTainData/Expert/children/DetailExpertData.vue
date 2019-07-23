@@ -71,6 +71,8 @@ import api from '@/api/ExpertApi'
 import XButton from '@/components/button'
 import UploadPDF from '@/components/UploadPDF'
 import UploadVedio from '@/components/UploadVideo'
+import eqpApi from '@/api/eqpApi.js'
+import apiOrg from '@/api/orgApi'
 export default {
   name: 'AddExpertData',
   components: {
@@ -111,13 +113,28 @@ export default {
         this.ExpertData.keyword = _res.keyword
         this.ExpertData.Experttitle = _res.title
         this.ExpertData.content = _res.content
-        this.ExpertData.deviceType = _res.deviceTypeName
-        this.ExpertData.deptName = _res.deptname
+        // this.ExpertData.deviceType = _res.deviceTypeName
+        // this.ExpertData.deptName = _res.deptname
+        this.getDeviceTypeById(_res.device_type)
+        this.getDeptNameById(_res.deptid)
         this.filevedioIDs = _res.video_file
         this.filevedioIDsEdit = _res.video_file
         this.fileattachIDs = _res.attch_file
         this.fileattachIDsEdit = _res.attch_file
       }).catch(err => console.log(err))
+    },
+    // 设备类型列表
+    getDeviceTypeById (id) {
+      eqpApi.getEqpTypeByID(id).then(res => {
+        this.ExpertData.deviceType = res.data.tName
+      }).catch(err => console.log(err))
+    },
+    getDeptNameById (id) {
+      apiOrg.getOrgNode(id).then(res => {
+        if (res.code === 0) {
+          this.ExpertData.deptName = res.data.name
+        }
+      })
     },
     getvedioFileID (val) {
       this.filevedioIDsEdit = val

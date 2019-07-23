@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MSS.API.Model.DTO
 {
-    public class WarnSettingQueryParm : BasePageParm
+    public class WarnSettingQueryParm : BasePageParam
     {
         /// <summary>
         /// 设备类型

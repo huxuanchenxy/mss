@@ -77,7 +77,8 @@ $border-radius: 4px;
 
 // 百分比换算
 @function percent($num, $total) {
-  @return ($num / $total * 100) + % ;
+  // @return ($num / $total * 100) + % ;
+  @return percentage($num/$total); 
 }
 
 @function PXtoEm($px) {

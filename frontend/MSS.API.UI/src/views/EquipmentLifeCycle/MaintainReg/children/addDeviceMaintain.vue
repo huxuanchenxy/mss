@@ -36,7 +36,7 @@
             <div class="inp-wrap">
               <span class="text">负责班组<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="team_group.text"
+                <!-- <el-select v-model="team_group.text"
                            clearable
                            placeholder="请选择">
                   <option disabled
@@ -47,10 +47,18 @@
                              :value="item.id"
                              :label="item.teamGroupName">
                   </el-option>
-                </el-select>
+                </el-select> -->
+                 <el-cascader class="cascader_width" clearable
+                    :props="defaultParams"
+                    change-on-select
+                    @change="cascader_change_copy"
+                    :show-all-levels="true"
+                    :options="teamList"
+                    v-model="teamPath.text">
+                  </el-cascader>
               </div>
             </div>
-            <p class="validate-tips">{{ team_group.tips }}</p>
+            <p class="validate-tips">{{ teamPath.tips }}</p>
           </li>
         </ul>
         <ul class="con-padding-horizontal input-group">
@@ -144,6 +152,8 @@ import { validateInputCommon, vInput, FileType } from '@/common/js/utils.js'
 import api from '@/api/DeviceMaintainRegApi.js'
 import XButton from '@/components/button'
 import UploadPDF from '@/components/UploadPDF'
+import axios from '@/api/interceptors'
+import apiOrg from '@/api/orgApi'
 export default {
   name: 'addDeviceMaintain',
   components: {
@@ -179,6 +189,17 @@ export default {
       director: {
         text: '',
         tips: ''
+      },
+      team: '',
+      teamPath: {
+        text: [],
+        tips: ''
+      },
+      teamList: [],
+      defaultParams: {
+        label: 'label',
+        value: 'id',
+        children: 'children'
       },
       directorList: [],
       deviceType: {
@@ -221,8 +242,12 @@ export default {
       this.directorList = res.data
     }).catch(err => console.log(err))
     // 部门列表
-    api.GetTeamGroupList().then(res => {
-      this.TeamGroupList = res.data
+    // api.GetTeamGroupList().then(res => {
+    //   this.TeamGroupList = res.data
+    // }).catch(err => console.log(err))
+    // 班组加载
+    apiOrg.getOrgAll().then(res => {
+      this.teamList = res.data
     }).catch(err => console.log(err))
   },
   methods: { // 添加权限组
@@ -249,6 +274,7 @@ export default {
       let model = {
         device_type_id: 0, // this.deviceType.text,
         device_id: 0, // this.device.text,
+        team_group_path: this.teamPath.text.join(','),
         team_group_id: this.team_group.text,
         director_id: this.director.text,
         detail_desc: this.detail_desc.text,
@@ -321,6 +347,7 @@ export default {
         let _res = res.data
         this.deviceType.text = this.strToIntArr(_res.device_type_id + ',' + _res.device_id)
         this.fileIDs = _res.attch_file
+        this.teamPath.text = this.strToIntArr(_res.team_group_path)
         this.team_group.text = _res.team_group_id
         this.director.text = _res.director_id
         this.detail_desc.text = _res.detail_desc
@@ -337,6 +364,29 @@ export default {
         ret.push(parseInt(arr[i]))
       }
       return ret
+    },
+    cascader_change_copy (val) {
+      var arr = this.teamPath.text
+      let id = arr[arr.length - 1]
+      this.team_group.text = id
+      let pmObj = new Promise((resolve, reject) => {
+        axios(
+          {
+            url: `http://10.89.36.204:5801/orgapi/org/node/${id}`,
+            method: 'get'
+          })
+          .then(res => {
+            resolve(res.data)
+          })
+          .catch(function (error) {
+            reject(error)
+          })
+      })
+      pmObj.then(data => {
+        if (data.code === 0) {
+          this.nodeType = data.data.nodeType
+        }
+      })
     },
     // 验证
     validateInput (val) {
@@ -363,11 +413,22 @@ export default {
       }
     },
     validateteam_groupSelect () {
-      if (this.team_group.text === '') {
-        this.team_group.tips = '此项必选'
+      // if (this.team_group.text === '') {
+      //   this.team_group.tips = '此项必选'
+      //   return false
+      // } else {
+      //   this.team_group.tips = ''
+      //   return true
+      // }
+      if (this.teamPath.text.length === 0) {
+        this.teamPath.tips = '此项必选'
+        return false
+      }
+      if (this.nodeType !== 3) {
+        this.teamPath.tips = '您选的并非是班组，请选择班组'
         return false
       } else {
-        this.team_group.tips = ''
+        this.teamPath.tips = ''
         return true
       }
     },

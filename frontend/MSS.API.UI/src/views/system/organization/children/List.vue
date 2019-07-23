@@ -9,7 +9,7 @@
       <div class="left">
       </div>
       <div class="right">
-        <x-button @click.native="addOrgNode">添加</x-button>
+        <x-button @click.native="addOrgNode" :disabled="btn.save">添加</x-button>
       </div>
     </div>
     <!-- 内容 -->
@@ -56,6 +56,7 @@ import XButton from '@/components/button'
 import OrgTreeRender from './TreeRender'
 import api from '@/api/orgApi.js'
 import eventBus from '@/components/Bus'
+import { btn } from '@/element/btn.js'
 export default {
   name: 'OrgList',
   components: {
@@ -63,6 +64,11 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false,
+        update: false
+      },
       loading: true,
       list: [],
       tips: '',
@@ -95,7 +101,8 @@ export default {
           store,
           tree: this.$refs.tree,
           getList: this.getList,
-          showDialog: this.showDialog
+          showDialog: this.showDialog,
+          btn: this.btn
         }
       })
     },
@@ -144,6 +151,21 @@ export default {
       })
     },
     submit (val) {
+    },
+    initBtn () {
+      let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+      if (!user.is_super) {
+        let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+        this.btn.save = !actions.some((item, index) => {
+          return item.actionID === btn.org.save
+        })
+        this.btn.delete = !actions.some((item, index) => {
+          return item.actionID === btn.org.delete
+        })
+        this.btn.update = !actions.some((item, index) => {
+          return item.actionID === btn.org.update
+        })
+      }
     }
   },
   mounted () {
@@ -158,6 +180,7 @@ export default {
       this.submit(data)
     })
     this.getList()
+    this.initBtn()
   }
 }
 </script>
