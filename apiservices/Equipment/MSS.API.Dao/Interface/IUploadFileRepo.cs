@@ -12,6 +12,7 @@ namespace MSS.API.Dao.Interface
         Task<int> Delete(int id);
         Task<UploadFile> GetByID(int id);
         Task<List<UploadFile>> ListByIDs(string ids);
+        Task<List<UploadFile>> ListByEntity(int id);
         Task<List<UploadFile>> ListAll();
     }
 }

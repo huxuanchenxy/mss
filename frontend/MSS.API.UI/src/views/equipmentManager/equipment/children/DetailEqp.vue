@@ -126,7 +126,7 @@
             </li>
             <li class="list upload-list">
               <div>
-                <upload-pdf :fileType="fileType" label="设备图纸" :fileIDs="eqp.fileIDs" :readOnly="true"></upload-pdf>
+                <upload-pdf :fileType="fileType" :fileIDs="eqp.fileIDs" :readOnly="true" :systemResource="systemResource"></upload-pdf>
               </div>
             </li>
           </ul>
@@ -160,6 +160,7 @@
 </template>
 <script>
 import { FileType, transformDateNoTime } from '@/common/js/utils.js'
+import { systemResource } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
 import api from '@/api/eqpApi'
@@ -171,6 +172,7 @@ export default {
   },
   data () {
     return {
+      systemResource: systemResource.eqp,
       fileIDs: '',
       fileType: FileType.Eqp_Drawings,
       title: '| 设备明细',
@@ -210,7 +212,6 @@ export default {
       api.getEqpDetailByID(this.eqp.id).then(res => {
         this.loading = false
         let _res = res.data
-        console.log(_res)
         this.eqp.eqpCode = _res.code
         this.eqp.eqpName = _res.name
         this.eqp.eqpType = _res.tName

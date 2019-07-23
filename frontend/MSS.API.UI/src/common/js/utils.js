@@ -64,7 +64,10 @@ export const transformDateNoTime = str => {
   //   // result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
   //   result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
   // })
-  return str.slice(0, 10)
+  if (str !== null && str !== '') {
+    return str.slice(0, 10)
+  }
+  return ''
 }
 // 转换内容区域中间的时间 "/Date(1523845477000)/" 有时分秒
 // export const transformTime = str => {

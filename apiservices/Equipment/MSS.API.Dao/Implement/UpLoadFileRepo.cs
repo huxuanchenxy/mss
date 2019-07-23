@@ -52,8 +52,32 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<UploadFile>(
-                    "SELECT * FROM upload_file WHERE id in @ids", new { ids = ids.Split(',') });
+                    "SELECT uf.*,ufr.type,dt.name as TypeName,dt1.name as SystemResourceName,ufr.system_resource FROM upload_file uf " +
+                    "left join upload_file_relation ufr on ufr.file_id=uf.id " +
+                    "left join dictionary_tree dt on ufr.type=dt.id " +
+                    "left join dictionary_tree dt1 on ufr.system_resource=dt1.id " +
+                    "WHERE uf.id in @ids", new { ids = ids.Split(',') });
                 if (result!=null && result.Count()>0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
+        public async Task<List<UploadFile>> ListByEntity(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<UploadFile>(
+                    "SELECT uf.*,ufr.type,dt.name as TypeName,dt1.name as SystemResourceName,ufr.system_resource FROM upload_file uf " +
+                    "left join upload_file_relation ufr on ufr.file_id=uf.id " +
+                    "left join dictionary_tree dt on ufr.type=dt.id " +
+                    "left join dictionary_tree dt1 on ufr.system_resource=dt1.id " +
+                    "WHERE ufr.entity_id=@id", new { id = id });
+                if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
                 }

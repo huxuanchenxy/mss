@@ -1,22 +1,38 @@
 <template>
   <div>
     <el-upload
-      action="http://10.89.36.204:5801/eqpapi/Upload"
+      action="http://localhost:3851/api/v1/Upload"
       :disabled="readOnly"
       :multiple="true"
-      :data="myFileType"
+      :data="myData"
       :headers="uploadHeaders"
       accept="application/pdf"
-      :file-list="fileList"
-      :show-file-list="true"
+      :file-list="currentFileList"
+      :show-file-list="false"
       list-type="text"
       :before-upload="beforeUpload"
-      :on-success="onSuccess"
-      :on-remove="onRemove"
-      :on-preview="preview">
-      <span class="text">{{label}}</span>
-      <x-button class="active upload-btn" v-show="!readOnly">点击上传</x-button>
+      :on-success="onSuccess">
+      <span>{{label}}</span>
+      <el-select v-show="!readOnly" ref="mySelect" v-model="myData.type" clearable filterable placeholder="请选择上传附件类型" class="upload-btn" @change="onChange">
+        <el-option
+          v-for="item in fileTypeList"
+          :key="item.key"
+          :label="item.name"
+          :value="item.business_type">
+        </el-option>
+      </el-select>
+      <x-button class="active" v-show="!readOnly">点击上传</x-button>
     </el-upload>
+    <div v-for="(item) in fileList" :key="item.key">
+      <el-upload
+        action="http://localhost:3851/api/v1/Upload"
+        :disabled="readOnly"
+        :file-list="item.list"
+        :on-remove="onRemove"
+        :on-preview="preview">
+        <div class="type-title">{{item.typeName}}</div>
+      </el-upload>
+    </div>
     <el-dialog
       :visible.sync="centerDialogVisible"
       :modal-append-to-body="false"
@@ -29,6 +45,7 @@
 <script>
 import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import api from '@/api/eqpApi'
+import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
 export default {
   name: 'UploadPDF',
@@ -36,39 +53,87 @@ export default {
     XButton
   },
   props: {
-    label: String,
-    fileType: Number,
+    // label: String,
+    systemResource: Number,
+    // fileType: Number,
     fileIDs: String,
     readOnly: Boolean,
     ext: String
   },
   data () {
     return {
-      myFileType: {},
+      label: '',
+      myData: {
+        type: '',
+        systemResource: ''
+      },
+      myFileIDs: [],
+      currentFileList: [],
+      fileTypeList: [],
       uploadHeaders: {Authorization: ''},
       fileList: [],
+      retFileList: [],
       previewUrl: '',
       centerDialogVisible: false,
-      isDeleted: false,
-      isAdd: false
+      isAdd: true
     }
+  },
+  created () {
+    apiAuth.getBusinessType(this.systemResource).then(res => {
+      this.fileTypeList = res.data
+    }).catch(err => console.log(err))
+    this.label = this.readOnly ? '已上传文件列表：' : '附件类型'
   },
   watch: {
     fileIDs () {
-      if (this.fileIDs !== '') {
+      if (this.fileIDs !== '' && this.fileIDs !== null) {
+        this.myFileIDs = JSON.parse(this.fileIDs)
         this.getFile()
       }
+      // if (this.fileIDs !== [] && this.fileIDs !== null) {
+      //   this.getFile()
+      // }
     }
   },
   mounted () {
-    this.myFileType.type = this.fileType
-    let token = window.sessionStorage.getItem('token')
-    if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
-      this.uploadHeaders.Authorization = `Bearer ${token}`
-    }
+    this.myData.systemResource = this.systemResource
+    // let token = window.sessionStorage.getItem('token')
+    // if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
+    //   this.uploadHeaders.Authorization = `Bearer ${token}`
+    // }
   },
   methods: {
+    onChange () {
+      if (this.fileList.length !== 0 && !this.uploadIsFinished(this.fileList[this.fileList.length - 1].list)) {
+        this.$message({
+          message: '此类型的文件还未上传完成，不可改变文件类型再次上传，请耐心等待',
+          type: 'warning'
+        })
+      } else {
+        this.currentFileList = []
+      }
+    },
+    uploadIsFinished (fileList) {
+      if (fileList.length !== 0) {
+        let list = fileList
+        if (list !== '' && list.length !== 0) {
+          for (let i = 0; i < list.length; i++) {
+            if (list[i].status !== 'success') {
+              return false
+            }
+          }
+        }
+      }
+      return true
+    },
     beforeUpload (file) {
+      if (this.myData.type === '') {
+        this.$message({
+          message: '请选择所要上传的文件类型',
+          type: 'warning'
+        })
+        return false
+      }
       if (this.ext !== undefined && this.ext !== '') {
         let tmp = file.name.split('.')
         let myExt = tmp[tmp.length - 1]
@@ -85,7 +150,7 @@ export default {
     },
     onSuccess (response, file, fileList) {
       this.isAdd = true
-      this.returnFileIDs(fileList)
+      this.returnFileIDs(fileList, this.myData.type)
     },
     onRemove (file, fileList) {
       // api.deleteUploadFile(file.id).then(res => {
@@ -97,8 +162,24 @@ export default {
       //   })
       //   return res.code === 0
       // }).catch(err => console.log(err))
-      this.isDeleted = true
-      this.returnFileIDs(fileList)
+      this.isAdd = false
+      if (fileList.length === 0) {
+        this.fileList.some((item, index) => {
+          if (+item.type === +file.type) {
+            this.fileList.splice(index, 1)
+            return true
+          }
+          return false
+        })
+        this.retFileList.some((item, index) => {
+          if (+item.type === +file.type) {
+            this.retFileList.splice(index, 1)
+            return true
+          }
+          return false
+        })
+      }
+      this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
       if (item.status === 'success') {
@@ -113,33 +194,137 @@ export default {
       this.centerDialogVisible = true
     },
     getFile () {
-      api.getUploadFileByIDs(this.fileIDs).then(res => {
+      let allFileIds = []
+      this.myFileIDs.map(val => {
+        val.list.map(item => {
+          allFileIds.push(item.id)
+        })
+      })
+      api.getUploadFileByIDs(allFileIds.join(',')).then(res => {
         this.fileList = res.data
+        this.fileList.map(val => {
+          let ids = []
+          val.list.map(item => {
+            ids.push(item.id)
+          })
+          this.retFileList.push({
+            type: val.type,
+            ids: ids.join(',')
+          })
+        })
+        // this.fileList = [{
+        //   typeName: 'test1',
+        //   list: [{
+        //     id: 1,
+        //     name: 'test11',
+        //     url: 'path11',
+        //     status: 'success'
+        //   }, {
+        //     id: 2,
+        //     name: 'test12',
+        //     url: 'path12',
+        //     status: 'success'
+        //   }]
+        // }, {
+        //   typeName: 'test2',
+        //   list: [{
+        //     id: 3,
+        //     name: 'test21',
+        //     url: 'path21',
+        //     status: 'success'
+        //   }, {
+        //     id: 4,
+        //     name: 'test22',
+        //     url: 'path22',
+        //     status: 'success'
+        //   }]
+        // }, {
+        //   typeName: 'test3',
+        //   list: [{
+        //     id: 3,
+        //     name: 'test31',
+        //     url: 'path31',
+        //     status: 'success'
+        //   }, {
+        //     id: 4,
+        //     name: 'test32',
+        //     url: 'path32',
+        //     status: 'success'
+        //   }]
+        // }]
       }).catch(err => console.log(err))
     },
-    returnFileIDs (fileList) {
+    returnFileIDs (fileList, type) {
       let ids = []
-      this.fileList = fileList
-      this.fileList.map(val => {
-        if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
-          val.id = val.response.data.id
+      let list = fileList
+      let retif = false
+      if (list.length !== 0 && this.uploadIsFinished(fileList)) {
+        list.map(val => {
+          if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
+            val.type = type
+            val.id = val.response.data.id
+          }
+          ids.push(val.id)
+        })
+        // 有新增就把原来上传的关系加上
+        // 删除就覆盖原来的
+        // 这样 后台才能先把原有的关系删除 再加上修改的 就不会遗漏了
+        retif = this.fileList.some((item, index) => {
+          if (+item.type === +type) {
+            this.myFileIDs.some((me, index1) => {
+              if (+me.type === +type) {
+                if (this.isAdd && me.list.length > 0) {
+                  me.list.map(val => {
+                    ids.push(val.id)
+                  })
+                  item.list = list.concat(item.list)
+                } else {
+                  item.list = list
+                }
+                return true
+              }
+              return false
+            })
+            return true
+          }
+          return false
+        })
+        if (!retif) {
+          this.fileList.push({
+            type: type,
+            typeName: this.$refs['mySelect'].query,
+            list: list
+          })
         }
-        ids.push(val.id)
-      })
-      // 有新增但没有删除过的时候 必须把原来上传的关系加上 这样 后台才能先把原有的关系删除 再加上修改的 就不会遗漏了
-      if (this.isAdd && !this.isDeleted && this.fileIDs !== '') {
-        ids.push(this.fileIDs)
+        retif = this.retFileList.some((item, index) => {
+          if (+item.type === +type) {
+            item.ids = ids.join(',')
+            return true
+          }
+          return false
+        })
+        if (!retif) {
+          this.retFileList.push({
+            type: type,
+            ids: ids.join(',')
+          })
+        }
       }
-      this.$emit('getFileIDs', ids.join(','))
+      this.$emit('getFileIDs', this.retFileList)
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 .upload-btn{
-  margin-left:50px!important;
+  margin-left:44px!important;
 }
 
+.type-title{
+  text-align:left;
+  margin-left:10px;
+  margin-top:10px;
+}
 // 图片预览
   /deep/ .show-list-wrap{
     width: 100% !important;
