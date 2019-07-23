@@ -35,7 +35,7 @@
                         </template>
                         <template>
                           <div class="right" style="padding-right:10px;">
-                            <el-button size="mini" v-show="canDelBtnShow(data)" @click="delOrgNode(data, node)">删除</el-button>
+                            <el-button size="mini" v-show="canDelBtnShow(data)" @click="delOrgNode(data, node)" :disabled="btn.delete">删除</el-button>
                           </div>
                         </template>
                       </li>
@@ -50,7 +50,7 @@
           <el-container style="height:100%">
             <el-aside class="middleBar" width="100px">
                 <el-button type="primary" style="width:40px; height:40px;top:50px"
-                   icon="el-icon-back" @click="onSaveBindClick" circle>
+                   icon="el-icon-back" @click="onSaveBindClick" circle :disabled="btn.save">
                 </el-button>
             </el-aside>
             <el-main style="padding:0px">
@@ -113,6 +113,7 @@ import { ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 // import OrgTreeRender from './TreeRenderForUser'
 import api from '@/api/orgApi.js'
+import { btn } from '@/element/btn.js'
 // import eventBus from '@/components/Bus'
 export default {
   name: 'OrgList',
@@ -121,6 +122,10 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false,
+        delete: false
+      },
       loading: true,
       filterText: '',
       keyUser: '',
@@ -317,6 +322,18 @@ export default {
           this.$message.error('获取节点用户失败')
         }
       })
+    },
+    initBtn () {
+      let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+      if (!user.is_super) {
+        let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+        this.btn.save = !actions.some((item, index) => {
+          return item.actionID === btn.orguser.save
+        })
+        this.btn.delete = !actions.some((item, index) => {
+          return item.actionID === btn.orguser.delete
+        })
+      }
     }
   },
   mounted () {
@@ -329,6 +346,7 @@ export default {
     })
     this.getList()
     this.getAllUsers()
+    this.initBtn()
   }
 }
 </script>
@@ -424,5 +442,12 @@ $height: $content-height - 56;
 
 .right{
   display: none;
+}
+
+/deep/ .el-button.is-disabled, .el-button.is-disabled:hover, .el-button.is-disabled:focus {
+  opacity: .65;
+  border-color: #c0c4cc !important;
+  background: none !important;
+  cursor: Default;
 }
 </style>
