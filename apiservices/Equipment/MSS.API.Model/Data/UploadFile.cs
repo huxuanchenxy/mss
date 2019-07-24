@@ -16,6 +16,7 @@ namespace MSS.API.Model.Data
         public string TypeName { get; set; }
         public int SystemResource { get; set; }
         public string SystemResourceName { get; set; }
+        public int Entity { get; set; }
 
     }
 
@@ -29,6 +30,7 @@ namespace MSS.API.Model.Data
             Map(o => o.SystemResourceName).ToColumn("resourceName");
             Map(o => o.Type).ToColumn("type");
             Map(o => o.TypeName).ToColumn("name");
+            Map(o => o.Entity).ToColumn("entity_id");
         }
     }
 }

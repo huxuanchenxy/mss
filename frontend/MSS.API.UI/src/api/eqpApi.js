@@ -26,5 +26,6 @@ export default {
 
   // deleteUploadFile: id => { return axios.delete(`${api}/Upload/${id}`).then(res => res.data) },
   getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) },
+  getUploadCascaderByIDs: ids => { return axios.get(`${api}/Upload/Cascader/${ids}`).then(res => res.data) },
   getListByPosition: (location, locationBy, eqpType) => { return axios.get(`${api}/Upload/ListByPosition/${location}/${locationBy}/${eqpType}`).then(res => res.data) }
 }

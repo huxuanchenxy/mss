@@ -75,6 +75,7 @@
                 <div class="url word-break">{{ item.desc }}</div>
                 <div class="upload-cascader">
                   <el-cascader clearable
+                    v-show="item.uploadFileArr.length != 0"
                     @change="preview"
                     :show-all-levels="false"
                     :options="item.uploadFileArr">
@@ -239,7 +240,7 @@ export default {
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
-            item.uploadFileArr = JSON.parse(item.uploadFiles)
+            item.uploadFileArr = item.uploadFiles === null ? [] : JSON.parse(item.uploadFiles)
           })
           this.eqpTypeList = res.data.rows
         }

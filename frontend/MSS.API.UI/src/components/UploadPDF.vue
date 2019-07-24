@@ -97,10 +97,10 @@ export default {
   },
   mounted () {
     this.myData.systemResource = this.systemResource
-    // let token = window.sessionStorage.getItem('token')
-    // if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
-    //   this.uploadHeaders.Authorization = `Bearer ${token}`
-    // }
+    let token = window.sessionStorage.getItem('token')
+    if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
+      this.uploadHeaders.Authorization = `Bearer ${token}`
+    }
   },
   methods: {
     onChange () {
@@ -139,7 +139,7 @@ export default {
         let myExt = tmp[tmp.length - 1]
         let arr = this.ext.split(',')
         for (let i = 0; i < arr.length; i++) {
-          if (myExt === arr[i]) return true
+          if (myExt.toLowerCase() === arr[i].toLowerCase()) return true
         }
         this.$message({
           message: '不支持扩展名为' + myExt + '的文件上传',

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Interface
 {
@@ -12,7 +13,7 @@ namespace MSS.API.Dao.Interface
         Task<int> Delete(int id);
         Task<UploadFile> GetByID(int id);
         Task<List<UploadFile>> ListByIDs(string ids);
-        Task<List<UploadFile>> ListByEntity(int id);
+        Task<List<UploadFile>> ListByEntity(int[] ids, SystemResource systemResource);
         Task<List<UploadFile>> ListAll();
     }
 }

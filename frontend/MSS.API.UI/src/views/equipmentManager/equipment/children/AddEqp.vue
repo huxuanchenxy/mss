@@ -4,6 +4,7 @@
     v-loading="loading"
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
+    <a href='http://10.89.36.103:8090/File/25/29/d2031b13-ccc6-4fd8-b440-4d53bc1c2c9d.pdf' download=""  title="下载">下载</a>
     <div class="con-padding-horizontal header">
       <h2 class="title">
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
@@ -223,7 +224,7 @@
               <p class="validate-tips">{{ life.tips }}</p>
             </li>
             <div class="upload-list">
-              <upload-pdf ext="pdf" :fileType="fileType" label="设备图纸" :fileIDs="fileIDs" :systemResource="systemResource" @getFileIDs="getFileIDs"></upload-pdf>
+              <upload-pdf :fileIDs="fileIDs" :systemResource="systemResource" @getFileIDs="getFileIDs"></upload-pdf>
             </div>
           </ul>
         </div>
@@ -276,7 +277,7 @@
 </template>
 <script>
 // import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
-import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty } from '@/common/js/utils.js'
 import { dictionary, firmType, systemResource } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
@@ -295,7 +296,7 @@ export default {
       systemResource: systemResource.eqp,
       fileIDs: '',
       fileIDsEdit: [],
-      fileType: FileType.Eqp_Drawings,
+      // fileType: FileType.Eqp_Drawings,
       areaParams: {
         label: 'areaName',
         value: 'id',
@@ -436,9 +437,9 @@ export default {
     }
   },
   methods: {
-    visibleChange (parm) {
-      console.log(parm)
-    },
+    // visibleChange (parm) {
+    //   console.log(parm)
+    // },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
