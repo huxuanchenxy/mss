@@ -49,5 +49,12 @@ namespace MSS.API.Core.V1.Controllers
             var ret = _uploadService.ListByIDs(ids);
             return Ok(ret.Result);
         }
+
+        [HttpGet("Cascader/{ids}")]
+        public ActionResult CascaderByIDs(string ids)
+        {
+            var ret = _uploadService.CascaderByIDs(ids);
+            return Ok(ret.Result);
+        }
     }
 }

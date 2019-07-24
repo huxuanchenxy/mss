@@ -16,5 +16,6 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> ListByIDs(string ids);
         Task<ApiResult> ListAll();
+        Task<ApiResult> CascaderByIDs(string ids);
     }
 }

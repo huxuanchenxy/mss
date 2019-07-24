@@ -105,7 +105,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 List<UploadFile> ufs = await _uploadFileRepo.ListByIDs(ids);
-                ret.data = UploadFileHelper.MyList(ufs);
+                ret.data = UploadFileHelper.ListShow(ufs);
                 return ret;
             }
             catch (Exception ex)
@@ -115,6 +115,24 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
+
+        public async Task<ApiResult> CascaderByIDs(string ids)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<UploadFile> ufs = await _uploadFileRepo.ListByIDs(ids);
+                ret.data = UploadFileHelper.CascaderShow(ufs);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
 
         public async Task<ApiResult> ListAll()
         {

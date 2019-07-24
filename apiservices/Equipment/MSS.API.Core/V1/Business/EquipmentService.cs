@@ -150,10 +150,10 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 Equipment e = await _eqpRepo.GetByID(id);
-                var list = await _uploadFileRepo.ListByEntity(e.ID);
+                var list = await _uploadFileRepo.ListByEntity(new int[] { id},MyDictionary.SystemResource.Eqp);
                 if (list != null)
                 {
-                    e.FileIDs = JsonConvert.SerializeObject(UploadFileHelper.MyList(list));
+                    e.FileIDs = JsonConvert.SerializeObject(UploadFileHelper.ListShow(list));
                 }
                 ret.data = e;
                 return ret;
@@ -174,10 +174,10 @@ namespace MSS.API.Core.V1.Business
                 List<AllArea> laa = await _eqpRepo.GetAllArea();
                 e.LocationName = laa.Where(a => a.Tablename == e.LocationBy && a.ID == e.Location)
                     .FirstOrDefault().AreaName;
-                var list = await _uploadFileRepo.ListByEntity(e.ID);
+                var list = await _uploadFileRepo.ListByEntity(new int[] { id},MyDictionary.SystemResource.Eqp);
                 if (list!=null)
                 {
-                    e.FileIDs = JsonConvert.SerializeObject(UploadFileHelper.MyList(list));
+                    e.FileIDs = JsonConvert.SerializeObject(UploadFileHelper.ListShow(list));
                 }
                 ret.data = e;
                 return ret;

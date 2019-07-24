@@ -11,6 +11,7 @@ using MSS.API.Common;
 using System.Data;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Implement
 {
@@ -32,30 +33,25 @@ namespace MSS.API.Dao.Implement
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, eqpType, trans);
                     eqpType.ID = newid;
-                    if (eqpType.UploadFiles != "")
+                    if (!string.IsNullOrWhiteSpace(eqpType.UploadFiles))
                     {
-                        List<JObject> uploadFiles = JsonConvert.DeserializeObject<List<JObject>>(eqpType.UploadFiles);
                         List<object> objs = new List<object>();
-                        foreach (var item in uploadFiles)
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(eqpType.UploadFiles);
+                        foreach (var obj in jobj)
                         {
-                            if (!string.IsNullOrEmpty(item["FileIDs"].ToString()))
+                            foreach (var item in obj["ids"].ToString().Split(','))
                             {
-                                foreach (string str in item["FileIDs"].ToString().Split(','))
+                                objs.Add(new
                                 {
-                                    objs.Add(new
-                                    {
-                                        eqpTypeID = newid,
-                                        fileID = Convert.ToInt32(str),
-                                        type = Convert.ToInt32(item["Type"])
-                                    });
-                                }
+                                    eqpTypeID = newid,
+                                    fileID = Convert.ToInt32(item),
+                                    type = Convert.ToInt32(obj["type"]),
+                                    systemResource = (int)SystemResource.EqpType
+                                });
                             }
                         }
-                        if (objs.Count > 0)
-                        {
-                            sql = "insert into upload_file_eqp_type values (0,@eqpTypeID,@fileID,@type)";
-                            int ret = await c.ExecuteAsync(sql, objs, trans);
-                        }
+                        sql = "insert into upload_file_relation values (0,@eqpTypeID,@fileID,@type,@systemResource)";
+                        int ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     trans.Commit();
                     return eqpType;
@@ -79,39 +75,27 @@ namespace MSS.API.Dao.Implement
                     var result = await c.ExecuteAsync(" update equipment_type " +
                         " set type_name=@TName,model=@Model,description=@Desc, " +
                         " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqpType,trans);
-                    if (eqpType.UploadFiles != "")
+                    if (!string.IsNullOrWhiteSpace(eqpType.UploadFiles))
                     {
-                        List<JObject> uploadFiles = JsonConvert.DeserializeObject<List<JObject>>(eqpType.UploadFiles);
+                        sql = "delete from upload_file_relation where entity_id=@id";
+                        int ret = await c.ExecuteAsync(sql, new { id = eqpType.ID }, trans);
                         List<object> objs = new List<object>();
-                        List<int> editType = new List<int>();
-                        foreach (var item in uploadFiles)
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(eqpType.UploadFiles);
+                        foreach (var obj in jobj)
                         {
-                            if (!string.IsNullOrEmpty(item["FileIDs"].ToString()))
+                            foreach (var item in obj["ids"].ToString().Split(','))
                             {
-                                foreach (string str in item["FileIDs"].ToString().Split(','))
+                                objs.Add(new
                                 {
-                                    int t = Convert.ToInt32(item["Type"]);
-                                    editType.Add(t);
-                                    objs.Add(new
-                                    {
-                                        eqpTypeID = eqpType.ID,
-                                        fileID = Convert.ToInt32(str),
-                                        type = t
-                                    });
-                                }
+                                    eqpTypeID = eqpType.ID,
+                                    fileID = Convert.ToInt32(item),
+                                    type = Convert.ToInt32(obj["type"]),
+                                    systemResource = (int)SystemResource.EqpType
+                                });
                             }
                         }
-                        if (objs.Count > 0)
-                        {
-                            sql = "delete from upload_file_eqp_type where eqp_type_id=@id and type in @type";
-                            int ret = await c.ExecuteAsync(sql, new
-                            {
-                                id = eqpType.ID,
-                                type = editType
-                            }, trans);
-                            sql = "insert into upload_file_eqp_type values (0,@eqpTypeID,@fileID,@type)";
-                            ret = await c.ExecuteAsync(sql, objs, trans);
-                        }
+                        sql = "insert into upload_file_relation values (0,@eqpTypeID,@fileID,@type,@systemResource)";
+                        ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     trans.Commit();
                     return result;
@@ -174,48 +158,6 @@ namespace MSS.API.Dao.Implement
                 return result;
             });
         }
-        public async Task<List<object>> RelationListByEqpType(int id)
-        {
-            return await WithConnection(async c =>
-            {
-                StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT file_id,type FROM upload_file_eqp_type ")
-                .Append(" where eqp_type_id=" + id)
-                .Append(" order by eqp_type_id");
-                var result = await c.QueryAsync<object>(sql.ToString());
-                if (result != null && result.Count() > 0)
-                {
-                    return result.ToList();
-                }
-                else
-                {
-                    return null;
-                }
-            });
-        }
-
-        public async Task<List<UploadFileEqpType>> UploadFileListByEqpType(int[] id)
-        {
-            return await WithConnection(async c =>
-            {
-                StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT distinct u.*,a.eqp_type_id,a.type,d.sub_code_name ")
-                .Append(" FROM (upload_file_eqp_type a,dictionary d,upload_file u) ")
-                //.Append(" where d.sub_code=a.type and d.code='" + STR_EQPTYPE_DRAWINGS + "'")
-                .Append(" and u.id=a.file_id")
-                .Append(" and a.eqp_type_id in @id");
-                var result = await c.QueryAsync<UploadFileEqpType>(sql.ToString(),new { id=id});
-                if (result != null && result.Count() > 0)
-                {
-                    return result.ToList();
-                }
-                else
-                {
-                    return null;
-                }
-            });
-        }
-
 
         public async Task<List<EquipmentType>> GetAll()
         {

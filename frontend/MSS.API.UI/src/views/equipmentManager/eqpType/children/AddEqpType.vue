@@ -39,38 +39,9 @@
             </div>
             <p class="validate-tips">{{ model.tips }}</p>
           </li>
-          <li class="list">
-            <upload-pdf ext="pdf" :fileType="fileType.EqpType_Working_Instruction" label="作业指导" :fileIDs="fileIDs.working" @getFileIDs="getWorkingFileIDs"></upload-pdf>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Technical_Drawings" label="技术图纸" :fileIDs="fileIDs.drawings" @getFileIDs="getDrawingsFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Installation_Manual" label="安装手册" :fileIDs="fileIDs.install" @getFileIDs="getInstallFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_User_Guide" label="使用手册" :fileIDs="fileIDs.user" @getFileIDs="getUserFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Regulations" label="维护规程" :fileIDs="fileIDs.regulations" @getFileIDs="getRegulationsFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list"/>
+          <div class="upload-list">
+            <upload-pdf ext="pdf" :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+          </div>
         </ul>
         <div class="con-padding-horizontal cause">
           <span class="lable">设备类型描述：</span>
@@ -89,7 +60,8 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, nullToEmpty } from '@/common/js/utils.js'
+import { systemResource } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 import MyUploadPDF from '@/components/UploadPDF'
@@ -101,43 +73,18 @@ export default {
   },
   data () {
     return {
+      systemResource: systemResource.eqpType,
       loading: false,
       title: '| 添加设备类型',
       eqpTypeID: '',
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
-      fileIDs: {
-        working: '',
-        drawings: '',
-        install: '',
-        user: '',
-        regulations: ''
-      },
-      fileIDsEdit: [{
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }],
-      fileType: FileType,
-      previewUrl: '',
-      pageType: ''
+      fileIDs: '',
+      fileIDsEdit: []
     }
   },
   created () {
-    // this.pageType = this.$route.query.type
-    // this.title = this.pageType === 'Add' ? '| 添加设备类型' : '| 修改设备类型'
     this.init()
   },
   methods: {
@@ -148,25 +95,8 @@ export default {
         this.getEqpType()
       }
     },
-    getWorkingFileIDs (val) {
-      this.fileIDsEdit[0].Type = FileType.EqpType_Working_Instruction
-      this.fileIDsEdit[0].FileIDs = val
-    },
-    getDrawingsFileIDs (val) {
-      this.fileIDsEdit[1].Type = FileType.EqpType_Technical_Drawings
-      this.fileIDsEdit[1].FileIDs = val
-    },
-    getInstallFileIDs (val) {
-      this.fileIDsEdit[2].Type = FileType.EqpType_Installation_Manual
-      this.fileIDsEdit[2].FileIDs = val
-    },
-    getUserFileIDs (val) {
-      this.fileIDsEdit[3].Type = FileType.EqpType_User_Guide
-      this.fileIDsEdit[3].FileIDs = val
-    },
-    getRegulationsFileIDs (val) {
-      this.fileIDsEdit[4].Type = FileType.EqpType_Regulations
-      this.fileIDsEdit[4].FileIDs = val
+    getFileIDs (ids) {
+      this.fileIDsEdit = ids
     },
     getEqpType () {
       api.getEqpTypeByID(this.$route.query.id).then(res => {
@@ -176,34 +106,7 @@ export default {
           this.eqpTypeName.text = data.tName
           this.model.text = nullToEmpty(data.model)
           this.eqpTypeDesc.text = data.desc
-          if (data.uploadFiles !== null) {
-            let obj = JSON.parse(data.uploadFiles)
-            let tmp = {
-              working: [],
-              drawings: [],
-              install: [],
-              user: [],
-              regulations: []
-            }
-            obj.map(val => {
-              if (val.type === FileType.EqpType_Working_Instruction) {
-                tmp.working.push(val.file_id)
-              } else if (val.type === FileType.EqpType_Technical_Drawings) {
-                tmp.drawings.push(val.file_id)
-              } else if (val.type === FileType.EqpType_Installation_Manual) {
-                tmp.install.push(val.file_id)
-              } else if (val.type === FileType.EqpType_User_Guide) {
-                tmp.user.push(val.file_id)
-              } else if (val.type === FileType.EqpType_Regulations) {
-                tmp.regulations.push(val.file_id)
-              }
-            })
-            this.fileIDs.working = tmp.working.join(',')
-            this.fileIDs.drawings = tmp.drawings.join(',')
-            this.fileIDs.install = tmp.install.join(',')
-            this.fileIDs.user = tmp.user.join(',')
-            this.fileIDs.regulations = tmp.regulations.join(',')
-          }
+          this.fileIDs = data.uploadFiles
         }
         this.loading = false
       }).catch(err => console.log(err))
@@ -230,20 +133,19 @@ export default {
       if (!this.validateInput()) {
         return
       }
-      for (let j = 0; j < this.fileIDsEdit.length; j++) {
-        if (this.fileIDsEdit[j].FileIDs !== '') {
-          let arr = this.fileIDsEdit[j].FileIDs.split(',')
-          for (let i = 0; i < arr.length; i++) {
-            if (arr[i] === '') {
-              this.$message({
-                message: '文件还未上传完成，请耐心等待',
-                type: 'warning'
-              })
-              return
-            }
+      this.fileIDsEdit.some(item => {
+        let arr = item.ids.split(',')
+        return arr.some(me => {
+          if (me === '') {
+            this.$message({
+              message: '文件还未上传完成，请耐心等待',
+              type: 'warning'
+            })
+            return true
           }
-        }
-      }
+          return false
+        })
+      })
       let eqpType = {
         TName: this.eqpTypeName.text,
         Desc: this.eqpTypeDesc.text,
@@ -483,5 +385,11 @@ export default {
 
 .disabled{
   background: #8c939d;
+}
+
+.upload-list{
+  margin-top: PXtoEm(25);
+  margin-bottom: PXtoEm(25);
+  width: -webkit-fill-available;
 }
 </style>
