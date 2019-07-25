@@ -40,7 +40,7 @@
             <p class="validate-tips">{{ model.tips }}</p>
           </li>
           <div class="upload-list">
-            <upload-pdf ext="pdf" :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+            <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
           </div>
         </ul>
         <div class="con-padding-horizontal cause">
@@ -62,6 +62,7 @@
 <script>
 import { validateInputCommon, vInput, nullToEmpty } from '@/common/js/utils.js'
 import { systemResource } from '@/common/js/dictionary.js'
+import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 import MyUploadPDF from '@/components/UploadPDF'
@@ -133,19 +134,7 @@ export default {
       if (!this.validateInput()) {
         return
       }
-      this.fileIDsEdit.some(item => {
-        let arr = item.ids.split(',')
-        return arr.some(me => {
-          if (me === '') {
-            this.$message({
-              message: '文件还未上传完成，请耐心等待',
-              type: 'warning'
-            })
-            return true
-          }
-          return false
-        })
-      })
+      if (!isUploadFinished(this.fileIDsEdit)) return
       let eqpType = {
         TName: this.eqpTypeName.text,
         Desc: this.eqpTypeDesc.text,

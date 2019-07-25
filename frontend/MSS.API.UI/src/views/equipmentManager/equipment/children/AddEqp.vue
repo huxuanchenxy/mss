@@ -4,7 +4,6 @@
     v-loading="loading"
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
-    <a href='http://10.89.36.103:8090/File/25/29/d2031b13-ccc6-4fd8-b440-4d53bc1c2c9d.pdf' download=""  title="下载">下载</a>
     <div class="con-padding-horizontal header">
       <h2 class="title">
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
@@ -92,7 +91,6 @@
                   <el-cascader class="cascader_width" clearable
                     :props="defaultParams"
                     @change="cascader_change"
-                    @visible-change="visibleChange"
                     :show-all-levels="true"
                     :options="teamList"
                     v-model="teamPath.text">
@@ -279,6 +277,7 @@
 // import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
 import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty } from '@/common/js/utils.js'
 import { dictionary, firmType, systemResource } from '@/common/js/dictionary.js'
+import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
 import apiAuth from '@/api/authApi'
@@ -476,19 +475,7 @@ export default {
         })
         return
       }
-      this.fileIDsEdit.some(item => {
-        let arr = item.ids.split(',')
-        return arr.some(me => {
-          if (me === '') {
-            this.$message({
-              message: '文件还未上传完成，请耐心等待',
-              type: 'warning'
-            })
-            return true
-          }
-          return false
-        })
-      })
+      if (!isUploadFinished(this.fileIDsEdit)) return
       let eqp = {
         Code: this.eqpCode.text,
         Name: this.eqpName.text,

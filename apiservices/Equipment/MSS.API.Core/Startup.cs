@@ -96,6 +96,13 @@ namespace MSS.API.Core
             }
             app.UseAuthentication();
             app.RegisterConsul(lifetime, consulService);
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                //设置不限制content-type，即任何上传的文件都可以被下载
+                ServeUnknownFileTypes = true
+            });
+
             app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
