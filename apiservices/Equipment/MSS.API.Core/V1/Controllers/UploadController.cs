@@ -56,5 +56,23 @@ namespace MSS.API.Core.V1.Controllers
             var ret = _uploadService.CascaderByIDs(ids);
             return Ok(ret.Result);
         }
+
+        [HttpPost("Download/{id}")]
+        public ActionResult Download(int id)
+        {
+
+            UploadFile ret = (UploadFile)_uploadService.GetByID(id).Result.data;
+
+            var url = (FilePath.BASEFILE + ret.FilePath).Replace('/', '\\');
+            if (System.IO.File.Exists(url))
+            {
+                var stream = System.IO.File.OpenRead(url);
+                return File(stream, "application/octet-stream", ret.FileName);
+            }
+            else
+            {
+                return File(new byte[] { }, "application/octet-stream");
+            }
+        }
     }
 }

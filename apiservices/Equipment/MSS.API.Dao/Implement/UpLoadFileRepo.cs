@@ -43,7 +43,10 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<UploadFile>(
-                    "SELECT * FROM upload_file WHERE id = @id", new { id = id });
+                    //"SELECT uf.*,ufr.system_resource,ufr.type FROM upload_file uf " +
+                    //"left join upload_file_relation ufr on ufr.file_id=uf.id " +
+                    "SELECT * FROM upload_file " +
+                    "WHERE id = @id", new { id = id });
                 return result;
             });
         }

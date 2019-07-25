@@ -126,6 +126,7 @@
 </template>
 <script>
 import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
@@ -166,7 +167,7 @@ export default {
         updated_by: 0
       },
       centerDialogVisible: false,
-      previewPartUrl: [],
+      uploadFile: {},
       previewUrl: ''
     }
   },
@@ -197,8 +198,11 @@ export default {
       // this.searchResult(1)
     },
     preview (val) {
-      this.centerDialogVisible = true
-      this.previewUrl = PDF_UPLOADED_VIEW_URL + val[val.length - 1]
+      let id = val[val.length - 1]
+      if (isPreview(id, this.uploadFile[id].label)) {
+        this.centerDialogVisible = true
+        this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+      }
       // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
     },
     // 改变排序
@@ -240,7 +244,16 @@ export default {
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
-            item.uploadFileArr = item.uploadFiles === null ? [] : JSON.parse(item.uploadFiles)
+            if (item.uploadFiles !== null) {
+              item.uploadFileArr = JSON.parse(item.uploadFiles)
+              item.uploadFileArr.map(val => {
+                val.children.map(item => {
+                  this.uploadFile[item.value] = item
+                })
+              })
+            } else {
+              item.uploadFileArr = []
+            }
           })
           this.eqpTypeList = res.data.rows
         }

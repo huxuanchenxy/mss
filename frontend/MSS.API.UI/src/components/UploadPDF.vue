@@ -6,7 +6,7 @@
       :multiple="true"
       :data="myData"
       :headers="uploadHeaders"
-      accept="application/pdf"
+      :accept="currentExt"
       :file-list="currentFileList"
       :show-file-list="false"
       list-type="text"
@@ -47,6 +47,7 @@ import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import api from '@/api/eqpApi'
 import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
+import { downloadFile } from '@/common/js/UpDownloadFileHelper.js'
 export default {
   name: 'UploadPDF',
   components: {
@@ -58,7 +59,8 @@ export default {
     // fileType: Number,
     fileIDs: String,
     readOnly: Boolean,
-    ext: String
+    canDown: Boolean
+    // ext: String
   },
   data () {
     return {
@@ -75,12 +77,16 @@ export default {
       retFileList: [],
       previewUrl: '',
       centerDialogVisible: false,
-      isAdd: true
+      ext: {},
+      currentExt: ''
     }
   },
   created () {
     apiAuth.getBusinessType(this.systemResource).then(res => {
       this.fileTypeList = res.data
+      this.fileTypeList.map(val => {
+        this.ext[val.business_type] = val.ext.toLowerCase()
+      })
     }).catch(err => console.log(err))
     this.label = this.readOnly ? '已上传文件列表：' : '附件类型'
   },
@@ -112,6 +118,9 @@ export default {
       } else {
         this.currentFileList = []
       }
+      if (this.myData.type !== '') {
+        this.currentExt = this.ext[this.myData.type]
+      }
     },
     uploadIsFinished (fileList) {
       if (fileList.length !== 0) {
@@ -134,23 +143,23 @@ export default {
         })
         return false
       }
-      if (this.ext !== undefined && this.ext !== '') {
+      let ext = this.currentExt
+      if (ext !== null && ext !== '') {
         let tmp = file.name.split('.')
         let myExt = tmp[tmp.length - 1]
-        let arr = this.ext.split(',')
+        let arr = ext.split(',')
         for (let i = 0; i < arr.length; i++) {
-          if (myExt.toLowerCase() === arr[i].toLowerCase()) return true
+          if (('.' + myExt.toLowerCase()) === arr[i]) return true
         }
         this.$message({
-          message: '不支持扩展名为' + myExt + '的文件上传',
+          message: '此类型不支持扩展名为' + myExt + '的文件上传',
           type: 'warning'
         })
         return false
       }
     },
     onSuccess (response, file, fileList) {
-      this.isAdd = true
-      this.returnFileIDs(fileList, this.myData.type)
+      this.returnFileIDs(fileList, this.myData.type, true)
     },
     onRemove (file, fileList) {
       // api.deleteUploadFile(file.id).then(res => {
@@ -162,7 +171,6 @@ export default {
       //   })
       //   return res.code === 0
       // }).catch(err => console.log(err))
-      this.isAdd = false
       if (fileList.length === 0) {
         this.fileList.some((item, index) => {
           if (+item.type === +file.type) {
@@ -182,16 +190,21 @@ export default {
       this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
-      if (item.status === 'success') {
-        if (item.url.indexOf('blob:') !== -1) {
-          this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+      let arr = item.url.split('.')
+      if (arr[arr.length - 1] === 'pdf') {
+        if (item.status === 'success') {
+          if (item.url.indexOf('blob:') !== -1) {
+            this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+          } else {
+            this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+          }
         } else {
-          this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+          this.previewUrl = PDF_BLOB_VIEW_URL + item.url
         }
-      } else {
-        this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+        this.centerDialogVisible = true
+      } else if (this.canDown) {
+        downloadFile(item.id, item.name)
       }
-      this.centerDialogVisible = true
     },
     getFile () {
       let allFileIds = []
@@ -254,7 +267,7 @@ export default {
         // }]
       }).catch(err => console.log(err))
     },
-    returnFileIDs (fileList, type) {
+    returnFileIDs (fileList, type, isAdd) {
       let ids = []
       let list = fileList
       let retif = false
@@ -266,18 +279,19 @@ export default {
           }
           ids.push(val.id)
         })
-        // 有新增就把原来上传的关系加上
-        // 删除就覆盖原来的
+        // 新增就把原来上传的关系加上
+        // 删除和之后的新增就覆盖原来的
         // 这样 后台才能先把原有的关系删除 再加上修改的 就不会遗漏了
         retif = this.fileList.some((item, index) => {
           if (+item.type === +type) {
             this.myFileIDs.some((me, index1) => {
               if (+me.type === +type) {
-                if (this.isAdd && me.list.length > 0) {
+                if (isAdd && me.list.length > 0) {
                   me.list.map(val => {
                     ids.push(val.id)
                   })
                   item.list = list.concat(item.list)
+                  this.currentFileList = []
                 } else {
                   item.list = list
                 }

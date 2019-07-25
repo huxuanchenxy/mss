@@ -71,9 +71,9 @@ namespace MSS.API.Core.V1.Business
                     {
                         type = item.Type,
                         typeName = item.TypeName,
-                        id = item.ID,
+                        value = item.ID,
                         label = item.FileName,
-                        value = item.FilePath
+                        url = item.FilePath
                     });
                 }
                 if (type != 0)

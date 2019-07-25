@@ -30,7 +30,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = (await c.QueryAsync<DictionaryRelation>(
-                    "select dr.*,dt.name from dictionary_relation dr " +
+                    "select dr.*,dt.name,dt.ext from dictionary_relation dr " +
                     "left join dictionary_tree dt on dr.business_type=dt.id " +
                     "where parent_business_type=@pid", new { pid = pid })).ToList();
                 return result;

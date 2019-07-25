@@ -15,5 +15,6 @@ namespace MSS.API.Model.Data
         public string parent_business_type { get; set; }
         public string business_type { get; set; }
         public string name { get; set; }
+        public string ext { get; set; }
     }
 }

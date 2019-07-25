@@ -126,7 +126,7 @@
             </li>
             <li class="list upload-list">
               <div>
-                <upload-pdf :fileType="fileType" :fileIDs="eqp.fileIDs" :readOnly="true" :systemResource="systemResource"></upload-pdf>
+                <upload-pdf :canDown="true" :fileIDs="eqp.fileIDs" :readOnly="true" :systemResource="systemResource"></upload-pdf>
               </div>
             </li>
           </ul>
