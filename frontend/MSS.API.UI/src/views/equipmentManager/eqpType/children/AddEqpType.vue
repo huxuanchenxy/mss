@@ -47,7 +47,7 @@
             <span class="lable">设备类型描述：</span>
             <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述" @keyup.native="validateInputNull(eqpTypeDesc)"></el-input>
         </div>
-        <div class="validate-tips">{{ eqpTypeDesc.tips }}</div>
+        <div class="validate-tips left">{{ eqpTypeDesc.tips }}</div>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
@@ -387,5 +387,8 @@ export default {
   margin-top: PXtoEm(25);
   margin-bottom: PXtoEm(25);
   width: -webkit-fill-available;
+}
+.left{
+  text-indent: 9.5%
 }
 </style>
