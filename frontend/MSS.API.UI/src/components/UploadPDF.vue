@@ -117,7 +117,7 @@ export default {
         })
       } else {
         this.currentFileList = []
-        this.myFileIDs = this.fileList
+        this.myFileIDs = this.fileList.concat()
       }
       if (this.myData.type !== '') {
         this.currentExt = this.ext[this.myData.type]
