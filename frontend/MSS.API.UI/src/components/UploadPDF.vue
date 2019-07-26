@@ -85,7 +85,7 @@ export default {
     apiAuth.getBusinessType(this.systemResource).then(res => {
       this.fileTypeList = res.data
       this.fileTypeList.map(val => {
-        this.ext[val.business_type] = val.ext.toLowerCase()
+        this.ext[val.business_type] = val.ext === null ? '' : val.ext.toLowerCase()
       })
     }).catch(err => console.log(err))
     this.label = this.readOnly ? '已上传文件列表：' : '附件类型'
@@ -117,6 +117,7 @@ export default {
         })
       } else {
         this.currentFileList = []
+        this.myFileIDs = this.fileList
       }
       if (this.myData.type !== '') {
         this.currentExt = this.ext[this.myData.type]
@@ -144,7 +145,7 @@ export default {
         return false
       }
       let ext = this.currentExt
-      if (ext !== null && ext !== '') {
+      if (ext !== '') {
         let tmp = file.name.split('.')
         let myExt = tmp[tmp.length - 1]
         let arr = ext.split(',')
