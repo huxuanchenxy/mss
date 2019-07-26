@@ -25,7 +25,7 @@
             <div class="inp-wrap">
               <span class="text">设备类型名称<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input v-model="eqpTypeName.text"></el-input>
+                <el-input placeholder="请输入设备类型名称" v-model="eqpTypeName.text" @keyup.native="validateInput()"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ eqpTypeName.tips }}</p>
@@ -34,7 +34,7 @@
             <div class="inp-wrap">
               <span class="text">型号</span>
               <div class="inp">
-                <el-input v-model="model.text"></el-input>
+                <el-input v-model="model.text" placeholder="请输入设备类型型号" @keyup.native="validateInputNull(model)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ model.tips }}</p>
@@ -44,10 +44,10 @@
           </div>
         </ul>
         <div class="con-padding-horizontal cause">
-          <span class="lable">设备类型描述：</span>
-          <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述"></el-input>
-          <p class="validate-tips">{{ eqpTypeDesc.tips }}</p>
+            <span class="lable">设备类型描述：</span>
+            <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述" @keyup.native="validateInputNull(eqpTypeDesc)"></el-input>
         </div>
+        <div class="validate-tips">{{ eqpTypeDesc.tips }}</div>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
@@ -112,26 +112,33 @@ export default {
         this.loading = false
       }).catch(err => console.log(err))
     },
+    validateInputNull (val) {
+      if (!vInput(val.text)) {
+        val.tips = '此项含有非法字符'
+        return false
+      } else {
+        val.tips = ''
+        return true
+      }
+    },
     validateInput () {
       if (!validateInputCommon(this.eqpTypeName)) {
         return false
       }
-      if (!vInput(this.model.text)) {
-        this.model.tips = '此项含有非法字符'
+      return true
+    },
+    validateInputAll () {
+      if (!this.validateInput() || !this.validateInputNull(this.model) || !this.validateInputNull(this.eqpTypeDesc)) {
         return false
-      } else {
-        this.model.tips = ''
-      }
-      if (!vInput(this.eqpTypeDesc.text)) {
-        this.eqpTypeDesc.tips = '此项含有非法字符'
-        return false
-      } else {
-        this.eqpTypeDesc.tips = ''
       }
       return true
     },
     save () {
       if (!this.validateInput()) {
+        this.$message({
+          message: '验证失败，请查看提示信息',
+          type: 'error'
+        })
         return
       }
       if (!isUploadFinished(this.fileIDsEdit)) return
