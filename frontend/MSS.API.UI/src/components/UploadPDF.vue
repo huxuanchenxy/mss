@@ -116,8 +116,15 @@ export default {
           type: 'warning'
         })
       } else {
-        this.currentFileList = []
-        this.myFileIDs = this.fileList.concat()
+        let ret = this.fileList.some(val => {
+          if (+val.type === +this.myData.type) {
+            this.currentFileList = val.list
+            // this.myFileIDs = this.fileList.concat()
+            return true
+          }
+          return false
+        })
+        if (!ret) this.currentFileList = []
       }
       if (this.myData.type !== '') {
         this.currentExt = this.ext[this.myData.type]
@@ -187,7 +194,9 @@ export default {
           }
           return false
         })
+        this.myData.type = file.type
       }
+      this.currentFileList = fileList
       this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
@@ -280,26 +289,31 @@ export default {
           }
           ids.push(val.id)
         })
-        // 新增就把原来上传的关系加上
-        // 删除和之后的新增就覆盖原来的
-        // 这样 后台才能先把原有的关系删除 再加上修改的 就不会遗漏了
         retif = this.fileList.some((item, index) => {
           if (+item.type === +type) {
-            this.myFileIDs.some((me, index1) => {
-              if (+me.type === +type) {
-                if (isAdd && me.list.length > 0) {
-                  me.list.map(val => {
-                    ids.push(val.id)
-                  })
-                  item.list = list.concat(item.list)
-                  this.currentFileList = []
-                } else {
-                  item.list = list
+            if (isAdd) {
+              this.myFileIDs.some((me, index1) => {
+                if (+me.type === +type) {
+                  if (me.list.length > 0) {
+                    // me.list.map(val => {
+                    //   ids.push(val.id)
+                    // })
+                    item.list = list.concat(item.list)
+                    if (this.myData.type === type) {
+                      this.currentFileList = item.list
+                    } else {
+                      this.myData.type = '' + type
+                      this.currentFileList = list
+                    }
+                  }
+                  return true
                 }
-                return true
-              }
-              return false
-            })
+                return false
+              })
+            }
+            item.list = list
+            this.myData.type = '' + type
+            this.currentFileList = list
             return true
           }
           return false

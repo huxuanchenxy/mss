@@ -236,7 +236,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<Equipment>(
-                    "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids });
+                    "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids.Split(',') });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();

@@ -141,7 +141,13 @@ export default {
         })
         return
       }
-      if (!isUploadFinished(this.fileIDsEdit)) return
+      if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
+        this.$message({
+          message: '文件正在上传中，请耐心等待',
+          type: 'warning'
+        })
+        return
+      }
       let eqpType = {
         TName: this.eqpTypeName.text,
         Desc: this.eqpTypeDesc.text,
@@ -152,10 +158,10 @@ export default {
         api.addEqpType(eqpType).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
-            // this.$message({
-            //   message: '保存成功',
-            //   type: 'success'
-            // })
+            this.$message({
+              message: '保存成功',
+              type: 'success'
+            })
           } else {
             this.$message({
               message: '保存失败',
@@ -168,10 +174,10 @@ export default {
         api.updateEqpType(eqpType).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
-            // this.$message({
-            //   message: '保存成功',
-            //   type: 'success'
-            // })
+            this.$message({
+              message: '保存成功',
+              type: 'success'
+            })
           } else {
             this.$message({
               message: '保存失败',
