@@ -154,7 +154,7 @@ namespace MSS.API.Dao.Implement
                 }
                 if (!string.IsNullOrWhiteSpace(parm.SearchCode))
                 {
-                    whereSql.Append(" and a.eqp_code like '%" + parm.SearchType + "%' ");
+                    whereSql.Append(" and a.eqp_code like '%" + parm.SearchCode + "%' ");
                 }
                 if (parm.SearchLocation != null && parm.SearchLocationBy!=null)
                 {
@@ -236,7 +236,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<Equipment>(
-                    "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids });
+                    "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids.Split(',') });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
