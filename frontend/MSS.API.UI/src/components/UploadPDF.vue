@@ -25,7 +25,7 @@
     </el-upload>
     <div v-for="(item) in fileList" :key="item.key">
       <el-upload
-        action="http://localhost:3851/api/v1/Upload"
+        action="http://10.89.36.204:5801/eqpapi/Upload"
         :disabled="readOnly"
         :file-list="item.list"
         :on-remove="onRemove"
@@ -194,7 +194,7 @@ export default {
           }
           return false
         })
-        this.myData.type = file.type
+        this.myData.type = '' + file.type
       }
       this.currentFileList = fileList
       this.returnFileIDs(fileList, file.type)
