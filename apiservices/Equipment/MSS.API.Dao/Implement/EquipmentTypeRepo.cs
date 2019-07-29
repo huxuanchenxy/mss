@@ -164,7 +164,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = (await c.QueryAsync<EquipmentType>(
-                    "SELECT * FROM equipment_type")).ToList();
+                    "SELECT * FROM equipment_type where is_del =" +(int)IsDeleted.no)).ToList();
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();

@@ -154,7 +154,7 @@ namespace MSS.API.Dao.Implement
                 }
                 if (!string.IsNullOrWhiteSpace(parm.SearchCode))
                 {
-                    whereSql.Append(" and a.eqp_code like '%" + parm.SearchType + "%' ");
+                    whereSql.Append(" and a.eqp_code like '%" + parm.SearchCode + "%' ");
                 }
                 if (parm.SearchLocation != null && parm.SearchLocationBy!=null)
                 {
