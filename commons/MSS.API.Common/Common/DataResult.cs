@@ -87,6 +87,17 @@ namespace MSS.API.Common
             Expert=27,
             MaintainReg=28
         }
+
+        public enum EqpHistoryType
+        {
+            Install = 39,
+            MediumMaintenance = 40,
+            MajorMaintenance = 41,
+            TroubleMaintenance = 42,
+            FirstMajorConstructio=43,
+            SecondaryMajorConstructio=44,
+            Expiration=45
+        }
     }
     #endregion
 

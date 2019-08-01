@@ -1,0 +1,4 @@
+2019-07-31 17:47:33.664 +08:00 [INF] Consul Start registration
+2019-07-31 17:47:34.296 +08:00 [INF] Consul Init ConsulCient :{"ACL":{},"Agent":{"NodeName":"3b4dbb739521"},"Catalog":{},"Config":{"Address":"http://10.89.36.59:8500","Datacenter":null,"Token":null,"WaitTime":null},"Coordinate":{},"Event":{},"Health":{},"KV":{},"Operator":{},"PreparedQuery":{},"Raw":{},"Session":{},"Snapshot":{},"Status":{}}
+2019-07-31 17:47:34.727 +08:00 [INF] Consul Agent ServiceRegister Wait Finish 
+2019-07-31 17:47:34.728 +08:00 [INF] Consul Add HealthCheck 

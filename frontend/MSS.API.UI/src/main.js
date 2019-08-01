@@ -7,6 +7,8 @@ import router from './router'
 import ElementUI from 'element-ui'
 import './common/scss/global.scss'
 import '../theme/index.css'
+
+import LightTimeline from 'vue-light-timeline'
 // import Charts from '@/components/charts/index'
 
 // // 引入 ECharts 主模块
@@ -36,6 +38,7 @@ import '../theme/index.css'
 // Vue.use(Charts)
 
 Vue.use(ElementUI)
+Vue.use(LightTimeline)
 Vue.config.productionTip = false
 // Vue.prototype.$echarts = echarts
 // window.axios = Axios

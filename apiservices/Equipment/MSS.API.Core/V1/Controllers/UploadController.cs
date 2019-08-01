@@ -57,6 +57,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(ret.Result);
         }
 
+        [HttpGet("ListByEqp/{id}")]
+        public ActionResult ListByEqp(int id)
+        {
+            var ret = _uploadService.ListByEqp(id);
+            return Ok(ret.Result);
+        }
+
         [HttpPost("Download/{id}")]
         public ActionResult Download(int id)
         {
