@@ -200,14 +200,19 @@
                 <div class="number">{{ item.director_name }}</div>
                 <div class="name">{{ item.maintain_date }}</div>
                 <div class="upload-cascader">
-                  <el-cascader clearable
+                  <!-- <el-cascader clearable
                              @change="preview"
                              :show-all-levels="false"
                              :options="item.arr">
-                </el-cascader>
+                </el-cascader> -->
+                 <el-cascader clearable
+                    @change="preview"
+                    :show-all-levels="false"
+                    :options="item.uploadFileArr">
+                  </el-cascader>
                 </div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
-                <div class="last-maintainer">{{ '管理员' }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
@@ -251,8 +256,9 @@
   </div>
 </template>
 <script>
-import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
+import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import api from '@/api/DeviceMaintainRegApi.js'
 import eqpApi from '@/api/eqpApi.js'
 import apiOrg from '@/api/orgApi'
@@ -270,6 +276,7 @@ export default {
       DeviceMaintainRegID: '',
       teamGroupid: '',
       TeamGroupList: [],
+      uploadFile: {},
       directorid: '',
       directorList: [],
       deviceType: '',
@@ -349,7 +356,6 @@ export default {
     }).catch(err => console.log(err))
   },
   activated () {
-    setTimeout(null, 200)
     this.searchResult(this.currentPage)
   },
   methods: {
@@ -363,8 +369,11 @@ export default {
       if (val.length < 1) {
         return
       }
-      this.centerDialogVisible = true
-      this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
+      let id = val[val.length - 1]
+      if (isPreview(id, this.uploadFile[id].label)) {
+        this.centerDialogVisible = true
+        this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+      }
     },
     // 班组下拉选中，过滤非班组
     cascader_change_copy (val) {
@@ -424,20 +433,31 @@ export default {
             break
         }
       }
-      api.GetListByPage(parm).then(res8 => {
-        setTimeout(null, 2000)
+      api.GetListByPage(parm).then(res => {
         this.loading = false
-        if (res8.code === 0) {
-          res8.data.list.map(item => {
+        if (res.code === 0) {
+          res.data.list.map(item => {
+            // item.updatedTime = transformDate(item.updatedTime)
+            // // item.team_group_name = this.Getteamgroupname(item.team_group_id)
+            // if (item.attch_file !== null && item.attch_file !== '') {
+            //   this.InvokeOutApI(item)
+            // } else {
+            //   this.DeviceMaintainRegList.push(item)
+            // }
             item.updatedTime = transformDate(item.updatedTime)
-            item.team_group_name = this.Getteamgroupname(item.team_group_id)
-            if (item.attch_file !== null && item.attch_file !== '') {
-              this.InvokeOutApI(item)
+            if (item.uploadFiles !== null && item.uploadFiles !== '[]') {
+              item.uploadFileArr = JSON.parse(item.uploadFiles)
+              item.uploadFileArr.map(val => {
+                val.children.map(item => {
+                  this.uploadFile[item.value] = item
+                })
+              })
             } else {
-              this.DeviceMaintainRegList.push(item)
+              item.uploadFileArr = null // []
             }
+            this.DeviceMaintainRegList = res.data.list
           })
-          this.total = res8.data.total
+          this.total = res.data.total
         }
       }).catch(err => console.log(err))
     },

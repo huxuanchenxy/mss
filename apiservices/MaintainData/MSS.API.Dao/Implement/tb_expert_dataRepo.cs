@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Dapper;
 using System.Linq;
 using Dapper.FastCrud;
+using System.Transactions;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Implement
 {
@@ -16,16 +18,45 @@ namespace MSS.API.Dao.Implement
             {
             } 
        public async Task<int> Add(tb_expert_data model)
-        { 
+        {
+            //return await WithConnection(
+            //    async c =>
+            //    {
+            //        string sql = "INSERT INTO tb_expert_data (device_type, deptID,dept_path, keyword, title, content, video_file, attch_file,Is_deleted, created_time, created_by,updated_time,updated_by, remark)"
+            //                                      + " Values (@device_type, @deptID,@dept_path, @keyword, @title, @content, @video_file, @attch_file,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy, @remark) ";
+            //        return await c.QueryFirstOrDefaultAsync<int>(sql, model);
+            //    });
+            List<string> list = new List<string>();
+            int ret = 0;
+            StringBuilder sqlBuild = new StringBuilder();
+            string sql = "INSERT INTO tb_expert_data (device_type, deptID,dept_path, keyword, title, content, video_file, attch_file,origin_file,Is_deleted, created_time, created_by,updated_time,updated_by, remark)"
+                                          + " Values (@device_type, @deptID,@dept_path, @keyword, @title, @content, @video_file, @attch_file,@origin_file,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy, @remark); " +
+                         " SELECT LAST_INSERT_ID() ";
             return await WithConnection(
                 async c =>
                 {
-                    string sql = "INSERT INTO tb_expert_data (device_type, deptID,dept_path, keyword, title, content, video_file, attch_file,Is_deleted, created_time, created_by,updated_time,updated_by, remark)"
-                                                  + " Values (@device_type, @deptID,@dept_path, @keyword, @title, @content, @video_file, @attch_file,@Is_deleted, @CreatedTime, @CreatedBy,@UpdatedTime,@UpdatedBy, @remark) ";
-                    // sql += "SELECT LAST_INSERT_ID()";
-                    // int newid = await c.QueryFirstOrDefaultAsync<int>(sql, model);
-                    // model.ID = newid; 
-                    return await c.QueryFirstOrDefaultAsync<int>(sql, model);
+                    using (TransactionScope scope = new TransactionScope())
+                    {
+                        int newid = await c.QueryFirstOrDefaultAsync<int>(sql, model);
+                        if (!string.IsNullOrEmpty(model.attch_file.Trim()))
+                        {
+                            list = ((IEnumerable<string>)model.attch_file.Split(new char[] { '$' },StringSplitOptions.RemoveEmptyEntries)).ToList<string>();
+                            foreach (var v in list)
+                            { 
+                                string[] strs = v.ToString().Split(':');
+                                string[] arr = strs[1].Split(',');
+                                foreach(var u in arr)
+                                {
+                                    sqlBuild.AppendFormat("insert into upload_file_relation(entity_id, file_id, type, system_resource) values({0},{1},{2},{3})", newid, u, strs[0], 27);
+                                    sqlBuild.AppendLine(";");
+                                } 
+                               
+                            }
+                            ret = await c.QueryFirstOrDefaultAsync<int>(sqlBuild.ToString());
+                        }
+                        scope.Complete();
+                    }
+                    return ret;
                 });
         }
 
@@ -90,7 +121,11 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT * FROM tb_expert_data where   Is_deleted!= 1 and " + strWhere );
+                sql.Append("SELECT a.* , b.type_name as deviceTypeName ,u.user_name as updated_name ,o.name as deptname " +
+                    " FROM tb_expert_data  a join user u on a.updated_by = u.id " +
+                    " JOIN equipment_type b on a.device_type=b.id " +
+                    " JOIN org_tree o on a.deptid=o.ID " +
+                    " where   a.Is_deleted!= 1 and " + strWhere );
                 if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(orderby))
                 {
                     sql.Append(" order by " + sort  + " " + orderby);
@@ -111,8 +146,13 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM tb_expert_data WHERE ID = @ID  and Is_deleted!= 1";
-                tb_expert_data model = await c.QueryFirstOrDefaultAsync<tb_expert_data>(sql,
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT a.* , b.type_name as deviceTypeName ,u.user_name as updated_name ,o.name as deptname " +
+               " FROM tb_expert_data  a join user u on a.updated_by = u.id " +
+               " JOIN equipment_type b on a.device_type=b.id " +
+               " JOIN org_tree o on a.deptid=o.ID " +
+               "  WHERE a.ID = @ID  and a.Is_deleted!= 1");
+                tb_expert_data model = await c.QueryFirstOrDefaultAsync<tb_expert_data>(sql.ToString(),
                 new
                 {
                     ID = id
@@ -131,14 +171,68 @@ namespace MSS.API.Dao.Implement
                 return count;
             });
         }
- 
-      public async   Task<int> Update(tb_expert_data model)
+
+        public async Task<List<UploadFile>> ListByEntity(int[] ids, SystemResource systemResource)
         {
             return await WithConnection(async c =>
             {
-                string sql = "UPDATE tb_expert_data SET device_type=@device_type, deptID=@deptID, dept_path=@dept_path,keyword=@keyword, title=@title, content=@content, video_file=@video_file, attch_file=@attch_file,Is_deleted=@Is_deleted, updated_by = @UpdatedBy, updated_time = @UpdatedTime,remark=@remark WHERE id = @id  ";
-               return await c.ExecuteAsync(sql, model); ;
+                var result = await c.QueryAsync<UploadFile>(
+                    "SELECT uf.*,ufr.type,dt.name as TypeName,dt1.name as SystemResourceName," +
+                    "ufr.system_resource,ufr.entity_id FROM upload_file uf " +
+                    "left join upload_file_relation ufr on ufr.file_id=uf.id " +
+                    "left join dictionary_tree dt on ufr.type=dt.id " +
+                    "left join dictionary_tree dt1 on ufr.system_resource=dt1.id " +
+                    "WHERE ufr.system_resource=@systemResource and ufr.entity_id in @ids",
+                    new { systemResource = (int)systemResource, ids });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
             });
+        }
+
+        public async   Task<int> Update(tb_expert_data model)
+        {
+            //return await WithConnection(async c =>
+            //{
+             string sql = "UPDATE tb_expert_data SET device_type=@device_type, deptID=@deptID, dept_path=@dept_path,keyword=@keyword, title=@title, content=@content, video_file=@video_file, attch_file=@attch_file,origin_file=@origin_file,Is_deleted=@Is_deleted, updated_by = @UpdatedBy, updated_time = @UpdatedTime,remark=@remark WHERE id = @id  ";
+            //   return await c.ExecuteAsync(sql, model); ;
+            //});
+            List<string> list = new List<string>();
+            int ret = 0;
+            StringBuilder sqlBuild = new StringBuilder();
+            return await WithConnection(
+                async c =>
+                {
+                    using (TransactionScope scope = new TransactionScope())
+                    {
+                        int newid = model.ID;
+                        await c.ExecuteAsync(sql, model);
+                        await c.ExecuteAsync("delete from upload_file_relation where entity_id=@entity_id ", new { entity_id = newid });
+                        if (!string.IsNullOrEmpty(model.attch_file.Trim()))
+                        {
+                            list = ((IEnumerable<string>)model.attch_file.Split(new char[] { '$' }, StringSplitOptions.RemoveEmptyEntries)).ToList<string>();
+                            foreach (var v in list)
+                            {
+                                string[] strs = v.ToString().Split(':');
+                                string[] arr = strs[1].Split(',');
+                                foreach (var u in arr)
+                                {
+                                    sqlBuild.AppendFormat("insert into upload_file_relation(entity_id, file_id, type, system_resource) values({0},{1},{2},{3})", newid, u, strs[0], 27);
+                                    sqlBuild.AppendLine(";");
+                                }
+
+                            }
+                            ret = await c.QueryFirstOrDefaultAsync<int>(sqlBuild.ToString());
+                        }
+                        scope.Complete();
+                    }
+                    return ret;
+                });
         }
     }
 }         

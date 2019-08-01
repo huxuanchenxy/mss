@@ -52,10 +52,10 @@
         </li>
       </ul>
         <!-- 上传图片列表 -->
-          <br/>
+          <!-- <br/>
         <div class="upload-wrap con-padding-horizontal">
           <upload-vedio :fileType="filevedioType" label="视频上传" :fileIDs="filevedioIDs" @getFileIDs="getvedioFileID" :readOnly="true"></upload-vedio>
-        </div>
+        </div> -->
         <br/>
         <div class="upload-wrap con-padding-horizontal">
           <upload-pdf :fileType="fileattachType" label="附件上传" :fileIDs="fileattachIDs" @getFileIDs="getattachFileID" :readOnly="true"></upload-pdf>
@@ -113,14 +113,14 @@ export default {
         this.ExpertData.keyword = _res.keyword
         this.ExpertData.Experttitle = _res.title
         this.ExpertData.content = _res.content
-        // this.ExpertData.deviceType = _res.deviceTypeName
-        // this.ExpertData.deptName = _res.deptname
-        this.getDeviceTypeById(_res.device_type)
-        this.getDeptNameById(_res.deptid)
-        this.filevedioIDs = _res.video_file
-        this.filevedioIDsEdit = _res.video_file
-        this.fileattachIDs = _res.attch_file
-        this.fileattachIDsEdit = _res.attch_file
+        this.ExpertData.deviceType = _res.deviceTypeName
+        this.ExpertData.deptName = _res.deptname
+        // this.getDeviceTypeById(_res.device_type)
+        // this.getDeptNameById(_res.deptid)
+        // this.filevedioIDs = _res.video_file
+        // this.filevedioIDsEdit = _res.video_file
+        this.fileattachIDs = _res.uploadFiles
+        // this.fileattachIDsEdit = _res.attch_file
       }).catch(err => console.log(err))
     },
     // 设备类型列表

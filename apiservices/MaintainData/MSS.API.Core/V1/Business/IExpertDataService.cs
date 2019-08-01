@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MSS.API.Core.Common;
 using MSS.API.Model.DTO;
 using MSS.API.Common;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -42,5 +43,6 @@ namespace MSS.API.Core.V1.Business
         /// <param name="pagesize">每页大小</param>
         /// <returns></returns>
         Task<ApiResult> GetListByPage(string strWhere,  string sort, string orderby, int page, int size);
+        //Task<List<UploadFile>> ListByEntity(int[] ids, SystemResource systemResource);
     }
 }

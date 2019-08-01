@@ -24,6 +24,11 @@ namespace MSS.API.Model.Data
         public string video_file { get; set; }
         public string attch_file { get; set; }
         public string remark { get;set;}
+
+        public string updated_name { get; set; }
+        public string origin_file { get; set; }
+
+        public string UploadFiles { get; set; }
     }
 
     /// <summary>
@@ -42,6 +47,7 @@ namespace MSS.API.Model.Data
             Map(o => o.content).ToColumn("content");
             Map(o => o.video_file).ToColumn("video_file");
             Map(o => o.attch_file).ToColumn("attch_file");
+            Map(o => o.origin_file).ToColumn("origin_file");
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedTime).ToColumn("created_time");
             Map(o => o.UpdatedBy).ToColumn("updated_by");

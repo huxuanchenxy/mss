@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\commons\MSS.API.Common\MSS.API.Common.csproj" />
     <ProjectReference Include="..\MSS.API.Model\MSS.API.Model.csproj" />
   </ItemGroup>
 

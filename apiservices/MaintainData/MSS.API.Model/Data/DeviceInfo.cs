@@ -15,4 +15,22 @@ namespace MSS.API.Model.Data
         public string deviceName { get; set; }
  
     }
+
+
+    public class LocationDeviceInfo
+    {
+
+        public int ConfigTypeID { get; set; }
+
+        public string ConfigType { get; set; }
+
+        public int StationID { get; set; }
+
+        public string StationName { get; set; }
+
+        public int LocationID { get; set; }
+
+        public string LocationName { get; set; }
+
+    }
 }
