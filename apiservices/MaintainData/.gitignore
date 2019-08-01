@@ -2,6 +2,7 @@
 bin/
 obj/
 logs/
+ConsolLogs/
 .vs/
 *.csproj.user
 # Other files and folders
