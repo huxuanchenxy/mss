@@ -20,17 +20,37 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">设备类别<em class="validate-mark">*</em></span>
-              <div class="inp">
+              <!-- <span class="text">设备<em class="validate-mark">*</em></span> -->
+              <!-- <div class="inp">
                 <el-cascader clearable
                              change-on-select
                              :show-all-levels="true"
                              :options="deviceTypeList"
                              v-model="deviceType.text">
                 </el-cascader>
-              </div>
+              </div> --> 
+            <span class="text">设备名称<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-select v-model="deviceType" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType.text)">
+                <option disabled value="" selected>请选择</option>
+                <el-option
+                  v-for="item in deviceTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>&nbsp;&nbsp;
+            <div class="inp">
+               <el-cascader clearable
+                             change-on-select
+                             :show-all-levels="true"
+                             :options="devicelist"
+                             v-model="device.text">
+                </el-cascader>
+          </div>
             </div>
-            <p class="validate-tips">{{ deviceType.tips }}</p>
+            <p class="validate-tips">{{ device.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
@@ -122,10 +142,11 @@
             :on-preview="preview">
             <i class="iconfont icon-pdf"></i>
           </el-upload> -->
-          <upload-pdf :fileType="fileType"
+          <!-- <upload-pdf :fileType="fileType"
                       label="附件上传"
                       :fileIDs="fileIDs"
-                      @getFileIDs="getFileID"></upload-pdf>
+                      @getFileIDs="getFileID"></upload-pdf> -->
+        <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
         </div>
         <!-- 按钮 -->
         <div class="btn-group">
@@ -150,10 +171,12 @@
 <script>
 import { validateInputCommon, vInput, FileType } from '@/common/js/utils.js'
 import api from '@/api/DeviceMaintainRegApi.js'
+import { systemResource } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import UploadPDF from '@/components/UploadPDF'
 import axios from '@/api/interceptors'
 import apiOrg from '@/api/orgApi'
+import eqpApi from '@/api/eqpApi.js'
 export default {
   name: 'addDeviceMaintain',
   components: {
@@ -166,8 +189,10 @@ export default {
       isShow: this.$route.params.mark,
       editID: this.$route.params.id,
       fileIDs: '',
-      fileIDsEdit: '',
+      fileIDsEdit: [], // '',
       fileType: FileType.DeviceMaintain_attach,
+      systemResource: systemResource.maintainReg,
+      attch_file: '',
       maintain_date: {
         text: '',
         tips: ''
@@ -224,19 +249,22 @@ export default {
       this.getEditData()
     }
     // 设备配置类型列表
-    api.GetEquipmentTypeList().then(res => {
-      res.data.map((e, i) => {
-        if (e.children != null && e.children.length > 0) {
-          this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName, children: []
-          })
-          e.children.map((item) => {
-            this.deviceTypeList[i].children.push({ value: item.id, label: item.deviceName })
-          })
-        } else {
-          this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName })
-        }
-      })
+     eqpApi.getEqpTypeAll().then(res => {
+      this.deviceTypeList = res.data
     }).catch(err => console.log(err))
+    // api.GetEquipmentTypeList().then(res => {
+    //   res.data.map((e, i) => {
+    //     if (e.children != null && e.children.length > 0) {
+    //       this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName, children: []
+    //       })
+    //       e.children.map((item) => {
+    //         this.deviceTypeList[i].children.push({ value: item.id, label: item.deviceName })
+    //       })
+    //     } else {
+    //       this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName })
+    //     }
+    //   })
+    // }).catch(err => console.log(err))
     // 设备配置类型列表
     api.GetDirectorList().then(res => {
       this.directorList = res.data
@@ -259,8 +287,9 @@ export default {
         })
         return
       }
-      if (this.fileIDsEdit !== '') {
-        let arr = this.fileIDsEdit.split(',')
+      // if (this.fileIDsEdit !== '') {
+      if (this.fileIDsEdit.length > 0) {
+        let arr = this.fileIDsEdit // this.fileIDsEdit.split(',')
         for (let i = 0; i < arr.length; i++) {
           if (arr[i] === '') {
             this.$message({
@@ -271,6 +300,10 @@ export default {
           }
         }
       }
+      if (this.fileIDsEdit.length > 0) {
+        this.fileType = this.fileIDsEdit[0].type
+        this.attch_file = this.fileIDsEdit[0].ids
+      }
       let model = {
         device_type_id: 0, // this.deviceType.text,
         device_id: 0, // this.device.text,
@@ -280,7 +313,8 @@ export default {
         detail_desc: this.detail_desc.text,
         maintain_date: this.maintain_date.text,
         file_type: this.fileType,
-        attch_file: this.fileIDsEdit,
+        attch_file: this.attch_file,
+        origin_file: JSON.stringify(this.fileIDsEdit),
         is_deleted: '0'
       }
       switch (this.deviceType.text.length) {
@@ -346,7 +380,7 @@ export default {
         this.loading = false
         let _res = res.data
         this.deviceType.text = this.strToIntArr(_res.device_type_id + ',' + _res.device_id)
-        this.fileIDs = _res.attch_file
+        this.fileIDs = _res.uploadFiles // _res.origin_file
         this.teamPath.text = this.strToIntArr(_res.team_group_path)
         this.team_group.text = _res.team_group_id
         this.director.text = _res.director_id
@@ -403,14 +437,24 @@ export default {
         return true
       }
     },
-    validatedeviceTypeSelect () {
-      if (this.deviceType.text === '') {
-        this.deviceType.tips = '此项必选'
-        return false
-      } else {
-        this.deviceType.tips = ''
-        return true
+    validatedeviceTypeSelect (val) {
+      // if (this.deviceType.text === '') {
+      //   this.deviceType.tips = '此项必选'
+      //   return false
+      // } else {
+      //   this.deviceType.tips = ''
+      //   return true
+      // }
+       if (val === '') {
+        this.devicelist = []
+        this.deviceType.text = ''
       }
+      api.GetDeviceListByTypeId(val).then(res => {
+        this.devicelist = res.data
+        this.deviceType.id = ''
+      }).catch(err => {
+        console.log(err)
+      })
     },
     validateteam_groupSelect () {
       // if (this.team_group.text === '') {
@@ -474,7 +518,7 @@ export default {
       if (!validateInputCommon(this.detail_desc)) return false
       return true
     },
-    getFileID (val) {
+    getFileIDs (val) {
       this.fileIDsEdit = val
     }
   }

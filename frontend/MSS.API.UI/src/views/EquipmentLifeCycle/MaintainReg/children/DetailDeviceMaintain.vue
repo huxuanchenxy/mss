@@ -112,13 +112,13 @@ export default {
         let _res = res.data
         this.Device.deviceType = _res.device_type_name
         this.Device.deviceName = _res.device_name
-        // this.Device.teamGroupName = _res.team_group_name
-        this.getgroupNameById(_res.team_group_id)
+        this.Device.teamGroupName = _res.team_group_name
+        // this.getgroupNameById(_res.team_group_id)
         this.Device.director = _res.director_name
         this.Device.detail_desc = _res.detail_desc
         this.Device.maintain_date = _res.maintain_date
-        this.fileattachIDs = _res.attch_file
-        this.fileattachIDsEdit = _res.attch_file
+        this.fileattachIDs = _res.uploadFiles
+        // this.fileattachIDsEdit = _res.attch_file
       }).catch(err => console.log(err))
     },
     getgroupNameById (id) {

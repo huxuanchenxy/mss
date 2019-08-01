@@ -22,6 +22,7 @@ namespace MSS.API.Dao
             services.AddSingleton<DapperOptions>(options); 
             services.AddTransient<Itb_expert_dataRepo<tb_expert_data>, Tb_expert_dataRepo>();
             services.AddTransient<Itb_devicemaintain_regRepo<tb_devicemaintain_reg>, tb_devicemaintain_regRepo>();
+            services.AddTransient<ILifeTimeKeyMaintainRepo<LifeTimeKeyMaintainInfo>, LifeTimeKeyMaintainRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {

@@ -1,12 +1,14 @@
 <template>
   <div class="wrap height-full"
-    v-loading="loading"
-    element-loading-text="加载中"
-    element-loading-spinner="el-icon-loading">
+       v-loading="loading"
+       element-loading-text="加载中"
+       element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }}
-         {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive"
+             alt=""
+             class="icon"> {{ $router.navList[$route.matched[0].path].name }}
+        {{ title }}
       </h2>
     </div>
     <div class="box">
@@ -16,13 +18,15 @@
           <div class="input-group">
             <label for="name">关键字</label>
             <div class="inp">
-              <el-input v-model.trim="keyword" placeholder="请输入站区名称"></el-input>
+              <el-input v-model.trim="keyword"
+                        placeholder="请输入站区名称"></el-input>
             </div>
           </div>
           <div class="input-group">
             <label for="name">标题</label>
             <div class="inp">
-              <el-input v-model.trim="ExpertTitle" placeholder="请输入标题名称"></el-input>
+              <el-input v-model.trim="ExpertTitle"
+                        placeholder="请输入标题名称"></el-input>
             </div>
           </div>
           <div class="input-group">
@@ -37,17 +41,19 @@
                  :label="item.deviceTypeName">
                  </el-option>
               </el-select> -->
-              <el-select v-model="deviceType" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="item in deviceTypeList"
-                  :key="item.key"
-                  :label="item.tName"
-                  :value="item.id">
+              <el-select v-model="deviceType"
+                         clearable
+                         filterable
+                         placeholder="请选择">
+                <el-option v-for="item in deviceTypeList"
+                           :key="item.key"
+                           :label="item.tName"
+                           :value="item.id">
                 </el-option>
               </el-select>
             </div>
           </div>
-           <div class="input-group">
+          <div class="input-group">
             <label for="">部门</label>
             <div class="inp">
               <!-- <el-select v-model="deptid" clearable placeholder="请选择">
@@ -59,19 +65,21 @@
                  :label="item.deptName">
                  </el-option>
               </el-select> -->
-              <el-cascader class="cascader_width" clearable
-                    :props="defaultParams"
-                    change-on-select
-                    @change="cascader_change_copy"
-                    :show-all-levels="true"
-                    :options="teamList"
-                    v-model="teamPath.text">
-                  </el-cascader>
+              <el-cascader class="cascader_width"
+                           clearable
+                           :props="defaultParams"
+                           change-on-select
+                           @change="cascader_change_copy"
+                           :show-all-levels="true"
+                           :options="teamList"
+                           v-model="teamPath.text">
+              </el-cascader>
             </div>
           </div>
         </div>
-        <div class="search-btn" @click="searchRes">
-          <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
+        <div class="search-btn"
+             @click="searchRes">
+          <x-button><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
@@ -80,24 +88,38 @@
             <router-link :to="{ name: 'AddExpertData', params: { mark: 'add' } }">添加</router-link>
           </x-button>
         </li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
-         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
+        <li class="list"
+            @click="remove">
+          <x-button>删除</x-button>
+        </li>
+        <li class="list"
+            @click="edit">
+          <x-button>修改</x-button>
+        </li>
+        <li class="list"
+            @click="detail">
+          <x-button>查看明细</x-button>
+        </li>
       </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list indexkey c-pointer" @click="changeOrder('id')">
+        <li class="list"><input type="checkbox"
+                 v-model="bCheckAll"
+                 @change="checkAll"></li>
+        <li class="list indexkey c-pointer"
+            @click="changeOrder('id')">
           序号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('keyword')">
+        <li class="list name c-pointer"
+            @click="changeOrder('keyword')">
           关键字
           <i :class="[{ 'el-icon-d-caret': headOrder.keyword === 0 }, { 'el-icon-caret-top': headOrder.keyword === 1 }, { 'el-icon-caret-bottom': headOrder.keyword === 2 }]"></i>
         </li>
-        <li class="list title c-pointer" @click="changeOrder('title')">
+        <li class="list title c-pointer"
+            @click="changeOrder('title')">
           标题
           <i :class="[{ 'el-icon-d-caret': headOrder.title === 0 }, { 'el-icon-caret-top': headOrder.title === 1 }, { 'el-icon-caret-bottom': headOrder.title === 2 }]"></i>
         </li>
@@ -105,27 +127,32 @@
           内容
           <i :class="[{ 'el-icon-d-caret': headOrder.content === 0 }, { 'el-icon-caret-top': headOrder.content === 1 }, { 'el-icon-caret-bottom': headOrder.content === 2 }]"></i>
         </li> -->
-         <li class="list number c-pointer" @click="changeOrder('device_type')">
+        <li class="list number c-pointer"
+            @click="changeOrder('device_type')">
           设备类型
           <i :class="[{ 'el-icon-d-caret': headOrder.device_type === 0 }, { 'el-icon-caret-top': headOrder.device_type === 1 }, { 'el-icon-caret-bottom': headOrder.device_type === 2 }]"></i>
         </li>
-         <li class="list number c-pointer" @click="changeOrder('deptid')">
+        <li class="list number c-pointer"
+            @click="changeOrder('deptid')">
           录入部门
           <i :class="[{ 'el-icon-d-caret': headOrder.deptid === 0 }, { 'el-icon-caret-top': headOrder.deptid === 1 }, { 'el-icon-caret-bottom': headOrder.deptid === 2 }]"></i>
         </li>
-         <!-- <li class="list number c-pointer" @click="changeOrder('video_file')">
+        <!-- <li class="list number c-pointer" @click="changeOrder('video_file')">
           视频
           <i :class="[{ 'el-icon-d-caret': headOrder.video_file === 0 }, { 'el-icon-caret-top': headOrder.video_file === 1 }, { 'el-icon-caret-bottom': headOrder.video_file === 2 }]"></i>
         </li> -->
-         <li class="list upload-cascader c-pointer" @click="changeOrder('attch_file')">
+        <li class="list upload-cascader c-pointer"
+            @click="changeOrder('attch_file')">
           附件
           <i :class="[{ 'el-icon-d-caret': headOrder.attch_file === 0 }, { 'el-icon-caret-top': headOrder.attch_file === 1 }, { 'el-icon-caret-bottom': headOrder.attch_file === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
+        <li class="list last-update-time c-pointer"
+            @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updatedTime === 0 }, { 'el-icon-caret-top': headOrder.updatedTime === 1 }, { 'el-icon-caret-bottom': headOrder.updatedTime === 2 }]"></i>
         </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('Updated_By')">
+        <li class="list last-maintainer c-pointer"
+            @click="changeOrder('Updated_By')">
           最后更新人
           <i :class="[{ 'el-icon-d-caret': headOrder.updatedBy === 0 }, { 'el-icon-caret-top': headOrder.updatedBy === 1 }, { 'el-icon-caret-bottom': headOrder.updatedBy === 2 }]"></i>
         </li>
@@ -133,10 +160,15 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item,index) in ExpertdataList" :key="item.key">
+            <li class="list"
+                v-for="(item,index) in ExpertdataList"
+                :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editExpertIDList" :value="item.id" @change="emitEditID">
+                  <input type="checkbox"
+                         v-model="editExpertIDList"
+                         :value="item.id"
+                         @change="emitEditID">
                 </div>
                 <div class="indexkey">{{index+1}}</div>
                 <div class="number">{{ item.keyword }}</div>
@@ -145,60 +177,73 @@
                 <div class="number">{{ item.deptname }}</div>
                 <div class="upload-cascader">
                   <el-cascader clearable
-                    @change="preview"
-                    :show-all-levels="false"
-                    :options="item.arr">
+                               @change="preview"
+                               :show-all-levels="false"
+                               :options="item.uploadFileArr">
                   </el-cascader>
                 </div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
-                <div class="last-maintainer">{{ '管理员' }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
-        <!-- 分页 -->
-          <el-pagination
-            :current-page.sync="currentPage"
-            @current-change="handleCurrentChange"
-            @prev-click="prevPage"
-            @next-click="nextPage"
-            layout="slot, jumper, prev, pager, next"
-            prev-text="上一页"
-            next-text="下一页"
-            :total="total">
+          <!-- 分页 -->
+          <el-pagination :current-page.sync="currentPage"
+                         @current-change="handleCurrentChange"
+                         @prev-click="prevPage"
+                         @next-click="nextPage"
+                         layout="slot, jumper, prev, pager, next"
+                         prev-text="上一页"
+                         next-text="下一页"
+                         :total="total">
             <span>总共 {{ total }} 条记录</span>
           </el-pagination>
         </el-scrollbar>
       </div>
     </div>
     <!-- dialog对话框 -->
-    <el-dialog
-      :visible.sync="dialogVisible.isShow"
-      :modal-append-to-body="false"
-      :show-close="false">
+    <el-dialog :visible.sync="dialogVisible.isShow"
+               :modal-append-to-body="false"
+               :show-close="false">
       {{ dialogVisible.text }}
-      <template slot="footer" class="dialog-footer">
+      <template slot="footer"
+                class="dialog-footer">
         <template v-if="dialogVisible.btn">
           <el-button @click="dialogVisible.isShow = false">否</el-button>
           <el-button @click="dialogEnter">是</el-button>
         </template>
-        <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
+        <el-button v-else
+                   @click="dialogVisible.isShow = false"
+                   :class="{ on: !dialogVisible.btn }">知道了</el-button>
       </template>
     </el-dialog>
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <iframe v-if="previewUrl !='' && videoFlag == false" :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
+    <el-dialog :visible.sync="centerDialogVisible"
+               :modal-append-to-body="false"
+               custom-class="show-list-wrap"
+               center>
+      <iframe v-if="previewUrl !='' && videoFlag == false"
+              :src="previewUrl"
+              width="100%"
+              height="100%"
+              frameborder="0"></iframe>
     </el-dialog>
-    <el-dialog title :visible.sync="vediocenterDialogVisible" width="30%" :modal-append-to-body="false" @close="closeDialog">
-         <video :src="previewUrl" controls autoplay class="video" :ref="dialogVideo"
-         width="100%"></video>
-      </el-dialog>
-    </div>
+    <el-dialog title
+               :visible.sync="vediocenterDialogVisible"
+               width="30%"
+               :modal-append-to-body="false"
+               @close="closeDialog">
+      <video :src="previewUrl"
+             controls
+             autoplay
+             class="video"
+             :ref="dialogVideo"
+             width="100%"></video>
+    </el-dialog>
+  </div>
 </template>
 <script>
-import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
+import { transformDate, FILE_SERVER_PATH, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
 import eqpApi from '@/api/eqpApi.js'
 import apiOrg from '@/api/orgApi'
@@ -220,6 +265,7 @@ export default {
       ExpertdataList: [],
       editExpertIDList: [],
       nodeType: '',
+      uploadFile: {},
       team: '',
       teamPath: {
         text: [],
@@ -282,7 +328,6 @@ export default {
     }).catch(err => console.log(err))
   },
   activated () {
-    setTimeout(null, 1000)
     this.searchResult(this.currentPage)
   },
   mounted () {
@@ -305,19 +350,21 @@ export default {
       if (val.length < 1) {
         return
       }
-      var aPos = val[1].indexOf('/')
-      var bPos = val[1].substring(aPos + 1).indexOf('/')
-      var val1 = val[1].substring(aPos + 1, aPos + bPos + 1)
-      if (val1 === 'ExpertData_vedio') {
-        this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
-        this.videoFlag = true
-        this.centerDialogVisible = false
-        this.vediocenterDialogVisible = true
-      } else {
-        this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
-        this.videoFlag = false
-        this.centerDialogVisible = true
-        this.vediocenterDialogVisible = false
+      let id = val[val.length - 1]
+      if (isPreview(id, this.uploadFile[id].label)) {
+        let arr = this.uploadFile[id].label.split('.')
+        if (arr[arr.length - 1] === 'pdf') {
+          this.centerDialogVisible = true
+          this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+          this.videoFlag = false
+          this.centerDialogVisible = true
+          this.vediocenterDialogVisible = false
+        } else {
+          this.previewUrl = FILE_SERVER_PATH + this.uploadFile[id].url
+          this.videoFlag = false
+          this.centerDialogVisible = true
+          this.vediocenterDialogVisible = false
+        }
       }
     },
     // 班组下拉选中，过滤非班组
@@ -362,116 +409,26 @@ export default {
         deptid: this.deptid,
         deviceType: this.deviceType
       }
-      setTimeout(null, 2000)
       api.GetListByPage(parm).then(res => {
         this.loading = false
-        if (res.code === 0 && this.deviceTypeList.length > 0 && this.teamList.length > 0) {
+        if (res.code === 0) {
           res.data.list.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
-            item.attch_file = this.MearchFileID(item.video_file, item.attch_file)
-            item.deviceTypeName = this.getdeviceTypeName(item.device_type)
-            item.deptname = this.getdeptName(item.deptid)
-            if (item.attch_file != null && item.attch_file !== '') {
-              this.InvokeOutApI(item)
+            if (item.uploadFiles !== null && item.uploadFiles !== '[]') {
+              item.uploadFileArr = JSON.parse(item.uploadFiles)
+              item.uploadFileArr.map(val => {
+                val.children.map(item => {
+                  this.uploadFile[item.value] = item
+                })
+              })
             } else {
-              this.ExpertdataList.push(item)
+              item.uploadFileArr = null // []
             }
+            this.ExpertdataList = res.data.list
           })
           this.total = res.data.total
         }
       }).catch(err => console.log(err))
-    },
-    getdeviceTypeName (val) {
-      for (var i = 0; i < this.deviceTypeList.length; i++) {
-        if (this.deviceTypeList[i].id === val) {
-          var deviceTypeName = this.deviceTypeList[i].tName
-          break
-        }
-      }
-      return deviceTypeName
-    },
-    getdeptName (val) {
-      var flag = false
-      for (var i = 0; i < this.teamList.length; i++) {
-        if (flag) {
-          break
-        }
-        for (var j = 0; j < this.teamList[i].children.length; j++) {
-          if (this.teamList[i].children[j].id === val) {
-            var deptName = this.teamList[i].children[j].label
-            flag = true
-            break
-          }
-        }
-      }
-      return deptName
-    },
-    MearchFileID (val, val1) {
-      if (this.IsNUllorEmpty(val) === true && this.IsNUllorEmpty(val1) === true) {
-        return val + ',' + val1
-      }
-      if (this.IsNUllorEmpty(val) === true && this.IsNUllorEmpty(val1) === false) {
-        return val
-      }
-      if (this.IsNUllorEmpty(val) === false && this.IsNUllorEmpty(val1) === true) {
-        return val1
-      }
-      return ''
-    },
-    IsNUllorEmpty (val) {
-      if (val === null || val === '') {
-        return false
-      }
-      return true
-    },
-    InvokeOutApI (item) {
-      eqpApi.getUploadFileByIDs(item.attch_file).then(res => {
-        if (res.code === 0) {
-          item.arr = this.convertDrdlist(res.data)
-          this.ExpertdataList.push(item)
-        }
-      })
-    },
-    convertDrdlist (val) {
-      let arr = []
-      let vediolist = {
-        value: '',
-        label: '',
-        children: []
-      }
-      let attchlist = {
-        value: '',
-        label: '',
-        children: []
-      }
-      for (var i = 0; i < val.length; i++) {
-        // File/ExpertData_attach/
-        var aPos = val[i].url.indexOf('/')
-        var bPos = val[i].url.substring(aPos + 1).indexOf('/')
-        var val1 = val[i].url.substring(aPos + 1, aPos + bPos + 1)
-        switch (val1) {
-          case 'ExpertData_vedio': // 视频
-            if (vediolist.label === '') {
-              vediolist.label = '视频资料'
-              vediolist.value = 7
-              arr.push(vediolist)
-            }
-            vediolist.children.push(this.convertName(val[i]))
-            break
-          case 'ExpertData_attach': // 附件
-            if (attchlist.label === '') {
-              attchlist.label = '附件资料'
-              attchlist.value = 6
-              arr.push(attchlist)
-            }
-            attchlist.children.push(this.convertName(val[i]))
-            break
-        }
-      }
-      return arr
-    },
-    convertName (val) {
-      return { 'value': val.url, 'label': val.name }
     },
     // 修改站区
     edit () {
@@ -598,79 +555,79 @@ export default {
 <style lang="scss" scoped>
 $con-height: $content-height - 145 - 56;
 // 内容区
-.content-wrap{
+.content-wrap {
   overflow: hidden;
   height: percent($con-height, $content-height);
   text-align: center;
-  .content-header{
+  .content-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: percent(50, $con-height);
     padding: 0 PXtoEm(24);
-    background: rgba(36,128,198,.5);
+    background: rgba(36, 128, 198, 0.5);
 
-    .last-update-time{
+    .last-update-time {
       color: $color-white;
     }
   }
 
-  .scroll{
+  .scroll {
     height: percent($con-height - 50, $con-height);
   }
 
-  .list-wrap{
-    .list{
-      &:nth-of-type(even){
-        .list-content{
-          background: rgba(186,186,186,.5);
+  .list-wrap {
+    .list {
+      &:nth-of-type(even) {
+        .list-content {
+          background: rgba(186, 186, 186, 0.5);
         }
       }
     }
 
-    .list-content{
+    .list-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: PXtoEm(15) PXtoEm(24);
 
-      div{
+      div {
         word-break: break-all;
       }
     }
 
-    .left-title{
+    .left-title {
       margin-right: 10px;
       font-weight: bold;
     }
 
     // 隐藏内容
-    .sub-content{
+    .sub-content {
       overflow: hidden;
       height: 0;
       font-size: $font-size-small;
       text-align: left;
       color: $color-content-text;
 
-      &.active{
+      &.active {
         overflow: inherit;
         height: auto;
-        transition: .7s .2s;
+        transition: 0.7s 0.2s;
       }
     }
 
-    .sub-con-list{
+    .sub-con-list {
       display: flex;
       padding: PXtoEm(15) PXtoEm(24);
       border-top: 1px solid $color-main-background;
-      background: rgba(0,0,0,.2);
+      background: rgba(0, 0, 0, 0.2);
 
-      .right-wrap{
+      .right-wrap {
         display: flex;
         flex-wrap: wrap;
       }
 
-      .list{
+      .list {
         margin-right: 10px;
       }
     }
@@ -678,33 +635,33 @@ $con-height: $content-height - 145 - 56;
 
   .number,
   .name,
-  .btn-wrap{
+  .btn-wrap {
     width: 10%;
   }
-  .indexkey{
+  .indexkey {
     width: 5%;
   }
-  .title{
+  .title {
     width: 15%;
   }
-  .name{
-    a{
+  .name {
+    a {
       color: #42abfd;
     }
   }
-  .upload-cascader{
+  .upload-cascader {
     width: 15%;
   }
-  .last-update-time{
+  .last-update-time {
     width: 18%;
     color: $color-content-text;
   }
 
-  .last-maintainer{
+  .last-maintainer {
     width: 10%;
   }
 
-  .state{
+  .state {
     width: 5%;
   }
 }

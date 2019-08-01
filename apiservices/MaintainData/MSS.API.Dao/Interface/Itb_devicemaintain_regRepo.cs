@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Interface
 {
@@ -40,5 +41,7 @@ namespace MSS.API.Dao.Interface
         /// <param name="pagesize">每页大小</param>
         /// <returns></returns>
         Task<List<tb_devicemaintain_reg>> GetListByPage(string strWhere, string sort, string orderby, int page, int size);
+
+        Task<List<UploadFile>> ListByEntity(int[] ids, SystemResource systemResource);
     }
 }
