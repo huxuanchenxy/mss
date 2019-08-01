@@ -1,0 +1,18 @@
+2019-07-23 16:13:32.332 +08:00 [INF] Consul Start registration
+2019-07-23 16:15:14.537 +08:00 [INF] Consul Start registration
+2019-07-23 16:15:28.016 +08:00 [INF] Consul Start registration
+2019-07-23 16:15:28.724 +08:00 [INF] Consul Init ConsulCient :{"ACL":{},"Agent":{"NodeName":"3b4dbb739521"},"Catalog":{},"Config":{"Address":"http://10.89.36.59:8500","Datacenter":null,"Token":null,"WaitTime":null},"Coordinate":{},"Event":{},"Health":{},"KV":{},"Operator":{},"PreparedQuery":{},"Raw":{},"Session":{},"Snapshot":{},"Status":{}}
+2019-07-23 16:15:29.008 +08:00 [INF] Consul Agent ServiceRegister Wait Finish 
+2019-07-23 16:15:29.009 +08:00 [INF] Consul Add HealthCheck 
+2019-07-23 16:20:09.684 +08:00 [INF] Consul Start registration
+2019-07-23 16:20:10.102 +08:00 [INF] Consul Init ConsulCient :{"ACL":{},"Agent":{"NodeName":"3b4dbb739521"},"Catalog":{},"Config":{"Address":"http://10.89.36.59:8500","Datacenter":null,"Token":null,"WaitTime":null},"Coordinate":{},"Event":{},"Health":{},"KV":{},"Operator":{},"PreparedQuery":{},"Raw":{},"Session":{},"Snapshot":{},"Status":{}}
+2019-07-23 16:20:10.292 +08:00 [INF] Consul Agent ServiceRegister Wait Finish 
+2019-07-23 16:20:10.293 +08:00 [INF] Consul Add HealthCheck 
+2019-07-23 16:22:02.404 +08:00 [INF] Consul Start registration
+2019-07-23 16:22:02.803 +08:00 [INF] Consul Init ConsulCient :{"ACL":{},"Agent":{"NodeName":"3b4dbb739521"},"Catalog":{},"Config":{"Address":"http://10.89.36.59:8500","Datacenter":null,"Token":null,"WaitTime":null},"Coordinate":{},"Event":{},"Health":{},"KV":{},"Operator":{},"PreparedQuery":{},"Raw":{},"Session":{},"Snapshot":{},"Status":{}}
+2019-07-23 16:22:03.876 +08:00 [INF] Consul Agent ServiceRegister Wait Finish 
+2019-07-23 16:22:03.877 +08:00 [INF] Consul Add HealthCheck 
+2019-07-23 16:25:26.227 +08:00 [INF] Consul Start registration
+2019-07-23 16:25:26.601 +08:00 [INF] Consul Init ConsulCient :{"ACL":{},"Agent":{"NodeName":"3b4dbb739521"},"Catalog":{},"Config":{"Address":"http://10.89.36.59:8500","Datacenter":null,"Token":null,"WaitTime":null},"Coordinate":{},"Event":{},"Health":{},"KV":{},"Operator":{},"PreparedQuery":{},"Raw":{},"Session":{},"Snapshot":{},"Status":{}}
+2019-07-23 16:25:26.799 +08:00 [INF] Consul Agent ServiceRegister Wait Finish 
+2019-07-23 16:25:26.800 +08:00 [INF] Consul Add HealthCheck 

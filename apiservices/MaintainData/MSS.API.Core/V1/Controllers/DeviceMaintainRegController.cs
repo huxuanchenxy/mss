@@ -54,23 +54,23 @@ namespace MSS.API.Core.V1.Controllers
             string where = "  1=1 ";
             if (!string.IsNullOrEmpty(query.DeviceType))
             {
-                where += " and device_type_id =" + query.DeviceType.Trim();
+                where += " and a.device_type_id =" + query.DeviceType.Trim();
             }
             if (!string.IsNullOrEmpty(query.DeviceId))
             {
-                where += " and device_id =" + query.DeviceId.Trim();
+                where += " and a.device_id =" + query.DeviceId.Trim();
             }
             if (!string.IsNullOrEmpty(query.TeamGroup))
             {
-                where += " and  team_group_id=" + query.TeamGroup.Trim();
+                where += " and  a.team_group_id=" + query.TeamGroup.Trim();
             }
             if (!string.IsNullOrEmpty(query.Director))
             {
-                where += " and  director_id=" + query.Director.Trim();
+                where += " and  a.director_id=" + query.Director.Trim();
             }
             if (!string.IsNullOrEmpty(query.maintain_date))
             {
-                where += " and  maintain_date= '" + query.maintain_date.Trim() + "'";
+                where += " and  a.maintain_date= '" + query.maintain_date.Trim() + "'";
             }
             var ret = await _devicemaintainService.GetListByPage(where, query.sort, query.order, query.page, query.rows);
             return ret;
