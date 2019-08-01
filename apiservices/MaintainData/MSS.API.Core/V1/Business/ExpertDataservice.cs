@@ -235,7 +235,7 @@ namespace MSS.API.Core.V1.Business
                             var tmp = ufs.Where(a => a.entity_id == model.ID);
                             if (tmp != null)
                             {
-                                model.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.CascaderShow(tmp.ToList()));
+                                model.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.ListShow(tmp.ToList()));
                             } 
                     }
                     ret.code = Code.Success;
