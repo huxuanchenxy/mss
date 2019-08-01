@@ -31,7 +31,7 @@
               </div> -->
             <span class="text">设备名称<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-select v-model="deviceType" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType.text)">
+              <el-select v-model="deviceType.text" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType.text)">
                 <option disabled value="" selected>请选择</option>
                 <el-option
                   v-for="item in deviceTypeList"
@@ -445,6 +445,7 @@ export default {
       //   this.deviceType.tips = ''
       //   return true
       // }
+      debugger
       if (val === '') {
         this.devicelist = []
         this.deviceType.text = ''
@@ -502,6 +503,7 @@ export default {
         this.devicelist = []
         this.device.text = ''
       }
+      debugger
       api.GetDeviceListByTypeId(val).then(res => {
         this.devicelist = res.data
         this.device.text = ''
