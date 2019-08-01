@@ -152,6 +152,7 @@
                 <div class="inp">{{eqp.timeAgain}}</div>
               </div>
             </li>
+            <li class="list"/>
           </ul>
         </div>
       </el-scrollbar>

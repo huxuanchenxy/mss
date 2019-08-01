@@ -96,13 +96,13 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int page, int size, string sort, string order,
+        public async Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int? page, int? size, string sort, string order,
             int? eqpTypeID, string paramID)
         {
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,d.type_name as eqp_type_name,e.user_name,c.pid_name, b.param_limit_type,b.param_limit_value FROM early_warnning_setting AS a");
+                sql.Append("SELECT a.*,d.type_name as eqp_type_name,e.user_name,c.pid_name,b.param_id, c.pid, b.param_limit_type,b.param_limit_value FROM early_warnning_setting AS a");
                 sql.Append(" LEFT JOIN early_warnning_setting_ex AS b ON a.ID=b.early_warnning_id AND b.is_del!=1");
                 sql.Append(" LEFT JOIN early_warnning_ex_type AS c on b.param_id=c.ID");
                 sql.Append(" JOIN equipment_type AS d on a.equipment_type_id=d.ID");
@@ -120,7 +120,11 @@ namespace MSS.API.Dao.Implement
                 {
                     sql.Append(" order by a." + sort + " " + order);
                 }
-                sql.Append(" limit " + (page - 1) * size + "," + size);
+                if (page != null && size != null)
+                {
+                    sql.Append(" limit " + (page - 1) * size + "," + size);
+                }
+                
                 var orderDictionary = new Dictionary<int, EarlyWarnningSetting>();
                 var list = await c.QueryAsync<EarlyWarnningSetting, EarlyWarnningSettingEx, EarlyWarnningSetting>(
                     sql.ToString(),
@@ -209,6 +213,61 @@ namespace MSS.API.Dao.Implement
                 string sql = "SELECT * FROM early_warnning_ex_type";
                 var data = await c.QueryAsync<EarlyWarnningExType>(sql);
                 return data.ToList();
+            });
+        }
+
+        // 获取所有设备信息
+        public async Task<List<Equipment>> ListAllEquipment()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT id, eqp_code, eqp_name, eqp_type, top_org, online_date,"
+                    + " online_again, life, medium_repair, large_repair from equipment"
+                    + " WHERE is_del != 1";
+                List<Equipment> eqps = (await c.QueryAsync<Equipment>(sql)).ToList();
+                return eqps;
+            });
+        }
+
+        // 插入pid表
+        public async Task<int> SavePidTable(List<PidTable> data)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "INSERT INTO pid_table (PID, eqp_id, prop, Des, UT, UP, DW, UUP, DDW)"
+                            + " Values (@pid, @EqpID, @prop, @Des, @UT, @UP, @DW, @UUP, @DDW);";
+                int affectedRows = await c.ExecuteAsync(sql, data);
+                return affectedRows;
+            });
+        }
+
+        // 删除指定pid
+        public async Task<int> DeletePidTable(List<PidTable> data)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "DELETE FROM pid_table WHERE PID = @pid";
+                int affectedRows = await c.ExecuteAsync(sql, data);
+                return affectedRows;
+            });
+        }
+
+        // 根据设备类型和参数查pid
+        public async Task<List<PidTable>> ListPidTable(List<int> eqpTypeIDs, List<string> props)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT a.*, b.eqp_type FROM pid_table a"
+                    + " JOIN equipment b on a.eqp_id=b.id AND b.eqp_type IN @EqpTypeID"
+                    + " WHERE a.prop IN @Prop";
+                var list = await c.QueryAsync<PidTable>(sql,
+                new
+                {
+                    EqpTypeID = eqpTypeIDs,
+                    Prop = props
+                });
+
+                return list.ToList();
             });
         }
 

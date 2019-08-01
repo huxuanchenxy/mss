@@ -133,6 +133,22 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
+        public async Task<ApiResult> ListByEqp(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(new int[] { id},MyDictionary.SystemResource.Eqp);
+                ret.data = UploadFileHelper.TimeLineShow(ufs);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
 
         public async Task<ApiResult> ListAll()
         {

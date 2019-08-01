@@ -8,5 +8,10 @@ namespace MSS.API.Core.Common
     {
         public const string Eqp = "eqp";
         public const string Org = "org";
+
+        // 预警
+        public const string Warn = "warn";
+        // 通知
+        public const string Notification = "notification";
     }
 }
