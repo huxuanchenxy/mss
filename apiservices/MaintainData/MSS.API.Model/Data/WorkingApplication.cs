@@ -34,6 +34,7 @@ namespace MSS.API.Model.Data
         public string SecurityMeasures { get; set; }
         public string ResponseSuggestions { get; set; }
         public int ResponseBy { get; set; }
+        public int ResponseByName { get; set; }
         public DateTime ResponseTime { get; set; }
     }
 
@@ -68,6 +69,7 @@ namespace MSS.API.Model.Data
             Map(o => o.SecurityMeasures).ToColumn("security_measures");
             Map(o => o.ResponseSuggestions).ToColumn("response_suggestions");
             Map(o => o.ResponseBy).ToColumn("response_by");
+            Map(o => o.ResponseByName).ToColumn("rname");
             Map(o => o.ResponseTime).ToColumn("response_time");
         }
     }
