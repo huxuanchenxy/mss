@@ -15,6 +15,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> Delete(int id);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> ListByIDs(string ids);
+        Task<ApiResult> ListByEqp(int id);
         Task<ApiResult> ListAll();
         Task<ApiResult> CascaderByIDs(string ids);
     }
