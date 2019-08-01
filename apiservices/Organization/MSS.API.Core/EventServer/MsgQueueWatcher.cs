@@ -5,6 +5,7 @@ using Quartz;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using MSS.API.Core.Common;
+using System.Threading;
 namespace MSS.API.Core.EventServer
 {
     public class MsgQueueWatcher : IJob
@@ -16,9 +17,6 @@ namespace MSS.API.Core.EventServer
         public MsgQueueWatcher(ILogger<MsgQueueWatcher> logger, IDistributedCache cache,
             IHubContext<MssEventHub, IMssEventClient> eventHubContext, EventQueues queues)
         {
-            // _demoService = demoService;
-            // _options = options.Value;
-            // _options = options.Value;
             _logger = logger;
             _eventHubContext = eventHubContext;
             _queues = queues;
@@ -26,30 +24,33 @@ namespace MSS.API.Core.EventServer
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            try
+            while (true)
             {
-                MssEventMsg msg;
-                bool ret = _queues.AlarmQueue.TryDequeue(out msg);
-                if (ret)
+                try
                 {
-                    string value = _cache.GetString(RedisKeyPrefix.Eqp + msg.eqp.ID);
-                    if (value != null)
+                    MssEventMsg msg;
+                    bool ret = _queues.AlarmQueue.TryDequeue(out msg);
+                    if (ret)
                     {
-                        int topOrg = int.Parse(value);
-                        string users_str = _cache.GetString(RedisKeyPrefix.Org + topOrg);
-                        if (users_str != null)
+                        string value = _cache.GetString(RedisKeyPrefix.Eqp + msg.eqp.ID);
+                        if (value != null)
                         {
-                            string[] idstrs = users_str.Split(',');
-                            await _eventHubContext.Clients.Users(idstrs).RecieveMsg(msg);
+                            int topOrg = int.Parse(value);
+                            string users_str = _cache.GetString(RedisKeyPrefix.Org + topOrg);
+                            if (users_str != null)
+                            {
+                                string[] idstrs = users_str.Split(',');
+                                await _eventHubContext.Clients.Users(idstrs).RecieveMsg(msg);
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.StackTrace);
-            }
-            
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.StackTrace);
+                }
+                Thread.Sleep(1000);
+            }            
         }
     }
 }

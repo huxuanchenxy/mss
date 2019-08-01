@@ -32,8 +32,5 @@ namespace MSS.API.Dao.Interface
         // 取出所有已关联组织的用户
         Task<List<OrgUser>> ListAllOrgUser();
         Task<int> DeleteOrgNodeUsers(OrgUserView users);
-
-        // 取所有设备信息
-        Task<List<Equipment>> ListAllEquipment();
     }
 }
