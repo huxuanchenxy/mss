@@ -15,7 +15,8 @@ namespace MSS.API.Core.EventServer
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return _serviceProvider.GetService<MsgQueueWatcher>();
+            // return _serviceProvider.GetService<MsgQueueWatcher>();
+            return (IJob)_serviceProvider.GetService(bundle.JobDetail.JobType);
         }
 
         public void ReturnJob(IJob job)

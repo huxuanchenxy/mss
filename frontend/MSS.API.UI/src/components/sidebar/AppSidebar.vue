@@ -190,12 +190,15 @@ export default {
     },
 
     startTimer () {
-      this.timer = setInterval(this.ChangeColor, 1000)
+      if (!this.timer) {
+        this.timer = setInterval(this.ChangeColor, 1000)
+      }
     },
 
     StopTimer () {
       if (this.timer) {
         clearInterval(this.timer)
+        this.timer = null
         this.activeColor = '#f91333'
       }
     },
@@ -212,19 +215,17 @@ export default {
       if (this.Conn) {
         this.Conn.close()
       }
-      // let ip = 'http://localhost:3851/eventHub'
-      let ip = hub
+      let ip = 'http://localhost:3851/eventHub'
+      // let ip = hub
       var connection = new signalR.HubConnectionBuilder().withUrl(ip,
         { accessTokenFactory: () => token }).build()
 
       connection.on('RecieveMsg', function (message) {
         console.log(message)
-        thisObj.startTimer()
-        // switch (message.type) {
-        //   case 0:
-        //     thisObj.EventTypeList[0].state = 'warning'
-        //     break
-        // }
+        if (!thisObj.bMsgShrink) {
+          thisObj.startTimer()
+        }
+
         if (message.type === 0) {
           thisObj.refresh('alarm')
         } else if (message.type === 1) {

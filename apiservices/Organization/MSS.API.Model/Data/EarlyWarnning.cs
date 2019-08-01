@@ -11,7 +11,7 @@ namespace MSS.API.Model.Data
         
         public int  EqpID { get; set; }
         public string Content { get; set; }
-        public float CurValue { get; set; }
+        public double CurValue { get; set; }
         public int Status { get; set; }
         public string EqpCode { get; set; }
         public string EqpName { get; set; }

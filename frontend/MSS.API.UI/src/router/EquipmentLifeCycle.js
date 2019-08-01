@@ -48,6 +48,21 @@ const routes = [
               component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/LifeTimeKeyMaintain/children/LifeTimeKeyMaintainlist.vue')
             }
           ]
+        },
+        {
+          path: 'history',
+          component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/Index.vue'),
+          children: [
+            {
+              path: '/',
+              name: 'history',
+              redirect: 'list'
+            }, {
+              path: 'list',
+              name: 'SeeHistory',
+              component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/SeeHistory.vue')
+            }
+          ]
         }
       ]
     }

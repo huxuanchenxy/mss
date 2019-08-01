@@ -18,12 +18,23 @@ namespace MSS.API.Dao.Interface
 
         Task<bool> DeleteWarnningSetting(EarlyWarnningSetting setting);
 
-        Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int idx, int size, string sort, string order,
+        Task<List<EarlyWarnningSetting>> ListWarnningSettingByPage(int? page, int? size, string sort, string order,
             int? eqpTypeID, string paramID);
         Task<int> Count(int? eqpTypeID, string paramID);
 
         Task<EarlyWarnningSetting> GetWarnningSettingByID(int id);
 
         Task<List<EarlyWarnningExType>> ListEarlyWarnningExType();
+
+        // 取所有设备信息
+        Task<List<Equipment>> ListAllEquipment();
+
+        // 插入pid表
+        Task<int> SavePidTable(List<PidTable> data);
+        // 删除指定pid
+        Task<int> DeletePidTable(List<PidTable> data);
+
+        // 查询pid
+        Task<List<PidTable>> ListPidTable(List<int> eqpTypeIDs, List<string> props);
     }
 }

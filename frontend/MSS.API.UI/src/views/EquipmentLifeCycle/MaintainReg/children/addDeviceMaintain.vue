@@ -28,7 +28,7 @@
                              :options="deviceTypeList"
                              v-model="deviceType.text">
                 </el-cascader>
-              </div> --> 
+              </div> -->
             <span class="text">设备名称<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-select v-model="deviceType" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType.text)">
@@ -249,7 +249,7 @@ export default {
       this.getEditData()
     }
     // 设备配置类型列表
-     eqpApi.getEqpTypeAll().then(res => {
+    eqpApi.getEqpTypeAll().then(res => {
       this.deviceTypeList = res.data
     }).catch(err => console.log(err))
     // api.GetEquipmentTypeList().then(res => {
@@ -445,7 +445,7 @@ export default {
       //   this.deviceType.tips = ''
       //   return true
       // }
-       if (val === '') {
+      if (val === '') {
         this.devicelist = []
         this.deviceType.text = ''
       }

@@ -88,7 +88,10 @@
               <div class="inp-wrap">
                 <span class="text">管辖班组<em class="validate-mark">*</em></span>
                 <div class="inp">
-                  <el-cascader class="cascader_width" clearable
+                  <el-cascader class="cascader_width" clearable ref='team'
+                    expand-trigger="hover"
+                    change-on-select
+                    popper-class="pop-team"
                     :props="defaultParams"
                     @change="cascader_change"
                     :show-all-levels="true"
@@ -444,12 +447,16 @@ export default {
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
-      this.teamPath.tips = ''
+      // console.log(val)
       let selectedTeam = val[val.length - 1]
       let obj = this.getCascaderObj(selectedTeam, this.teamList)
       if (obj.node_type === 3) {
         this.team = val[val.length - 1]
+      } else {
+        // this.teamPath.tips = '您选择的不是班组'
       }
+      // let el = document.querySelector('.pop-team')
+      // el.style.display = 'none'
     },
     getCascaderObj (val, opt) {
       for (let i = 0; i < opt.length; ++i) {
@@ -656,24 +663,34 @@ export default {
       } else if (this.team === '') {
         this.teamPath.tips = '您选的并非是班组，请选择班组'
         return false
-      }
+      } else this.teamPath.tips = ''
       if (this.area.text.length === 0) {
         this.area.tips = '此项必选'
         return false
-      }
+      } else this.area.tips = ''
       if (this.time.text === '') {
         this.time.tips = '此项必选'
         return false
-      }
+      } else this.time.tips = ''
       if (!this.validateInputNull(this.life)) return false
       if (!validateNumberCommon(this.mediumRepair)) return false
       if (!validateNumberCommon(this.largeRepair)) return false
       return true
     }
+  },
+  mounted () {
+    // console.log(this.$refs.team.id)
+    // let el = document.querySelector('.pop-display')
+    // console.log(el)
+    // el.style.display = 'block'
   }
+
 }
 </script>
 <style lang="scss" scoped>
+.pop-display{
+  display: block!important;
+}
 // 功能区
 .operation{
   .input-group{

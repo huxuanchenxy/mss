@@ -13,6 +13,7 @@ namespace MSS.API.Model.Data
         public float ParamLimitValue { get; set; }
 
         public string PidName { get; set; }
+        public string pid { get; set; }
     }
 
     public class EarlyWarnningSettingExMap : EntityMap<EarlyWarnningSettingEx>
@@ -25,6 +26,7 @@ namespace MSS.API.Model.Data
             Map(o => o.ParamLimitValue).ToColumn("param_limit_value");
 
             Map(o => o.PidName).ToColumn("pid_name");
+            Map(o => o.pid).ToColumn("pid");
 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedTime).ToColumn("created_time");
