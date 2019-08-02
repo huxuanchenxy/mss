@@ -16,28 +16,28 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="">设备名称</label>
+            <label for="">设备类别</label>
             <div class="inp">
-              <!-- <el-select v-model="deviceType" clearable placeholder="请选择">
+              <el-select v-model="deviceType" clearable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType)">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deviceTypeList"
-                 :key="item.key"
-                 :value="item.id"
-                 :label="item.deviceTypeName">
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
                  </el-option>
-              </el-select> -->
-              <el-cascader clearable
+              </el-select>
+              <!-- <el-cascader clearable
                            :show-all-levels="true"
                            :options="deviceTypeList"
                            v-model="deviceType">
-              </el-cascader>
+              </el-cascader> -->
             </div>
           </div>
-          <!-- <div class="input-group">
+          <div class="input-group">
             <label for="">设备名称</label>
             <div class="inp">
-              <el-select v-model="deviceName" clearable placeholder="请选择">
+              <!-- <el-select v-model="deviceName" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in devicelist"
@@ -45,9 +45,16 @@
                  :value="item.id"
                  :label="item.deviceName">
                  </el-option>
-              </el-select>
+              </el-select> -->
+               <el-cascader clearable
+                             :props="defaultParams1"
+                             change-on-select
+                             :show-all-levels="true"
+                             :options="devicelist"
+                             v-model="deviceName">
+                </el-cascader>
             </div>
-          </div> -->
+          </div>
           <div class="input-group">
             <label for="">负责班组</label>
             <div class="inp">
@@ -272,7 +279,7 @@ export default {
       title: ' | 设备维修',
       maintain_date: '',
       deviceName: '',
-      devicelist: [],
+      devicelist: null,
       DeviceMaintainRegID: '',
       teamGroupid: '',
       TeamGroupList: [],
@@ -296,6 +303,11 @@ export default {
       },
       defaultParams: {
         label: 'label',
+        value: 'id',
+        children: 'children'
+      },
+      defaultParams1: {
+        label: 'name',
         value: 'id',
         children: 'children'
       },
@@ -336,21 +348,24 @@ export default {
       this.teamList = res.data
     }).catch(err => console.log(err))
     // 设备配置类型列表
-    api.GetEquipmentTypeList().then(res => {
-      res.data.map((e, i) => {
-        if (e.children != null && e.children.length > 0) {
-          this.deviceTypeList.push({'value': e.id, 'label': e.deviceTypeName, 'children': []
-          })
-          e.children.map((item) => {
-            this.deviceTypeList[i].children.push({ 'value': item.id, 'label': item.deviceName })
-          })
-        } else {
-          this.deviceTypeList.push({ 'value': e.id, 'label': e.deviceTypeName
-          })
-        }
-      })
-    }).catch(err => console.log(err))
+    // api.GetEquipmentTypeList().then(res => {
+    //   res.data.map((e, i) => {
+    //     if (e.children != null && e.children.length > 0) {
+    //       this.deviceTypeList.push({'value': e.id, 'label': e.deviceTypeName, 'children': []
+    //       })
+    //       e.children.map((item) => {
+    //         this.deviceTypeList[i].children.push({ 'value': item.id, 'label': item.deviceName })
+    //       })
+    //     } else {
+    //       this.deviceTypeList.push({ 'value': e.id, 'label': e.deviceTypeName
+    //       })
+    //     }
+    //   })
+    // }).catch(err => console.log(err))
     // 设备配置类型列表
+    eqpApi.getEqpTypeAll().then(res => {
+      this.deviceTypeList = res.data
+    }).catch(err => console.log(err))
     api.GetDirectorList().then(res => {
       this.directorList = res.data
     }).catch(err => console.log(err))
@@ -412,27 +427,27 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        deviceType: '', // this.deviceType.text,
-        deviceId: '', // this.deviceName,
+        deviceType: this.deviceType,
+        deviceId: this.deviceName[this.deviceName.length - 1],
         TeamGroup: this.teamGroupid,
         Director: this.directorid,
         maintain_date: this.maintain_date
       }
-      if (this.deviceType !== '') {
-        switch (this.deviceType.length) {
-          case 0:
-            parm.deviceType = ''
-            parm.deviceId = ''
-            break
-          case 1:
-            parm.deviceType = this.deviceType[0]
-            break
-          case 2:
-            parm.deviceType = this.deviceType[0]
-            parm.deviceId = this.deviceType[1]
-            break
-        }
-      }
+      // if (this.deviceType !== '') {
+      //   switch (this.deviceType.length) {
+      //     case 0:
+      //       parm.deviceType = ''
+      //       parm.deviceId = ''
+      //       break
+      //     case 1:
+      //       parm.deviceType = this.deviceType[0]
+      //       break
+      //     case 2:
+      //       parm.deviceType = this.deviceType[0]
+      //       parm.deviceId = this.deviceType[1]
+      //       break
+      //   }
+      // }
       api.GetListByPage(parm).then(res => {
         this.loading = false
         if (res.code === 0) {
@@ -613,7 +628,23 @@ export default {
       this.bCheckAll ? this.DeviceMaintainRegList.map(val => this.editDeviceMaintainRegIDList.push(val.id)) : this.editDeviceMaintainRegIDList = []
       this.emitEditID()
     },
-
+    validatedeviceTypeSelect (val) {
+      if (val === '') {
+        this.devicelist = []
+        this.deviceType.text = ''
+      }
+      api.GetDeviceListByTypeId(val).then(res => {
+        if (res.data.length > 0) {
+          this.devicelist = res.data
+          this.deviceType.id = ''
+        } else {
+          this.devicelist = null
+          this.deviceType.id = ''
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.bCheckAll = false

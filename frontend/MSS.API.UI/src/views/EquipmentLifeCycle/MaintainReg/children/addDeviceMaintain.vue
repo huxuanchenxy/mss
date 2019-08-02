@@ -43,6 +43,7 @@
             </div>&nbsp;&nbsp;
             <div class="inp">
                <el-cascader clearable
+                             :props="defaultParams1"
                              change-on-select
                              :show-all-levels="true"
                              :options="devicelist"
@@ -84,7 +85,7 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">维护负责人<em class="validate-mark">*</em></span>
+              <span class="text0">维护负责人<em class="validate-mark">*</em></span>
               <div class="inp">
                 <el-select v-model="director.text"
                            clearable
@@ -119,7 +120,7 @@
           </li>
         </ul>
         <div class="con-padding-horizontal cause">
-          <span class="text">备件更换过程记录<em class="validate-mark">*</em></span>
+          <span class="text">备件更换过程记录<em class="validate-mark">*&nbsp; &nbsp;&nbsp;</em></span>
           <el-input type="textarea"
                     v-model="detail_desc.text"
                     placeholder="请输入内容"></el-input>
@@ -201,7 +202,7 @@ export default {
         text: '',
         tips: ''
       },
-      devicelist: [],
+      devicelist: null,
       detail_desc: {
         text: '',
         tips: ''
@@ -223,6 +224,11 @@ export default {
       teamList: [],
       defaultParams: {
         label: 'label',
+        value: 'id',
+        children: 'children'
+      },
+      defaultParams1: {
+        label: 'name',
         value: 'id',
         children: 'children'
       },
@@ -305,8 +311,9 @@ export default {
         this.attch_file = this.fileIDsEdit[0].ids
       }
       let model = {
-        device_type_id: 0, // this.deviceType.text,
-        device_id: 0, // this.device.text,
+        device_type_id: this.deviceType.text,
+        device_id: this.device.text[this.device.text.length - 1],
+        device_id_path: this.device.text.join(','),
         team_group_path: this.teamPath.text.join(','),
         team_group_id: this.team_group.text,
         director_id: this.director.text,
@@ -317,19 +324,19 @@ export default {
         origin_file: JSON.stringify(this.fileIDsEdit),
         is_deleted: '0'
       }
-      switch (this.deviceType.text.length) {
-        case 0:
-          model.device_type_id = 0
-          model.device_id = 0
-          break
-        case 1:
-          model.device_type_id = this.deviceType.text[0]
-          break
-        case 2:
-          model.device_type_id = this.deviceType.text[0]
-          model.device_id = this.deviceType.text[1]
-          break
-      }
+      // switch (this.deviceType.text.length) {
+      //   case 0:
+      //     model.device_type_id = 0
+      //     model.device_id = 0
+      //     break
+      //   case 1:
+      //     model.device_type_id = this.deviceType.text[0]
+      //     break
+      //   case 2:
+      //     model.device_type_id = this.deviceType.text[0]
+      //     model.device_id = this.deviceType.text[1]
+      //     break
+      // }
       if (this.isShow === 'add') {
         // 添加站区
         api.Save(model).then(res => {
@@ -379,7 +386,14 @@ export default {
       api.GetDeviceMaintainRegById(id).then(res => {
         this.loading = false
         let _res = res.data
-        this.deviceType.text = this.strToIntArr(_res.device_type_id + ',' + _res.device_id)
+        this.deviceType.text = _res.device_type_id // this.strToIntArr(_res.device_type_id + ',' + _res.device_id)
+        api.GetDeviceListByTypeId(_res.device_type_id).then(res => {
+          this.devicelist = res.data
+          this.device.text = this.strToIntArr(_res.device_id_path)
+        }).catch(err => {
+          console.log(err)
+        })
+        // this.device.text = this.strToIntArr(_res.device_id_path)
         this.fileIDs = _res.uploadFiles // _res.origin_file
         this.teamPath.text = this.strToIntArr(_res.team_group_path)
         this.team_group.text = _res.team_group_id
@@ -438,14 +452,6 @@ export default {
       }
     },
     validatedeviceTypeSelect (val) {
-      // if (this.deviceType.text === '') {
-      //   this.deviceType.tips = '此项必选'
-      //   return false
-      // } else {
-      //   this.deviceType.tips = ''
-      //   return true
-      // }
-      debugger
       if (val === '') {
         this.devicelist = []
         this.deviceType.text = ''
@@ -456,6 +462,24 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+    validatedeviceType () {
+      if (this.deviceType.text === '') {
+        this.deviceType.tips = '此项必选'
+        return false
+      } else {
+        this.deviceType.tips = ''
+        return true
+      }
+    },
+    validatedevice () {
+      if (this.device.text === '') {
+        this.device.tips = '此项必选'
+        return false
+      } else {
+        this.device.tips = ''
+        return true
+      }
     },
     validateteam_groupSelect () {
       // if (this.team_group.text === '') {
@@ -503,17 +527,21 @@ export default {
         this.devicelist = []
         this.device.text = ''
       }
-      debugger
       api.GetDeviceListByTypeId(val).then(res => {
-        this.devicelist = res.data
-        this.device.text = ''
+        if (res.data.length > 0) {
+          this.devicelist = res.data
+          this.device.text = ''
+        } else {
+          this.devicelist = null
+          this.device.text = '无数据'
+        }
       }).catch(err => {
         console.log(err)
       })
     },
     validateAll () {
-      if (!this.validatedeviceTypeSelect()) return false
-      // if (!this.validatedeviceSelect()) return false
+      if (!this.validatedeviceType()) return false
+      if (!this.validatedevice()) return false
       if (!this.validateteam_groupSelect()) return false
       if (!this.validatedirectorSelect()) return false
       if (!validateInputCommon(this.maintain_date)) return false
@@ -536,12 +564,13 @@ export default {
     height: 100%;
   }
 }
-
 .header {
   display: flex;
   justify-content: space-between;
 }
-
+ .text1 {
+    width: 14%;
+  }
 // 顶部信息
 .middle {
   position: relative;
@@ -587,7 +616,6 @@ export default {
       }
     }
   }
-
   .sub-list-wrap {
     .list {
       margin-right: 40px;
@@ -643,7 +671,9 @@ export default {
     .text {
       width: 28%;
     }
-
+    .text0 {
+      width: 23%;
+    }
     &:nth-of-type(3n + 1) {
       justify-content: flex-start;
     }
@@ -657,7 +687,7 @@ export default {
   display: flex;
   margin-top: 20px;
   align-items: center;
-
+  width: 90%;
   .el-textarea {
     flex: 1;
     width: auto;

@@ -91,14 +91,11 @@ namespace MSS.API.Core.V1.Business
                                     if (v.Children== null)
                                     {
                                         v.Children = new List<LocatioInfo>() { };
+                                        locationinfolist.Add(v);
                                     }
                                     v.Children.Add(m);
                                     m.Children = new List<LocatioInfo>() { };
-                                    m.Children.AddRange(list22);//添加设备
-                                    if (list11.Count <1)
-                                    {
-                                        locationinfolist.Add(v);
-                                    }
+                                    m.Children.AddRange(list22);//添加设备 
                                 } 
                                 foreach (var u in list2)
                                 {
@@ -112,6 +109,7 @@ namespace MSS.API.Core.V1.Business
                                         if (v.Children == null)
                                         {
                                             v.Children = new List<LocatioInfo>() { };
+                                            locationinfolist.Add(v);
                                         }
                                         if(m.Children ==null)
                                         {
@@ -120,11 +118,7 @@ namespace MSS.API.Core.V1.Business
                                         v.Children.Add(m); 
                                         m.Children.Add(u);
                                         u.Children = new List<LocatioInfo>() { };
-                                        u.Children.AddRange(list33);
-                                        if (list22.Count <1)
-                                        {
-                                            locationinfolist.Add(v);
-                                        }
+                                        u.Children.AddRange(list33); 
                                     }
                                 }
                             }
