@@ -1,6 +1,6 @@
 import axios from './interceptors'
-let api = 'http://10.89.36.204:5801/maintainapi'
-// let api = 'http://localhost:3851/api/v1'
+// let api = 'http://10.89.36.204:5801/maintainapi'
+let api = 'http://localhost:3851/api/v1'
 export default {
   getAllUsers: () => { return {} },
   Save: data => { return axios.post(`${api}/DeviceMaintainReg/Save`, data).then(res => res.data) },
@@ -14,5 +14,7 @@ export default {
   Delete: id => { return axios.delete(`${api}/DeviceMaintainReg/Delete/${id}`).then(res => res.data) },
   GetLifeTimeKeyListByPage: parm => { return axios.get(`${api}/LifeTimeKeyMaintain/GetLifeTimeKeyListByPage`, {params: parm}).then(res => res.data) },
   DeleteList: Ids => { return axios.delete(`${api}/DeviceMaintainReg/DeleteList/${Ids}`, Ids).then(res => res.data) },
-  ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) }
+
+  ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) },
+  getWorkingApplicationByID: id => { return axios.get(`${api}/WorkingApplication/${id}`).then(res => res.data) }
 }

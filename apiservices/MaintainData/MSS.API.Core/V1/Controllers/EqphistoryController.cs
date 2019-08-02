@@ -17,11 +17,9 @@ namespace MSS.API.Core.V1.Controllers
     public class EqpHistoryController : ControllerBase
     {
         private readonly IEqpHistoryService _eqpHistoryService;
-        private readonly int _userId;
         public EqpHistoryController(IEqpHistoryService eqpHistoryService)
         {
             _eqpHistoryService = eqpHistoryService;
-            _userId = 1;
         }
 
         [HttpGet("ListByEqp/{id}")]

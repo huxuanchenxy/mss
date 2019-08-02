@@ -61,6 +61,10 @@ const routes = [
               path: 'list',
               name: 'SeeHistory',
               component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/SeeHistory.vue')
+            }, {
+              path: 'detail',
+              name: 'DetailWorkingApplication',
+              component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/DetailWorkingApplication.vue')
             }
           ]
         }

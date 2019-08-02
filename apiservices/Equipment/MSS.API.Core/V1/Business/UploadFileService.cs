@@ -139,7 +139,10 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(new int[] { id},MyDictionary.SystemResource.Eqp);
-                ret.data = UploadFileHelper.TimeLineShow(ufs);
+                if (ufs!=null)
+                {
+                    ret.data = UploadFileHelper.TimeLineShow(ufs);
+                }
                 return ret;
             }
             catch (Exception ex)

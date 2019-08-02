@@ -9,7 +9,7 @@ namespace MSS.API.Dao.Interface
    public interface IWorkingApplicationRepo<T>
     {
         Task<WorkingApplication> GetByID(int id);
-
+        Task<List<WorkingApplicationManager>> GetByWorkingApplication(int id);
 
     }
 }

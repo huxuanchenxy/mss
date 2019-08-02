@@ -309,6 +309,8 @@ export default {
         // this.fileIDs = data.uploadFiles
         // this.filevedioIDs = _res.video_file
         // this.filevedioIDsEdit = _res.video_file
+        console.log(_res.uploadFiles)
+        debugger
         this.fileIDs = _res.uploadFiles
         // this.fileattachIDsEdit = _res.uploadFiles
       }).catch(err => console.log(err))

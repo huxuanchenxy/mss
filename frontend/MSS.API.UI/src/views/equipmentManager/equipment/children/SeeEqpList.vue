@@ -355,7 +355,8 @@ export default {
         this.$router.push({
           name: 'DetailEqp',
           params: {
-            id: this.editEqpID[0]
+            id: this.editEqpID[0],
+            sourceName: 'SeeEqpList'
           }
         })
       }
