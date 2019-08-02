@@ -14,5 +14,7 @@ export default {
   Delete: id => { return axios.delete(`${api}/DeviceMaintainReg/Delete/${id}`).then(res => res.data) },
   GetLifeTimeKeyListByPage: parm => { return axios.get(`${api}/LifeTimeKeyMaintain/GetLifeTimeKeyListByPage`, {params: parm}).then(res => res.data) },
   DeleteList: Ids => { return axios.delete(`${api}/DeviceMaintainReg/DeleteList/${Ids}`, Ids).then(res => res.data) },
-  ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) }
+
+  ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) },
+  getWorkingApplicationByID: id => { return axios.get(`${api}/WorkingApplication/${id}`).then(res => res.data) }
 }

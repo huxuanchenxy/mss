@@ -39,13 +39,13 @@ export default {
   // 子组件下边的按钮加搜索
   /deep/ .box{
     // height: percent(145, $content-height);
-    height: 80px;
+    height: 100px;
     // 搜索组
     .search-wrap{
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 100%;
+      height: 80%;
       // height: percent(80, 145);
       background: rgba(128, 128, 128, 0.1);
       color: $color-white;

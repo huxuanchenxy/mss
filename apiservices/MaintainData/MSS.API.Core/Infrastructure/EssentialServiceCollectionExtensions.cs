@@ -16,6 +16,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IDeviceMaintainRegService, DeviceMaintainRegService>();
             services.AddTransient<ILifeTimeKeyMaintainService, LifeTimeKeyMaintainService>();
             services.AddTransient<IEqpHistoryService, EqpHistoryService>();
+            services.AddTransient<IWorkingApplicationService, WorkingApplicationService>();
             return services;
         }
     }

@@ -663,15 +663,15 @@ export default {
       } else if (this.team === '') {
         this.teamPath.tips = '您选的并非是班组，请选择班组'
         return false
-      } else this.teamPath.tips = ''
+      }
       if (this.area.text.length === 0) {
         this.area.tips = '此项必选'
         return false
-      } else this.area.tips = ''
+      }
       if (this.time.text === '') {
         this.time.tips = '此项必选'
         return false
-      } else this.time.tips = ''
+      }
       if (!this.validateInputNull(this.life)) return false
       if (!validateNumberCommon(this.mediumRepair)) return false
       if (!validateNumberCommon(this.largeRepair)) return false

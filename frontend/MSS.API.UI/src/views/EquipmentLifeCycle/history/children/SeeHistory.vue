@@ -13,14 +13,34 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">设备类型名称</label>
+            <label for="">设备类型</label>
             <div class="inp">
-              <el-input v-model.trim="eqpTypeName" placeholder="请输入设备类型名称"></el-input>
+              <el-select v-model="eqpType" clearable filterable placeholder="请选择" @change="eqpTypeChange">
+                <el-option
+                  v-for="item in eqpTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">设备</label>
+            <div class="inp">
+              <el-cascader class="cascader_width" clearable
+                expand-trigger="hover"
+                :props="defaultParams"
+                :show-all-levels="false"
+                :options="eqpList"
+                v-model="eqpSelected">
+              </el-cascader>
             </div>
           </div>
         </div>
-        <div class="search-btn" @click="searchRes">
-          <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
+        <div class="search-btn">
+          <i @click="searchRes"><x-button ><i class="iconfont icon-search"></i> 查询</x-button></i>
+          <i @click="eqpDetail"><x-button ><i class="iconfont el-icon-more"></i> 设备明细</x-button></i>
         </div>
       </div>
     </div>
@@ -45,21 +65,30 @@
               <el-collapse class='myContent' v-show="item.children">
                 <el-collapse-item :title="item.content">
                   <div v-for="data in item.children" :key="data.key">
-                    <div class="secondContent" v-show="!item.isFile" @click="detail(data.id)">{{"施工单"+data.id}}</div>
+                    <div class="secondContent" v-show="!item.isFile" @click="detail(data.id)">{{"施工申请单"+data.id}}</div>
                     <div class="secondContent" v-show="item.isFile" @click="preview(data)">{{data.name}}</div>
                   </div>
                 </el-collapse-item>
               </el-collapse>
-              <div class='myContentOnly' v-show="!item.children">{{item.content}}</div>
+              <div class='myContentOnly' v-show="item.children === null || item.children.length === 0">{{item.content}}</div>
             </template>
           </light-timeline>
         </el-scrollbar>
       </div>
     </div>
+    <el-dialog
+      :visible.sync="centerDialogVisible"
+      :modal-append-to-body="false"
+      custom-class="show-list-wrap"
+      center>
+      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
+    </el-dialog>
   </div>
 </template>
 <script>
 import XButton from '@/components/button'
+import { PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import api from '@/api/DeviceMaintainRegApi.js'
 import apiEqp from '@/api/eqpApi'
 export default {
@@ -71,34 +100,101 @@ export default {
     return {
       loading: false,
       title: ' | 设备履历',
+      defaultParams: {
+        label: 'name',
+        value: 'id',
+        children: 'children'
+      },
       eqpTypeName: '',
-      items: []
+      items: [],
+      centerDialogVisible: false,
+      previewUrl: '',
+      eqpType: '',
+      eqpTypeList: [],
+      eqp: '',
+      eqpSelected: [],
+      eqpList: []
     }
   },
   created () {
-    this.searchRes()
+    // 设备类型加载
+    apiEqp.getEqpTypeAll().then(res => {
+      this.eqpTypeList = res.data
+      this.eqpType = this.eqpTypeList[0].id
+      // 设备加载
+      api.GetDeviceListByTypeId(this.eqpType).then(res => {
+        this.eqpList = res.data
+        this.eqpSelected.push(this.eqpList[0].id)
+        this.eqp = this.getDefaultEqp(this.eqpList[0])
+        this.searchRes()
+      }).catch(err => console.log(err))
+    }).catch(err => console.log(err))
   },
   methods: {
+    eqpTypeChange () {
+      api.GetDeviceListByTypeId(this.eqpType).then(res => {
+        this.eqpList = res.data
+      }).catch(err => console.log(err))
+    },
+    getDefaultEqp (list) {
+      let tmp = list.children[0]
+      this.eqpSelected.push(tmp.id)
+      if (tmp.children === null) return tmp.id
+      else return this.getDefaultEqp(tmp)
+    },
     searchRes () {
-      api.ListByEqp(1).then(res => {
-        apiEqp.getUploadFileByEqp(1).then(ret => {
-          console.log(ret.data)
-          this.items = ret.data.concat(res.data)
-          console.log(this.items)
+      this.eqp = this.eqpSelected[this.eqpSelected.length - 1]
+      api.ListByEqp(this.eqp).then(res => {
+        apiEqp.getUploadFileByEqp(this.eqp).then(ret => {
+          let tmp = [{
+            tag: '技术资料',
+            stage: 1,
+            content: '无',
+            children: null
+          }]
+          if (ret.data !== null && res.data !== null) this.items = ret.data.concat(res.data)
+          else if (ret.data !== null && res.data === null) this.items = ret.data
+          else if (ret.data === null && res.data !== null) this.items = tmp.concat(res.data)
+          else this.items = tmp
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
     },
     detail (id) {
-      console.log(id)
+      this.$router.push({
+        name: 'DetailWorkingApplication',
+        params: {
+          id: id
+        }
+      })
     },
-    preview (data) {
-      console.log(data)
+    preview (item) {
+      if (isPreview(item.id, item.name)) {
+        this.centerDialogVisible = true
+        this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+      }
+    },
+    eqpDetail () {
+      if (this.eqpSelected.length === 0) {
+        this.$message({
+          message: '请选择需要查看的设备',
+          type: 'warning'
+        })
+      } else {
+        this.eqp = this.eqpSelected[this.eqpSelected.length - 1]
+        this.$router.push({
+          name: 'DetailEqp',
+          params: {
+            id: this.eqp,
+            sourceName: 'SeeHistory'
+          }
+        })
+      }
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-$con-height: $content-height - 145 - 56 + 80;
+$con-height: $content-height - 145 - 56 + 64;
 // 内容区
 .content-wrap{
   overflow: hidden;
@@ -204,6 +300,7 @@ $con-height: $content-height - 145 - 56 + 80;
     }
   }
   .myContentOnly{
+    margin-top: 11px;
     margin-left: 74px;
   }
 }

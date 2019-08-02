@@ -9,7 +9,7 @@
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
       <x-button class="active">
-        <router-link :to="{name:'SeeEqpList'}">返回</router-link>
+        <router-link :to="{name:sourceName}">返回</router-link>
       </x-button>
     </div>
     <div class="scroll">
@@ -177,6 +177,7 @@ export default {
       fileIDs: '',
       fileType: FileType.Eqp_Drawings,
       title: '| 设备明细',
+      sourceName: this.$route.params.sourceName,
       loading: false,
       eqp: {
         id: this.$route.params.id,
