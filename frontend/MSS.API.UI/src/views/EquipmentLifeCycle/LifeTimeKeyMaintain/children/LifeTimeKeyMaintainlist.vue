@@ -18,7 +18,7 @@
           <div class="input-group">
             <label for="">设备类别</label>
             <div class="inp">
-             <el-select v-model="deviceType" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect()">
+             <el-select v-model="deviceType" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType)">
                 <option disabled value="" selected>请选择</option>
                 <el-option
                   v-for="item in deviceTypeList"
@@ -32,7 +32,7 @@
           <div class="input-group">
             <label for="">设备名称</label>
             <div class="inp">
-              <el-select v-model="deviceName" clearable placeholder="请选择">
+              <!-- <el-select v-model="deviceName" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in devicelist"
@@ -40,7 +40,14 @@
                  :value="item.id"
                  :label="item.deviceName">
                  </el-option>
-              </el-select>
+              </el-select> -->
+               <el-cascader clearable
+                             :props="defaultParams1"
+                             change-on-select
+                             :show-all-levels="true"
+                             :options="devicelist"
+                             v-model="deviceName">
+                </el-cascader>
             </div>
           </div>
           <div class="input-group">
@@ -214,7 +221,7 @@ export default {
       title: ' | 寿命与重点维保',
       maintain_type: '',
       deviceName: '',
-      devicelist: [],
+      devicelist: null,
       deviceType: '',
       deviceTypeList: [],
       MaintainList: [{ label: '中修', value: '中修' }, { label: '大修', value: '大修' }],
@@ -223,6 +230,11 @@ export default {
       bCheckAll: false,
       defaultParams: {
         label: 'label',
+        value: 'id',
+        children: 'children'
+      },
+      defaultParams1: {
+        label: 'name',
         value: 'id',
         children: 'children'
       },
@@ -297,7 +309,7 @@ export default {
         rows: 10,
         page: page,
         device_type: this.deviceType,
-        deviceId: '', // this.deviceName,
+        device_id: this.deviceName[this.deviceName.length - 1],
         maintain_type: this.maintain_type
       }
       api.GetLifeTimeKeyListByPage(parm).then(res => {
@@ -323,7 +335,23 @@ export default {
     //   this.bCheckAll ? this.DeviceMaintainRegList.map(val => this.editDeviceMaintainRegIDList.push(val.id)) : this.editDeviceMaintainRegIDList = []
     //   this.emitEditID()
     // },
-
+    validatedeviceTypeSelect (val) {
+      if (val === '') {
+        this.devicelist = []
+        this.deviceType.text = ''
+      }
+      api.GetDeviceListByTypeId(val).then(res => {
+        if (res.data.length > 0) {
+          this.devicelist = res.data
+          this.deviceType.id = ''
+        } else {
+          this.devicelist = null
+          this.deviceType.id = ''
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.bCheckAll = false
