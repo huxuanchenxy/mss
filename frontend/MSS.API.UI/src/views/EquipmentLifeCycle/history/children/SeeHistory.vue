@@ -15,7 +15,7 @@
           <div class="input-group">
             <label for="">设备类型</label>
             <div class="inp">
-              <el-select v-model="eqpType" clearable filterable placeholder="请选择" @change="eqpTypeChange">
+              <el-select v-model="eqpType" filterable placeholder="请选择" @change="eqpTypeChange">
                 <el-option
                   v-for="item in eqpTypeList"
                   :key="item.key"
@@ -28,7 +28,7 @@
           <div class="input-group">
             <label for="">设备</label>
             <div class="inp">
-              <el-cascader class="cascader_width" clearable
+              <el-cascader class="cascader_width"
                 expand-trigger="hover"
                 :props="defaultParams"
                 :show-all-levels="false"
@@ -65,8 +65,9 @@
               <el-collapse class='myContent' v-show="item.children">
                 <el-collapse-item :title="item.content">
                   <div v-for="data in item.children" :key="data.key">
-                    <div class="secondContent" v-show="!item.isFile" @click="detail(data.id)">{{"施工申请单"+data.id}}</div>
-                    <div class="secondContent" v-show="item.isFile" @click="preview(data)">{{data.name}}</div>
+                    <div class="secondContent" v-show="item.detailType === 1" @click="detail(data.id, 1)">{{"施工申请单"+data.id}}</div>
+                    <div class="secondContent" v-show="item.detailType === 2" @click="detail(data.id, 2)">{{"故障报告单"+data.id}}</div>
+                    <div class="secondContent" v-show="item.detailType === 0" @click="preview(data)">{{data.name}}</div>
                   </div>
                 </el-collapse-item>
               </el-collapse>
@@ -117,6 +118,7 @@ export default {
     }
   },
   created () {
+    this.loading = true
     // 设备类型加载
     apiEqp.getEqpTypeAll().then(res => {
       this.eqpTypeList = res.data
@@ -129,6 +131,9 @@ export default {
         this.searchRes()
       }).catch(err => console.log(err))
     }).catch(err => console.log(err))
+  },
+  activated () {
+    this.searchRes()
   },
   methods: {
     eqpTypeChange () {
@@ -156,16 +161,29 @@ export default {
           else if (ret.data !== null && res.data === null) this.items = ret.data
           else if (ret.data === null && res.data !== null) this.items = tmp.concat(res.data)
           else this.items = tmp
+          this.loading = false
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
     },
-    detail (id) {
-      this.$router.push({
-        name: 'DetailWorkingApplication',
-        params: {
-          id: id
-        }
-      })
+    detail (id, detailType) {
+      switch (detailType) {
+        case 1:
+          this.$router.push({
+            name: 'DetailWorkingApplication',
+            params: {
+              id: id
+            }
+          })
+          break
+        case 2:
+          this.$router.push({
+            name: 'DetailTroubleReport',
+            params: {
+              id: id
+            }
+          })
+          break
+      }
     },
     preview (item) {
       if (isPreview(item.id, item.name)) {

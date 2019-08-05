@@ -96,7 +96,8 @@ namespace MSS.API.Common
             TroubleMaintenance = 42,
             FirstMajorConstructio=43,
             SecondaryMajorConstructio=44,
-            Expiration=45
+            Expiration=45,
+            TroubleReport=46
         }
     }
     #endregion

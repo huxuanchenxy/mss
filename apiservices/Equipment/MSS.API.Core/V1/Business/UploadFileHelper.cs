@@ -120,7 +120,7 @@ namespace MSS.API.Core.V1.Business
                 }
                 objs.Add(new
                 {
-                    isFile = true,
+                    detailType = 0,
                     tag,
                     stage,
                     content,
