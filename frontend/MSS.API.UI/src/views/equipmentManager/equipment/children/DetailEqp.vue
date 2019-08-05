@@ -8,9 +8,7 @@
       <h2 class="title">
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active">
-        <router-link :to="{name:sourceName}">返回</router-link>
-      </x-button>
+      <i @click="back"><x-button class="active">返回</x-button></i>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -178,6 +176,8 @@ export default {
       fileType: FileType.Eqp_Drawings,
       title: '| 设备明细',
       sourceName: this.$route.params.sourceName,
+      eqpSelected: this.$route.params.eqpSelected,
+      eqpType: this.$route.params.eqpType,
       loading: false,
       eqp: {
         id: this.$route.params.id,
@@ -209,6 +209,21 @@ export default {
     this.getEqp()
   },
   methods: {
+    back () {
+      if (this.sourceName === 'SeeHistory') {
+        this.$router.push({
+          name: 'SeeHistory',
+          params: {
+            eqpSelected: this.eqpSelected,
+            eqpType: this.eqpType
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.sourceName
+        })
+      }
+    },
     // 修改设备时获取设备资料
     getEqp () {
       api.getEqpDetailByID(this.eqp.id).then(res => {
