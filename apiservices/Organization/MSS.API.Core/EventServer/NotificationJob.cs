@@ -14,6 +14,7 @@ using MSS.API.Core.Models.Ex;
 using Microsoft.Extensions.Caching.Distributed;
 using MSS.API.Core.Common;
 using System.Threading;
+using MSS.API.Common;
 namespace MSS.API.Core.EventServer
 {
     public class NotificationJob : IJob
@@ -35,14 +36,25 @@ namespace MSS.API.Core.EventServer
             _warnSetting = warnSetting;
             _queues = queues;
         }
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             while(true)
             {
                 try
                 {
                     // 取大中修事件
-
+                    List<EqpHistory> eqpHistory = new List<EqpHistory>();
+                    var _services = await _consulServiceProvider.GetServiceAsync("ExpertDataAndDeviceService");
+                    IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                    string types = (int)MyDictionary.EqpHistoryType.Install + "," 
+                        + (int)MyDictionary.EqpHistoryType.MediumMaintenance + ","
+                        + (int)MyDictionary.EqpHistoryType.MajorMaintenance;
+                    ApiResult result = await httpHelper.
+                        GetSingleItemRequest(_services + "/api/v1/EqpHistory/ListByType/" + types);
+                    if (result.code == Code.Success)
+                    {
+                        eqpHistory = JsonConvert.DeserializeObject<List<EqpHistory>>(result.data.ToString());
+                    }
                     // 循环设备判断寿命及大中修事件
                     List<Equipment> allEqp = _globalDataManager.AllEqp;
                     EquipmentConfig eqpConfig = _globalDataManager.EqpConfig;
@@ -50,12 +62,89 @@ namespace MSS.API.Core.EventServer
                     {
                         // 寿命
                         _checkLifeCycle(eqp, eqpConfig);
+                        _checkMediumMaintenance(eqp, eqpConfig, eqpHistory);
+                        _checkMajorMaintenance(eqp, eqpConfig, eqpHistory);
                     }
                     Thread.Sleep(30000);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.StackTrace);
+                }
+            }
+        }
+
+        private void _checkMediumMaintenance(Equipment eqp, EquipmentConfig eqpConfig, List<EqpHistory> eqpHistory)
+        {
+            DateTime? start = null;
+            EqpHistory his_medium = eqpHistory.Where(c => c.Type == 
+                MyDictionary.EqpHistoryType.MediumMaintenance && c.EqpID == eqp.ID).FirstOrDefault();
+            if (his_medium != null)
+            {
+                start = his_medium.CreatedTime;
+            }
+            else
+            {
+                EqpHistory his_install = eqpHistory.Where(c => c.Type ==
+                MyDictionary.EqpHistoryType.Install && c.EqpID == eqp.ID).FirstOrDefault();
+                if (his_install != null)
+                {
+                    start = his_install.CreatedTime;
+                }
+            }
+
+            if (start != null && eqpConfig != null)
+            {
+                DateTime dateRepair = ((DateTime)start).AddDays(eqp.MediumRepair);
+                if (dateRepair < DateTime.Now.AddDays(eqpConfig.beforeMaintainMiddle))
+                {
+                    string prefix = RedisKeyPrefix.Notification;
+                    string notiID = _cache.GetString(prefix + eqp.ID + "_" + 2);
+                    if (notiID == null)
+                    {
+                        int remain = (int)(dateRepair - DateTime.Now).TotalDays;
+                        string msg = String.Format("设备中修时间{0}{1}天",
+                            (remain > 0) ? "还有" : "超过", Math.Abs(remain));
+                        
+                        _addNotification(eqp, msg, 2, "中修");
+                    }
+                }
+            }
+        }
+
+        private void _checkMajorMaintenance(Equipment eqp, EquipmentConfig eqpConfig, List<EqpHistory> eqpHistory)
+        {
+            DateTime? start = null;
+            EqpHistory his_major = eqpHistory.Where(c => c.Type ==
+                MyDictionary.EqpHistoryType.MajorMaintenance && c.EqpID == eqp.ID).FirstOrDefault();
+            if (his_major != null)
+            {
+                start = his_major.CreatedTime;
+            }
+            else
+            {
+                EqpHistory his_install = eqpHistory.Where(c => c.Type ==
+                MyDictionary.EqpHistoryType.Install && c.EqpID == eqp.ID).FirstOrDefault();
+                if (his_install != null)
+                {
+                    start = his_install.CreatedTime;
+                }
+            }
+
+            if (start != null && eqpConfig != null)
+            {
+                DateTime dateRepair = ((DateTime)start).AddDays(eqp.LargeRepair);
+                if (dateRepair < DateTime.Now.AddDays(eqpConfig.beforeMaintainBig))
+                {
+                    string prefix = RedisKeyPrefix.Notification;
+                    string notiID = _cache.GetString(prefix + eqp.ID + "_" + 1);
+                    if (notiID == null)
+                    {
+                        int remain = (int)(dateRepair - DateTime.Now).TotalDays;
+                        string msg = String.Format("设备大修时间{0}{1}天",
+                            (remain > 0) ? "还有" : "超过", Math.Abs(remain));
+                        _addNotification(eqp, msg, 1, "大修");
+                    }
                 }
             }
         }
@@ -73,13 +162,17 @@ namespace MSS.API.Core.EventServer
             }
             if (start != null && eqpConfig != null)
             {
-                if (((DateTime)start).AddYears(eqp.LifeCycle) < DateTime.Now.AddDays(eqpConfig.beforeDead))
+                DateTime datelife = ((DateTime)start).AddYears(eqp.LifeCycle);
+                if (datelife < DateTime.Now.AddDays(eqpConfig.beforeDead))
                 {
                     string prefix = RedisKeyPrefix.Notification;
                     string notiID = _cache.GetString(prefix + eqp.ID + "_" + 0);
                     if (notiID == null)
                     {
-                        _addNotification(eqp, "寿命还有" + eqpConfig.beforeDead + "天到期", 0, "寿命");
+                        int remain = (int)(datelife - DateTime.Now).TotalDays;
+                        string msg = String.Format("寿命{0}{1}天",
+                            (remain > 0) ? "还有" : "超过", Math.Abs(remain));
+                        _addNotification(eqp, msg, 0, "寿命");
                     }
                 }
             }

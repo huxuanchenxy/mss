@@ -65,6 +65,20 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<Notification> GetNotificationByID(int notificationID)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM notification WHERE ID = @ID;";
+                Notification data = await c.QueryFirstOrDefaultAsync<Notification>(sql,
+                new
+                {
+                    ID = notificationID
+                });
+                return data;
+            });
+        }
+
         public async  Task<List<EarlyWarnning>> ListAllEarlyWarnning()
         {
             return await WithConnection(async c =>
@@ -108,6 +122,27 @@ namespace MSS.API.Dao.Implement
                     sql += " WHERE b.top_org = " + orgID;
                 }
                 var data = await c.QueryAsync<Notification>(sql);
+                return data.ToList();
+            });
+        }
+
+        public async Task<List<PidTable>> ListPidTableByOrg(int? orgID, int? eqpType)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT a.*, b.eqp_code, b.eqp_name, b.eqp_type, c.type_name, b.top_org"
+                    + " FROM pid_table a"
+                    + " JOIN equipment b ON a.eqp_id=b.id"
+                    + " JOIN equipment_type c ON c.id=b.eqp_type WHERE 1=1";
+                if (orgID != null)
+                {
+                    sql += " AND b.top_org = " + orgID;
+                }
+                if (eqpType != null)
+                {
+                    sql += " AND b.eqp_type = " + eqpType;
+                }
+                var data = await c.QueryAsync<PidTable>(sql);
                 return data.ToList();
             });
         }

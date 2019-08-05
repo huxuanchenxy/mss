@@ -12,166 +12,176 @@
     <!-- 内容 -->
     <div class="content-wrap">
 
-      <el-tabs v-model="activeName">
+      <el-tabs class="tab-height" v-model="activeName">
         <el-tab-pane label="报警" name="alarm">
           <el-container style="height:100%;">
-            <el-header height="100px" style="padding:0px">
-              <div>
-                <ul class="content-header">
-                  <li class="list number">
-                    设备编号
-                  </li>
-                  <li class="list number">
-                    设备名称
-                  </li>
-                  <li class="list number">
-                    设备类型
-                  </li>
-                  <li class="list number">
-                    等级
-                  </li>
-                  <li class="list number">
-                    内容
-                  </li>
-                  <li class="list last-update-time">
-                    发生时间
-                  </li>
-                </ul>
-                <div class="scroll">
-                  <el-scrollbar>
-                    <ul class="list-wrap">
-                      <li class="list" v-for="(item) in AlarmList1" :key="item.key">
-                        <div class="list-content">
-                          <div class="number">{{ item.eqpCode }}</div>
-                          <div class="number">{{ item.eqpName }}</div>
-                          <div class="number">{{ item.eqpTypeName }}</div>
-                          <div class="number">{{ item.level }}</div>
-                          <div class="number">{{ item.content }}</div>
-                          <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
-                        </div>
-                      </li>
-                    </ul>
-                  </el-scrollbar>
-                </div>
-              </div>
+            <el-header height="200px" style="padding:0px">
+              <el-container style="height:100%;">
+                <el-header height="40px" style="padding:0px">
+                  <ul class="content-header">
+                    <li class="list number">
+                      设备编号
+                    </li>
+                    <li class="list number">
+                      设备名称
+                    </li>
+                    <li class="list number">
+                      设备类型
+                    </li>
+                    <li class="list number">
+                      等级
+                    </li>
+                    <li class="list number">
+                      属性
+                    </li>
+                    <li class="list number">
+                      内容
+                    </li>
+                    <li class="list last-update-time">
+                      发生时间
+                    </li>
+                  </ul>
+                </el-header>
+                <el-main style="padding:0px">
+                  <ul class="list-wrap">
+                    <li class="list" v-for="(item) in AlarmList1" :key="item.key">
+                      <div class="list-content">
+                        <div class="number">{{ item.eqpCode }}</div>
+                        <div class="number">{{ item.eqpName }}</div>
+                        <div class="number">{{ item.eqpTypeName }}</div>
+                        <div class="number">{{ item.eLevel }}</div>
+                        <div class="number">{{ item.pidDes }}</div>
+                        <div class="number">{{ item.des }}</div>
+                        <div class="last-update-time">{{ transformDate(item.originTime) }}</div>
+                      </div>
+                    </li>
+                  </ul>
+                </el-main>
+              </el-container>
             </el-header>
             <el-main style="padding:0px">
               <!-- level 大于2 -->
-              <div>
-                <ul class="content-header">
-                  <li class="list number">
-                    设备编号
-                  </li>
-                  <li class="list number">
-                    设备名称
-                  </li>
-                  <li class="list number">
-                    设备类型
-                  </li>
-                  <li class="list number">
-                    等级
-                  </li>
-                  <li class="list number">
-                    内容
-                  </li>
-                  <li class="list last-update-time">
-                    发生时间
-                  </li>
-                </ul>
-                <div class="scroll">
-                  <el-scrollbar>
-                    <ul class="list-wrap">
-                      <li class="list" v-for="(item) in AlarmList2" :key="item.key">
-                        <div class="list-content">
-                          <div class="number">{{ item.eqpCode }}</div>
-                          <div class="number">{{ item.eqpName }}</div>
-                          <div class="number">{{ item.eqpTypeName }}</div>
-                          <div class="number">{{ item.level }}</div>
-                          <div class="number">{{ item.content }}</div>
-                          <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
-                        </div>
-                      </li>
-                    </ul>
-                  </el-scrollbar>
-                </div>
-              </div>
+              <el-container style="height:100%;">
+                <el-header height="40px" style="padding:0px">
+                  <ul class="content-header">
+                    <li class="list number">
+                      设备编号
+                    </li>
+                    <li class="list number">
+                      设备名称
+                    </li>
+                    <li class="list number">
+                      设备类型
+                    </li>
+                    <li class="list number">
+                      等级
+                    </li>
+                    <li class="list number">
+                      属性
+                    </li>
+                    <li class="list number">
+                      内容
+                    </li>
+                    <li class="list last-update-time">
+                      发生时间
+                    </li>
+                  </ul>
+                </el-header>
+                <el-main style="padding:0px">
+                  <ul class="list-wrap">
+                    <li class="list" v-for="(item) in AlarmList2" :key="item.key">
+                      <div class="list-content">
+                        <div class="number">{{ item.eqpCode }}</div>
+                        <div class="number">{{ item.eqpName }}</div>
+                        <div class="number">{{ item.eqpTypeName }}</div>
+                        <div class="number">{{ item.eLevel }}</div>
+                        <div class="number">{{ item.pidDes }}</div>
+                        <div class="number">{{ item.des }}</div>
+                        <div class="last-update-time">{{ transformDate(item.originTime) }}</div>
+                      </div>
+                    </li>
+                  </ul>
+                </el-main>
+              </el-container>
             </el-main>
           </el-container>
         </el-tab-pane>
-        <el-tab-pane label="预警" name="warnning">
-          <div>
-            <ul class="content-header">
-              <li class="list number">
-                设备编号
-              </li>
-              <li class="list number">
-                设备名称
-              </li>
-              <li class="list number">
-                设备类型
-              </li>
-              <li class="list number">
-                内容
-              </li>
-              <li class="list last-update-time">
-                发生时间
-              </li>
-            </ul>
-            <div class="scroll">
-              <el-scrollbar>
-                <ul class="list-wrap">
-                  <li class="list" v-for="(item) in WarnList" :key="item.key">
-                    <div class="list-content">
-                      <div class="number">{{ item.eqpCode }}</div>
-                      <div class="number">{{ item.eqpName }}</div>
-                      <div class="number">{{ item.eqpTypeName }}</div>
-                      <div class="number">{{ item.content }}</div>
-                      <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
-                    </div>
-                  </li>
-                </ul>
-              </el-scrollbar>
-            </div>
+        <el-tab-pane class="pane-height pane-notification" label="预警" name="warnning">
+          <ul class="content-header">
+            <li class="list number">
+              设备编号
+            </li>
+            <li class="list number">
+              设备名称
+            </li>
+            <li class="list number">
+              设备类型
+            </li>
+            <li class="list number">
+              内容
+            </li>
+            <li class="list last-update-time">
+              发生时间
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="(item) in WarnList" :key="item.key">
+                  <div class="list-content">
+                    <div class="number">{{ item.eqpCode }}</div>
+                    <div class="number">{{ item.eqpName }}</div>
+                    <div class="number">{{ item.eqpTypeName }}</div>
+                    <div class="number">{{ item.content }}</div>
+                    <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
+                  </div>
+                </li>
+              </ul>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="通知" name="notification">
-          <div>
-            <ul class="content-header">
-              <li class="list number">
-                设备编号
-              </li>
-              <li class="list number">
-                设备名称
-              </li>
-              <li class="list number">
-                设备类型
-              </li>
-              <li class="list number">
-                通知类型
-              </li>
-              <li class="list number">
-                内容
-              </li>
-              <li class="list last-update-time">
-                发生时间
-              </li>
-            </ul>
-            <div class="scroll">
-              <el-scrollbar>
-                <ul class="list-wrap">
-                  <li class="list" v-for="(item) in NotificationList" :key="item.key">
-                    <div class="list-content">
-                      <div class="number">{{ item.eqpCode }}</div>
-                      <div class="number">{{ item.eqpName }}</div>
-                      <div class="number">{{ item.eqpTypeName }}</div>
-                      <div class="number">{{ item.notificationTypeName }}</div>
-                      <div class="number">{{ item.content }}</div>
-                      <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
+        <el-tab-pane class="pane-height pane-notification" label="通知" name="notification">
+          <ul class="content-header">
+            <li class="list number">
+              设备编号
+            </li>
+            <li class="list number">
+              设备名称
+            </li>
+            <li class="list number">
+              设备类型
+            </li>
+            <li class="list number">
+              通知类型
+            </li>
+            <li class="list content">
+              内容
+            </li>
+            <li class="list last-update-time">
+              发生时间
+            </li>
+            <li class="list number">
+              操作
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="(item) in NotificationList" :key="item.key">
+                  <div class="list-content">
+                    <div class="number">{{ item.eqpCode }}</div>
+                    <div class="number">{{ item.eqpName }}</div>
+                    <div class="number">{{ item.eqpTypeName }}</div>
+                    <div class="number">{{ item.notificationTypeName }}</div>
+                    <div class="content">{{ item.content }}</div>
+                    <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
+                    <div class="number">
+                      <li @click="confirmNotification(item.id)"><x-button>确认</x-button></li>
                     </div>
-                  </li>
-                </ul>
-              </el-scrollbar>
-            </div>
+                  </div>
+                </li>
+              </ul>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -284,8 +294,15 @@ export default {
       api.getAlarm().then(res => {
         // this.loading = false
         if (res.code === ApiRESULT.Success) {
-          this.AlarmList1 = res.data.filter(item => item.level < 2)
-          this.AlarmList2 = res.data.filter(item => item.level >= 2)
+          this.AlarmList1 = res.data.filter(item => item.eLevel < 2)
+          this.AlarmList2 = res.data.filter(item => item.eLevel >= 2)
+        }
+      }).catch(err => console.log(err))
+    },
+    confirmNotification (id) {
+      api.deleteNotification(id).then(res => {
+        if (res.code === ApiRESULT.Success) {
+          debugger
         }
       }).catch(err => console.log(err))
     }
@@ -303,7 +320,7 @@ $con-height: $content-height - 56;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 30px;
+    height: 40px;
     padding: 0 PXtoEm(24);
     background: rgba(36,128,198,.5);
 
@@ -311,9 +328,25 @@ $con-height: $content-height - 56;
       color: $color-white;
     }
   }
-
+  .tab-height{
+    height: percent($con-height, $con-height);
+  }
+  /deep/ .el-tabs__header{
+    height: percent(50, $con-height)
+  }
+  /deep/ .el-tabs__content{
+    height: percent($con-height - 50, $con-height)
+  }
+  .pane-height{
+    height: 100%
+  }
+  .pane-notification{
+    .content-header{
+      height: percent(50, $con-height)
+    }
+  }
   .scroll{
-    height: percent($con-height - 50, $con-height);
+    height: percent($con-height - 50, $con-height)
   }
 
   .list-wrap{
@@ -378,6 +411,9 @@ $con-height: $content-height - 56;
   .btn-wrap{
     width: 10%;
   }
+  .content{
+    width: 15%;
+  }
   /deep/ .el-checkbox__label{
     display: none;
   }
@@ -400,6 +436,6 @@ $con-height: $content-height - 56;
   .state{
     width: 5%;
   }
-
 }
+
 </style>
