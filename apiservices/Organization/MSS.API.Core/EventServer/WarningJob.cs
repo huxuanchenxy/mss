@@ -39,13 +39,13 @@ namespace MSS.API.Core.EventServer
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            try
-            {
-                string server = _config.GetValue<string>("influxdb:server");
-                string db = _config.GetValue<string>("influxdb:db");
-                string query = "http://" + server + "/query?db=" + db;
+            string server = _config.GetValue<string>("influxdb:server");
+            string db = _config.GetValue<string>("influxdb:db");
+            string query = "http://" + server + "/query?db=" + db;
 
-                while (true)
+            while (true)
+            {
+                try
                 {
                     // 如果pid数据没有加载完毕，等待。。
                     if (_globalDataManager.AllPID.Count ==0)
@@ -65,12 +65,12 @@ namespace MSS.API.Core.EventServer
                         sTime = (TimeSpan)_lastTime;
                     }
                     _lastTime = eTime;
-                    // string sql = "&q=SELECT time, Value FROM testlog where"
-                    //     + " PID='r_s01_t1_a_0393' and time > " + (long)sTime.TotalMilliseconds + "ms and"
-                    //     + " time <= " + (long)eTime.TotalMilliseconds + "ms";
-                    string sql = "&q=SELECT * FROM testlog where"
-                        + " PID='r_s01_t1_a_0393' and time > " + 1560846493559 + "ms and"
-                        + " time <= " + 1560866593559 + "ms";
+                    string sql = "&q=SELECT time, Value FROM testlog where"
+                        + " PID='r_s01_t1_a_0393' and time > " + (long)sTime.TotalMilliseconds + "ms and"
+                        + " time <= " + (long)eTime.TotalMilliseconds + "ms";
+                    // string sql = "&q=SELECT * FROM testlog where"
+                    //     + " PID='r_s01_t1_a_0393' and time > " + 1560846493559 + "ms and"
+                    //     + " time <= " + 1560866593559 + "ms";
                     IHttpClientHelper<InfluxdbResult> httpHelper = new HttpClientHelper<InfluxdbResult>();
                     InfluxdbResult result = await httpHelper.
                         GetSingleItemRequest(query + sql);
@@ -112,12 +112,14 @@ namespace MSS.API.Core.EventServer
                         // sleep
                         Thread.Sleep(2000);
                     }
+                    
+                    
                 }
-                
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.StackTrace);
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.StackTrace);
+                    Thread.Sleep(30000);
+                }
             }
         }
 
