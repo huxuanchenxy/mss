@@ -13,10 +13,17 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> ListWarnningByOrg(int? orgID);
         // 获取所有未处理通知 orgID 为null 取所有
         Task<ApiResult> ListNotificationByOrg(int? orgID);
+        Task<ApiResult> ListAlarmByOrg(int? orgID);
+
+        // 查询报警历史记录
+        Task<ApiResult> ListAlarmHistory(AlarmParam param);
 
         // 查询预警历史记录
         Task<ApiResult> ListEarlyWarningHistory(WarningParam param);
         // 查询通知记录
         Task<ApiResult> ListNotificationHistory(NotificationParam param);
+
+        // 删除通知
+        Task<ApiResult> DeleteNotification(int notificationId);
     }
 }

@@ -15,7 +15,13 @@ namespace MSS.API.Model.Data
         public double? DW { get; set; }
         public double? UUP { get; set; }
         public double? DDW { get; set; }
+        
+        // ex
+        public string EqpCode { get; set; }
+        public string EqpName { get; set; }
         public int EqpTypeID { get; set; }
+        public string EqpTypeName { get; set; }
+        public int TopOrg { get; set; }
     }
 
     public class PidTableMap : EntityMap<PidTable>
@@ -31,7 +37,13 @@ namespace MSS.API.Model.Data
             Map(o => o.DW).ToColumn("DW");
             Map(o => o.UUP).ToColumn("UUP");
             Map(o => o.DDW).ToColumn("DDW");
+
+            // ex
+            Map(o => o.EqpCode).ToColumn("eqp_code");
+            Map(o => o.EqpName).ToColumn("eqp_name");
             Map(o => o.EqpTypeID).ToColumn("eqp_type");
+            Map(o => o.EqpTypeName).ToColumn("type_name");
+            Map(o => o.TopOrg).ToColumn("top_org");
         }
     }
 }

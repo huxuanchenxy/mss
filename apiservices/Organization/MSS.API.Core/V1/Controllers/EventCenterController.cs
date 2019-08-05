@@ -110,8 +110,74 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
 
+        [HttpGet("alarm")]
+        public async Task<ActionResult<ApiResult>> GetAlarm()
+        {
+            ApiResult ret = new ApiResult { code = Code.Failure };
+            ApiResult topOrg = await _orgService.GetTopNodeByUserID(_userId);
+            if (topOrg.code == Code.Success)
+            {
+                int topOrgID = 0;
+                if (topOrg.data != null)
+                {
+                    topOrgID = (topOrg.data as OrgTree).ID;
+                    ret = await _warnService.ListAlarmByOrg(topOrgID);
+                }
+                else
+                {
+                    var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
+                    IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                    ApiResult result = await httpHelper.
+                        GetSingleItemRequest(_services + "/api/v1/user/" + _userId);
+                    JObject jobj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
+                    if ((bool)jobj["is_super"])
+                    {
+                        ret = await _warnService.ListAlarmByOrg(null);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        [HttpDelete("notification/{id}")]
+        public async Task<ActionResult<ApiResult>> DeleteNotification(int id)
+        {
+            ApiResult ret = await _warnService.DeleteNotification(id);
+            return ret;
+        }
+
+        [HttpGet("history/alarm")]
+        public async Task<ActionResult<ApiResult>> GetAlarmHistoryByPage([FromQuery]AlarmParam query)
+        {
+            ApiResult ret = new ApiResult { code = Code.Failure };
+            ApiResult topOrg = await _orgService.GetTopNodeByUserID(_userId);
+            if (topOrg.code == Code.Success)
+            {
+                if (topOrg.data != null)
+                {
+                    query.orgID = (topOrg.data as OrgTree).ID;
+                }
+                else
+                {
+                    var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
+                    IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                    ApiResult result = await httpHelper.
+                        GetSingleItemRequest(_services + "/api/v1/user/" + _userId);
+                    JObject jobj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
+                    if ((bool)jobj["is_super"])
+                    {
+                        query.orgID = null;
+                    }
+                }
+                ret = await _warnService.ListAlarmHistory(query);
+            }
+
+            return ret;
+        }
+
         [HttpGet("history/warning")]
-        public async Task<ActionResult<ApiResult>> GetWarningSByPage([FromQuery]WarningParam query)
+        public async Task<ActionResult<ApiResult>> GetWarningHistoryByPage([FromQuery]WarningParam query)
         {
             ApiResult ret = new ApiResult { code = Code.Failure };
             ApiResult topOrg = await _orgService.GetTopNodeByUserID(_userId);
@@ -140,7 +206,7 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpGet("history/notification")]
-        public async Task<ActionResult<ApiResult>> GetNotificationByPage([FromQuery]NotificationParam query)
+        public async Task<ActionResult<ApiResult>> GetNotificationHistoryByPage([FromQuery]NotificationParam query)
         {
             ApiResult ret = new ApiResult { code = Code.Failure };
             ApiResult topOrg = await _orgService.GetTopNodeByUserID(_userId);

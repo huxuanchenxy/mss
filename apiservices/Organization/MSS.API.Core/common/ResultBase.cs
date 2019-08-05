@@ -4,17 +4,15 @@ using System.Text;
 
 namespace MSS.API.Core.Common
 {
-    public enum RESULT
+    public class PageData<T>
     {
-        FAIL,
-        OK,
-        REINSERT,
-        NOTFOUNT
-    }
-    public class DataResult
-    {
-        public RESULT Result { get; set; }
-        public string Message { get; set; }
-        public object Data { get; set; }
+        /// <summary>
+        /// 查询结果集
+        /// </summary>
+        public List<T> rows { get; set; }
+        /// <summary>
+        /// 总数
+        /// </summary>
+        public int total { get; set; }
     }
 }

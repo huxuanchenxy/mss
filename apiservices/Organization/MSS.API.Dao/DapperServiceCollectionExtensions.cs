@@ -40,6 +40,7 @@ namespace MSS.API.Dao
                 config.AddMap(new EquipmentMap());
                 config.AddMap(new EarlyWarnningMap());
                 config.AddMap(new NotificationMap());
+                config.AddMap(new PidTableMap());
             });
             return services;
         }

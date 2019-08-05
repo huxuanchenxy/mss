@@ -83,6 +83,8 @@ namespace MSS.API.Core
             services.AddTransient<WarningJob>();
             // 设备维修通知任务
             services.AddTransient<NotificationJob>();
+            // 报警事件监听任务
+            services.AddTransient<AlarmJob>();
             
             // 报警队列
             services.AddSingleton<EventQueues>();

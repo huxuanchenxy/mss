@@ -21,10 +21,15 @@ namespace MSS.API.Dao.Interface
         // 更新报警
         Task<Notification> UpdateNotification(Notification noti);
 
+        Task<Notification> GetNotificationByID(int notificationID);
+
         // 获取当前未处理的预警 orgID为null时返回所有数据
         Task<List<EarlyWarnning>> ListEarlyWarnningByOrg(int? orgID);
         // 获取当前未处理的通知 orgID为null时返回所有数据
         Task<List<Notification>> ListNotificationByOrg(int? orgID);
+
+        // 获取此组织下所有pid
+        Task<List<PidTable>> ListPidTableByOrg(int? orgID, int? eqpType);
 
         // 查询预警历史
         Task<PageData<EarlyWarnning>> ListEarlyWarningHistory(WarningParam param);
