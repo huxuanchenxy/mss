@@ -10,9 +10,12 @@ export default {
   GetTeamGroupList: () => { return axios.get(`${api}/DeviceMaintainReg/GetTeamGroupList`).then(res => res.data) },
   GetDirectorList: () => { return axios.get(`${api}/DeviceMaintainReg/GetDirectorList`).then(res => res.data) },
   GetEquipmentTypeList: () => { return axios.get(`${api}/DeviceMaintainReg/GetEquipmentTypeList`).then(res => res.data) },
-  GetDeviceListByTypeId: id => { return axios.get(`${api}/DeviceMaintainReg/GetDeviceListByTypeId/${id}`).then(res => res.data) },
+  GetDeviceListByTypeId: id => { return axios.get(`${api}/LifeTimeKeyMaintain/GetDeviceListByTypeId/${id}`).then(res => res.data) },
   Delete: id => { return axios.delete(`${api}/DeviceMaintainReg/Delete/${id}`).then(res => res.data) },
+  GetLifeTimeKeyListByPage: parm => { return axios.get(`${api}/LifeTimeKeyMaintain/GetLifeTimeKeyListByPage`, {params: parm}).then(res => res.data) },
   DeleteList: Ids => { return axios.delete(`${api}/DeviceMaintainReg/DeleteList/${Ids}`, Ids).then(res => res.data) },
 
-  ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) }
+  ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) },
+  getWorkingApplicationByID: id => { return axios.get(`${api}/WorkingApplication/${id}`).then(res => res.data) },
+  getTroubleReportByID: id => { return axios.get(`${api}/TroubleReport/${id}`).then(res => res.data) }
 }

@@ -20,17 +20,38 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">设备类别<em class="validate-mark">*</em></span>
-              <div class="inp">
+              <!-- <span class="text">设备<em class="validate-mark">*</em></span> -->
+              <!-- <div class="inp">
                 <el-cascader clearable
                              change-on-select
                              :show-all-levels="true"
                              :options="deviceTypeList"
                              v-model="deviceType.text">
                 </el-cascader>
-              </div>
+              </div> -->
+            <span class="text">设备名称<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-select v-model="deviceType.text" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType.text)">
+                <option disabled value="" selected>请选择</option>
+                <el-option
+                  v-for="item in deviceTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>&nbsp;&nbsp;
+            <div class="inp">
+               <el-cascader clearable
+                             :props="defaultParams1"
+                             change-on-select
+                             :show-all-levels="true"
+                             :options="devicelist"
+                             v-model="device.text">
+                </el-cascader>
+          </div>
             </div>
-            <p class="validate-tips">{{ deviceType.tips }}</p>
+            <p class="validate-tips">{{ device.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
@@ -64,7 +85,7 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">维护负责人<em class="validate-mark">*</em></span>
+              <span class="text0">维护负责人<em class="validate-mark">*</em></span>
               <div class="inp">
                 <el-select v-model="director.text"
                            clearable
@@ -99,7 +120,7 @@
           </li>
         </ul>
         <div class="con-padding-horizontal cause">
-          <span class="text">备件更换过程记录<em class="validate-mark">*</em></span>
+          <span class="text">备件更换过程记录<em class="validate-mark">*&nbsp; &nbsp;&nbsp;</em></span>
           <el-input type="textarea"
                     v-model="detail_desc.text"
                     placeholder="请输入内容"></el-input>
@@ -122,10 +143,11 @@
             :on-preview="preview">
             <i class="iconfont icon-pdf"></i>
           </el-upload> -->
-          <upload-pdf :fileType="fileType"
+          <!-- <upload-pdf :fileType="fileType"
                       label="附件上传"
                       :fileIDs="fileIDs"
-                      @getFileIDs="getFileID"></upload-pdf>
+                      @getFileIDs="getFileID"></upload-pdf> -->
+        <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
         </div>
         <!-- 按钮 -->
         <div class="btn-group">
@@ -150,10 +172,12 @@
 <script>
 import { validateInputCommon, vInput, FileType } from '@/common/js/utils.js'
 import api from '@/api/DeviceMaintainRegApi.js'
+import { systemResource } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import UploadPDF from '@/components/UploadPDF'
 import axios from '@/api/interceptors'
 import apiOrg from '@/api/orgApi'
+import eqpApi from '@/api/eqpApi.js'
 export default {
   name: 'addDeviceMaintain',
   components: {
@@ -166,8 +190,10 @@ export default {
       isShow: this.$route.params.mark,
       editID: this.$route.params.id,
       fileIDs: '',
-      fileIDsEdit: '',
+      fileIDsEdit: [], // '',
       fileType: FileType.DeviceMaintain_attach,
+      systemResource: systemResource.maintainReg,
+      attch_file: '',
       maintain_date: {
         text: '',
         tips: ''
@@ -176,7 +202,7 @@ export default {
         text: '',
         tips: ''
       },
-      devicelist: [],
+      devicelist: null,
       detail_desc: {
         text: '',
         tips: ''
@@ -198,6 +224,11 @@ export default {
       teamList: [],
       defaultParams: {
         label: 'label',
+        value: 'id',
+        children: 'children'
+      },
+      defaultParams1: {
+        label: 'name',
         value: 'id',
         children: 'children'
       },
@@ -224,19 +255,22 @@ export default {
       this.getEditData()
     }
     // 设备配置类型列表
-    api.GetEquipmentTypeList().then(res => {
-      res.data.map((e, i) => {
-        if (e.children != null && e.children.length > 0) {
-          this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName, children: []
-          })
-          e.children.map((item) => {
-            this.deviceTypeList[i].children.push({ value: item.id, label: item.deviceName })
-          })
-        } else {
-          this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName })
-        }
-      })
+    eqpApi.getEqpTypeAll().then(res => {
+      this.deviceTypeList = res.data
     }).catch(err => console.log(err))
+    // api.GetEquipmentTypeList().then(res => {
+    //   res.data.map((e, i) => {
+    //     if (e.children != null && e.children.length > 0) {
+    //       this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName, children: []
+    //       })
+    //       e.children.map((item) => {
+    //         this.deviceTypeList[i].children.push({ value: item.id, label: item.deviceName })
+    //       })
+    //     } else {
+    //       this.deviceTypeList.push({ value: e.id, label: e.deviceTypeName })
+    //     }
+    //   })
+    // }).catch(err => console.log(err))
     // 设备配置类型列表
     api.GetDirectorList().then(res => {
       this.directorList = res.data
@@ -259,8 +293,9 @@ export default {
         })
         return
       }
-      if (this.fileIDsEdit !== '') {
-        let arr = this.fileIDsEdit.split(',')
+      // if (this.fileIDsEdit !== '') {
+      if (this.fileIDsEdit.length > 0) {
+        let arr = this.fileIDsEdit // this.fileIDsEdit.split(',')
         for (let i = 0; i < arr.length; i++) {
           if (arr[i] === '') {
             this.$message({
@@ -271,31 +306,37 @@ export default {
           }
         }
       }
+      if (this.fileIDsEdit.length > 0) {
+        this.fileType = this.fileIDsEdit[0].type
+        this.attch_file = this.fileIDsEdit[0].ids
+      }
       let model = {
-        device_type_id: 0, // this.deviceType.text,
-        device_id: 0, // this.device.text,
+        device_type_id: this.deviceType.text,
+        device_id: this.device.text[this.device.text.length - 1],
+        device_id_path: this.device.text.join(','),
         team_group_path: this.teamPath.text.join(','),
         team_group_id: this.team_group.text,
         director_id: this.director.text,
         detail_desc: this.detail_desc.text,
         maintain_date: this.maintain_date.text,
         file_type: this.fileType,
-        attch_file: this.fileIDsEdit,
+        attch_file: this.attch_file,
+        origin_file: JSON.stringify(this.fileIDsEdit),
         is_deleted: '0'
       }
-      switch (this.deviceType.text.length) {
-        case 0:
-          model.device_type_id = 0
-          model.device_id = 0
-          break
-        case 1:
-          model.device_type_id = this.deviceType.text[0]
-          break
-        case 2:
-          model.device_type_id = this.deviceType.text[0]
-          model.device_id = this.deviceType.text[1]
-          break
-      }
+      // switch (this.deviceType.text.length) {
+      //   case 0:
+      //     model.device_type_id = 0
+      //     model.device_id = 0
+      //     break
+      //   case 1:
+      //     model.device_type_id = this.deviceType.text[0]
+      //     break
+      //   case 2:
+      //     model.device_type_id = this.deviceType.text[0]
+      //     model.device_id = this.deviceType.text[1]
+      //     break
+      // }
       if (this.isShow === 'add') {
         // 添加站区
         api.Save(model).then(res => {
@@ -345,8 +386,15 @@ export default {
       api.GetDeviceMaintainRegById(id).then(res => {
         this.loading = false
         let _res = res.data
-        this.deviceType.text = this.strToIntArr(_res.device_type_id + ',' + _res.device_id)
-        this.fileIDs = _res.attch_file
+        this.deviceType.text = _res.device_type_id // this.strToIntArr(_res.device_type_id + ',' + _res.device_id)
+        api.GetDeviceListByTypeId(_res.device_type_id).then(res => {
+          this.devicelist = res.data
+          this.device.text = this.strToIntArr(_res.device_id_path)
+        }).catch(err => {
+          console.log(err)
+        })
+        // this.device.text = this.strToIntArr(_res.device_id_path)
+        this.fileIDs = _res.uploadFiles // _res.origin_file
         this.teamPath.text = this.strToIntArr(_res.team_group_path)
         this.team_group.text = _res.team_group_id
         this.director.text = _res.director_id
@@ -403,12 +451,33 @@ export default {
         return true
       }
     },
-    validatedeviceTypeSelect () {
+    validatedeviceTypeSelect (val) {
+      if (val === '') {
+        this.devicelist = []
+        this.deviceType.text = ''
+      }
+      api.GetDeviceListByTypeId(val).then(res => {
+        this.devicelist = res.data
+        this.deviceType.id = ''
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    validatedeviceType () {
       if (this.deviceType.text === '') {
         this.deviceType.tips = '此项必选'
         return false
       } else {
         this.deviceType.tips = ''
+        return true
+      }
+    },
+    validatedevice () {
+      if (this.device.text === '') {
+        this.device.tips = '此项必选'
+        return false
+      } else {
+        this.device.tips = ''
         return true
       }
     },
@@ -459,22 +528,27 @@ export default {
         this.device.text = ''
       }
       api.GetDeviceListByTypeId(val).then(res => {
-        this.devicelist = res.data
-        this.device.text = ''
+        if (res.data.length > 0) {
+          this.devicelist = res.data
+          this.device.text = ''
+        } else {
+          this.devicelist = null
+          this.device.text = '无数据'
+        }
       }).catch(err => {
         console.log(err)
       })
     },
     validateAll () {
-      if (!this.validatedeviceTypeSelect()) return false
-      // if (!this.validatedeviceSelect()) return false
+      if (!this.validatedeviceType()) return false
+      if (!this.validatedevice()) return false
       if (!this.validateteam_groupSelect()) return false
       if (!this.validatedirectorSelect()) return false
       if (!validateInputCommon(this.maintain_date)) return false
       if (!validateInputCommon(this.detail_desc)) return false
       return true
     },
-    getFileID (val) {
+    getFileIDs (val) {
       this.fileIDsEdit = val
     }
   }
@@ -490,12 +564,13 @@ export default {
     height: 100%;
   }
 }
-
 .header {
   display: flex;
   justify-content: space-between;
 }
-
+ .text1 {
+    width: 14%;
+  }
 // 顶部信息
 .middle {
   position: relative;
@@ -541,7 +616,6 @@ export default {
       }
     }
   }
-
   .sub-list-wrap {
     .list {
       margin-right: 40px;
@@ -597,7 +671,9 @@ export default {
     .text {
       width: 28%;
     }
-
+    .text0 {
+      width: 23%;
+    }
     &:nth-of-type(3n + 1) {
       justify-content: flex-start;
     }
@@ -611,7 +687,7 @@ export default {
   display: flex;
   margin-top: 20px;
   align-items: center;
-
+  width: 90%;
   .el-textarea {
     flex: 1;
     width: auto;

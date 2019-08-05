@@ -16,28 +16,28 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="">设备名称</label>
+            <label for="">设备类别</label>
             <div class="inp">
-              <!-- <el-select v-model="deviceType" clearable placeholder="请选择">
+              <el-select v-model="deviceType" clearable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType)">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in deviceTypeList"
-                 :key="item.key"
-                 :value="item.id"
-                 :label="item.deviceTypeName">
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
                  </el-option>
-              </el-select> -->
-              <el-cascader clearable
+              </el-select>
+              <!-- <el-cascader clearable
                            :show-all-levels="true"
                            :options="deviceTypeList"
                            v-model="deviceType">
-              </el-cascader>
+              </el-cascader> -->
             </div>
           </div>
-          <!-- <div class="input-group">
+          <div class="input-group">
             <label for="">设备名称</label>
             <div class="inp">
-              <el-select v-model="deviceName" clearable placeholder="请选择">
+              <!-- <el-select v-model="deviceName" clearable placeholder="请选择">
                 <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in devicelist"
@@ -45,9 +45,16 @@
                  :value="item.id"
                  :label="item.deviceName">
                  </el-option>
-              </el-select>
+              </el-select> -->
+               <el-cascader clearable
+                             :props="defaultParams1"
+                             change-on-select
+                             :show-all-levels="true"
+                             :options="devicelist"
+                             v-model="deviceName">
+                </el-cascader>
             </div>
-          </div> -->
+          </div>
           <div class="input-group">
             <label for="">负责班组</label>
             <div class="inp">
@@ -200,14 +207,19 @@
                 <div class="number">{{ item.director_name }}</div>
                 <div class="name">{{ item.maintain_date }}</div>
                 <div class="upload-cascader">
-                  <el-cascader clearable
+                  <!-- <el-cascader clearable
                              @change="preview"
                              :show-all-levels="false"
                              :options="item.arr">
-                </el-cascader>
+                </el-cascader> -->
+                 <el-cascader clearable
+                    @change="preview"
+                    :show-all-levels="false"
+                    :options="item.uploadFileArr">
+                  </el-cascader>
                 </div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
-                <div class="last-maintainer">{{ '管理员' }}</div>
+                <div class="last-maintainer">{{ item.updated_name }}</div>
               </div>
             </li>
           </ul>
@@ -251,8 +263,9 @@
   </div>
 </template>
 <script>
-import { transformDate, FILE_SERVER_PATH } from '@/common/js/utils.js'
+import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import api from '@/api/DeviceMaintainRegApi.js'
 import eqpApi from '@/api/eqpApi.js'
 import apiOrg from '@/api/orgApi'
@@ -266,10 +279,11 @@ export default {
       title: ' | 设备维修',
       maintain_date: '',
       deviceName: '',
-      devicelist: [],
+      devicelist: null,
       DeviceMaintainRegID: '',
       teamGroupid: '',
       TeamGroupList: [],
+      uploadFile: {},
       directorid: '',
       directorList: [],
       deviceType: '',
@@ -289,6 +303,11 @@ export default {
       },
       defaultParams: {
         label: 'label',
+        value: 'id',
+        children: 'children'
+      },
+      defaultParams1: {
+        label: 'name',
         value: 'id',
         children: 'children'
       },
@@ -329,27 +348,29 @@ export default {
       this.teamList = res.data
     }).catch(err => console.log(err))
     // 设备配置类型列表
-    api.GetEquipmentTypeList().then(res => {
-      res.data.map((e, i) => {
-        if (e.children != null && e.children.length > 0) {
-          this.deviceTypeList.push({'value': e.id, 'label': e.deviceTypeName, 'children': []
-          })
-          e.children.map((item) => {
-            this.deviceTypeList[i].children.push({ 'value': item.id, 'label': item.deviceName })
-          })
-        } else {
-          this.deviceTypeList.push({ 'value': e.id, 'label': e.deviceTypeName
-          })
-        }
-      })
-    }).catch(err => console.log(err))
+    // api.GetEquipmentTypeList().then(res => {
+    //   res.data.map((e, i) => {
+    //     if (e.children != null && e.children.length > 0) {
+    //       this.deviceTypeList.push({'value': e.id, 'label': e.deviceTypeName, 'children': []
+    //       })
+    //       e.children.map((item) => {
+    //         this.deviceTypeList[i].children.push({ 'value': item.id, 'label': item.deviceName })
+    //       })
+    //     } else {
+    //       this.deviceTypeList.push({ 'value': e.id, 'label': e.deviceTypeName
+    //       })
+    //     }
+    //   })
+    // }).catch(err => console.log(err))
     // 设备配置类型列表
+    eqpApi.getEqpTypeAll().then(res => {
+      this.deviceTypeList = res.data
+    }).catch(err => console.log(err))
     api.GetDirectorList().then(res => {
       this.directorList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
-    setTimeout(null, 200)
     this.searchResult(this.currentPage)
   },
   methods: {
@@ -363,8 +384,11 @@ export default {
       if (val.length < 1) {
         return
       }
-      this.centerDialogVisible = true
-      this.previewUrl = FILE_SERVER_PATH + val[val.length - 1]
+      let id = val[val.length - 1]
+      if (isPreview(id, this.uploadFile[id].label)) {
+        this.centerDialogVisible = true
+        this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+      }
     },
     // 班组下拉选中，过滤非班组
     cascader_change_copy (val) {
@@ -403,41 +427,52 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        deviceType: '', // this.deviceType.text,
-        deviceId: '', // this.deviceName,
+        deviceType: this.deviceType,
+        deviceId: this.deviceName[this.deviceName.length - 1],
         TeamGroup: this.teamGroupid,
         Director: this.directorid,
         maintain_date: this.maintain_date
       }
-      if (this.deviceType !== '') {
-        switch (this.deviceType.length) {
-          case 0:
-            parm.deviceType = ''
-            parm.deviceId = ''
-            break
-          case 1:
-            parm.deviceType = this.deviceType[0]
-            break
-          case 2:
-            parm.deviceType = this.deviceType[0]
-            parm.deviceId = this.deviceType[1]
-            break
-        }
-      }
-      api.GetListByPage(parm).then(res8 => {
-        setTimeout(null, 2000)
+      // if (this.deviceType !== '') {
+      //   switch (this.deviceType.length) {
+      //     case 0:
+      //       parm.deviceType = ''
+      //       parm.deviceId = ''
+      //       break
+      //     case 1:
+      //       parm.deviceType = this.deviceType[0]
+      //       break
+      //     case 2:
+      //       parm.deviceType = this.deviceType[0]
+      //       parm.deviceId = this.deviceType[1]
+      //       break
+      //   }
+      // }
+      api.GetListByPage(parm).then(res => {
         this.loading = false
-        if (res8.code === 0) {
-          res8.data.list.map(item => {
+        if (res.code === 0) {
+          res.data.list.map(item => {
+            // item.updatedTime = transformDate(item.updatedTime)
+            // // item.team_group_name = this.Getteamgroupname(item.team_group_id)
+            // if (item.attch_file !== null && item.attch_file !== '') {
+            //   this.InvokeOutApI(item)
+            // } else {
+            //   this.DeviceMaintainRegList.push(item)
+            // }
             item.updatedTime = transformDate(item.updatedTime)
-            item.team_group_name = this.Getteamgroupname(item.team_group_id)
-            if (item.attch_file !== null && item.attch_file !== '') {
-              this.InvokeOutApI(item)
+            if (item.uploadFiles !== null && item.uploadFiles !== '[]') {
+              item.uploadFileArr = JSON.parse(item.uploadFiles)
+              item.uploadFileArr.map(val => {
+                val.children.map(item => {
+                  this.uploadFile[item.value] = item
+                })
+              })
             } else {
-              this.DeviceMaintainRegList.push(item)
+              item.uploadFileArr = null // []
             }
+            this.DeviceMaintainRegList = res.data.list
           })
-          this.total = res8.data.total
+          this.total = res.data.total
         }
       }).catch(err => console.log(err))
     },
@@ -593,7 +628,23 @@ export default {
       this.bCheckAll ? this.DeviceMaintainRegList.map(val => this.editDeviceMaintainRegIDList.push(val.id)) : this.editDeviceMaintainRegIDList = []
       this.emitEditID()
     },
-
+    validatedeviceTypeSelect (val) {
+      if (val === '') {
+        this.devicelist = []
+        this.deviceType.text = ''
+      }
+      api.GetDeviceListByTypeId(val).then(res => {
+        if (res.data.length > 0) {
+          this.devicelist = res.data
+          this.deviceType.id = ''
+        } else {
+          this.devicelist = null
+          this.deviceType.id = ''
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.bCheckAll = false

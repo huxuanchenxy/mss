@@ -90,9 +90,25 @@ namespace MSS.API.Core.V1.Business
                         children.Add(new { id = e.WorkingOrder });
                         content = e.TypeName;
                     }
+                    int detailType = 1;
+                    switch (groupType.Key)
+                    {
+                        case (int)MyDictionary.EqpHistoryType.TroubleReport:
+                            detailType = 2;
+                            break;
+                        case (int)MyDictionary.EqpHistoryType.Install:
+                        case (int)MyDictionary.EqpHistoryType.Expiration:
+                        case (int)MyDictionary.EqpHistoryType.FirstMajorConstructio:
+                        case (int)MyDictionary.EqpHistoryType.MajorMaintenance:
+                        case (int)MyDictionary.EqpHistoryType.MediumMaintenance:
+                        case (int)MyDictionary.EqpHistoryType.SecondaryMajorConstructio:
+                        case (int)MyDictionary.EqpHistoryType.TroubleMaintenance:
+                            detailType = 1;
+                            break;
+                    }
                     objs.Add(new
                     {
-                        isFile=false,
+                        detailType,
                         tag,
                         stage,
                         content,

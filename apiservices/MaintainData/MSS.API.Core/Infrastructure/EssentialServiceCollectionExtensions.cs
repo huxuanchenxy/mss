@@ -14,7 +14,10 @@ namespace MSS.API.Core.Infrastructure
             if (services == null) throw new ArgumentNullException(nameof(services)); 
             services.AddTransient<IExpertDataService, ExpertDataService>();
             services.AddTransient<IDeviceMaintainRegService, DeviceMaintainRegService>();
+            services.AddTransient<ILifeTimeKeyMaintainService, LifeTimeKeyMaintainService>();
             services.AddTransient<IEqpHistoryService, EqpHistoryService>();
+            services.AddTransient<IWorkingApplicationService, WorkingApplicationService>();
+            services.AddTransient<ITroubleReportService, TroubleReportService>();
             return services;
         }
     }

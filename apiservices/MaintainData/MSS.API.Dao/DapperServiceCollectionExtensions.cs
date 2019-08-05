@@ -21,8 +21,11 @@ namespace MSS.API.Dao
             optionsSection.Bind(options);
             services.AddSingleton<DapperOptions>(options); 
             services.AddTransient<Itb_expert_dataRepo<tb_expert_data>, Tb_expert_dataRepo>();
-            services.AddTransient<Itb_devicemaintain_regRepo<tb_devicemaintain_reg>, tb_devicemaintain_regRepo>();
+            services.AddTransient<Itb_devicemaintain_regRepo<tb_devicemaintain_reg>, tb_devicemaintain_regRepo>(); 
+            services.AddTransient<ILifeTimeKeyMaintainRepo<LifeTimeKeyMaintainInfo>, LifeTimeKeyMaintainRepo>(); 
             services.AddTransient<IEqpHistoryRepo<EqpHistory>, EqpHistoryRepo>();
+            services.AddTransient<IWorkingApplicationRepo<WorkingApplication>, WorkingApplicationRepo>();
+            services.AddTransient<ITroubleReportRepo<TroubleReport>, TroubleReportRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -30,6 +33,9 @@ namespace MSS.API.Dao
                 config.AddMap(new tb_expert_dataMap());
                 config.AddMap(new tb_devicemaintain_regMap());
                 config.AddMap(new EqpHistoryMap());
+                config.AddMap(new WorkingApplicationMap());
+                config.AddMap(new WorkingApplicationManagerMap());
+                config.AddMap(new TroubleReportMap());
             });
             return services;
         }

@@ -94,17 +94,18 @@
                       label="视频上传"
                       :fileIDs="filevedioIDs"
                       @getFileIDs="getvedioFileID"></upload-pdf> -->
-               <upload-vedio :fileType="filevedioType"
+               <!-- <upload-vedio :fileType="filevedioType"
                              label="视频上传"
                              :fileIDs="filevedioIDs"
-                             @getFileIDs="getvedioFileID" ></upload-vedio>
+                             @getFileIDs="getvedioFileID" ></upload-vedio> -->
         </div>
         <br/>
         <div class="upload-wrap con-padding-horizontal">
-          <upload-pdf :fileType="fileattachType"
+          <!-- <upload-pdf :fileType="fileattachType"
                       label="附件上传"
                       :fileIDs="fileattachIDs"
-                      @getFileIDs="getattachFileID"></upload-pdf>
+                      @getFileIDs="getattachFileID"></upload-pdf> -->
+          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getattachFileID"></upload-pdf>
         </div>
         <!-- 按钮 -->
         <div class="btn-group">
@@ -128,6 +129,7 @@
 import { validateInputCommon, vInput, FileType } from '@/common/js/utils.js'
 import api from '@/api/ExpertApi'
 import axios from '@/api/interceptors'
+import { systemResource } from '@/common/js/dictionary.js'
 import eqpApi from '@/api/eqpApi.js'
 import apiOrg from '@/api/orgApi'
 import XButton from '@/components/button'
@@ -148,9 +150,11 @@ export default {
       filevedioIDs: '',
       filevedioIDsEdit: '',
       filevedioType: FileType.ExpertData_vedio,
-      fileattachIDs: '',
-      fileattachIDsEdit: '',
+      fileIDs: '',
+      fileattachIDsEdit: [], // '',
       fileattachType: FileType.ExpertData_attach,
+      systemResource: systemResource.expert,
+      attch_file: '',
       nodeType: '',
       keyword: {
         text: '',
@@ -224,6 +228,12 @@ export default {
         })
         return
       }
+      this.attch_file = ''
+      if (this.fileattachIDsEdit.length > 0) {
+        for (var i = 0; i < this.fileattachIDsEdit.length; i++) {
+          this.attch_file += this.fileattachIDsEdit[i].type + ':' + this.fileattachIDsEdit[i].ids + '$'
+        }
+      }
       let tbexpertdata = {
         device_type: this.deviceType.id,
         deptID: this.dept.id,
@@ -232,7 +242,8 @@ export default {
         title: this.Experttitle.text,
         content: this.content.text,
         video_file: this.filevedioIDsEdit,
-        attch_file: this.fileattachIDsEdit,
+        attch_file: this.attch_file,
+        origin_file: JSON.stringify(this.fileattachIDsEdit),
         sort: 'asc',
         is_Used: '1',
         is_Deleted: '0',
@@ -295,10 +306,13 @@ export default {
         this.dept.id = _res.deptid
         this.teamPath.text = this.strToIntArr(_res.dept_path)
         this.nodeType = 2
-        this.filevedioIDs = _res.video_file
-        this.filevedioIDsEdit = _res.video_file
-        this.fileattachIDs = _res.attch_file
-        this.fileattachIDsEdit = _res.attch_file
+        // this.fileIDs = data.uploadFiles
+        // this.filevedioIDs = _res.video_file
+        // this.filevedioIDsEdit = _res.video_file
+        console.log(_res.uploadFiles)
+        debugger
+        this.fileIDs = _res.uploadFiles
+        // this.fileattachIDsEdit = _res.uploadFiles
       }).catch(err => console.log(err))
     },
     strToIntArr (str) {

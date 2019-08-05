@@ -54,19 +54,19 @@ namespace MSS.API.Core.V1.Controllers
             string where = "  1=1 ";
             if (!string.IsNullOrEmpty(query.keyword))
             {
-                where += " and keyword like '%" + query.keyword.Trim() + "%'";
+                where += " and a.keyword like '%" + query.keyword.Trim() + "%'";
             }
             if (!string.IsNullOrEmpty(query.title))
             {
-                where += " and  title like '%" + query.title.Trim() + "%'";
+                where += " and  a.title like '%" + query.title.Trim() + "%'";
             }
             if (!string.IsNullOrEmpty(query.deptid))
             {
-                where += " and  deptid= '" + query.deptid.Trim() + "'";
+                where += " and  a.deptid= '" + query.deptid.Trim() + "'";
             }
             if (!string.IsNullOrEmpty(query.deviceType))
             {
-                where += " and  device_type= '" + query.deviceType.Trim() + "'";
+                where += " and  a.device_type= '" + query.deviceType.Trim() + "'";
             }
             var ret = await _expertService.GetListByPage(where, query.sort, query.order, query.page, query.rows);
             return ret;

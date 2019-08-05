@@ -35,6 +35,21 @@ const routes = [
           ]
         },
         {
+          path: 'LifeTimeKeyMaintain',
+          component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/LifeTimeKeyMaintain/Index.vue'),
+          children: [
+            {
+              path: '/',
+              name: 'LifeTimeKeyMaintain',
+              redirect: 'list'
+            }, {
+              path: 'list',
+              name: 'LifeTimeKeyMaintainlist',
+              component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/LifeTimeKeyMaintain/children/LifeTimeKeyMaintainlist.vue')
+            }
+          ]
+        },
+        {
           path: 'history',
           component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/Index.vue'),
           children: [
@@ -46,6 +61,14 @@ const routes = [
               path: 'list',
               name: 'SeeHistory',
               component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/SeeHistory.vue')
+            }, {
+              path: 'detail',
+              name: 'DetailWorkingApplication',
+              component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/DetailWorkingApplication.vue')
+            }, {
+              path: 'detailTroubleReport',
+              name: 'DetailTroubleReport',
+              component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/DetailTroubleReport.vue')
             }
           ]
         }

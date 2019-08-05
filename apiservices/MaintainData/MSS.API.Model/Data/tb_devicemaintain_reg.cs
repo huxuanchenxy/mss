@@ -11,6 +11,7 @@ namespace MSS.API.Model.Data
         public int device_type_id { get; set; }
         public string device_type_name { get; set; }
         public int device_id { get; set; }
+        public string device_id_path { get; set; }
         public string device_name { get; set; }
         public int team_group_id { get; set; }
         public string team_group_name { get; set; }
@@ -25,11 +26,15 @@ namespace MSS.API.Model.Data
         public string detail_desc { get; set; }
 
         public string arr { get; set; }
+
+        public string updated_name { get; set; }
         //public int is_deleted { get; set; }
         //public DateTime create_time { get; set; }
         //public int create_by { get; set; }
         //public DateTime update_time { get; set; }
         //public int update_by { get; set; }
+        public string origin_file { get; set; }
+        public string UploadFiles { get; set; }
     }
 
 
@@ -48,6 +53,7 @@ namespace MSS.API.Model.Data
             Map(o => o.director_id).ToColumn("director_id");
             Map(o => o.maintain_date).ToColumn("maintain_date");
             Map(o => o.attch_file).ToColumn("attch_file");
+            Map(o => o.origin_file).ToColumn("origin_file");
             Map(o => o.file_type).ToColumn("file_type");
             Map(o => o.detail_desc).ToColumn("detail_desc"); 
             Map(o => o.CreatedBy).ToColumn("created_by");

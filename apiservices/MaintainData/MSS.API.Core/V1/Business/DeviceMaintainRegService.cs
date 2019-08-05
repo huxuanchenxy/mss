@@ -11,17 +11,21 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MSS.API.Common;
 using MSS.API.Core.Common;
+using MSS.Common.Consul;
+using MSS.API.Common.Utility;
 
 namespace MSS.API.Core.V1.Business
 {
     public class DeviceMaintainRegService : IDeviceMaintainRegService
     { //private readonly ILogger<UserService> _logger;
         private readonly Itb_devicemaintain_regRepo<tb_devicemaintain_reg> _deviceMaintainRegRepo;
+        private readonly IServiceDiscoveryProvider _consulServiceProvider;
 
-        public DeviceMaintainRegService(Itb_devicemaintain_regRepo<tb_devicemaintain_reg> expertRepo)
+        public DeviceMaintainRegService(Itb_devicemaintain_regRepo<tb_devicemaintain_reg> expertRepo, IServiceDiscoveryProvider consulServiceProvider)
         {
             //_logger = logger;
             _deviceMaintainRegRepo = expertRepo;
+            _consulServiceProvider = consulServiceProvider;
         }
         public async Task<ApiResult> Add(tb_devicemaintain_reg model)
         {
@@ -148,11 +152,21 @@ namespace MSS.API.Core.V1.Business
                     {
                         foreach (var v in list)
                         {
-                            v.maintain_date = v.maintain_date.Substring(0, 10);
-                            v.device_name = GetdeviceName(v.device_id.ToString());
-                            v.device_type_name = GetDeviceTypeNameByID(v.device_type_id.ToString());
+                            v.maintain_date = v.maintain_date.Substring(0, 10); 
                             v.director_name = GetderoctName(v.director_id.ToString());
-                            v.team_group_name = GettermGroupName(v.team_group_id.ToString());
+                        }
+                    }
+                    List<UploadFile> ufs = await _deviceMaintainRegRepo.ListByEntity(
+                    list.Select(a => a.ID).ToArray(), MyDictionary.SystemResource.MaintainReg);
+                    if (ufs != null && ufs.Count() > 0)
+                    {
+                        foreach (var item in list)
+                        {
+                            var tmp = ufs.Where(a => a.entity_id == item.ID);
+                            if (tmp != null)
+                            {
+                                item.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.CascaderShow(tmp.ToList()));
+                            }
                         }
                     }
 
@@ -282,14 +296,56 @@ namespace MSS.API.Core.V1.Business
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
+                    //var model = await _deviceMaintainRegRepo.GetModel(id);
+                    //model.maintain_date = model.maintain_date.Substring(0, 10);
+                    ////model.device_name = GetdeviceName(model.device_id.ToString());
+                    ////model.device_type_name = GetDeviceTypeNameByID(model.device_type_id.ToString());
+                    //model.director_name = GetderoctName(model.director_id.ToString());
+                    ////model.team_group_name = GettermGroupName(model.team_group_id.ToString());
+                    //ret.code = Code.Success;
+                    //ret.data = model;
+                    //scope.Complete();
                     var model = await _deviceMaintainRegRepo.GetModel(id);
                     model.maintain_date = model.maintain_date.Substring(0, 10);
-                    model.device_name = GetdeviceName(model.device_id.ToString());
-                    model.device_type_name = GetDeviceTypeNameByID(model.device_type_id.ToString());
                     model.director_name = GetderoctName(model.director_id.ToString());
-                    model.team_group_name = GettermGroupName(model.team_group_id.ToString());
+                    List<UploadFile> ufs = await _deviceMaintainRegRepo.ListByEntity(new int[] { model.ID }, MyDictionary.SystemResource.MaintainReg);
+                    if (ufs != null && ufs.Count() > 0)
+                    {
+                        var tmp = ufs.Where(a => a.entity_id == model.ID);
+                        if (tmp != null)
+                        {
+                            model.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.ListShow(tmp.ToList()));
+                        }
+                    }
                     ret.code = Code.Success;
                     ret.data = model;
+                    scope.Complete();
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> GetDeviceTypeList()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    var _services = await _consulServiceProvider.GetServiceAsync("EqpService");
+                    IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                    ApiResult result = await httpHelper.GetSingleItemRequest(_services + "api/v1/EquipmentType/all");
+                   // List<DeviceInfo> children = new List<DeviceInfo> { };
+                   // OrgTree topNode = await _findTopNode(id);
+
+                    ret.code = Code.Success;
+                    ret.data = result.data;
                     scope.Complete();
                 }
             }

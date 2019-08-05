@@ -140,23 +140,29 @@ namespace MSS.API.Core.V1.Business
                 using (TransactionScope scope = new TransactionScope())
                 {
                     int count = await _expertRepo.GetRecordCount(strWhere);
-                    var list = await _expertRepo.GetListByPage(strWhere, sort, orderby, page, size);
-                    if (list != null && list.Count > 0)
+                    var list = await _expertRepo.GetListByPage(strWhere, sort, orderby, page, size); 
+                    List<UploadFile> ufs = await _expertRepo.ListByEntity(
+                    list.Select(a => a.ID).ToArray(), MyDictionary.SystemResource.Expert);
+                    if (ufs != null && ufs.Count() > 0)
                     {
-                        foreach (var v in list)
+                        foreach (var item in list)
                         {
-                            v.deptname = GetDeptNameByID(v.deptid.ToString());
-                            v.deviceTypeName = GetDeviceTypeNameByID(v.device_type.ToString());
+                            var tmp = ufs.Where(a => a.entity_id == item.ID);
+                            if (tmp != null)
+                            {
+                                item.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.CascaderShow(tmp.ToList()));
+                            }
                         }
                     }
-
+                    //ret.data = list;
+                    //return ret;
                     ret.code = Code.Success;
                     ret.data = new
                     {
                         total = count,
                         list = list
                     };
-                    scope.Complete();
+
                 }
             }
             catch (Exception ex)
@@ -222,8 +228,16 @@ namespace MSS.API.Core.V1.Business
                 using (TransactionScope scope = new TransactionScope())
                 {
                     var model = await _expertRepo.GetModel(id);
-                    model.deptname = GetDeptNameByID(model.deptid.ToString());
-                    model.deviceTypeName = GetDeviceTypeNameByID(model.device_type.ToString());
+                    List<UploadFile> ufs = await _expertRepo.ListByEntity(
+                   new int[] { model.ID }, MyDictionary.SystemResource.Expert);
+                    if (ufs != null && ufs.Count() > 0)
+                    { 
+                            var tmp = ufs.Where(a => a.entity_id == model.ID);
+                            if (tmp != null)
+                            {
+                                model.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.ListShow(tmp.ToList()));
+                            } 
+                    }
                     ret.code = Code.Success;
                     ret.data = model;
                     scope.Complete();
