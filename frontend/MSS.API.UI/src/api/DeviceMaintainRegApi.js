@@ -16,5 +16,6 @@ export default {
   DeleteList: Ids => { return axios.delete(`${api}/DeviceMaintainReg/DeleteList/${Ids}`, Ids).then(res => res.data) },
 
   ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) },
-  getWorkingApplicationByID: id => { return axios.get(`${api}/WorkingApplication/${id}`).then(res => res.data) }
+  getWorkingApplicationByID: id => { return axios.get(`${api}/WorkingApplication/${id}`).then(res => res.data) },
+  getTroubleReportByID: id => { return axios.get(`${api}/TroubleReport/${id}`).then(res => res.data) }
 }

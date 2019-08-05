@@ -25,6 +25,7 @@ namespace MSS.API.Dao
             services.AddTransient<ILifeTimeKeyMaintainRepo<LifeTimeKeyMaintainInfo>, LifeTimeKeyMaintainRepo>(); 
             services.AddTransient<IEqpHistoryRepo<EqpHistory>, EqpHistoryRepo>();
             services.AddTransient<IWorkingApplicationRepo<WorkingApplication>, WorkingApplicationRepo>();
+            services.AddTransient<ITroubleReportRepo<TroubleReport>, TroubleReportRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -34,6 +35,7 @@ namespace MSS.API.Dao
                 config.AddMap(new EqpHistoryMap());
                 config.AddMap(new WorkingApplicationMap());
                 config.AddMap(new WorkingApplicationManagerMap());
+                config.AddMap(new TroubleReportMap());
             });
             return services;
         }

@@ -17,6 +17,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<ILifeTimeKeyMaintainService, LifeTimeKeyMaintainService>();
             services.AddTransient<IEqpHistoryService, EqpHistoryService>();
             services.AddTransient<IWorkingApplicationService, WorkingApplicationService>();
+            services.AddTransient<ITroubleReportService, TroubleReportService>();
             return services;
         }
     }
