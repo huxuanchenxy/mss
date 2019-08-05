@@ -41,8 +41,8 @@
           <li class="list" v-for="item in EventTypeList" :key="item.key">
             <!-- <p>{{ item.region }}</p> -->
             <a @click="gotoMonitor(item.type)" class="list-link">
-              <i class="dot" :class="item.state"></i>
-              <el-tooltip :content="item.title" :disabled="item.title.length < 4" placement="top">
+              <!-- <i class="dot" :class="item.state"></i> -->
+              <el-tooltip :content="item.tooptip_content" :disabled="item.tooptip_disable" placement="top">
                 <span v-if="item.type === 'alarm'">
                   {{ item.title }}(
                   <font style="color:red;">{{item.type === 'alarm' ? item.count1 : ''}}</font>
@@ -95,17 +95,23 @@ export default {
         title: '报警',
         state: '',
         count1: 0, // 严重警报
-        count2: 0
+        count2: 0,
+        tooptip_content: '',
+        tooptip_disable: true
       }, {
         type: 'warnning',
         title: '预警',
         state: '',
-        count: 0
+        count: 0,
+        tooptip_content: '',
+        tooptip_disable: true
       }, {
         type: 'notification',
         title: '通知',
         state: '',
-        count: 0
+        count: 0,
+        tooptip_content: '',
+        tooptip_disable: true
       }
       ],
       activeColor: '#f91333',
@@ -137,22 +143,38 @@ export default {
     getWarnning () {
       apiEvent.getAllWarning().then(res => {
         if (res.code === ApiRESULT.Success) {
-          this.EventTypeList[1].count = res.data.length
+          let count = res.data.length
+          this.EventTypeList[1].count = count
+          if ((count + '').length > 3) {
+            this.EventTypeList[1].tooptip_disable = false
+            this.EventTypeList[1].tooptip_content = `有${count}预警事件`
+          }
         }
       }).catch(err => console.log(err))
     },
     getNotification () {
       apiEvent.getAllNotification().then(res => {
         if (res.code === ApiRESULT.Success) {
-          this.EventTypeList[2].count = res.data.length
+          let count = res.data.length
+          this.EventTypeList[2].count = count
+          if ((count + '').length > 3) {
+            this.EventTypeList[2].tooptip_disable = false
+            this.EventTypeList[2].tooptip_content = `有${count}通知事件`
+          }
         }
       }).catch(err => console.log(err))
     },
     getAlarm () {
       apiEvent.getAlarm().then(res => {
         if (res.code === ApiRESULT.Success) {
-          this.EventTypeList[0].count1 = res.data.filter(item => item.level < 2).length
-          this.EventTypeList[0].count2 = res.data.filter(item => item.level >= 2).length
+          let count1 = res.data.filter(item => item.eLevel < 2).length
+          let count2 = res.data.filter(item => item.eLevel >= 2).length
+          this.EventTypeList[0].count1 = count1
+          this.EventTypeList[0].count2 = count2
+          if ((count1 + '').length > 1 || (count2 + '').length > 1) {
+            this.EventTypeList[0].tooptip_disable = false
+            this.EventTypeList[0].tooptip_content = `有${count1}严重警报，${count2}非严重警报`
+          }
         }
       }).catch(err => console.log(err))
     },
@@ -222,7 +244,7 @@ export default {
 
       connection.on('RecieveMsg', function (message) {
         console.log(message)
-        if (!thisObj.bMsgShrink) {
+        if (!thisObj.bMsgShrink && message.msg !== 'off') {
           thisObj.startTimer()
         }
 

@@ -47,139 +47,160 @@
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
-
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="报警历史" name="alarm">
-          <div>
-            <ul class="content-header">
-              <li class="list number">
-                设备编号
-              </li>
-              <li class="list number">
-                设备名称
-              </li>
-              <li class="list number">
-                设备类型
-              </li>
-              <li class="list number">
-                等级
-              </li>
-              <li class="list number">
-                内容
-              </li>
-              <li class="list last-update-time">
-                发生时间
-              </li>
-            </ul>
-            <div class="scroll">
-              <el-scrollbar>
-                <ul class="list-wrap">
-                  <li class="list" v-for="(item) in AlarmList" :key="item.key">
-                    <div class="list-content">
-                      <div class="number">{{ item.eqpCode }}</div>
-                      <div class="number">{{ item.eqpName }}</div>
-                      <div class="number">{{ item.eqpTypeName }}</div>
-                      <div class="number">{{ item.level }}</div>
-                      <div class="number">{{ item.content }}</div>
-                      <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
-                    </div>
-                  </li>
-                </ul>
-              </el-scrollbar>
-            </div>
+      <el-tabs class="tab-height" v-model="activeName">
+        <el-tab-pane class="pane-height pane-notification" label="报警历史" name="alarm">
+          <ul class="content-header">
+            <li class="list number">
+              设备编号
+            </li>
+            <li class="list number">
+              设备名称
+            </li>
+            <li class="list number">
+              设备类型
+            </li>
+            <li class="list number">
+              等级
+            </li>
+            <li class="list number">
+              属性
+            </li>
+            <li class="list number">
+              内容
+            </li>
+            <li class="list last-update-time">
+              发生时间
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="(item) in AlarmList" :key="item.key">
+                  <div class="list-content">
+                    <div class="number">{{ item.eqpCode }}</div>
+                    <div class="number">{{ item.eqpName }}</div>
+                    <div class="number">{{ item.eqpTypeName }}</div>
+                    <div class="number">{{ item.eLevel }}</div>
+                    <div class="number">{{ item.pidDes }}</div>
+                    <div class="number">{{ item.des }}</div>
+                    <div class="last-update-time">{{ transformDate(item.eTime) }}</div>
+                  </div>
+                </li>
+              </ul>
+              <!-- 分页 -->
+              <el-pagination
+                :current-page.sync="currentPage"
+                @current-change="handleCurrentChange"
+                @prev-click="prevPage"
+                @next-click="nextPage"
+                layout="slot, jumper, prev, pager, next"
+                prev-text="上一页"
+                next-text="下一页"
+                :total="total">
+                <span>总共 {{ total }} 条记录</span>
+              </el-pagination>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="预警历史" name="warnning">
-          <div>
-            <ul class="content-header">
-              <li class="list number">
-                设备编号
-              </li>
-              <li class="list number">
-                设备名称
-              </li>
-              <li class="list number">
-                设备类型
-              </li>
-              <li class="list number">
-                内容
-              </li>
-              <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
-                发生时间
-                <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
-              </li>
-            </ul>
-            <div class="scroll">
-              <el-scrollbar>
-                <ul class="list-wrap">
-                  <li class="list" v-for="(item) in WarnList" :key="item.key">
-                    <div class="list-content">
-                      <div class="number">{{ item.eqpCode }}</div>
-                      <div class="number">{{ item.eqpName }}</div>
-                      <div class="number">{{ item.eqpTypeName }}</div>
-                      <div class="number">{{ item.content }}</div>
-                      <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
-                    </div>
-                  </li>
-                </ul>
-              </el-scrollbar>
-            </div>
+        <el-tab-pane class="pane-height pane-notification" label="预警历史" name="warnning">
+          <ul class="content-header">
+            <li class="list number">
+              设备编号
+            </li>
+            <li class="list number">
+              设备名称
+            </li>
+            <li class="list number">
+              设备类型
+            </li>
+            <li class="list number">
+              内容
+            </li>
+            <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
+              发生时间
+              <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="(item) in WarnList" :key="item.key">
+                  <div class="list-content">
+                    <div class="number">{{ item.eqpCode }}</div>
+                    <div class="number">{{ item.eqpName }}</div>
+                    <div class="number">{{ item.eqpTypeName }}</div>
+                    <div class="number">{{ item.content }}</div>
+                    <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
+                  </div>
+                </li>
+              </ul>
+              <!-- 分页 -->
+              <el-pagination
+                :current-page.sync="currentPage"
+                @current-change="handleCurrentChange"
+                @prev-click="prevPage"
+                @next-click="nextPage"
+                layout="slot, jumper, prev, pager, next"
+                prev-text="上一页"
+                next-text="下一页"
+                :total="total">
+                <span>总共 {{ total }} 条记录</span>
+              </el-pagination>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="通知历史" name="notification">
-          <div>
-            <ul class="content-header">
-              <li class="list number">
-                设备编号
-              </li>
-              <li class="list number">
-                设备名称
-              </li>
-              <li class="list number">
-                设备类型
-              </li>
-              <li class="list number">
-                通知类型
-              </li>
-              <li class="list number">
-                内容
-              </li>
-              <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
-                发生时间
-                <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
-              </li>
-            </ul>
-            <div class="scroll">
-              <el-scrollbar>
-                <ul class="list-wrap">
-                  <li class="list" v-for="(item) in NotificationList" :key="item.key">
-                    <div class="list-content">
-                      <div class="number">{{ item.eqpCode }}</div>
-                      <div class="number">{{ item.eqpName }}</div>
-                      <div class="number">{{ item.eqpTypeName }}</div>
-                      <div class="number">{{ item.notificationTypeName }}</div>
-                      <div class="number">{{ item.content }}</div>
-                      <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
-                    </div>
-                  </li>
-                </ul>
-              </el-scrollbar>
-            </div>
+        <el-tab-pane class="pane-height pane-notification" label="通知历史" name="notification">
+          <ul class="content-header">
+            <li class="list number">
+              设备编号
+            </li>
+            <li class="list number">
+              设备名称
+            </li>
+            <li class="list number">
+              设备类型
+            </li>
+            <li class="list number">
+              通知类型
+            </li>
+            <li class="list content">
+              内容
+            </li>
+            <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
+              发生时间
+              <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="(item) in NotificationList" :key="item.key">
+                  <div class="list-content">
+                    <div class="number">{{ item.eqpCode }}</div>
+                    <div class="number">{{ item.eqpName }}</div>
+                    <div class="number">{{ item.eqpTypeName }}</div>
+                    <div class="number">{{ item.notificationTypeName }}</div>
+                    <div class="content">{{ item.content }}</div>
+                    <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
+                  </div>
+                </li>
+              </ul>
+              <!-- 分页 -->
+              <el-pagination
+                :current-page.sync="currentPage"
+                @current-change="handleCurrentChange"
+                @prev-click="prevPage"
+                @next-click="nextPage"
+                layout="slot, jumper, prev, pager, next"
+                prev-text="上一页"
+                next-text="下一页"
+                :total="total">
+                <span>总共 {{ total }} 条记录</span>
+              </el-pagination>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
       </el-tabs>
-      <!-- 分页 -->
-      <el-pagination
-        :current-page.sync="currentPage"
-        @current-change="handleCurrentChange"
-        @prev-click="prevPage"
-        @next-click="nextPage"
-        layout="slot, jumper, prev, pager, next"
-        prev-text="上一页"
-        next-text="下一页"
-        :total="total">
-        <span>总共 {{ total }} 条记录</span>
-      </el-pagination>
     </div>
   </div>
 </template>
@@ -316,9 +337,18 @@ export default {
       }).catch(err => console.log(err))
     },
     getAlarm () {
-      // this.loading = true
-      api.getAlarmHistory().then(res => {
-        // this.loading = false
+      let param = {
+        order: this.currentSort.order,
+        sort: this.currentSort.sort,
+        rows: 10,
+        page: this.currentPage,
+        eqpTypeID: this.eqpTypeID,
+        startTime: this.time ? this.time[0] : '',
+        endTime: this.time ? this.otherStyleDate(this.time[1]) + ' 23:59:59' : ''
+      }
+      this.loading = true
+      api.getAlarmHistory(param).then(res => {
+        this.loading = false
         if (res.code === ApiRESULT.Success) {
           this.AlarmList = res.data.rows
           this.total = res.data.total
@@ -347,7 +377,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$con-height: $content-height - 100;
+$con-height: $content-height - 100 - 56;
 // 内容区
 .content-wrap{
   overflow: hidden;
@@ -365,9 +395,25 @@ $con-height: $content-height - 100;
       color: $color-white;
     }
   }
-
+  .tab-height{
+    height: percent($con-height, $con-height);
+  }
+  /deep/ .el-tabs__header{
+    height: percent(50, $con-height)
+  }
+  /deep/ .el-tabs__content{
+    height: percent($con-height - 50, $con-height)
+  }
+  .pane-height{
+    height: 100%
+  }
+  .pane-notification{
+    .content-header{
+      height: percent(50, $con-height)
+    }
+  }
   .scroll{
-    height: percent($con-height - 50, $con-height);
+    height: percent($con-height - 50, $con-height)
   }
 
   .list-wrap{
@@ -431,6 +477,9 @@ $con-height: $content-height - 100;
   .name,
   .btn-wrap{
     width: 10%;
+  }
+  .content{
+    width: 15%;
   }
   /deep/ .el-checkbox__label{
     display: none;
