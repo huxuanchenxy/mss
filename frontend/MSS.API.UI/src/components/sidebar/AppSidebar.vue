@@ -237,8 +237,8 @@ export default {
       if (this.Conn) {
         this.Conn.close()
       }
-      let ip = 'http://localhost:3851/eventHub'
-      // let ip = hub
+      // let ip = 'http://localhost:3851/eventHub'
+      let ip = hub
       var connection = new signalR.HubConnectionBuilder().withUrl(ip,
         { accessTokenFactory: () => token }).build()
 
