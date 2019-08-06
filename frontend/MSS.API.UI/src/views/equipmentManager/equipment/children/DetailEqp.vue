@@ -122,7 +122,7 @@
                 <div class="inp">{{eqp.life}}</div>
               </div>
             </li>
-            <li class="list upload-list">
+            <li class="upload-list">
               <div>
                 <upload-pdf :canDown="true" :fileIDs="eqp.fileIDs" :readOnly="true" :systemResource="systemResource"></upload-pdf>
               </div>
@@ -291,7 +291,9 @@ export default {
       }
     }
     .upload-list{
+      margin-top: PXtoEm(25);
       margin-bottom: PXtoEm(25);
+      width: 50%;
     }
   }
 }

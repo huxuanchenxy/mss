@@ -13,7 +13,7 @@ namespace MSS.API.Core.V1.Business
     {
         Task<ApiResult> Save(Firm firm);
         Task<ApiResult> Update(Firm firm);
-        Task<ApiResult> Delete(string ids, int userID);
+        Task<ApiResult> Delete(string ids);
         Task<ApiResult> GetPageByParm(FirmQueryParm parm);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> GetAll();

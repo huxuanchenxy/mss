@@ -47,5 +47,10 @@ export const btn = {
     save: 64,
     delete: 65,
     update: 66
+  },
+  firm: {
+    save: 71,
+    delete: 72,
+    update: 73
   }
 }

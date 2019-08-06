@@ -140,6 +140,13 @@ export default {
   methods: {
     // 添加权限
     enter () {
+      if (this.actionGroup !== '' && this.parentMenu !== '' && this.parentMenu !== null) {
+        this.$message({
+          message: '如果是按钮权限，则属于菜单；如果是菜单权限，则属于权限组；不允许同时属于两者',
+          type: 'error'
+        })
+        return
+      }
       if (!this.validateAll()) {
         this.$message({
           message: '验证失败，请查看提示信息',
@@ -233,12 +240,6 @@ export default {
       if (!validateInputCommon(this.actionName)) return false
       if (!validateInputCommon(this.actionUrl)) return false
       if (!validateNumberCommon(this.menuOrder)) return false
-      if (this.actionGroup !== '' && this.parentMenu !== '') {
-        this.$message({
-          message: '如果是按钮权限，则属于菜单；如果是菜单权限，则属于权限组；不允许同时属于两者',
-          type: 'error'
-        })
-      }
       return true
     }
   }

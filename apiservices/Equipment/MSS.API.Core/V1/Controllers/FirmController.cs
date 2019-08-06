@@ -24,20 +24,15 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save([FromForm]Firm firm)
+        public ActionResult Save(Firm firm)
         {
-            firm.CreatedBy = 1;
-            firm.UpdatedBy = 1;
-            firm.IsDel = false;
-
             var ret = _firmService.Save(firm);
             return Ok(ret.Result);
         }
 
         [HttpPut]
-        public ActionResult Update([FromForm]Firm firm)
+        public ActionResult Update(Firm firm)
         {
-            firm.UpdatedBy = 1;
             var ret = _firmService.Update(firm);
             return Ok(ret.Result);
         }
@@ -45,8 +40,7 @@ namespace MSS.API.Core.V1.Controllers
         [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
-            int userID = 1;
-            var resp = _firmService.Delete(ids, userID);
+            var resp = _firmService.Delete(ids);
             return Ok(resp.Result);
         }
 

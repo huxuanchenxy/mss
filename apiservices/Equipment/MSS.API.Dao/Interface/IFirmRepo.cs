@@ -8,10 +8,10 @@ namespace MSS.API.Dao.Interface
 {
     public interface IFirmRepo<T> where T:BaseEntity
     {
-        Task<Firm> Save(Firm eqpType);
-        Task<int> Update(Firm eqpType);
+        Task<Firm> Save(Firm firm);
+        Task<int> Update(Firm firm);
         Task<int> Delete(string[] ids, int userID);
-        Task<object> GetPageByParm(EqpTypeQueryParm parm);
+        Task<object> GetPageByParm(FirmQueryParm parm);
         Task<Firm> GetByID(int id);
         Task<List<Firm>> GetAll();
     }

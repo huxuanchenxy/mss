@@ -9,6 +9,7 @@ namespace MSS.API.Model.Data
     {
         public string Name { get; set; }
         public int Type { get; set; }
+        public string TypeName { get; set; }
         public string Mobile { get; set; }
         public string Contact { get; set; }
         public string Address { get; set; }
@@ -22,6 +23,7 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.Name).ToColumn("name");
             Map(o => o.Type).ToColumn("type");
+            Map(o => o.TypeName).ToColumn("tname");
             Map(o => o.Mobile).ToColumn("mobile");
 
             Map(o => o.Contact).ToColumn("contact");
@@ -40,6 +42,6 @@ namespace MSS.API.Model.Data
     public class FirmQueryParm:BaseQueryParm
     {
         public string SearchName { get; set; }
-        public string SearchType { get; set; }
+        public int? SearchType { get; set; }
     }
 }

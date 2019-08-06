@@ -1,6 +1,7 @@
 export const dictionary = {
   actionGroupType: 5,
-  subSystem: 17
+  subSystem: 17,
+  firmType: 22
 }
 
 export const firmType = {
