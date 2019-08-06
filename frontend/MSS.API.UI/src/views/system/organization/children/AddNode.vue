@@ -124,7 +124,7 @@
           </el-row>
         </div>
         <el-row>
-          <el-col align="center">
+          <el-col align="center" v-show="!this.ReadOnly">
             <el-form-item>
               <x-button class="close">
                 <router-link :to="{ name: 'OrgList' }">取消</router-link>
