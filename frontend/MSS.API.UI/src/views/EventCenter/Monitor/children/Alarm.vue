@@ -302,7 +302,6 @@ export default {
     confirmNotification (id) {
       api.deleteNotification(id).then(res => {
         if (res.code === ApiRESULT.Success) {
-          debugger
         }
       }).catch(err => console.log(err))
     }

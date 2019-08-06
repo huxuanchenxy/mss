@@ -35,7 +35,7 @@
         <i class="iconfont icon-arrow-right"></i>
       </div>
       <div v-if="bMsgShrink" class="right-msg-wrap">
-        <div class="sidebar-title" @click="test()"><i class="iconfont icon-warning"
+        <div class="sidebar-title"><i class="iconfont icon-warning"
           style="color:#f91333;"></i> 事件中心</div>
         <ul class="msg-wrap">
           <li class="list" v-for="item in EventTypeList" :key="item.key">
@@ -145,7 +145,7 @@ export default {
         if (res.code === ApiRESULT.Success) {
           let count = res.data.length
           this.EventTypeList[1].count = count
-          if ((count + '').length > 3) {
+          if ((count + '').length > 6) {
             this.EventTypeList[1].tooptip_disable = false
             this.EventTypeList[1].tooptip_content = `有${count}预警事件`
           }
@@ -157,7 +157,7 @@ export default {
         if (res.code === ApiRESULT.Success) {
           let count = res.data.length
           this.EventTypeList[2].count = count
-          if ((count + '').length > 3) {
+          if ((count + '').length > 6) {
             this.EventTypeList[2].tooptip_disable = false
             this.EventTypeList[2].tooptip_content = `有${count}通知事件`
           }
@@ -171,7 +171,7 @@ export default {
           let count2 = res.data.filter(item => item.eLevel >= 2).length
           this.EventTypeList[0].count1 = count1
           this.EventTypeList[0].count2 = count2
-          if ((count1 + '').length > 1 || (count2 + '').length > 1) {
+          if ((count1 + '').length + (count2 + '').length > 5) {
             this.EventTypeList[0].tooptip_disable = false
             this.EventTypeList[0].tooptip_content = `有${count1}严重警报，${count2}非严重警报`
           }
@@ -195,13 +195,13 @@ export default {
       })
     },
 
-    test () {
-      if (this.Conn) {
-        this.Conn.invoke('SendMessage', 'message').catch(function (err) {
-          return console.error(err.toString())
-        })
-      }
-    },
+    // test () {
+    //   if (this.Conn) {
+    //     this.Conn.invoke('SendMessage', 'message').catch(function (err) {
+    //       return console.error(err.toString())
+    //     })
+    //   }
+    // },
 
     ChangeColor () {
       if (this.activeColor === '#f91333') {
@@ -568,7 +568,7 @@ $width: 180;
       cursor: pointer;
       span{
         display: inline-block;
-        width: 90px;
+        width: 120px;
         @extend %ellipsis;
       }
     }

@@ -38,7 +38,7 @@ export default {
 
   // 子组件下边的按钮加搜索
   /deep/ .box{
-    height: percent(100, $content-height);
+    height: percent(80, $content-height);
 
     // 搜索组
     .search-wrap{

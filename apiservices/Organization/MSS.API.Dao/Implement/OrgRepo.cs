@@ -205,7 +205,10 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM org_user WHERE org_node_id = @ID and is_del != 1";
+                // string sql = "SELECT * FROM org_user WHERE org_node_id = @ID and is_del != 1";
+                string sql = "SELECT a.*, b.user_name, b.email, b.mobile FROM org_user a"
+                    + " INNER JOIN user AS b on a.user_id=b.id "
+                    + " WHERE a.org_node_id = @ID and a.is_del != 1";
                 var prop = await c.QueryAsync<OrgUser>(sql,
                 new
                 {

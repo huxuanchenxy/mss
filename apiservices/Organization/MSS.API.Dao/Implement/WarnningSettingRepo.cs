@@ -221,7 +221,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT id, eqp_code, eqp_name, eqp_type, top_org, online_date,"
+                string sql = "SELECT id, eqp_code, eqp_name, eqp_type, top_org, team, online_date,"
                     + " online_again, life, medium_repair, large_repair from equipment"
                     + " WHERE is_del != 1";
                 List<Equipment> eqps = (await c.QueryAsync<Equipment>(sql)).ToList();
