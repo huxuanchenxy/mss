@@ -11,34 +11,31 @@ using MSS.API.Common;
 
 namespace MSS.API.Dao.Implement
 {
-    //目前为了设备能选中，只用了getall，其余需要重新修改代码
     public class FirmRepo : BaseRepo, IFirmRepo<Firm>
     {
         public FirmRepo(DapperOptions options) : base(options) { }
 
-        public async Task<Firm> Save(Firm eqpType)
+        public async Task<Firm> Save(Firm firm)
         {
             return await WithConnection(async c =>
             {
                 string sql = " insert into firm " +
-                    " values (0,@TName,@Model,@Desc,@PWorking,@PDrawings, " +
-                    " @PInstall,@PUser,@PRegulations, " +
+                    " values (0,@Name,@Type,@Mobile,@Contact,@Address, " +
                     " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
                 sql += "SELECT LAST_INSERT_ID()";
-                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, eqpType);
-                eqpType.ID = newid;
-                return eqpType;
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, firm);
+                firm.ID = newid;
+                return firm;
             });
         }
 
-        public async Task<int> Update(Firm eqpType)
+        public async Task<int> Update(Firm firm)
         {
             return await WithConnection(async c =>
             {
                 var result = await c.ExecuteAsync(" update firm " +
-                    " set type_name=@TName,model=@Model,description=@Desc,path_working_instruction=@PWorking, " +
-                    " path_technical_drawings=@PDrawings,path_installation_manual=@PInstall,path_user_guide=@PUser, " +
-                    " path_regulations=@PRegulations,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqpType);
+                    " set name=@Name,type=@Type,mobile=@Mobile,contact=@Contact, " +
+                    " address=@Address,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", firm);
                 return result;
             });
         }
@@ -54,24 +51,25 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<object> GetPageByParm(EqpTypeQueryParm parm)
+        public async Task<object> GetPageByParm(FirmQueryParm parm)
         {
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,u1.user_name as created_name,u2.user_name as updated_name ")
+                sql.Append("SELECT a.*,dt.name as tname,u1.user_name as created_name,u2.user_name as updated_name ")
                 .Append(" FROM firm a ")
+                .Append(" left join dictionary_tree dt on a.type=dt.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id ");
                 StringBuilder whereSql = new StringBuilder();
                 whereSql.Append(" WHERE a.is_del=" + (int)IsDeleted.no);
                 if (!string.IsNullOrWhiteSpace(parm.SearchName))
                 {
-                    whereSql.Append(" and a.type_name like '%" + parm.SearchName + "%' ");
+                    whereSql.Append(" and a.name like '%" + parm.SearchName + "%' ");
                 }
-                if (!string.IsNullOrWhiteSpace(parm.SearchDesc))
+                if (parm.SearchType!=null)
                 {
-                    whereSql.Append(" and a.description like '%" + parm.SearchDesc + "%' ");
+                    whereSql.Append(" and a.type=" + parm.SearchType);
                 }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)

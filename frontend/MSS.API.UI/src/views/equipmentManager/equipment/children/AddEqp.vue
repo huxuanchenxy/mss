@@ -727,7 +727,7 @@ export default {
     .upload-list{
       margin-top: PXtoEm(25);
       margin-bottom: PXtoEm(25);
-      width: -webkit-fill-available;
+      width: 50%;
     }
   }
 }
