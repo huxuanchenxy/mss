@@ -37,7 +37,7 @@ namespace MSS.API.Core.EventServer
             try
             {
                 _logger.LogInformation("开始同步pid表");
-                var _services = await _consulServiceProvider.GetServiceAsync("RDBService");
+                var _services = await _consulServiceProvider.GetServiceAsync("RDBRTDBService");
                 IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
                 ApiResult result = await httpHelper.
                     GetSingleItemRequest(_services + "/api/v1/TableInfo");

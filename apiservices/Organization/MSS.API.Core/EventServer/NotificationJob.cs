@@ -68,7 +68,10 @@ namespace MSS.API.Core.EventServer
                     foreach (Equipment eqp in allEqp)
                     {
                         // 寿命
-                        await _checkLifeCycle(eqp, eqpConfig);
+                        if (eqp.LifeCycle != null)
+                        {
+                            await _checkLifeCycle(eqp, eqpConfig);
+                        }
                         await _checkMediumMaintenance(eqp, eqpConfig, eqpHistory);
                         await _checkMajorMaintenance(eqp, eqpConfig, eqpHistory);
                     }
@@ -169,9 +172,9 @@ namespace MSS.API.Core.EventServer
             {
                 start = eqp.OnlineDate;
             }
-            if (start != null && eqpConfig != null)
+            if (start != null && eqpConfig != null )
             {
-                DateTime datelife = ((DateTime)start).AddYears(eqp.LifeCycle);
+                DateTime datelife = ((DateTime)start).AddYears((int)eqp.LifeCycle);
                 if (datelife < DateTime.Now.AddDays(eqpConfig.beforeDead))
                 {
                     string prefix = RedisKeyPrefix.Notification;

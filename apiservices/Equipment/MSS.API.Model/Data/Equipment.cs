@@ -37,7 +37,7 @@ namespace MSS.API.Model.Data
         public string LocationPath { get; set; }
         public string LocationName { get; set; }
         public DateTime Online { get; set; }
-        public string Life { get; set; }
+        public int Life { get; set; }
         public int MediumRepair { get; set; }
         public int LargeRepair { get; set; }
         public DateTime? OnlineAgain { get; set; }
@@ -109,6 +109,13 @@ namespace MSS.API.Model.Data
 
         public int? SearchLocationBy { get; set; }
         public int? SearchTopOrg { get; set; }
+
+        // 根据location_path字段查询
+        public int? LocationPath { get; set; }
+
+        // locationPath 层级
+        public int? LocationPath_level { get; set; }
+
     }
 
     public class AllArea

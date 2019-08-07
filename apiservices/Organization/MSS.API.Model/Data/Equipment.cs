@@ -14,7 +14,7 @@ namespace MSS.API.Model.Data
         public int? Team { get; set; }
         public DateTime? OnlineDate { get; set; }
         public DateTime? OnlineAgain { get; set; }
-        public int LifeCycle { get; set; }
+        public int? LifeCycle { get; set; }
         public int MediumRepair { get; set; }
         public int LargeRepair { get; set; }
 
