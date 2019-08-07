@@ -482,7 +482,13 @@ export default {
         })
         return
       }
-      if (!isUploadFinished(this.fileIDsEdit)) return
+      if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
+        this.$message({
+          message: '文件正在上传中，请耐心等待',
+          type: 'warning'
+        })
+        return
+      }
       let eqp = {
         Code: this.eqpCode.text,
         Name: this.eqpName.text,

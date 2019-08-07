@@ -66,7 +66,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<UserView>(
-                    " SELECT * FROM User WHERE acc_name = @acc and is_del="+(int)IsDeleted.no, new { acc = acc });
+                    " SELECT * FROM User WHERE acc_name = @acc", new { acc = acc });
                 return result;
             });
         }

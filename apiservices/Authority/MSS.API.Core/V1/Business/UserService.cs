@@ -102,7 +102,7 @@ namespace MSS.API.Core.V1.Business
                 else
                 {
                     mRet.code = (int)ErrType.Repeat;
-                    mRet.msg = "登录账号重复";
+                    mRet.msg = "登录账号重复(离职账号不可见但需保留)";
                 }
                 return mRet;
             }
