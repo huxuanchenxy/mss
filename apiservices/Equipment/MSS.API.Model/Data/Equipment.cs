@@ -109,6 +109,13 @@ namespace MSS.API.Model.Data
 
         public int? SearchLocationBy { get; set; }
         public int? SearchTopOrg { get; set; }
+
+        // 根据location_path字段查询
+        public int? LocationPath { get; set; }
+
+        // locationPath 层级
+        public int? LocationPath_level { get; set; }
+
     }
 
     public class AllArea
