@@ -37,7 +37,7 @@ namespace MSS.API.Model.Data
         public string LocationPath { get; set; }
         public string LocationName { get; set; }
         public DateTime Online { get; set; }
-        public string Life { get; set; }
+        public int Life { get; set; }
         public int MediumRepair { get; set; }
         public int LargeRepair { get; set; }
         public DateTime? OnlineAgain { get; set; }
