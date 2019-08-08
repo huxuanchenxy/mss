@@ -159,12 +159,12 @@ export default {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
             this.$message({
-              message: '保存成功',
+              message: '添加成功',
               type: 'success'
             })
           } else {
             this.$message({
-              message: '保存失败',
+              message: res.msg === '' ? '添加失败' : res.msg,
               type: 'error'
             })
           }
@@ -175,12 +175,12 @@ export default {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
             this.$message({
-              message: '保存成功',
+              message: '修改成功',
               type: 'success'
             })
           } else {
             this.$message({
-              message: '保存失败',
+              message: res.msg === '' ? '修改失败' : res.msg,
               type: 'error'
             })
           }
@@ -392,7 +392,7 @@ export default {
 .upload-list{
   margin-top: PXtoEm(25);
   margin-bottom: PXtoEm(25);
-  width: -webkit-fill-available;
+  width: 50%;
 }
 .left{
   text-indent: 9.5%

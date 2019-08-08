@@ -52,28 +52,10 @@ namespace MSS.API.Common
         public static string SHAREFILE = "File/";
     }
 
-    public enum FileType
+    public enum UploadShowType
     {
-        //设备类型中的作业指导书
-        EqpType_Working_Instruction = 0,
-        //设备类型中的技术图纸
-        EqpType_Technical_Drawings = 1,
-        //设备类型中的安装手册
-        EqpType_Installation_Manual = 2,
-        //设备类型中的使用手册
-        EqpType_User_Guide = 3,
-        //设备类型中的维护手册
-        EqpType_Regulations = 4,
-        //设备中的设备图纸
-        Eqp_Drawings = 5,
-        //设备生命周期维护的附件
-        DeviceMaintain_attach = 6,
-        
-        //专家库视频资料
-        ExpertData_vedio = 7,
-
-        //专家库附件资料
-        ExpertData_attach = 8
+        Cascader=1,
+        List=2
     }
     #endregion
 
@@ -85,7 +67,8 @@ namespace MSS.API.Common
             EqpType = 25,
             Eqp=26,
             Expert=27,
-            MaintainReg=28
+            MaintainReg=28,
+            EmergencyPlan=57
         }
 
         public enum EqpHistoryType
@@ -99,6 +82,13 @@ namespace MSS.API.Common
             Expiration=45,
             TroubleReport=46
         }
+    }
+
+    public enum OrgType
+    {
+        Company = 1,
+        Department = 2,
+        Team = 3
     }
     #endregion
 

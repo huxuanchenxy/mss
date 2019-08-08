@@ -15,8 +15,8 @@ using System.IO;
 using Microsoft.AspNetCore.HttpsPolicy; 
 using Swashbuckle.AspNetCore.Swagger;
 using MSS.Common.Consul;
-
-
+using MSS.API.Common;
+using MSS.API.Common.Global;
 
 namespace MSS.API.Core
 {
@@ -46,24 +46,34 @@ namespace MSS.API.Core
                 .AddJsonFormatters();
 
             services.AddDapper(Configuration);
+            services.AddCSRedisCache(options =>
+            {
+                options.ConnectionString = this.Configuration["redis:ConnectionString"];
+            });
             services.AddEssentialService();
             //services.AddConsulService(Configuration);
             services.AddConsulService(Configuration);
             //跨域 Cors
             services.AddCors(options =>
             {
-                //options.AddDefaultPolicy(
-                //builder =>
-                //{
+                options.AddDefaultPolicy(
+                builder =>
+                {
 
-                //    builder.WithOrigins("http://localhost:8080",
-                //                        "http://www.contoso.com")
-                //                        .AllowAnyHeader()
-                //                        .AllowAnyMethod();
-                //});
-                options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+                    builder.WithOrigins("http://localhost:8080",
+                                        "http://www.contoso.com")
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                });
+                //options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSingleton<GlobalActionFilter>();
+            services.AddMvc(
+                options =>
+                {
+                    options.Filters.Add<GlobalActionFilter>();
+                }
+            ).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(c =>
             {
@@ -83,6 +93,7 @@ namespace MSS.API.Core
                 app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
+            app.RegisterConsul(lifetime, consulService);
             // app.UseCors(AllowSpecificOrigins); 
             //启用中间件服务生成Swagger作为JSON终结点
             app.UseSwagger();
@@ -92,9 +103,9 @@ namespace MSS.API.Core
                 //c.InjectOnCompleteJavaScript("/swagger/ui/zh_CN.js"); // 加载中文包
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MySystem V1");
             });
-            app.UseHttpsRedirection();
-            app.RegisterConsul(lifetime, consulService);
-            app.UseCors("AllowAll");
+            //app.UseHttpsRedirection();
+            
+            app.UseCors();
             app.UseMvc();
         }
     }

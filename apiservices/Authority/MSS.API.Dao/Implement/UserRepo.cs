@@ -116,6 +116,16 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<bool> IsInOrg(string[] ids)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryFirstOrDefaultAsync<int>(" select count(*) from org_user" +
+                    " WHERE user_id in @ids ", new { ids = ids});
+                return result>0;
+            });
+        }
+
         public async Task<List<User>> GetAll()
         {
             return await WithConnection(async c =>

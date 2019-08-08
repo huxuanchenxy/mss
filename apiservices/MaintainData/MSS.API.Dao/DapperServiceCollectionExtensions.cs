@@ -26,6 +26,7 @@ namespace MSS.API.Dao
             services.AddTransient<IEqpHistoryRepo<EqpHistory>, EqpHistoryRepo>();
             services.AddTransient<IWorkingApplicationRepo<WorkingApplication>, WorkingApplicationRepo>();
             services.AddTransient<ITroubleReportRepo<TroubleReport>, TroubleReportRepo>();
+            services.AddTransient<IEmergencyPlanRepo<EmergencyPlan>, EmergencyPlanRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -36,6 +37,7 @@ namespace MSS.API.Dao
                 config.AddMap(new WorkingApplicationMap());
                 config.AddMap(new WorkingApplicationManagerMap());
                 config.AddMap(new TroubleReportMap());
+                config.AddMap(new EmergencyPlanMap());
             });
             return services;
         }

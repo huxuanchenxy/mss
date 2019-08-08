@@ -219,7 +219,7 @@
               <div class="inp-wrap">
                 <span class="text">使用期限</span>
                 <div class="inp">
-                  <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateInputNull(life)"></el-input>
+                  <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateNumber(life)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ life.tips }}</p>
@@ -451,9 +451,10 @@ export default {
       let selectedTeam = val[val.length - 1]
       let obj = this.getCascaderObj(selectedTeam, this.teamList)
       if (obj.node_type === 3) {
-        this.team = val[val.length - 1]
+        this.team = selectedTeam
+        this.teamPath.tips = ''
       } else {
-        // this.teamPath.tips = '您选择的不是班组'
+        this.teamPath.tips = '您选择的不是班组'
       }
       // let el = document.querySelector('.pop-team')
       // el.style.display = 'none'
@@ -541,7 +542,7 @@ export default {
             })
           } else {
             this.$message({
-              message: res.msg,
+              message: res.msg === '' ? '添加失败' : res.msg,
               type: 'error'
             })
           }
@@ -562,7 +563,7 @@ export default {
             })
           } else {
             this.$message({
-              message: res.msg,
+              message: res.msg === '' ? '修改失败' : res.msg,
               type: 'error'
             })
           }
@@ -592,7 +593,7 @@ export default {
         this.ratedPower.text = _res.ratedPower === null ? '' : _res.ratedPower
         this.area.text = this.strToIntArr(_res.locationPath)
         this.time.text = _res.online
-        this.life.text = nullToEmpty(_res.life)
+        this.life.text = _res.life
         this.mediumRepair.text = _res.mediumRepair.toString()
         this.largeRepair.text = _res.largeRepair.toString()
         this.timeAgain.text = nullToEmpty(_res.onlineAgain)
@@ -678,7 +679,7 @@ export default {
         this.time.tips = '此项必选'
         return false
       }
-      if (!this.validateInputNull(this.life)) return false
+      if (!validateNumberCommon(this.life)) return false
       if (!validateNumberCommon(this.mediumRepair)) return false
       if (!validateNumberCommon(this.largeRepair)) return false
       return true
