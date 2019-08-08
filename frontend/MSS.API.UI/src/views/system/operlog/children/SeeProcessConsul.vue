@@ -15,7 +15,7 @@
           <div class="input-group">
             <label for="name">服务名称</label>
             <div class="inp">
-              <el-input v-model.trim="userName" placeholder="请输入服务名称"></el-input>
+              <el-input v-model.trim="serviceName" placeholder="请输入服务名称"></el-input>
             </div>
           </div>
         </div>
@@ -71,8 +71,9 @@
                 <div class="name">
                   <el-switch
                     v-model="item.healthStatus"
+                    :disabled='item.healthStatus'
                     active-color="#13ce66"
-                    inactive-color="#ff4949">
+                    inactive-color="#ff4949" @change='changeStatus($event,item)'>
                   </el-switch>
                 </div>
                 <div class="name">{{ item.servicePID }}</div>
@@ -264,6 +265,15 @@ export default {
             mark: 'look'
           }
         })
+      }
+    },
+    changeStatus: function ($event, item) {
+      alert($event)
+      alert(item.id)
+      if ($event) {
+        api.startProcess(item.id).then(res => {
+          this.loading = false
+        }).catch(err => console.log(err))
       }
     }
   }
