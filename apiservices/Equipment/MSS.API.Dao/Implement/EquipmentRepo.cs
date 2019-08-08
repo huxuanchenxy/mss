@@ -165,10 +165,14 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and a.top_org=" + parm.SearchTopOrg);
                 }
-                if (parm.LocationPath != null && parm.LocationPath_level != null)
+                if (!string.IsNullOrWhiteSpace(parm.LocationPath))
                 {
-                    whereSql.Append(" AND FIND_IN_SET(" + parm.LocationPath + ",a.location_path)="
-                        + parm.LocationPath_level);
+                    string[] local = parm.LocationPath.Split(',');
+                    for (int i = 0; i < local.Length; ++i)
+                    {
+                        whereSql.Append(" AND FIND_IN_SET(" + local[i] + ",a.location_path)="
+                        + (i + 1));
+                    }
                 }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
