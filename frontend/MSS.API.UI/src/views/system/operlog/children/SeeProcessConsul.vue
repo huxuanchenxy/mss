@@ -71,7 +71,6 @@
                 <div class="name">
                   <el-switch
                     v-model="item.healthStatus"
-                    :disabled='item.healthStatus'
                     active-color="#13ce66"
                     inactive-color="#ff4949" @change='changeStatus($event,item)'>
                   </el-switch>
@@ -272,6 +271,10 @@ export default {
       alert(item.id)
       if ($event) {
         api.startProcess(item.id).then(res => {
+          this.loading = false
+        }).catch(err => console.log(err))
+      } else {
+        api.stopProcess(item.id).then(res => {
           this.loading = false
         }).catch(err => console.log(err))
       }
