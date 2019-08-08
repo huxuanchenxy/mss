@@ -31,30 +31,27 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
-        <li class="list number c-pointer" @click="changeOrder('controller_name')">
-          模块名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.controller_name === 0 }, { 'el-icon-caret-top': headOrder.controller_name === 1 }, { 'el-icon-caret-bottom': headOrder.controller_name === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('serviceName')">
+          服务名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.serviceName === 0 }, { 'el-icon-caret-top': headOrder.serviceName === 1 }, { 'el-icon-caret-bottom': headOrder.serviceName === 2 }]"></i>
        </li>
-        <li class="list number c-pointer" @click="changeOrder('method_name')">
-          操作名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.method_name === 0 }, { 'el-icon-caret-top': headOrder.method_name === 1 }, { 'el-icon-caret-bottom': headOrder.method_name === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('serviceAddr')">
+          主机ip
+          <i :class="[{ 'el-icon-d-caret': headOrder.serviceAddr === 0 }, { 'el-icon-caret-top': headOrder.serviceAddr === 1 }, { 'el-icon-caret-bottom': headOrder.serviceAddr === 2 }]"></i>
        </li>
-       <li class="list number c-pointer" @click="changeOrder('user_name')">
-          用户姓名
-          <i :class="[{ 'el-icon-d-caret': headOrder.user_name === 0 }, { 'el-icon-caret-top': headOrder.user_name === 1 }, { 'el-icon-caret-bottom': headOrder.user_name === 2 }]"></i>
+       <li class="list number c-pointer" @click="changeOrder('servicePort')">
+          服务端口
+          <i :class="[{ 'el-icon-d-caret': headOrder.servicePort === 0 }, { 'el-icon-caret-top': headOrder.servicePort === 1 }, { 'el-icon-caret-bottom': headOrder.servicePort === 2 }]"></i>
        </li>
-        <li class="list number c-pointer" @click="changeOrder('acc_name')" >
-          登录账号
-          <i :class="[{ 'el-icon-d-caret': headOrder.acc_name === 0 }, { 'el-icon-caret-top': headOrder.acc_name === 1 }, { 'el-icon-caret-bottom': headOrder.acc_name === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('healthStatus')" >
+          健康状态
+          <i :class="[{ 'el-icon-d-caret': headOrder.healthStatus === 0 }, { 'el-icon-caret-top': headOrder.healthStatus === 1 }, { 'el-icon-caret-bottom': headOrder.healthStatus === 2 }]"></i>
        </li>
-        <li class="list number c-pointer" @click="changeOrder('ip')" >ip地址
-          <i :class="[{ 'el-icon-d-caret': headOrder.ip === 0 }, { 'el-icon-caret-top': headOrder.ip === 1 }, { 'el-icon-caret-bottom': headOrder.ip === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('servicePID')" >进程pid
+          <i :class="[{ 'el-icon-d-caret': headOrder.servicePID === 0 }, { 'el-icon-caret-top': headOrder.servicePID === 1 }, { 'el-icon-caret-bottom': headOrder.servicePID === 2 }]"></i>
         </li>
-        <!-- <li class="list number c-pointer" @click="changeOrder('mac_add')" >mac地址
-<i :class="[{ 'el-icon-d-caret': headOrder.mac_add === 0 }, { 'el-icon-caret-top': headOrder.mac_add === 1 }, { 'el-icon-caret-bottom': headOrder.mac_add === 2 }]"></i>
-        </li> -->
-        <li class="list number c-pointer" @click="changeOrder('created_time')">操作时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('updatedTime')">最后启动时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.updatedTime === 0 }, { 'el-icon-caret-top': headOrder.updatedTime === 1 }, { 'el-icon-caret-bottom': headOrder.updatedTime === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
@@ -65,16 +62,22 @@
                 <div class="checkbox">
                   <input type="checkbox" v-model="lookOperlogID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="name">{{ item.controller_name }}</div>
-                <div class="name">{{ item.method_name }}</div>
+                <div class="name">{{ item.serviceName }}</div>
+                <div class="name">{{ item.serviceAddr }}</div>
                 <!--<div class="name">
-                  <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.user_name }}</router-link>
+                  <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.servicePort }}</router-link>
                 </div>-->
-                <div class="name">{{ item.user_name }}</div>
-                <div class="name">{{ item.acc_name }}</div>
-                <div class="name">{{ item.ip }}</div>
+                <div class="name">{{ item.servicePort }}</div>
+                <div class="name">
+                  <el-switch
+                    v-model="item.healthStatus"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949">
+                  </el-switch>
+                </div>
+                <div class="name">{{ item.servicePID }}</div>
                 <!-- <div class="name">{{ item.mac_add }}</div> -->
-                <div class="name">{{ item.created_time }}</div>
+                <div class="name">{{ item.updatedTime }}</div>
               </div>
             </li>
           </ul>
@@ -99,7 +102,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/operlogApi'
+import api from '@/api/processConsulApi'
 export default {
   name: 'SeeProcessConsul',
   components: {
@@ -109,9 +112,7 @@ export default {
     return {
       title: ' | 服务监控',
       time: '',
-      userName: '',
-      actionName: '',
-      methodName: '',
+      serviceName: '',
       startTime: '',
       endTime: '',
       role: '',
@@ -123,8 +124,8 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'created_time',
-        order: 'desc'
+        sort: 'service_name',
+        order: 'asc'
       },
       dialogVisible: {
         isShow: false,
@@ -134,22 +135,19 @@ export default {
       },
       headOrder: {
         id: 0,
-        acc_name: 0,
-        controller_name: 0,
+        healthStatus: 0,
+        serviceName: 0,
         action_name: 0,
-        method_name: 0,
-        user_name: 0,
-        ip: 0,
+        serviceAddr: 0,
+        servicePort: 0,
+        servicePID: 0,
         mac_add: 0,
-        created_time: 0
+        updatedTime: 0
       }
     }
   },
   created () {
     this.$emit('title', '| 服务监控')
-    if (this.$route.params.roleID !== '' && this.$route.params.roleID !== null) {
-      this.role = this.$route.params.roleID
-    }
     this.init()
   },
   activated () {
@@ -166,13 +164,13 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.acc_name = 0
-        this.headOrder.user_name = 0
-        this.headOrder.controller_name = 0
-        this.headOrder.method_name = 0
-        this.headOrder.ip = 0
+        this.headOrder.healthStatus = 0
+        this.headOrder.servicePort = 0
+        this.headOrder.serviceName = 0
+        this.headOrder.serviceAddr = 0
+        this.headOrder.servicePID = 0
         this.headOrder.mac_add = 0
-        this.headOrder.created_time = 0
+        this.headOrder.updatedTime = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -196,15 +194,13 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        methodName: this.methodName,
-        userName: this.userName,
-        startTime: this.time === null || this.time === '' ? '' : this.time[0] + ' 00:00:00',
-        endTime: this.time === null || this.time === '' ? '' : this.time[1] + ' 23:59:59'
+        serviceName: this.serviceName
       }
-      api.getOperationLog(parm).then(res => {
+      api.getPage(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.created_time = transformDate(item.created_time)
+          item.updatedTime = transformDate(item.updatedTime)
+          item.healthStatus = item.healthStatus === 1
         })
         this.UserList = res.data.rows
         this.total = res.data.total
