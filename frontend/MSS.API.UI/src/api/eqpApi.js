@@ -1,5 +1,6 @@
 import axios from './interceptors'
 // let api = 'http://localhost:3851/api/v1'
+// let api = 'http://localhost:8084/api/v1'
 let api = 'http://10.89.36.204:5801/eqpapi'
 export default {
   getEqpType: parm => { return axios.get(`${api}/EquipmentType`, {params: parm}).then(res => res.data) },
@@ -30,5 +31,7 @@ export default {
   getUploadCascaderByIDs: ids => { return axios.get(`${api}/Upload/Cascader/${ids}`).then(res => res.data) },
   getUploadFileByEqp: id => { return axios.get(`${api}/Upload/ListByEqp/${id}`).then(res => res.data) },
 
-  downloadFile: id => { return axios({method: 'post', url: `${api}/Upload/Download/${id}`, responseType: 'blob'}).then(res => res) }
+  downloadFile: id => { return axios({method: 'post', url: `${api}/Upload/Download/${id}`, responseType: 'blob'}).then(res => res) },
+
+  getAllEqpCount: () => { return axios.get(`${api}/Equipment/count`).then(res => res.data) }
 }

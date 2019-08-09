@@ -19,6 +19,9 @@ namespace MSS.API.Dao.Interface
         Task<List<Equipment>> GetAll();
         Task<List<AllArea>> GetAllArea();
 
+        // 所有设备数
+        Task<int> CountAllEqp();
+
         Task<bool> CodeIsRepeat(string code);
     }
 }

@@ -16,11 +16,28 @@ namespace MSS.API.Core.V1.Controllers
             _globalDataManager = globalDataManager;
         }
 
-        [HttpGet("config")]
+        [HttpGet("warnsetting")]
         public ActionResult<ApiResult> updateWarnSetting()
         {
             ApiResult ret = new ApiResult { code = Code.Success };
-            _globalDataManager.postUpdateEvent(3);
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitWarnSetting);
+            return ret;
+        }
+
+        [HttpGet("eqp")]
+        public ActionResult<ApiResult> updateEquipmentList()
+        {
+            ApiResult ret = new ApiResult { code = Code.Success };
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitEquipment);
+            return ret;
+        }
+
+        // 更新顶级节点下所有用户
+        [HttpGet("toporg")]
+        public ActionResult<ApiResult> updateTopOrg()
+        {
+            ApiResult ret = new ApiResult { code = Code.Success };
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitTopOrg);
             return ret;
         }
 

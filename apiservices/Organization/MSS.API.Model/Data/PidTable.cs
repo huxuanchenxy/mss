@@ -15,6 +15,8 @@ namespace MSS.API.Model.Data
         public double? DW { get; set; }
         public double? UUP { get; set; }
         public double? DDW { get; set; }
+        public int PidType { get; set; }
+        
         
         // ex
         public string EqpCode { get; set; }
@@ -37,6 +39,7 @@ namespace MSS.API.Model.Data
             Map(o => o.DW).ToColumn("DW");
             Map(o => o.UUP).ToColumn("UUP");
             Map(o => o.DDW).ToColumn("DDW");
+            Map(o => o.PidType).ToColumn("pid_type");
 
             // ex
             Map(o => o.EqpCode).ToColumn("eqp_code");
