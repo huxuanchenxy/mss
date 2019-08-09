@@ -68,6 +68,10 @@ namespace MSS.API.Core.EventServer
                                     .Where(p =>p.pid.Equals(alarm.pid)).FirstOrDefault();
                                 if (pidInfo != null && pidInfo.EqpID != null)
                                 {
+                                    var detial = new {
+                                        Alarm = alarm,
+                                        PidInfo = pidInfo
+                                    };
                                     // redis中查找看是否有报警存在
                                     string prefix = RedisKeyPrefix.Alarm;
                                     string warnID = _cache.GetString(prefix + alarm.pid);
@@ -75,12 +79,12 @@ namespace MSS.API.Core.EventServer
                                     {
                                         // 插入redis
                                         _cache.SetString(prefix + alarm.pid, "0");
-                                        _sendAlarm((int)pidInfo.EqpID, "on");
+                                        _sendAlarm((int)pidInfo.EqpID, "on", detial);
                                     }
                                     else if (warnID != null && alarm.Ack != 0)
                                     {
                                         _cache.Remove(prefix + alarm.pid);
-                                        _sendAlarm((int)pidInfo.EqpID, "off");
+                                        _sendAlarm((int)pidInfo.EqpID, "off", detial);
                                     }
                                 }
                                 
@@ -105,7 +109,7 @@ namespace MSS.API.Core.EventServer
             return Task.CompletedTask;
         }
 
-        private void _sendAlarm(int eqpID, string content)
+        private void _sendAlarm(int eqpID, string content, object detail)
         {
             MssEventMsg msg = new MssEventMsg();
             msg.msg = content;
@@ -114,6 +118,7 @@ namespace MSS.API.Core.EventServer
             {
                 ID = eqpID
             };
+            msg.detail = detail;
             _queues.AlarmQueue.Enqueue(msg);
         }
     }

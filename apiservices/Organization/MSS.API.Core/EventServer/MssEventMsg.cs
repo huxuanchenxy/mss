@@ -18,5 +18,6 @@ namespace MSS.API.Core.EventServer
         public Equipment eqp { get; set; }
         public MssEventType type { get; set; }
         public string msg { get; set; }
+        public object detail { get; set; }
     }
 }
