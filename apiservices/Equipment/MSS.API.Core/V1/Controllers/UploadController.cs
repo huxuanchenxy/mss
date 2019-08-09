@@ -11,6 +11,7 @@ using MSS.API.Model.DTO;
 using MSS.API.Common;
 using MSS.API.Common.Utility;
 using System.IO;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -56,6 +57,14 @@ namespace MSS.API.Core.V1.Controllers
             var ret = _uploadService.CascaderByIDs(ids);
             return Ok(ret.Result);
         }
+
+        [HttpGet("ListByEntity/{entitys}/{sr}/{ust}")]
+        public ActionResult ListByEntity(string entitys, SystemResource sr, UploadShowType ust)
+        {
+            var ret = _uploadService.ListByEntity(entitys.Split(',').Select(a=>Convert.ToInt32(a)).ToArray(), sr, ust);
+            return Ok(ret.Result);
+        }
+
 
         [HttpGet("ListByEqp/{id}")]
         public ActionResult ListByEqp(int id)

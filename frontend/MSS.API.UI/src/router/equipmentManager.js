@@ -9,7 +9,7 @@ const routes = [
     children: [
       {
         path: '/',
-        redirect: 'eqpType'
+        redirect: 'equipment'
       }, {
         path: 'eqpType',
         component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/eqpType/Index.vue'),
@@ -65,6 +65,24 @@ const routes = [
             path: 'detail',
             name: 'DetailEqp',
             component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/DetailEqp.vue')
+          }
+        ]
+      }, {
+        path: 'firm',
+        component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/firm/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'firm',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeFirmList',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/firm/children/SeeFirmList.vue')
+          }, {
+            path: 'add',
+            name: 'AddFirm',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/firm/children/AddFirm.vue')
           }
         ]
       }, {

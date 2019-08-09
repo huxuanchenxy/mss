@@ -14,54 +14,54 @@ namespace MSS.API.Core.V1.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class FirmController : ControllerBase
+    public class EmergencyPlanController : ControllerBase
     {
-        private readonly IFirmService _firmService;
-        public FirmController(IFirmService firmService)
+        private readonly IEmergencyPlanService _emergencyPlanService;
+        public EmergencyPlanController(IEmergencyPlanService emergencyPlanService)
         {
-            _firmService = firmService;
+            _emergencyPlanService = emergencyPlanService;
 
         }
 
         [HttpPost]
-        public ActionResult Save(Firm firm)
+        public ActionResult Save(EmergencyPlan ePlan)
         {
-            var ret = _firmService.Save(firm);
+            var ret = _emergencyPlanService.Save(ePlan);
             return Ok(ret.Result);
         }
 
         [HttpPut]
-        public ActionResult Update(Firm firm)
+        public ActionResult Update(EmergencyPlan ePlan)
         {
-            var ret = _firmService.Update(firm);
+            var ret = _emergencyPlanService.Update(ePlan);
             return Ok(ret.Result);
         }
 
         [HttpDelete("{ids}")]
         public ActionResult Delete(string ids)
         {
-            var resp = _firmService.Delete(ids);
+            var resp = _emergencyPlanService.Delete(ids);
             return Ok(resp.Result);
         }
 
         [HttpGet]
-        public ActionResult GetPageByParm([FromQuery] FirmQueryParm parm)
+        public ActionResult GetPageByParm([FromQuery] EPlanQueryParm parm)
         {
-            var resp = _firmService.GetPageByParm(parm);
+            var resp = _emergencyPlanService.GetPageByParm(parm);
             return Ok(resp.Result);
         }
 
         [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
-            var resp = _firmService.GetByID(id);
+            var resp = _emergencyPlanService.GetByID(id);
             return Ok(resp.Result);
         }
 
         [HttpGet("All")]
         public ActionResult GetAll()
         {
-            var resp = _firmService.GetAll();
+            var resp = _emergencyPlanService.GetAll();
             return Ok(resp.Result);
         }
     }

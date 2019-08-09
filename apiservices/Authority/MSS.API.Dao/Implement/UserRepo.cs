@@ -66,7 +66,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<UserView>(
-                    " SELECT * FROM User WHERE acc_name = @acc and is_del="+(int)IsDeleted.no, new { acc = acc });
+                    " SELECT * FROM User WHERE acc_name = @acc", new { acc = acc });
                 return result;
             });
         }
@@ -113,6 +113,16 @@ namespace MSS.API.Dao.Implement
                     ",updated_time=@updated_time,updated_by=@updated_by" +
                     " WHERE id in @ids ", new { ids = ids, updated_time=DateTime.Now, updated_by=userID });
                 return result;
+            });
+        }
+
+        public async Task<bool> IsInOrg(string[] ids)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryFirstOrDefaultAsync<int>(" select count(*) from org_user" +
+                    " WHERE user_id in @ids ", new { ids = ids});
+                return result>0;
             });
         }
 

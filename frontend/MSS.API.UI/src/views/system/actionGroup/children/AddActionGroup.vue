@@ -26,7 +26,7 @@
           <div class="inp-wrap">
             <span class="text">权限组名称<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入权限组别名称" v-model="groupName.text" @keyup.native="validateInput(groupName)"></el-input>
+              <el-input placeholder="请输入权限组名称" v-model="groupName.text" @keyup.native="validateInput(groupName)"></el-input>
             </div>
           </div>
           <p class="validate-tips">{{ groupName.tips }}</p>

@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeEqpTypeList' }">返回</router-link></x-button>
+      <x-button class="active"><router-link :to="{ name: 'SeeFirmList' }">返回</router-link></x-button>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -15,43 +15,62 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">设备类型ID</span>
-              <div class="inp disabled">
-                <el-input v-model="eqpTypeID" :disabled="true"></el-input>
+              <span class="text">厂商名称<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-input placeholder="请输入厂商名称" v-model="firmName.text" @keyup.native="validateInput()"></el-input>
               </div>
             </div>
+            <p class="validate-tips">{{ firmName.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">设备类型名称<em class="validate-mark">*</em></span>
+              <span class="text">厂商类型<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input placeholder="请输入设备类型名称" v-model="eqpTypeName.text" @keyup.native="validateInput()"></el-input>
+                <el-select v-model="type.text" clearable filterable placeholder="请选择厂商类型" @change="validateSelect(type)">
+                <el-option
+                  v-for="item in typeList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
               </div>
             </div>
-            <p class="validate-tips">{{ eqpTypeName.tips }}</p>
+            <p class="validate-tips">{{ type.tips }}</p>
+          </li>
+          <li class="list"/>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">联系电话</span>
+              <div class="inp">
+                <el-input placeholder="请输入联系电话" v-model="mobile.text" @keyup.native="validateInputNull(mobile)"></el-input>
+              </div>
+            </div>
+            <p class="validate-tips">{{ mobile.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">型号</span>
+              <span class="text">联系人</span>
               <div class="inp">
-                <el-input v-model="model.text" placeholder="请输入设备类型型号" @keyup.native="validateInputNull(model)"></el-input>
+                <el-input placeholder="请输入联系人" v-model="contact.text" @keyup.native="validateInputNull(contact)"></el-input>
               </div>
             </div>
-            <p class="validate-tips">{{ model.tips }}</p>
+            <p class="validate-tips">{{ contact.tips }}</p>
           </li>
-          <div class="upload-list">
-            <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
-          </div>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">地址</span>
+              <div class="inp">
+                <el-input placeholder="请输入地址" v-model="address.text" @keyup.native="validateInputNull(address)"></el-input>
+              </div>
+            </div>
+            <p class="validate-tips">{{ address.tips }}</p>
+          </li>
         </ul>
-        <div class="con-padding-horizontal cause">
-            <span class="lable">设备类型描述：</span>
-            <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述" @keyup.native="validateInputNull(eqpTypeDesc)"></el-input>
-        </div>
-        <div class="validate-tips left">{{ eqpTypeDesc.tips }}</div>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
-            <router-link :to="{name: 'SeeEqpTypeList'}">取消</router-link>
+            <router-link :to="{name: 'SeeFirmList'}">取消</router-link>
           </x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
@@ -61,28 +80,26 @@
 </template>
 <script>
 import { validateInputCommon, vInput, nullToEmpty } from '@/common/js/utils.js'
-import { systemResource } from '@/common/js/dictionary.js'
-import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
+import { dictionary } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
+import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
-import MyUploadPDF from '@/components/UploadPDF'
 export default {
-  name: 'AddEqpType',
+  name: 'AddFirm',
   components: {
-    XButton,
-    'upload-pdf': MyUploadPDF
+    XButton
   },
   data () {
     return {
-      systemResource: systemResource.eqpType,
       loading: false,
-      title: '| 添加设备类型',
-      eqpTypeID: '',
-      eqpTypeName: {text: '', tips: ''},
-      model: {text: '', tips: ''},
-      eqpTypeDesc: {text: '', tips: ''},
-      fileIDs: '',
-      fileIDsEdit: []
+      title: '| 添加厂商',
+      firmID: '',
+      type: {text: '', tips: ''},
+      typeList: [],
+      firmName: {text: '', tips: ''},
+      mobile: {text: '', tips: ''},
+      contact: {text: '', tips: ''},
+      address: {text: '', tips: ''}
     }
   },
   created () {
@@ -91,23 +108,28 @@ export default {
   methods: {
     init () {
       if (this.$route.query.type !== 'Add') {
-        this.title = '| 修改设备类型'
+        this.title = '| 修改厂商'
         this.loading = true
-        this.getEqpType()
+        apiAuth.getSubCode(dictionary.firmType).then(res => {
+          this.typeList = res.data
+          this.getFirm()
+        }).catch(err => console.log(err))
+      } else {
+        apiAuth.getSubCode(dictionary.firmType).then(res => {
+          this.typeList = res.data
+        }).catch(err => console.log(err))
       }
     },
-    getFileIDs (ids) {
-      this.fileIDsEdit = ids
-    },
-    getEqpType () {
-      api.getEqpTypeByID(this.$route.query.id).then(res => {
+    getFirm () {
+      api.getFirmByID(this.$route.query.id).then(res => {
         if (res.code === 0) {
           let data = res.data
-          this.eqpTypeID = data.id
-          this.eqpTypeName.text = data.tName
-          this.model.text = nullToEmpty(data.model)
-          this.eqpTypeDesc.text = data.desc
-          this.fileIDs = data.uploadFiles
+          this.firmID = data.id
+          this.firmName.text = data.name
+          this.type.text = data.type
+          this.mobile.text = nullToEmpty(data.mobile)
+          this.contact.text = nullToEmpty(data.contact)
+          this.address.text = nullToEmpty(data.address)
         }
         this.loading = false
       }).catch(err => console.log(err))
@@ -122,13 +144,22 @@ export default {
       }
     },
     validateInput () {
-      if (!validateInputCommon(this.eqpTypeName)) {
+      if (!validateInputCommon(this.firmName)) {
         return false
       }
       return true
     },
+    validateSelect (val) {
+      if (val.text === '') {
+        val.tips = '此项必选'
+        return false
+      } else {
+        val.tips = ''
+        return true
+      }
+    },
     validateInputAll () {
-      if (!this.validateInput() || !this.validateInputNull(this.model) || !this.validateInputNull(this.eqpTypeDesc)) {
+      if (!this.validateInput() || !this.validateInputNull(this.mobile) || !this.validateInputNull(this.contact) || !this.validateInputNull(this.address) || !this.validateSelect(this.type)) {
         return false
       }
       return true
@@ -141,23 +172,17 @@ export default {
         })
         return
       }
-      if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
-        this.$message({
-          message: '文件正在上传中，请耐心等待',
-          type: 'warning'
-        })
-        return
-      }
-      let eqpType = {
-        TName: this.eqpTypeName.text,
-        Desc: this.eqpTypeDesc.text,
-        Model: this.model.text,
-        UploadFiles: JSON.stringify(this.fileIDsEdit)
+      let firm = {
+        Name: this.firmName.text,
+        Type: this.type.text,
+        Mobile: this.mobile.text,
+        Contact: this.contact.text,
+        Address: this.address.text
       }
       if (this.$route.query.type === 'Add') {
-        api.addEqpType(eqpType).then(res => {
+        api.addFirm(firm).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEqpTypeList'})
+            this.$router.push({name: 'SeeFirmList'})
             this.$message({
               message: '添加成功',
               type: 'success'
@@ -170,10 +195,10 @@ export default {
           }
         }).catch(err => console.log(err))
       } else {
-        eqpType.ID = this.eqpTypeID
-        api.updateEqpType(eqpType).then(res => {
+        firm.ID = this.firmID
+        api.updateFirm(firm).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEqpTypeList'})
+            this.$router.push({name: 'SeeFirmList'})
             this.$message({
               message: '修改成功',
               type: 'success'
@@ -392,7 +417,7 @@ export default {
 .upload-list{
   margin-top: PXtoEm(25);
   margin-bottom: PXtoEm(25);
-  width: 50%;
+  width: -webkit-fill-available;
 }
 .left{
   text-indent: 9.5%

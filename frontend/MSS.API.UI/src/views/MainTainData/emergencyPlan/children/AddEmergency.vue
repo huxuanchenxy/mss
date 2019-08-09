@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeEqpTypeList' }">返回</router-link></x-button>
+      <x-button class="active"><router-link :to="{ name: 'SeeEmergencyPlanList' }">返回</router-link></x-button>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -15,43 +15,47 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">设备类型ID</span>
-              <div class="inp disabled">
-                <el-input v-model="eqpTypeID" :disabled="true"></el-input>
+              <span class="text">应急场景<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-input placeholder="请输入应急场景" v-model="scene.text" @keyup.native="validateInput(scene)"></el-input>
               </div>
             </div>
+            <p class="validate-tips">{{ scene.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">设备类型名称<em class="validate-mark">*</em></span>
+              <span class="text">关键词<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input placeholder="请输入设备类型名称" v-model="eqpTypeName.text" @keyup.native="validateInput()"></el-input>
+                <el-input v-model="keyword.text" placeholder="请输入关键词" @keyup.native="validateInput(keyword)"></el-input>
               </div>
             </div>
-            <p class="validate-tips">{{ eqpTypeName.tips }}</p>
+            <p class="validate-tips">{{ keyword.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">型号</span>
+              <span class="text">上传部门</span>
               <div class="inp">
-                <el-input v-model="model.text" placeholder="请输入设备类型型号" @keyup.native="validateInputNull(model)"></el-input>
+                <el-cascader class="cascader_width" clearable ref='dept'
+                  expand-trigger="hover"
+                  change-on-select
+                  :props="defaultParams"
+                  @change="cascader_change"
+                  :show-all-levels="true"
+                  :options="deptList"
+                  v-model="deptPath.text">
+                </el-cascader>
               </div>
             </div>
-            <p class="validate-tips">{{ model.tips }}</p>
+            <p class="validate-tips">{{ deptPath.tips }}</p>
           </li>
           <div class="upload-list">
             <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
           </div>
         </ul>
-        <div class="con-padding-horizontal cause">
-            <span class="lable">设备类型描述：</span>
-            <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述" @keyup.native="validateInputNull(eqpTypeDesc)"></el-input>
-        </div>
-        <div class="validate-tips left">{{ eqpTypeDesc.tips }}</div>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
-            <router-link :to="{name: 'SeeEqpTypeList'}">取消</router-link>
+            <router-link :to="{name: 'SeeEmergencyPlanList'}">取消</router-link>
           </x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
@@ -64,23 +68,31 @@ import { validateInputCommon, vInput, nullToEmpty } from '@/common/js/utils.js'
 import { systemResource } from '@/common/js/dictionary.js'
 import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
-import api from '@/api/eqpApi'
+import api from '@/api/ExpertApi.js'
+import apiOrg from '@/api/orgApi'
 import MyUploadPDF from '@/components/UploadPDF'
 export default {
-  name: 'AddEqpType',
+  name: 'AddEmergency',
   components: {
     XButton,
     'upload-pdf': MyUploadPDF
   },
   data () {
     return {
-      systemResource: systemResource.eqpType,
+      defaultParams: {
+        label: 'label',
+        value: 'id',
+        children: 'children'
+      },
+      systemResource: systemResource.emergencyPlan,
       loading: false,
-      title: '| 添加设备类型',
-      eqpTypeID: '',
-      eqpTypeName: {text: '', tips: ''},
-      model: {text: '', tips: ''},
-      eqpTypeDesc: {text: '', tips: ''},
+      title: '| 添加应急预案',
+      ePlanID: '',
+      scene: {text: '', tips: ''},
+      keyword: {text: '', tips: ''},
+      dept: '',
+      deptList: [],
+      deptPath: {text: [], tips: ''},
       fileIDs: '',
       fileIDsEdit: []
     }
@@ -91,26 +103,70 @@ export default {
   methods: {
     init () {
       if (this.$route.query.type !== 'Add') {
-        this.title = '| 修改设备类型'
+        this.title = '| 修改应急预案'
         this.loading = true
-        this.getEqpType()
+        // 部门加载
+        apiOrg.getOrgAll().then(res => {
+          this.deptList = res.data
+          this.getEPlan()
+        }).catch(err => console.log(err))
+      } else {
+        // 部门加载
+        apiOrg.getOrgAll().then(res => {
+          this.deptList = res.data
+        }).catch(err => console.log(err))
       }
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
-    getEqpType () {
-      api.getEqpTypeByID(this.$route.query.id).then(res => {
+    cascader_change (val) {
+      let selectedDept = val[val.length - 1]
+      let obj = this.getCascaderObj(selectedDept, this.deptList)
+      if (obj.node_type === 2) {
+        this.dept = selectedDept
+        this.deptPath.tips = ''
+      } else {
+        this.deptPath.tips = '您选择的不是部门'
+      }
+      // let el = document.querySelector('.pop-team')
+      // el.style.display = 'none'
+    },
+    getCascaderObj (val, opt) {
+      for (let i = 0; i < opt.length; ++i) {
+        let item = opt[i]
+        if (val === item.id) {
+          return item
+        } else {
+          if (item.children) {
+            let ret = this.getCascaderObj(val, item.children)
+            if (ret) {
+              return ret
+            }
+          }
+        }
+      }
+    },
+    getEPlan () {
+      api.getEPlanByID(this.$route.query.id).then(res => {
         if (res.code === 0) {
           let data = res.data
-          this.eqpTypeID = data.id
-          this.eqpTypeName.text = data.tName
-          this.model.text = nullToEmpty(data.model)
-          this.eqpTypeDesc.text = data.desc
+          this.ePlanID = data.id
+          this.scene.text = data.scene
+          this.keyword.text = nullToEmpty(data.keyword)
+          this.deptPath.text = this.strToIntArr(data.deptPath)
           this.fileIDs = data.uploadFiles
         }
         this.loading = false
       }).catch(err => console.log(err))
+    },
+    strToIntArr (str) {
+      let arr = str.split(',')
+      let ret = []
+      for (let i = 0; i < arr.length; i++) {
+        ret.push(parseInt(arr[i]))
+      }
+      return ret
     },
     validateInputNull (val) {
       if (!vInput(val.text)) {
@@ -121,14 +177,14 @@ export default {
         return true
       }
     },
-    validateInput () {
-      if (!validateInputCommon(this.eqpTypeName)) {
+    validateInput (val) {
+      if (!validateInputCommon(val)) {
         return false
       }
       return true
     },
     validateInputAll () {
-      if (!this.validateInput() || !this.validateInputNull(this.model) || !this.validateInputNull(this.eqpTypeDesc)) {
+      if (!this.validateInput(this.scene) || !this.validateInput(this.keyword)) {
         return false
       }
       return true
@@ -148,16 +204,17 @@ export default {
         })
         return
       }
-      let eqpType = {
-        TName: this.eqpTypeName.text,
-        Desc: this.eqpTypeDesc.text,
-        Model: this.model.text,
+      let ePlan = {
+        Scene: this.scene.text,
+        Dept: this.dept,
+        DeptPath: this.deptPath.text.join(','),
+        Keyword: this.keyword.text,
         UploadFiles: JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
-        api.addEqpType(eqpType).then(res => {
+        api.addEPlan(ePlan).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEqpTypeList'})
+            this.$router.push({name: 'SeeEmergencyPlanList'})
             this.$message({
               message: '添加成功',
               type: 'success'
@@ -170,10 +227,10 @@ export default {
           }
         }).catch(err => console.log(err))
       } else {
-        eqpType.ID = this.eqpTypeID
-        api.updateEqpType(eqpType).then(res => {
+        ePlan.ID = this.ePlanID
+        api.updateEPlan(ePlan).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEqpTypeList'})
+            this.$router.push({name: 'SeeEmergencyPlanList'})
             this.$message({
               message: '修改成功',
               type: 'success'
@@ -396,5 +453,9 @@ export default {
 }
 .left{
   text-indent: 9.5%
+}
+
+.cascader_width{
+  width: 100%!important;
 }
 </style>

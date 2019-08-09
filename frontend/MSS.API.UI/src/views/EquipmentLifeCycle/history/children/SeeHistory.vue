@@ -133,7 +133,6 @@ export default {
     }).catch(err => console.log(err))
   },
   activated () {
-    debugger
     if ('eqpSelected' in this.$route.params) {
       this.eqpSelected = this.$route.params.eqpSelected
       this.eqpType = this.$route.params.eqpType

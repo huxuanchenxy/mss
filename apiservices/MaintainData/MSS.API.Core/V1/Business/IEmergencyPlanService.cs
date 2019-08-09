@@ -3,18 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MSS.API.Common;
+using MSS.API.Core.Common;
 using MSS.API.Model.DTO;
-using Microsoft.AspNetCore.Http;
+using MSS.API.Common;
 
 namespace MSS.API.Core.V1.Business
 {
-    public interface IFirmService
+    public interface IEmergencyPlanService
     {
-        Task<ApiResult> Save(Firm firm);
-        Task<ApiResult> Update(Firm firm);
+        Task<ApiResult> Save(EmergencyPlan ePlan);
+        Task<ApiResult> Update(EmergencyPlan ePlan);
         Task<ApiResult> Delete(string ids);
-        Task<ApiResult> GetPageByParm(FirmQueryParm parm);
+        Task<ApiResult> GetPageByParm(EPlanQueryParm parm);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> GetAll();
     }
