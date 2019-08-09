@@ -67,6 +67,19 @@ const routes = [
             component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/equipment/children/DetailEqp.vue')
           }
         ]
+      }, {
+        path: 'eqpmonitor',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/equipmentManager/eqpmonitor/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'EqpMonitor',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/equipmentManager/eqpmonitor/children/List.vue')
+          }
+        ]
       }
     ]
   }

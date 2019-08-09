@@ -168,7 +168,7 @@ export default {
       apiEvent.getAlarm().then(res => {
         if (res.code === ApiRESULT.Success) {
           let count1 = res.data.filter(item => item.eLevel < 2).length
-          let count2 = res.data.filter(item => item.eLevel >= 2).length
+          let count2 = res.data.length - count1
           this.EventTypeList[0].count1 = count1
           this.EventTypeList[0].count2 = count2
           if ((count1 + '').length + (count2 + '').length > 5) {
