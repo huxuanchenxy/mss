@@ -23,9 +23,6 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
-      <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="look"><x-button>查看详情</x-button></li>
-      </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
@@ -155,7 +152,7 @@ export default {
   },
   methods: {
     init () {
-      // this.bCheckAll = false
+      // this.bCheckAll = false  :disabled='item.healthStatus'
       // this.checkAll()
       this.currentPage = 1
       this.searchResult(1)
@@ -208,7 +205,7 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 操作日志')
+      this.$emit('title', '| 服务监控')
       this.loading = true
       this.init()
       this.searchResult(1)
@@ -267,8 +264,8 @@ export default {
       }
     },
     changeStatus: function ($event, item) {
-      alert($event)
-      alert(item.id)
+      // alert($event)
+      // alert(item.id)
       if ($event) {
         api.startProcess(item.id).then(res => {
           this.loading = false
