@@ -33,6 +33,25 @@ const routes = [
                   component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/MainTainData/Expert/children/DetailExpertData.vue')
                 }
               ]
+            },
+            {
+              path: 'EmergencyPlan',
+              component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/EmergencyPlan/Index.vue'),
+              children: [
+                {
+                  path: '/',
+                  name: 'EmergencyPlan',
+                  redirect: 'list'
+                }, {
+                  path: 'list',
+                  name: 'SeeEmergencyPlanList',
+                  component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/EmergencyPlan/children/SeeEmergencyPlanList.vue')
+                }, {
+                  path: 'Add',
+                  name: 'AddEmergency',
+                  component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/EmergencyPlan/children/AddEmergency.vue')
+                }
+              ]
             }
           ]
         }

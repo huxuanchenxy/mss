@@ -13,5 +13,6 @@ export const systemResource = {
   eqpType: 25,
   eqp: 26,
   expert: 27,
-  maintainReg: 28
+  maintainReg: 28,
+  emergencyPlan: 57
 }

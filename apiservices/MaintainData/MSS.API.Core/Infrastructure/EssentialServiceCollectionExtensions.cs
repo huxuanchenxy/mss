@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MSS.API.Common.Utility;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace MSS.API.Core.Infrastructure
 {
@@ -18,6 +21,9 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IEqpHistoryService, EqpHistoryService>();
             services.AddTransient<IWorkingApplicationService, WorkingApplicationService>();
             services.AddTransient<ITroubleReportService, TroubleReportService>();
+            services.AddTransient<IEmergencyPlanService, EmergencyPlanService>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IAuthHelper, AuthHelper>();
             return services;
         }
     }

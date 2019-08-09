@@ -130,8 +130,9 @@ namespace MSS.API.Core.V1.Business
                     List<AllArea> laa = await _eqpRepo.GetAllArea();
                     foreach (var item in eqps)
                     {
-                        item.LocationName = laa.Where(a => a.Tablename == item.LocationBy && a.ID == item.Location)
-                            .FirstOrDefault().AreaName;
+                        var tmp = laa.Where(a => a.Tablename == item.LocationBy && a.ID == item.Location)
+                            .FirstOrDefault();
+                        if (tmp!=null) item.LocationName = tmp.AreaName;
                     }
                     ret.data = ev;
                 }

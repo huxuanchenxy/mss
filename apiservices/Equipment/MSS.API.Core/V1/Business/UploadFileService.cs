@@ -15,6 +15,7 @@ using static MSS.API.Common.FilePath;
 using Microsoft.AspNetCore.Http;
 using MSS.API.Common.Utility;
 using System.IO;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -133,12 +134,52 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
+        public async Task<ApiResult> ListByEntity(int[] entitys, SystemResource sr, UploadShowType ust)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<object> objs = new List<object>();
+                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(entitys,sr);
+                if (ufs != null && ufs.Count() > 0)
+                {
+                    IEnumerable<IGrouping<int, UploadFile>> groupAction = ufs.GroupBy(a => a.Entity);
+                    foreach (IGrouping<int, UploadFile> group in groupAction)
+                    {
+                        if (ust== UploadShowType.Cascader)
+                        {
+                            objs.Add(new {
+                                Entity= group.Key,
+                                UploadFiles= JsonConvert.SerializeObject(UploadFileHelper.CascaderShow(group.ToList()))
+                            });
+                        }
+                        else if (ust == UploadShowType.List)
+                        {
+                            objs.Add(new
+                            {
+                                Entity = group.Key,
+                                UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.ListShow(group.ToList()))
+                            });
+                        }
+                    }
+                }
+                ret.data = objs;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
         public async Task<ApiResult> ListByEqp(int id)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(new int[] { id},MyDictionary.SystemResource.Eqp);
+                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(new int[] { id},SystemResource.Eqp);
                 if (ufs!=null)
                 {
                     ret.data = UploadFileHelper.TimeLineShow(ufs);

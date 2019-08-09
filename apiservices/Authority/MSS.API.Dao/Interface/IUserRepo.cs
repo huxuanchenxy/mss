@@ -21,7 +21,7 @@ namespace MSS.API.Dao.Interface
         Task<int> Update(User user);
 
         Task<int> Delete(string[] ids,int userID);
-
+        Task<bool> IsInOrg(string[] ids);
         Task<List<User>> GetAll();
         Task<List<User>> GetAllContainSuper();
         Task<int> ChangePwd(User user);

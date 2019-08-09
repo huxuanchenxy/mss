@@ -102,7 +102,7 @@ namespace MSS.API.Core.V1.Business
                 else
                 {
                     mRet.code = (int)ErrType.Repeat;
-                    mRet.msg = "登录账号重复";
+                    mRet.msg = "登录账号重复(离职账号不可见但需保留)";
                 }
                 return mRet;
             }
@@ -139,9 +139,18 @@ namespace MSS.API.Core.V1.Business
             MSSResult mRet = new MSSResult();
             try
             {
-                mRet.data = await _UserRepo.Delete(ids.Split(','),userID);
-                await SaveRedis();
-                mRet.code = (int)ErrType.OK;
+                var isInOrg = await _UserRepo.IsInOrg(ids.Split());
+                if (isInOrg)
+                {
+                    mRet.code = (int)ErrType.Associated;
+                    mRet.msg = "已分配到组织树中的人员不可删除";
+                }
+                else
+                {
+                    mRet.data = await _UserRepo.Delete(ids.Split(','), userID);
+                    await SaveRedis();
+                    mRet.code = (int)ErrType.OK;
+                }
                 return mRet;
             }
             catch (Exception ex)

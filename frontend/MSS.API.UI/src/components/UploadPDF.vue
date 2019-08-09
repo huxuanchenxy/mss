@@ -38,12 +38,17 @@
       :modal-append-to-body="false"
       custom-class="show-list-wrap"
       center>
-      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
+      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0" v-show="!isVedio"></iframe>
+      <video :src="previewUrl"
+        v-show="isVedio"
+        controls
+        autoplay
+        height="99%"></video>
     </el-dialog>
   </div>
 </template>
 <script>
-import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
+import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, FILE_SERVER_PATH } from '@/common/js/utils.js'
 import api from '@/api/eqpApi'
 import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
@@ -78,7 +83,8 @@ export default {
       previewUrl: '',
       centerDialogVisible: false,
       ext: {},
-      currentExt: ''
+      currentExt: '',
+      isVedio: false
     }
   },
   created () {
@@ -200,7 +206,8 @@ export default {
       this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
-      let arr = item.url.split('.')
+      let arr = item.name.split('.')
+      let extTmp = arr[arr.length - 1]
       if (arr[arr.length - 1] === 'pdf') {
         if (item.status === 'success') {
           if (item.url.indexOf('blob:') !== -1) {
@@ -211,6 +218,11 @@ export default {
         } else {
           this.previewUrl = PDF_BLOB_VIEW_URL + item.url
         }
+        this.isVedio = false
+        this.centerDialogVisible = true
+      } else if (extTmp === 'mp4' || extTmp === 'avi' || extTmp === 'flv' || extTmp === 'rmvb' || extTmp === 'ogg') {
+        this.previewUrl = FILE_SERVER_PATH + item.url
+        this.isVedio = true
         this.centerDialogVisible = true
       } else if (this.canDown) {
         downloadFile(item.id, item.name)
