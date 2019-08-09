@@ -31,9 +31,6 @@ namespace MSS.API.Core.EventServer
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //初始化设备列表及公司人员
-            // await _globalDataManager.initEquipment();
-            // await _globalDataManager.initTopOrg();
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitEqpConfig);
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitEquipment);
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitTopOrg);
@@ -67,13 +64,13 @@ namespace MSS.API.Core.EventServer
             await _scheduler.ScheduleJob(job, trigger);
 
 
-            // 初始化配置，只执行一次
-            IJobDetail job_pid = JobBuilder.Create<InitPidTableJob>()
-                .Build();
-            ITrigger trigger_pid = TriggerBuilder.Create()
-                .StartNow()
-                .Build();
-            await _scheduler.ScheduleJob(job_pid, trigger_pid);
+            // // 初始化配置，只执行一次
+            // IJobDetail job_pid = JobBuilder.Create<InitPidTableJob>()
+            //     .Build();
+            // ITrigger trigger_pid = TriggerBuilder.Create()
+            //     .StartNow()
+            //     .Build();
+            // await _scheduler.ScheduleJob(job_pid, trigger_pid);
 
             // 预警分析任务
             IJobDetail job_warn = JobBuilder.Create<WarningJob>()

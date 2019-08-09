@@ -12,6 +12,9 @@ namespace MSS.API.Core.Common
         public const string Warn = "warn";
         // 通知
         public const string Notification = "notification";
+
+        // 事件中心，管理员用户组
+        public const string SuperGroup = "superGroup";
     }
 
     public enum UpdateEventType

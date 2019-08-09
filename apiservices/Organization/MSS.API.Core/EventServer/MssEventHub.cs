@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using System;
 using MSS.API.Model.Data;
+using MSS.API.Core.Common;
 namespace MSS.API.Core.EventServer
 {
     public interface IMssEventClient
@@ -17,12 +18,19 @@ namespace MSS.API.Core.EventServer
         
         public override async Task OnConnectedAsync()
         {
-            // await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
+            if (Context.Items["isSuper"] != null && (bool)Context.Items["isSuper"])
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, RedisKeyPrefix.SuperGroup);
+            }
             await base.OnConnectedAsync();
         }
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            // await Groups.RemoveFromGroupAsync(Context.ConnectionId, "SignalR Users");
+            if (Context.Items["isSuper"] != null && (bool)Context.Items["isSuper"])
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, RedisKeyPrefix.SuperGroup);
+            }
             await base.OnDisconnectedAsync(exception);
         }
         public Task SendMessage(string message)
