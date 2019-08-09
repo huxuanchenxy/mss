@@ -78,5 +78,12 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _eqpService.GetAll();
             return Ok(resp.Result);
         }
+
+        [HttpGet("count")]
+        public ActionResult CountAllEqp()
+        {
+            var resp = _eqpService.CountAllEqp();
+            return Ok(resp.Result);
+        }
     }
 }

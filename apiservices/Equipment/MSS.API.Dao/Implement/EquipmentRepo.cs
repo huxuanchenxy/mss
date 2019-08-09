@@ -294,6 +294,16 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<int> CountAllEqp()
+        {
+            return await WithConnection(async c =>
+            {
+                int count = (await c.QueryFirstOrDefaultAsync<int>(
+                    "SELECT count(*) FROM equipment where is_del=" + (int)IsDeleted.no));
+                return count;
+            });
+        }
+
         public async Task<bool> CodeIsRepeat(string code)
         {
             return await WithConnection(async c =>

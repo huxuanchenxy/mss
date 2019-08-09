@@ -247,5 +247,21 @@ namespace MSS.API.Core.V1.Business
                 return 0;
             }
         }
+
+        public async Task<ApiResult> CountAllEqp()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _eqpRepo.CountAllEqp();
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
     }
 }
