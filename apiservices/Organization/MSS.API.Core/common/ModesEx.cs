@@ -45,8 +45,11 @@ namespace MSS.API.Core.Models.Ex
         public string Des { get; set; }
 
         // ex
+        public int? EqpID { get; set; }
+        public bool IsTrouble { get; set; }
         public string EqpCode  { get; set; }
         public string EqpName { get; set; }
         public string EqpTypeName { get; set; }
+
     }
 }

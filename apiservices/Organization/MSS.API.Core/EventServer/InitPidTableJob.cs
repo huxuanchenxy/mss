@@ -1,36 +1,41 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Distributed;
-using MSS.API.Core.Common;
 using MSS.Common.Consul;
 using MSS.API.Common.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MSS.API.Common;
 using MSS.API.Dao.Interface;
 using MSS.API.Model.Data;
-using MSS.API.Model.DTO;
+using System.Collections.Generic;
+using MSS.API.Core.Models.Ex;
+using Microsoft.Extensions.Caching.Distributed;
+using MSS.API.Core.Common;
+using System.Threading;
+using MSS.API.Common;
+using Confluent.Kafka;
+using Microsoft.Extensions.Configuration;
 using System.Transactions;
 namespace MSS.API.Core.EventServer
 {
-    public class InitConfigJob : IJob
+    public class InitPidTableJob : IJob
     {
         private readonly ILogger _logger;
         private readonly IDistributedCache _cache;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
-        private readonly IWarnningSettingRepo<EarlyWarnning> _warnSettingRepo;
-        public InitConfigJob(ILogger<InitConfigJob> logger, IDistributedCache cache,
-            IServiceDiscoveryProvider consulServiceProvider, IWarnningSettingRepo<EarlyWarnning> warnSettingRepo)
+        private readonly IWarnningSettingRepo<EarlyWarnningSetting> _warnSettingRepo;
+        private readonly GlobalDataManager _globalDataManager;
+        public InitPidTableJob(ILogger<InitPidTableJob> logger, IDistributedCache cache,
+            IServiceDiscoveryProvider consulServiceProvider, IWarnningSettingRepo<EarlyWarnningSetting> warnSettingRepo,
+            GlobalDataManager globalDataManager)
         {
             _logger = logger;
             _cache = cache;
             _consulServiceProvider = consulServiceProvider;
             _warnSettingRepo = warnSettingRepo;
+            _globalDataManager = globalDataManager;
         }
         public async Task Execute(IJobExecutionContext context)
         {
@@ -81,6 +86,11 @@ namespace MSS.API.Core.EventServer
                                 // 设备属性
                                 newdata.prop = pid_seg[4];
                                 newdata.Des = item_pid["Des"].ToString();
+                                // 判断是否为故障点
+                                if (newdata.Des.IndexOf("故障") > 0)
+                                {
+                                    newdata.PidType = 1;
+                                }
                                 if (item_pid["UP"] != null && item_pid["UP"].Type != JTokenType.Null)
                                 {
                                     newdata.UP = Convert.ToDouble(item_pid["UP"]);
@@ -112,7 +122,7 @@ namespace MSS.API.Core.EventServer
                         }
                         else
                         {
-                            _logger.LogError("/api/v1/TableInfo/" + table +"接口调用失败");
+                            _logger.LogError("/api/v1/TableInfo/" + table + "接口调用失败");
                         }
                     }
                 }
@@ -121,6 +131,8 @@ namespace MSS.API.Core.EventServer
                     _logger.LogError("/api/v1/TableInfo 接口调用失败");
                 }
                 _logger.LogInformation("同步pid表结束");
+                // 发送通知 更新预警设定，预警设定中会牵涉到pid列表
+                _globalDataManager.postUpdateEvent(UpdateEventType.InitWarnSetting);
             }
             catch (Exception ex)
             {
@@ -128,5 +140,6 @@ namespace MSS.API.Core.EventServer
                 _logger.LogError(ex.Message);
             }
         }
+
     }
 }
