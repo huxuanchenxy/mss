@@ -10,6 +10,7 @@ namespace MSS.API.Dao.Interface
     public interface IUploadFileRepo<T>
     {
         Task<UploadFile> Save(UploadFile uploadFile);
+        Task<int> Save(List<UploadFileRelation> uploadFileRelations);
         Task<int> Delete(int id);
         Task<UploadFile> GetByID(int id);
         Task<List<UploadFile>> ListByIDs(string ids);
