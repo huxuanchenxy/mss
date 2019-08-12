@@ -39,10 +39,11 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 100px;
+  height: 20px;
 }
 
 .footer-nav-wrap{
+  display: none;
   flex-wrap: wrap;
   position: absolute;
   bottom: 35px;

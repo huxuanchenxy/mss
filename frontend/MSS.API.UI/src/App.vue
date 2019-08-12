@@ -63,7 +63,7 @@ export default {
   top: 15%;
   left: 50%;
   width: percent(960, 1440);
-  height: percent(550, 780);
+  height: percent(631, 780);
   border-radius: $border-radius;
   transform: translateX(percent(-960 / 2, 960));
 
@@ -81,7 +81,7 @@ export default {
       display: flex;
       align-items: center;
       position: relative;
-      height: percent(56, $content-height);
+      height: percent(25, $content-height);
 
       &:after{
         content: "";
@@ -109,4 +109,12 @@ export default {
     }
   }
 }
+</style>
+<style>
+  .box{
+      height: 16.36364%  !important
+    }
+    .content-wrap{
+      height: 78.45455% !important
+    }
 </style>
