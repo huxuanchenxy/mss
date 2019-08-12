@@ -126,23 +126,4 @@ namespace MSS.API.Model.Data
         public List<Equipment> rows { get; set; }
         public int total { get; set; }
     }
-
-    public class UploadFileEqp
-    {
-        public int ID { get; set; }
-
-        public int EqpID { get; set; }
-        public int FileID { get; set; }
-    }
-
-    public class UploadFileEqpMap : EntityMap<UploadFileEqp>
-    {
-        public UploadFileEqpMap()
-        {
-            Map(o => o.ID).ToColumn("id");
-            Map(o => o.EqpID).ToColumn("eqp_id");
-            Map(o => o.FileID).ToColumn("file_id");
-        }
-    }
-
 }

@@ -12,6 +12,8 @@ using MSS.API.Common;
 using MSS.API.Common.Utility;
 using System.IO;
 using static MSS.API.Common.MyDictionary;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -36,6 +38,20 @@ namespace MSS.API.Core.V1.Controllers
         {
             public int type { get; set; }
             public int systemResource { get; set; }
+        }
+        [HttpPost("SaveList")]
+        public ActionResult Save(FilesByEntity filesByEntity)
+        {
+            //List<UploadFileRelation> ufrs = JsonConvert.DeserializeObject<List<UploadFileRelation>>(list);
+            var ret = _uploadService.Save(ObjectToList(filesByEntity));
+            return Ok(ret.Result);
+            //return Ok("");
+        }
+        public class FilesByEntity
+        {
+            public int entity { get; set; }
+            public int systemResource { get; set; }
+            public string files { get; set; }
         }
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
@@ -89,6 +105,25 @@ namespace MSS.API.Core.V1.Controllers
             {
                 return File(new byte[] { }, "application/octet-stream");
             }
+        }
+
+        private List<UploadFileRelation> ObjectToList(FilesByEntity fe)
+        {
+            List<UploadFileRelation> ret = new List<UploadFileRelation>();
+            JArray arr= JsonConvert.DeserializeObject<JArray>(fe.files);
+            foreach (var item in arr)
+            {
+                foreach (var id in item["ids"].ToString().Split(','))
+                {
+                    UploadFileRelation ufr = new UploadFileRelation();
+                    ufr.Entity = fe.entity;
+                    ufr.SystemResource = fe.systemResource;
+                    ufr.Type = Convert.ToInt32(item["type"]);
+                    ufr.File = Convert.ToInt32(id);
+                    ret.Add(ufr);
+                }
+            }
+            return ret;
         }
     }
 }
