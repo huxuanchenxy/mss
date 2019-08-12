@@ -218,6 +218,27 @@ const routes = [
               component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
             }
           ]
+        }      ,
+        {
+          path: 'ProcessConsul',
+          component: () => import( '@/views/system/operlog/index.vue'),
+          children: [
+            {
+              path: '/',
+              name: 'ProcessConsul',
+              redirect: 'list'
+            }, 
+            {
+              path: 'list',
+              name: 'SeeProcessConsul',
+              component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeProcessConsul.vue')
+            }, 
+            {
+              path: 'addMaintainConfig/:mark?/:id?',
+              name: 'addMaintainConfig',
+              component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
+            }
+          ]
         }
     ]
   }
