@@ -21,7 +21,7 @@
           :value="item.business_type">
         </el-option>
       </el-select>
-      <x-button class="active" v-show="!readOnly">点击上传</x-button>
+      <el-button size="small" type="primary" class="btn" v-show="!readOnly" :loading="loading">点击上传</el-button>
     </el-upload>
     <div v-for="(item) in fileList" :key="item.key">
       <el-upload
@@ -53,6 +53,7 @@ import api from '@/api/eqpApi'
 import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
 import { downloadFile } from '@/common/js/UpDownloadFileHelper.js'
+import { systemResource } from '@/common/js/dictionary.js'
 export default {
   name: 'UploadPDF',
   components: {
@@ -64,11 +65,13 @@ export default {
     // fileType: Number,
     fileIDs: String,
     readOnly: Boolean,
-    canDown: Boolean
+    canDown: Boolean,
+    unSelectedEntity: Number
     // ext: String
   },
   data () {
     return {
+      loading: false,
       label: '',
       myData: {
         type: '',
@@ -98,13 +101,14 @@ export default {
   },
   watch: {
     fileIDs () {
+      this.currentFileList = []
+      this.fileList = []
+      this.retFileList = []
       if (this.fileIDs !== '' && this.fileIDs !== null) {
+        this.myFileIDs = []
         this.myFileIDs = JSON.parse(this.fileIDs)
         this.getFile()
       }
-      // if (this.fileIDs !== [] && this.fileIDs !== null) {
-      //   this.getFile()
-      // }
     }
   },
   mounted () {
@@ -150,6 +154,14 @@ export default {
       return true
     },
     beforeUpload (file) {
+      if (this.unSelectedEntity > 0) {
+        let msg = '请选择' + this.intToStr(this.unSelectedEntity)
+        this.$message({
+          message: msg,
+          type: 'warning'
+        })
+        return false
+      }
       if (this.myData.type === '') {
         this.$message({
           message: '请选择所要上传的文件类型',
@@ -170,6 +182,13 @@ export default {
           type: 'warning'
         })
         return false
+      }
+      this.loading = true
+    },
+    intToStr (i) {
+      switch (i) {
+        case systemResource.eqpType: return '设备类型'
+        case systemResource.eqp: return '设备'
       }
     },
     onSuccess (response, file, fileList) {
@@ -293,6 +312,7 @@ export default {
       let ids = []
       let list = fileList
       let retif = false
+      //  && this.uploadIsFinished(fileList)
       if (list.length !== 0 && this.uploadIsFinished(fileList)) {
         list.map(val => {
           if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
@@ -351,6 +371,7 @@ export default {
           })
         }
       }
+      this.loading = false
       this.$emit('getFileIDs', this.retFileList)
     }
   }
@@ -365,6 +386,15 @@ export default {
   text-align:left;
   margin-left:10px;
   margin-top:10px;
+}
+
+.btn{
+  font-size: 14px;
+  width: 85px;
+  &:hover{
+    border-color: $color-main-btn!important;
+    background: $color-main-btn!important;
+  }
 }
 // 图片预览
   /deep/ .show-list-wrap{

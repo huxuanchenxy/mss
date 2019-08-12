@@ -141,6 +141,7 @@ export default {
   },
   methods: {
     eqpTypeChange () {
+      this.eqpSelected = []
       api.GetDeviceListByTypeId(this.eqpType).then(res => {
         this.eqpList = res.data
       }).catch(err => console.log(err))

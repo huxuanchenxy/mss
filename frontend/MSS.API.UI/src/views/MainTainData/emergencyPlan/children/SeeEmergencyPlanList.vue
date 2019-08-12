@@ -48,7 +48,7 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.emergencyPlan_scene === 0 }, { 'el-icon-caret-top': headOrder.emergencyPlan_scene === 1 }, { 'el-icon-caret-bottom': headOrder.emergencyPlan_scene === 2 }]"></i>
         </li>
         <li class="list url">关键词</li>
-        <li class="list upload-cascader">上传文件</li>
+        <li class="list upload-cascader">附件</li>
         <li class="list url c-pointer" @click="changeOrder('dept_id')">
           上传部门
           <i :class="[{ 'el-icon-d-caret': headOrder.dept_id === 0 }, { 'el-icon-caret-top': headOrder.dept_id === 1 }, { 'el-icon-caret-bottom': headOrder.dept_id === 2 }]"></i>
@@ -184,13 +184,13 @@ export default {
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.ePlan.save
+        return item.actionID === btn.emergencyPlan.save
       })
       this.btn.delete = !actions.some((item, index) => {
-        return item.actionID === btn.ePlan.delete
+        return item.actionID === btn.emergencyPlan.delete
       })
       this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.ePlan.update
+        return item.actionID === btn.emergencyPlan.update
       })
     }
     this.init()
