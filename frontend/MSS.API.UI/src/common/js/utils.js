@@ -178,3 +178,9 @@ export const FileType = {
   ExpertData_vedio: 7,
   ExpertData_attach: 8
 }
+export const EqpStatus = {
+  normal: 0,
+  fault: 1,
+  warning: 2
+
+}

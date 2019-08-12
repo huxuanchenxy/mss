@@ -249,6 +249,7 @@ export default {
         }
 
         if (message.type === 0) {
+          Bus.$emit('eqp_monitor', message)
           thisObj.refresh('alarm')
         } else if (message.type === 1) {
           thisObj.refresh('warnning')
