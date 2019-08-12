@@ -59,9 +59,8 @@ namespace MSS.API.Core
                 options.AddDefaultPolicy(
                 builder =>
                 {
-
-                    builder.WithOrigins("http://localhost:8080",
-                                        "http://10.89.36.103")
+                    string[] origins = Configuration["AllowedHosts"].Split(',');
+                    builder.WithOrigins(origins)
                                         .AllowAnyHeader()
                                         .AllowAnyMethod()
                                         .AllowCredentials();

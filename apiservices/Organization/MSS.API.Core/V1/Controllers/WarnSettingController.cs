@@ -101,5 +101,12 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _warnService.ListWarnningSettingExType();
             return ret;
         }
+
+        [HttpGet("props/{eqpTypeID}")]
+        public async Task<ActionResult<ApiResult>> GetEqpPropByEqpType(int eqpTypeID)
+        {
+            var ret = await _warnService.ListEqpPropByEqpTypeID(eqpTypeID);
+            return ret;
+        }
     }
 }

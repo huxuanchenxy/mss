@@ -18,5 +18,8 @@ namespace MSS.API.Core.V1.Business
             int? eqpTypeID, string paramID);
         Task<ApiResult> ListWarnningSettingExType();
         Task<ApiResult> GetWarnningSettingByID(int id);
+
+        // 根据设备类型获取其下所有设备属性
+        Task<ApiResult> ListEqpPropByEqpTypeID(int eqpTypeID);
     }
 }

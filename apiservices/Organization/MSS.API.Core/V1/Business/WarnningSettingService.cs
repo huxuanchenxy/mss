@@ -205,5 +205,23 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
+
+        public async Task<ApiResult> ListEqpPropByEqpTypeID(int eqpTypeID)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var data = await _warnRepo.ListEqpPropByEqpTypeID(eqpTypeID);
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
     }
 }
