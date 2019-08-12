@@ -23,20 +23,23 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
+            <ul class="con-padding-horizontal btn-group">
+        <li class="list" @click="refreshpage"><x-button>刷新</x-button></li>
+      </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
-        <li class="list number c-pointer" @click="changeOrder('serviceName')">
+        <li class="list number c-pointer" @click="changeOrder('service_name')">
           服务名称
           <i :class="[{ 'el-icon-d-caret': headOrder.serviceName === 0 }, { 'el-icon-caret-top': headOrder.serviceName === 1 }, { 'el-icon-caret-bottom': headOrder.serviceName === 2 }]"></i>
        </li>
-        <li class="list number c-pointer" @click="changeOrder('serviceAddr')">
+        <li class="list number c-pointer" @click="changeOrder('service_addr')">
           主机ip
           <i :class="[{ 'el-icon-d-caret': headOrder.serviceAddr === 0 }, { 'el-icon-caret-top': headOrder.serviceAddr === 1 }, { 'el-icon-caret-bottom': headOrder.serviceAddr === 2 }]"></i>
        </li>
-       <li class="list number c-pointer" @click="changeOrder('servicePort')">
+       <li class="list number c-pointer" @click="changeOrder('service_port')">
           服务端口
           <i :class="[{ 'el-icon-d-caret': headOrder.servicePort === 0 }, { 'el-icon-caret-top': headOrder.servicePort === 1 }, { 'el-icon-caret-bottom': headOrder.servicePort === 2 }]"></i>
        </li>
@@ -44,10 +47,14 @@
           健康状态
           <i :class="[{ 'el-icon-d-caret': headOrder.healthStatus === 0 }, { 'el-icon-caret-top': headOrder.healthStatus === 1 }, { 'el-icon-caret-bottom': headOrder.healthStatus === 2 }]"></i>
        </li>
-        <li class="list number c-pointer" @click="changeOrder('servicePID')" >进程pid
+               <li class="list number c-pointer">
+          操作
+          <i :class="[{ 'el-icon-d-caret': headOrder.healthStatus === 0 }, { 'el-icon-caret-top': headOrder.healthStatus === 1 }, { 'el-icon-caret-bottom': headOrder.healthStatus === 2 }]"></i>
+       </li>
+        <li class="list number c-pointer" @click="changeOrder('service_pid')" >进程pid
           <i :class="[{ 'el-icon-d-caret': headOrder.servicePID === 0 }, { 'el-icon-caret-top': headOrder.servicePID === 1 }, { 'el-icon-caret-bottom': headOrder.servicePID === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('updatedTime')">最后启动时间
+        <li class="list number c-pointer" @click="changeOrder('updated_time')">最后启动时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updatedTime === 0 }, { 'el-icon-caret-top': headOrder.updatedTime === 1 }, { 'el-icon-caret-bottom': headOrder.updatedTime === 2 }]"></i>
         </li>
       </ul>
@@ -65,13 +72,14 @@
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.servicePort }}</router-link>
                 </div>-->
                 <div class="name">{{ item.servicePort }}</div>
-                <div class="name"><span v-if="item.healthStatus===true">running</span><span v-else>stoped</span>
-                  <el-switch
-                    v-model="item.healthStatus"
+                <div class="name">
+                  <span v-if="item.healthStatus===1">running</span><span v-else>stoped</span>
+                </div>
+                <div class="name"><el-switch
+                    v-model="item.healthDo"
                     active-color="#13ce66"
                     inactive-color="#ff4949" @change='changeStatus($event,item)'>
-                  </el-switch>
-                </div>
+                  </el-switch></div>
                 <div class="name">{{ item.servicePID }}</div>
                 <!-- <div class="name">{{ item.mac_add }}</div> -->
                 <div class="name">{{ item.updatedTime }}</div>
@@ -167,7 +175,6 @@ export default {
         this.headOrder.serviceName = 0
         this.headOrder.serviceAddr = 0
         this.headOrder.servicePID = 0
-        this.headOrder.mac_add = 0
         this.headOrder.updatedTime = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
@@ -198,7 +205,7 @@ export default {
         this.loading = false
         res.data.rows.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
-          item.healthStatus = item.healthStatus === 1
+          item.healthDo = item.healthStatus === 1
         })
         this.UserList = res.data.rows
         this.total = res.data.total
@@ -243,26 +250,11 @@ export default {
       this.currentPage = val
       this.searchResult(val)
     },
-    look () {
-      if (!this.lookOperlogID.length) {
-        this.$message({
-          message: '请选择需要查看的日志详情',
-          type: 'warning'
-        })
-      } else if (this.lookOperlogID.length > 1) {
-        this.$message({
-          message: '查看的日志详情不能超过1个',
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'AddOperlog',
-          params: {
-            id: this.lookOperlogID[0],
-            mark: 'look'
-          }
-        })
-      }
+    refreshpage () {
+      // this.$router.go(0)
+      this.currentPage = 1
+      this.loading = true
+      this.searchResult(1)
     },
     changeStatus: function ($event, item) {
       // alert($event)
@@ -271,20 +263,56 @@ export default {
         if ($event) {
           api1.startProcess(item.id).then(res => {
             this.loading = false
+            this.$message({
+              message: '启动成功,请耐心等待服务器启动',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
           }).catch(err => console.log(err))
         } else {
           api1.stopProcess(item.id).then(res => {
             this.loading = false
+            this.$message({
+              message: '停止成功,请耐心等待服务器停止',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
           }).catch(err => console.log(err))
         }
       } else if (item.serviceAddr === '10.89.36.160') {
         if ($event) {
           api2.startProcess(item.id).then(res => {
             this.loading = false
+            this.$message({
+              message: '启动成功,请耐心等待服务器启动',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
           }).catch(err => console.log(err))
         } else {
           api2.stopProcess(item.id).then(res => {
             this.loading = false
+            this.$message({
+              message: '停止成功,请耐心等待服务器停止',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
           }).catch(err => console.log(err))
         }
       }
