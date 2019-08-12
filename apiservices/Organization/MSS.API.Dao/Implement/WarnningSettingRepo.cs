@@ -216,6 +216,23 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<PidTable>> ListEqpPropByEqpTypeID(int eqpTypeID)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT distinct a.prop, a.Des, a.UT FROM pid_table a"
+                    + " JOIN equipment b on a.eqp_id=b.id"
+                    + " WHERE b.eqp_type = @EqpTypeID";
+                var list = await c.QueryAsync<PidTable>(sql,
+                new
+                {
+                    EqpTypeID = eqpTypeID
+                });
+
+                return list.ToList();
+            });
+        }
+
         // 获取所有设备信息
         public async Task<List<Equipment>> ListAllEquipment()
         {

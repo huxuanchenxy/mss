@@ -128,7 +128,9 @@
                 <div class="name">{{ item.subSystemName }}</div>
                 <div class="name">{{ item.tName }}</div>
                 <div class="number">{{ item.teamName }}</div>
-                <div class="number">{{ item.status }}</div>
+                <div class="number" :style="textColor(item.status)">
+                  {{ statusShow(item.status) }}
+                </div>
               </div>
             </li>
           </ul>
@@ -151,7 +153,8 @@
 </template>
 <script>
 // import { transformDate } from '@/common/js/utils.js'
-import { ApiRESULT } from '@/common/js/utils.js'
+import Bus from '@/components/Bus'
+import { ApiRESULT, EqpStatus } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import eqpApi from '@/api/eqpApi'
 import apiEvent from '@/api/eventCenterApi'
@@ -185,6 +188,7 @@ export default {
       totalEqp: 0,
       troubleCount: 0,
       otherCount: 0,
+      newMsg: null,
 
       bCheckAll: false,
       total: 0,
@@ -209,11 +213,22 @@ export default {
       }
     }
   },
+  watch: {
+    newMsg () {
+      if (this.newMsg.type === 0) {
+        this.getAlarm()
+      }
+    },
+    dataList () {
+      this.updateEqpStatus()
+    }
+  },
   created () {
     this.getAllAreaList()
     this.init()
     this.getAlarm()
     this.getTotalEqp()
+    Bus.$on('eqp_monitor', data => (this.newMsg = data))
   },
   activated () {
     this.search()
@@ -267,9 +282,47 @@ export default {
       this.checkAll()
       this.search()
     },
+    textColor (status) {
+      let style = {}
+      switch (status) {
+        case EqpStatus.fault:
+          style = {color: 'red'}
+          break
+        case EqpStatus.warning:
+          style = {color: 'yellow'}
+          break
+      }
+      return style
+    },
+    statusShow (status) {
+      let content = '正常'
+      switch (status) {
+        case EqpStatus.fault:
+          content = '故障'
+          break
+        case EqpStatus.warning:
+          content = '报警'
+          break
+      }
+      return content
+    },
     calcTrouble () {
       this.troubleCount = Object.values(this.alarmList).filter(item => item.isTrouble).length
       this.otherCount = Object.values(this.alarmList).length - this.troubleCount
+    },
+    updateEqpStatus () {
+      for (let key in this.alarmList) {
+        for (let i = 0; i < this.dataList.length; ++i) {
+          let item = this.dataList[i]
+          if (+key === item.id) {
+            if (this.alarmList[key].isTrouble) {
+              item.status = EqpStatus.fault
+            } else {
+              item.status = EqpStatus.warning
+            }
+          }
+        }
+      }
     },
     getAlarm () {
       apiEvent.getAlarm().then(res => {
@@ -278,6 +331,7 @@ export default {
             return item.eqpID
           })
           this.calcTrouble()
+          this.updateEqpStatus()
         }
       }).catch(err => console.log(err))
     },
@@ -333,7 +387,7 @@ export default {
       eqpApi.getEqp(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.status = '正常'
+          item.status = EqpStatus.normal
         })
         this.dataList = res.data.rows
         this.total = res.data.total

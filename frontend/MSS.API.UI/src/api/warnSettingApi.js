@@ -10,6 +10,7 @@ export default {
   updateWarnningSetting: (id, data) => { return axios.put(`${api}/warnsetting/${id}`, data).then(res => res.data) },
   deleteWarnningSetting: ids => { return axios.delete(`${api}/warnsetting/${ids}`).then(res => res.data) },
   getAllEqpType: () => { return axios.get(`${serviceeqp}/EquipmentType/All`).then(res => res.data) },
+  getParamByEqpType: (id) => { return axios.get(`${api}/warnsetting/props/${id}`).then(res => res.data) }
   // getAllEqpType: () => {
   //   return {
   //     then: (call) => {
@@ -27,12 +28,14 @@ export default {
   //     }
   //   }
   // },
-  getParamByEqpType: (id) => {
-    return axios.get(`/static/mock/param.json`).then(res => {
-      res.data = res.data.filter(item => item.type === id)
-      return res
-    })
-  }
+
+  // getParamByEqpType: (id) => {
+  //   return axios.get(`/static/mock/param.json`).then(res => {
+  //     res.data = res.data.filter(item => item.type === id)
+  //     return res
+  //   })
+  // }
+
   // getParamByEqpType: (id) => {
   //   return {
   //     then: (call) => {
