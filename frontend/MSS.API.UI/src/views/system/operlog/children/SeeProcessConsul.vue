@@ -65,7 +65,7 @@
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.servicePort }}</router-link>
                 </div>-->
                 <div class="name">{{ item.servicePort }}</div>
-                <div class="name">
+                <div class="name"><span v-if="item.healthStatus===true">running</span><span v-else>stoped</span>
                   <el-switch
                     v-model="item.healthStatus"
                     active-color="#13ce66"
@@ -99,7 +99,8 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/processConsulApi'
+import api1 from '@/api/processConsul1Api'
+import api2 from '@/api/processConsul2Api'
 export default {
   name: 'SeeProcessConsul',
   components: {
@@ -193,7 +194,7 @@ export default {
         page: page,
         serviceName: this.serviceName
       }
-      api.getPage(parm).then(res => {
+      api1.getPage(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
@@ -265,15 +266,27 @@ export default {
     },
     changeStatus: function ($event, item) {
       // alert($event)
-      // alert(item.id)
-      if ($event) {
-        api.startProcess(item.id).then(res => {
-          this.loading = false
-        }).catch(err => console.log(err))
-      } else {
-        api.stopProcess(item.id).then(res => {
-          this.loading = false
-        }).catch(err => console.log(err))
+      // alert(item.serviceAddr)
+      if (item.serviceAddr === '10.89.36.103') {
+        if ($event) {
+          api1.startProcess(item.id).then(res => {
+            this.loading = false
+          }).catch(err => console.log(err))
+        } else {
+          api1.stopProcess(item.id).then(res => {
+            this.loading = false
+          }).catch(err => console.log(err))
+        }
+      } else if (item.serviceAddr === '10.89.36.160') {
+        if ($event) {
+          api2.startProcess(item.id).then(res => {
+            this.loading = false
+          }).catch(err => console.log(err))
+        } else {
+          api2.stopProcess(item.id).then(res => {
+            this.loading = false
+          }).catch(err => console.log(err))
+        }
       }
     }
   }
