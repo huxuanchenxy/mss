@@ -26,6 +26,9 @@ namespace MSS.API.Dao.Interface
 
         Task<List<EarlyWarnningExType>> ListEarlyWarnningExType();
 
+        // 根据设备类型获取此类型下设备属性
+        Task<List<PidTable>> ListEqpPropByEqpTypeID(int eqpTypeID);
+
         // 取所有设备信息
         Task<List<Equipment>> ListAllEquipment();
 

@@ -31,18 +31,17 @@ namespace MSS.API.Core.EventServer
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //初始化设备列表及公司人员
-            // await _globalDataManager.initEquipment();
-            // await _globalDataManager.initTopOrg();
-            _globalDataManager.postUpdateEvent(0);
-            _globalDataManager.postUpdateEvent(1);
-            _globalDataManager.postUpdateEvent(2);
-            _globalDataManager.postUpdateEvent(3);
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitEqpConfig);
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitEquipment);
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitTopOrg);
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitWarnSetting);
 
             _logger.LogInformation("定时服务启动.");
             _scheduler = await _schedulerFactory.GetScheduler();
             _scheduler.JobFactory = _mssJobFactory;
             await _scheduler.Start();
+
+            
 
             // 全局数据更新job
             IJobDetail job_globalData = JobBuilder.Create<GlobalDataManager>()
@@ -64,13 +63,14 @@ namespace MSS.API.Core.EventServer
                 .Build();
             await _scheduler.ScheduleJob(job, trigger);
 
-            // 初始化配置，只执行一次
-            // IJobDetail jobInit = JobBuilder.Create<InitConfigJob>()
+
+            // // 初始化配置，只执行一次
+            // IJobDetail job_pid = JobBuilder.Create<InitPidTableJob>()
             //     .Build();
-            // ITrigger trigger_once = TriggerBuilder.Create()
+            // ITrigger trigger_pid = TriggerBuilder.Create()
             //     .StartNow()
             //     .Build();
-            // await _scheduler.ScheduleJob(jobInit, trigger_once);
+            // await _scheduler.ScheduleJob(job_pid, trigger_pid);
 
             // 预警分析任务
             IJobDetail job_warn = JobBuilder.Create<WarningJob>()

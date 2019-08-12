@@ -95,6 +95,8 @@ namespace MSS.API.Core.V1.Business
                             alarm.EqpCode = pid.EqpCode;
                             alarm.EqpName = pid.EqpName;
                             alarm.EqpTypeName = pid.EqpTypeName;
+                            alarm.EqpID = pid.EqpID;
+                            alarm.IsTrouble = pid.PidType == 1 ? true : false;
                         }
                     }
                     ret.code = Code.Success;

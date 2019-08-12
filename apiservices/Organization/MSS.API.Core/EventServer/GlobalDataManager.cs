@@ -35,8 +35,8 @@ namespace MSS.API.Core.EventServer
         private List<Equipment> _allEqp = new List<Equipment>();
         private EquipmentConfig _EqpConfig;
 
-        // 类型 1:initEquipment 2:initTopOrg
-        private BufferBlock<int> _updateEventsBuffer = new BufferBlock<int>();
+        // 事件队列
+        private BufferBlock<UpdateEventType> _updateEventsBuffer = new BufferBlock<UpdateEventType>();
         public GlobalDataManager(ILogger<MsgQueueWatcher> logger, IOrgRepo<OrgTree> orgRepo,
             IDistributedCache cache, IOrgService orgService,
             IWarnningSettingRepo<EarlyWarnningSetting> warnSettingRepo,
@@ -96,19 +96,19 @@ namespace MSS.API.Core.EventServer
                 try
                 {
                     // int curid = Thread.CurrentThread.ManagedThreadId;
-                    int type = _updateEventsBuffer.Receive();
+                    UpdateEventType type = _updateEventsBuffer.Receive();
                     switch (type)
                     {
-                        case 0:
+                        case UpdateEventType.InitEqpConfig:
                             await this.initEquipmentConfig();
                             break;
-                        case 1:
+                        case UpdateEventType.InitEquipment:
                             await this.initEquipment();
                             break;
-                        case 2:
+                        case UpdateEventType.InitTopOrg:
                             await this.initTopOrg();
                             break;
-                        case 3:
+                        case UpdateEventType.InitWarnSetting:
                             await this.initWarnSetting();
                             break;
                         default:
@@ -190,7 +190,7 @@ namespace MSS.API.Core.EventServer
                 new List<string>(propList));
         }
 
-        public void postUpdateEvent(int type)
+        public void postUpdateEvent(UpdateEventType type)
         {
             _updateEventsBuffer.Post(type);
         }

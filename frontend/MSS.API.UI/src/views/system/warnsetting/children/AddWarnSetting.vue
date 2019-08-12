@@ -41,15 +41,15 @@
           <div class="inp-wrap">
             <span class="text">设备参数</span>
             <div class="inp">
-              <el-select v-model="paramObj" value-key="_paramID" placeholder="请选择">
+              <el-select v-model="paramObj" value-key="prop" placeholder="请选择">
                 <el-option
                   v-for="item in paramList"
                   :key="item.key"
-                  :label="item._paramName"
+                  :label="item.des"
                   :value="item">
                 </el-option>
               </el-select>
-              <span>{{paramObj ? paramObj._paramUnit : ''}}</span>
+              <span>{{paramObj ? paramObj.ut : ''}}</span>
             </div>
           </div>
         </li>
@@ -317,9 +317,9 @@ export default {
       if (this.validateAll()) {
         var param = {
           EquipmentTypeID: this.equipmentTypeID,
-          ParamID: this.paramObj._paramID,
-          ParamName: this.paramObj._paramName,
-          ParamUnit: this.paramObj._paramUnit,
+          ParamID: this.paramObj.prop,
+          ParamName: this.paramObj.des,
+          ParamUnit: this.paramObj.ut,
           ParamLimitUpper: this.limitUp.text,
           ParamLimitLower: this.limitDown.text,
           IsActived: this.isActived,
@@ -361,7 +361,7 @@ export default {
         this.loading = false
         if (res.code === ApiRESULT.Success) {
           this.equipmentTypeID = res.data.equipmentTypeID
-          this.paramObj = {_paramID: res.data.paramID, _paramName: res.data.paramName, _paramUnit: res.data.paramUnit}
+          this.paramObj = {prop: res.data.paramID, des: res.data.paramName, ut: res.data.paramUnit}
           this.isActived = res.data.isActived
           this.limitUp.text = res.data.paramLimitUpper
           this.limitDown.text = res.data.paramLimitLower

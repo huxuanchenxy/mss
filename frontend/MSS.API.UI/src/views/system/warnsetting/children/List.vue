@@ -33,8 +33,8 @@
                 <el-option
                   v-for="item in paramList"
                   :key="item.key"
-                  :label="item._paramName"
-                  :value="item._paramID">
+                  :label="item.des"
+                  :value="item.prop">
                 </el-option>
               </el-select>
             </div>

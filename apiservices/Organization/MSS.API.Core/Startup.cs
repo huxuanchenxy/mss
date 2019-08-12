@@ -59,9 +59,8 @@ namespace MSS.API.Core
                 options.AddDefaultPolicy(
                 builder =>
                 {
-
-                    builder.WithOrigins("http://localhost:8080",
-                                        "http://10.89.36.103")
+                    string[] origins = Configuration["crossOrigin"].Split(',');
+                    builder.WithOrigins(origins)
                                         .AllowAnyHeader()
                                         .AllowAnyMethod()
                                         .AllowCredentials();
@@ -77,14 +76,13 @@ namespace MSS.API.Core
             services.AddSingleton<IJobFactory, MssJobFactory>();
             // 报警队列监控任务
             services.AddTransient<MsgQueueWatcher>();
-            // 获取所有pid任务
-            services.AddTransient<InitConfigJob>();
             // 预警分析任务
             services.AddTransient<WarningJob>();
             // 设备维修通知任务
             services.AddTransient<NotificationJob>();
             // 报警事件监听任务
             services.AddTransient<AlarmJob>();
+            services.AddTransient<InitPidTableJob>();
             
             // 报警队列
             services.AddSingleton<EventQueues>();
