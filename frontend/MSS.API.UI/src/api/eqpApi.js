@@ -30,6 +30,7 @@ export default {
   getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) },
   getUploadCascaderByIDs: ids => { return axios.get(`${api}/Upload/Cascader/${ids}`).then(res => res.data) },
   getUploadFileByEqp: id => { return axios.get(`${api}/Upload/ListByEqp/${id}`).then(res => res.data) },
+  addUploadFileRelation: list => { return axios.post(`${api}/Upload/SaveList`, list).then(res => res.data) },
 
   downloadFile: id => { return axios({method: 'post', url: `${api}/Upload/Download/${id}`, responseType: 'blob'}).then(res => res) },
 

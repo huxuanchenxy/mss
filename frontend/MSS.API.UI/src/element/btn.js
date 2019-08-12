@@ -52,5 +52,10 @@ export const btn = {
     save: 71,
     delete: 72,
     update: 73
+  },
+  emergencyPlan: {
+    save: 77,
+    delete: 78,
+    update: 79
   }
 }
