@@ -61,14 +61,15 @@ export default {
 #main{
   position: fixed;
   top: 15%;
-  left: 50%;
-  width: percent(960, 1440);
-  height: percent(631, 780);
+  left: 47%;
+  width: 85%;
+  height: percent(608, 780);
   border-radius: $border-radius;
   transform: translateX(percent(-960 / 2, 960));
 
   &.shrink{
-    width: percent(1100, 1440);
+    left: 44%;
+    width: percent(1296, 1440);
     transform: translateX(percent(-960 / 2, 1100));
   }
 
@@ -81,7 +82,7 @@ export default {
       display: flex;
       align-items: center;
       position: relative;
-      height: percent(25, $content-height);
+      height: percent(30, $content-height);
 
       &:after{
         content: "";
