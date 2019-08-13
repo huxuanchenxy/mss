@@ -18,6 +18,7 @@ namespace MSS.API.Model.Data
         public string DeptPath { get; set; }
         public string Keyword { get; set; }
         public string UploadFiles { get; set; }
+        public string Type { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
     }
@@ -35,6 +36,7 @@ namespace MSS.API.Model.Data
             Map(o => o.DeptName).ToColumn("name");
             Map(o => o.DeptPath).ToColumn("dept_path");
             Map(o => o.Keyword).ToColumn("keyword");
+            Map(o => o.Type).ToColumn("type");
 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedName).ToColumn("created_name");
@@ -50,6 +52,7 @@ namespace MSS.API.Model.Data
     {
         public string SearchName { get; set; }
         public string SearchDesc { get; set; }
+        public int Type { get; set; }
     }
 
     public class EPlanView

@@ -175,7 +175,10 @@ export default {
         let myExt = tmp[tmp.length - 1]
         let arr = ext.split(',')
         for (let i = 0; i < arr.length; i++) {
-          if (('.' + myExt.toLowerCase()) === arr[i]) return true
+          if (('.' + myExt.toLowerCase()) === arr[i]) {
+            this.loading = true
+            return true
+          }
         }
         this.$message({
           message: '此类型不支持扩展名为' + myExt + '的文件上传',
@@ -391,6 +394,8 @@ export default {
 .btn{
   font-size: 14px;
   width: 85px;
+  border-color: $color-main-btn!important;
+  background: $color-main-btn!important;
   &:hover{
     border-color: $color-main-btn!important;
     background: $color-main-btn!important;

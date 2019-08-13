@@ -110,6 +110,7 @@ export default {
   },
   data () {
     return {
+      title: '',
       loading: false,
       isShow: this.$route.params.mark,
       editUserID: this.$route.params.id,

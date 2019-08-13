@@ -35,6 +35,7 @@
           <div class="scroll">
             <el-scrollbar>
               <upload-pdf class="upload-list"
+              :readOnly="readOnly"
               :systemResource="systemResource"
               :fileIDs="eqpTypeFileIDs"
               :unSelectedEntity="unSelectedEqpType"
@@ -42,7 +43,7 @@
               </upload-pdf>
               <!-- 按钮 -->
               <div class="btn-group">
-                <el-button type="primary" class="btn" @click.native="saveEqpType" :loading="saveEqpTypeLoading">保存</el-button>
+                <el-button type="primary" class="btn" v-show="btnSave" @click.native="saveEqpType" :loading="saveEqpTypeLoading">保存</el-button>
               </div>
             </el-scrollbar>
           </div>
@@ -84,10 +85,10 @@
           </div>
           <div class="scroll">
             <el-scrollbar>
-              <upload-pdf class="upload-list" :systemResource="systemResource" :fileIDs="fileIDs" :unSelectedEntity="unSelectedEqp" @getFileIDs="getFileIDs"></upload-pdf>
+              <upload-pdf class="upload-list" :readOnly="readOnly" :systemResource="systemResource" :fileIDs="fileIDs" :unSelectedEntity="unSelectedEqp" @getFileIDs="getFileIDs"></upload-pdf>
               <!-- 按钮 -->
               <div class="btn-group">
-                <el-button type="primary" class="btn" @click.native="saveEqp" :loading="saveEqpLoading">保存</el-button>
+                <el-button type="primary" class="btn" v-show="btnSave" @click.native="saveEqp" :loading="saveEqpLoading">保存</el-button>
               </div>
             </el-scrollbar>
           </div>
@@ -99,6 +100,8 @@
 <script>
 import { ApiRESULT } from '@/common/js/utils.js'
 import { systemResource } from '@/common/js/dictionary.js'
+import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
+import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import apiMainTain from '@/api/DeviceMaintainRegApi.js'
 import api from '@/api/eqpApi'
@@ -134,10 +137,21 @@ export default {
       saveEqpTypeLoading: false,
       eqpTypeFileIDs: '',
       eqpTypeFileIDsEdit: [],
-      eqpTypeOnly: ''
+      eqpTypeOnly: '',
+
+      btnSave: true,
+      readOnly: false
     }
   },
   created () {
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btnSave = actions.some((item, index) => {
+        return item.actionID === btn.emergencyPlan.save
+      })
+      if (!this.btnSave) this.readOnly = true
+    }
     // 设备类型加载
     api.getEqpTypeAll().then(res => {
       this.eqpTypeList = res.data
@@ -190,6 +204,14 @@ export default {
       }).catch(err => console.log(err))
     },
     saveEqp () {
+      if (this.eqpSelected.length === 0) {
+        this.$message({
+          message: '请选择设备',
+          type: 'warning'
+        })
+        return
+      }
+      if (!this.validateAll()) return
       this.saveEqpLoading = true
       let obj = {
         entity: this.eqp,
@@ -226,6 +248,14 @@ export default {
       }).catch(err => console.log(err))
     },
     saveEqpType () {
+      if (this.eqpTypeOnly === '') {
+        this.$message({
+          message: '请选择设备类型',
+          type: 'warning'
+        })
+        return
+      }
+      if (!this.validateAll()) return
       this.saveEqpTypeLoading = true
       let obj = {
         entity: this.eqpTypeOnly,
@@ -246,6 +276,22 @@ export default {
           })
         }
       }).catch(err => console.log(err))
+    },
+    validateAll () {
+      if (this.fileIDsEdit.length === 0) {
+        this.$message({
+          message: '请修改后进行保存操作',
+          type: 'warning'
+        })
+        return false
+      } else if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
+        this.$message({
+          message: '文件正在上传中，请耐心等待',
+          type: 'warning'
+        })
+        return false
+      }
+      return true
     }
   }
 }
@@ -254,7 +300,7 @@ export default {
 $con-height: $content-height - 56;
 // 内容区
 .content-wrap{
-  overflow: hidden;
+  // overflow: hidden;
   height: percent($con-height, $content-height);
   // text-align: center;
   .content-header{
@@ -278,6 +324,7 @@ $con-height: $content-height - 56;
     height: percent(50, $con-height)
   }
   /deep/ .el-tabs__content{
+    overflow: hidden;
     height: percent($con-height - 50, $con-height)
   }
   .pane-height{
@@ -291,7 +338,10 @@ $con-height: $content-height - 56;
   .scroll{
     height: percent($con-height - 50, $con-height)
   }
-
+  .el-scrollbar__thumb{
+    z-index: 99!important;
+    background: #1b7ec9!important;
+  }
   .list-wrap{
     .list{
       &:nth-of-type(even){
@@ -387,7 +437,7 @@ $con-height: $content-height - 56;
   margin-left: PXtoEm(25);
   margin-top: PXtoEm(25);
   margin-bottom: PXtoEm(25);
-  width: 400px;
+  width: 430px;
 }
 
 .btn-group{
