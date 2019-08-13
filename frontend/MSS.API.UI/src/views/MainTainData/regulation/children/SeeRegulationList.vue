@@ -13,9 +13,9 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">应急场景</label>
+            <label for="name">制度名称</label>
             <div class="inp">
-              <el-input v-model.trim="scene" placeholder="请输入应急场景"></el-input>
+              <el-input v-model.trim="scene" placeholder="请输入制度名称"></el-input>
             </div>
           </div>
           <div class="input-group">
@@ -44,7 +44,7 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('emergencyPlan_scene')">
-          应急场景
+          制度名称
           <i :class="[{ 'el-icon-d-caret': headOrder.emergencyPlan_scene === 0 }, { 'el-icon-caret-top': headOrder.emergencyPlan_scene === 1 }, { 'el-icon-caret-bottom': headOrder.emergencyPlan_scene === 2 }]"></i>
         </li>
         <li class="list url">关键词</li>
@@ -150,7 +150,7 @@ export default {
         update: false
       },
       isVedio: false,
-      title: ' | 应急预案',
+      title: ' | 规章制度',
       scene: '',
       keyword: '',
       ePlanList: [],
@@ -185,16 +185,17 @@ export default {
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.emergencyPlan.save
+        return item.actionID === btn.regulation.save
       })
       this.btn.delete = !actions.some((item, index) => {
-        return item.actionID === btn.emergencyPlan.delete
+        return item.actionID === btn.regulation.delete
       })
       this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.emergencyPlan.update
+        return item.actionID === btn.regulation.update
       })
     }
     this.init()
+    this.searchResult(1)
   },
   activated () {
     this.searchResult(this.currentPage)
@@ -253,7 +254,7 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        type: systemResource.emergencyPlan,
+        type: systemResource.regulation,
         searchName: this.scene,
         searchDesc: this.keyword
       }).then(res => {
@@ -281,23 +282,23 @@ export default {
     },
     add () {
       // 判断权限，符合则允许跳转
-      this.$router.push({name: 'AddEmergency', query: { type: 'Add' }})
+      this.$router.push({name: 'AddRegulation', query: { type: 'Add' }})
     },
-    // 修改应急预案
+    // 修改规章制度
     edit () {
       if (!this.ePlanID.length) {
         this.$message({
-          message: '请选择修改操作的应急预案',
+          message: '请选择修改操作的规章制度',
           type: 'warning'
         })
       } else if (this.ePlanID.length > 1) {
         this.$message({
-          message: '修改的应急预案不能超过1个',
+          message: '修改的规章制度不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddEmergency',
+          name: 'AddRegulation',
           query: {
             id: this.ePlanID[0],
             type: 'edit'
@@ -306,23 +307,23 @@ export default {
       }
     },
 
-    // 删除应急预案
+    // 删除规章制度
     remove () {
       if (!this.ePlanID.length) {
         this.$message({
-          message: '请选择需删除作的应急预案',
+          message: '请选择需删除作的规章制度',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条应急预案信息?'
+        this.dialogVisible.text = '确定删除该条规章制度信息?'
       }
     },
 
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 应急预案')
+      this.$emit('title', '| 规章制度')
       this.loading = true
       this.init()
       this.searchResult(1)
@@ -350,7 +351,7 @@ export default {
       }).catch(err => console.log(err))
     },
 
-    // 获取修改应急预案id
+    // 获取修改规章制度id
     emitEditID () {
       this.$emit('ePlanID', this.ePlanID)
     },
