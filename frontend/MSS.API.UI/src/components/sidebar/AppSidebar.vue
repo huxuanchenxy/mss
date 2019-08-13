@@ -81,7 +81,7 @@ export default {
     return {
       navHeight: '360px',
       navMoveNum: 0,
-      bMsgShrink: true,
+      bMsgShrink: false,
       bShowSubNav: false,
       navList: [
         {

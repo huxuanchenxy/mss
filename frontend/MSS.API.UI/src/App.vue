@@ -115,6 +115,9 @@ export default {
       height: 16.36364%  !important
     }
     .content-wrap{
-      height: 78.45455% !important
+      height: 81.45455% !important
+    }
+    .content-header{
+      height: 10.45455% !important
     }
 </style>
