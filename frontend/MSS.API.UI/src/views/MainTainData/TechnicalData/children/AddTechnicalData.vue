@@ -100,6 +100,7 @@
 <script>
 import { ApiRESULT } from '@/common/js/utils.js'
 import { systemResource } from '@/common/js/dictionary.js'
+import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import apiMainTain from '@/api/DeviceMaintainRegApi.js'
@@ -138,8 +139,8 @@ export default {
       eqpTypeFileIDsEdit: [],
       eqpTypeOnly: '',
 
-      btnSave: false,
-      readOnly: true
+      btnSave: true,
+      readOnly: false
     }
   },
   created () {
@@ -203,6 +204,14 @@ export default {
       }).catch(err => console.log(err))
     },
     saveEqp () {
+      if (this.eqpSelected.length === 0) {
+        this.$message({
+          message: '请选择设备',
+          type: 'warning'
+        })
+        return
+      }
+      if (!this.validateAll()) return
       this.saveEqpLoading = true
       let obj = {
         entity: this.eqp,
@@ -239,6 +248,14 @@ export default {
       }).catch(err => console.log(err))
     },
     saveEqpType () {
+      if (this.eqpTypeOnly === '') {
+        this.$message({
+          message: '请选择设备类型',
+          type: 'warning'
+        })
+        return
+      }
+      if (!this.validateAll()) return
       this.saveEqpTypeLoading = true
       let obj = {
         entity: this.eqpTypeOnly,
@@ -259,6 +276,22 @@ export default {
           })
         }
       }).catch(err => console.log(err))
+    },
+    validateAll () {
+      if (this.fileIDsEdit.length === 0) {
+        this.$message({
+          message: '请修改后进行保存操作',
+          type: 'warning'
+        })
+        return false
+      } else if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
+        this.$message({
+          message: '文件正在上传中，请耐心等待',
+          type: 'warning'
+        })
+        return false
+      }
+      return true
     }
   }
 }
