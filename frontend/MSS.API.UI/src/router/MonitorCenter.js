@@ -5,14 +5,14 @@ const routes = [
   {
     path: '/monitorCenter',
     meta: { validate: true },
-    component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/EquipmentManager.vue'),
+    component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/MonitorCenter/MonitorCenter.vue'),
     children: [
       {
         path: '/',
         redirect: 'eqpmonitor'
       }, {
         path: 'eqpmonitor',
-        component: () => import(/* webpackChunkName: "system" */ '@/views/equipmentManager/eqpmonitor/Index.vue'),
+        component: () => import(/* webpackChunkName: "system" */ '@/views/MonitorCenter/eqpmonitor/Index.vue'),
         children: [
           {
             path: '/',
@@ -20,7 +20,7 @@ const routes = [
           }, {
             path: 'list',
             name: 'EqpMonitor',
-            component: () => import(/* webpackChunkName: "system" */ '@/views/equipmentManager/eqpmonitor/children/List.vue')
+            component: () => import(/* webpackChunkName: "system" */ '@/views/MonitorCenter/eqpmonitor/children/List.vue')
           }
         ]
       }
