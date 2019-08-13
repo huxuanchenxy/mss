@@ -35,6 +35,7 @@
           <div class="scroll">
             <el-scrollbar>
               <upload-pdf class="upload-list"
+              :readOnly="readOnly"
               :systemResource="systemResource"
               :fileIDs="eqpTypeFileIDs"
               :unSelectedEntity="unSelectedEqpType"
@@ -42,7 +43,7 @@
               </upload-pdf>
               <!-- 按钮 -->
               <div class="btn-group">
-                <el-button type="primary" class="btn" @click.native="saveEqpType" :loading="saveEqpTypeLoading">保存</el-button>
+                <el-button type="primary" class="btn" v-show="btnSave" @click.native="saveEqpType" :loading="saveEqpTypeLoading">保存</el-button>
               </div>
             </el-scrollbar>
           </div>
@@ -84,10 +85,10 @@
           </div>
           <div class="scroll">
             <el-scrollbar>
-              <upload-pdf class="upload-list" :systemResource="systemResource" :fileIDs="fileIDs" :unSelectedEntity="unSelectedEqp" @getFileIDs="getFileIDs"></upload-pdf>
+              <upload-pdf class="upload-list" :readOnly="readOnly" :systemResource="systemResource" :fileIDs="fileIDs" :unSelectedEntity="unSelectedEqp" @getFileIDs="getFileIDs"></upload-pdf>
               <!-- 按钮 -->
               <div class="btn-group">
-                <el-button type="primary" class="btn" @click.native="saveEqp" :loading="saveEqpLoading">保存</el-button>
+                <el-button type="primary" class="btn" v-show="btnSave" @click.native="saveEqp" :loading="saveEqpLoading">保存</el-button>
               </div>
             </el-scrollbar>
           </div>
@@ -99,6 +100,7 @@
 <script>
 import { ApiRESULT } from '@/common/js/utils.js'
 import { systemResource } from '@/common/js/dictionary.js'
+import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import apiMainTain from '@/api/DeviceMaintainRegApi.js'
 import api from '@/api/eqpApi'
@@ -134,10 +136,21 @@ export default {
       saveEqpTypeLoading: false,
       eqpTypeFileIDs: '',
       eqpTypeFileIDsEdit: [],
-      eqpTypeOnly: ''
+      eqpTypeOnly: '',
+
+      btnSave: false,
+      readOnly: true
     }
   },
   created () {
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btnSave = actions.some((item, index) => {
+        return item.actionID === btn.emergencyPlan.save
+      })
+      if (!this.btnSave) this.readOnly = true
+    }
     // 设备类型加载
     api.getEqpTypeAll().then(res => {
       this.eqpTypeList = res.data

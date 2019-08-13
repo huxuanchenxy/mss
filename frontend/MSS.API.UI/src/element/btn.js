@@ -57,5 +57,8 @@ export const btn = {
     save: 77,
     delete: 78,
     update: 79
+  },
+  technicalData: {
+    save: 81
   }
 }
