@@ -52,6 +52,21 @@ const routes = [
                   component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/EmergencyPlan/children/AddEmergency.vue')
                 }
               ]
+            },
+            {
+              path: 'TechnicalData',
+              component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/TechnicalData/Index.vue'),
+              children: [
+                {
+                  path: '/',
+                  name: 'TechnicalData',
+                  redirect: 'Add'
+                }, {
+                  path: 'Add',
+                  name: 'AddTechnicalData',
+                  component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/TechnicalData/children/AddTechnicalData.vue')
+                }
+              ]
             }
           ]
         }

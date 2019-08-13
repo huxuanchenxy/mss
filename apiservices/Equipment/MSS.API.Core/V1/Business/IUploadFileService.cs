@@ -13,6 +13,7 @@ namespace MSS.API.Core.V1.Business
     public interface IUploadFileService
     {
         Task<ApiResult> Save(int type,int systemResource, List<IFormFile> file);
+        Task<ApiResult> Save(List<UploadFileRelation> ufrs);
         Task<ApiResult> Delete(int id);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> ListByIDs(string ids);

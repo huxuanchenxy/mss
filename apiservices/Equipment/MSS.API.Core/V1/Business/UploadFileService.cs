@@ -54,6 +54,21 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
+        public async Task<ApiResult> Save(List<UploadFileRelation> ufrs)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _uploadFileRepo.Save(ufrs);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
         public async Task<ApiResult> Delete(int id)
         {
             ApiResult ret = new ApiResult();

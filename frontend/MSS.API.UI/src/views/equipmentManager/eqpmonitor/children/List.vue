@@ -79,14 +79,14 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         设备总数：{{totalEqp}}
-        <span v-if="troubleCount>0" style="padding-left:5px">
-          有
-          <font style="color:red">{{troubleCount}}</font>
+        <span style="padding-left:5px">
+          , 有
+          <font style="color:#be0909">{{troubleCount}}</font>
           台设备故障
         </span>
-        <span v-if="otherCount>0" style="padding-left:5px">
-          有
-          <font style="color:yellow">{{otherCount}}</font>
+        <span style="padding-left:5px">
+          , 有
+          <font style="color:#f79707">{{otherCount}}</font>
           台设备报警
         </span>
       </ul>
@@ -122,13 +122,13 @@
         <el-scrollbar>
           <ul class="list-wrap">
             <li class="list" v-for="(item) in dataList" :key="item.key">
-              <div class="list-content">
+              <div class="list-content" :style="textColor(item.status)">
                 <div class="number">{{ item.code }}</div>
                 <div class="name">{{ item.name }}</div>
                 <div class="name">{{ item.subSystemName }}</div>
                 <div class="name">{{ item.tName }}</div>
                 <div class="number">{{ item.teamName }}</div>
-                <div class="number" :style="textColor(item.status)">
+                <div class="number">
                   {{ statusShow(item.status) }}
                 </div>
               </div>
@@ -286,10 +286,10 @@ export default {
       let style = {}
       switch (status) {
         case EqpStatus.fault:
-          style = {color: 'red'}
+          style = {background: '#be0909'}
           break
         case EqpStatus.warning:
-          style = {color: 'yellow'}
+          style = {background: '#f79707'}
           break
       }
       return style

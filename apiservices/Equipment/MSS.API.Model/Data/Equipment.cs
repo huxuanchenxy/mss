@@ -114,6 +114,11 @@ namespace MSS.API.Model.Data
         public string LocationPath { get; set; }
     }
 
+    public class EqpQueryByIDParm : BaseQueryParm
+    {
+        public List<int> IDs { get; set; }
+    }
+
     public class AllArea
     {
         public int ID { get; set; }
@@ -126,23 +131,4 @@ namespace MSS.API.Model.Data
         public List<Equipment> rows { get; set; }
         public int total { get; set; }
     }
-
-    public class UploadFileEqp
-    {
-        public int ID { get; set; }
-
-        public int EqpID { get; set; }
-        public int FileID { get; set; }
-    }
-
-    public class UploadFileEqpMap : EntityMap<UploadFileEqp>
-    {
-        public UploadFileEqpMap()
-        {
-            Map(o => o.ID).ToColumn("id");
-            Map(o => o.EqpID).ToColumn("eqp_id");
-            Map(o => o.FileID).ToColumn("file_id");
-        }
-    }
-
 }

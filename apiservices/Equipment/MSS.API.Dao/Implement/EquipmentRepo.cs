@@ -294,6 +294,44 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<EqpView> ListEqpByIDs(EqpQueryByIDParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT distinct a.*,u1.user_name as created_name,u2.user_name as updated_name, ")
+                .Append(" et.type_name,d.name as sub_code_name,ot.name,f1.name as supplierName,f2.name as manufacturerName ")
+                .Append(" FROM equipment a ")
+                .Append(" left join user u1 on a.created_by=u1.id ")
+                .Append(" left join user u2 on a.updated_by=u2.id ")
+                .Append(" left join equipment_type et on et.id=a.eqp_type ")
+                .Append(" left join org_tree ot on ot.id=a.team ")
+                .Append(" left join firm f1 on f1.id=a.Supplier ")
+                .Append(" left join firm f2 on f2.id=a.Manufacturer ")
+                .Append(" left join dictionary_tree d on a.sub_system=d.id ");
+                StringBuilder whereSql = new StringBuilder();
+                whereSql.Append(" where a.is_del=" + (int)IsDeleted.no);
+                if (parm.IDs != null && parm.IDs.Count > 0)
+                {
+                    whereSql.Append(" AND a.id in @IDs");
+                }
+                
+                sql.Append(whereSql)
+                .Append(" order by a." + parm.sort + " " + parm.order)
+                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
+                List<Equipment> ets = (await c.QueryAsync<Equipment>(sql.ToString(),
+                    new{ IDs = parm.IDs })).ToList();
+                sql.Clear();
+                sql.Append("select count(*) FROM equipment a ");
+                int total = await c.QueryFirstOrDefaultAsync<int>(
+                    sql.ToString() + whereSql.ToString(), new { IDs = parm.IDs });
+                EqpView ret = new EqpView();
+                ret.rows = ets;
+                ret.total = total;
+                return ret;
+            });
+        }
+
         public async Task<int> CountAllEqp()
         {
             return await WithConnection(async c =>

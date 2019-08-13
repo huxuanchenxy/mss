@@ -59,7 +59,7 @@ namespace MSS.API.Core
                 options.AddDefaultPolicy(
                 builder =>
                 {
-                    string[] origins = Configuration["AllowedHosts"].Split(',');
+                    string[] origins = Configuration["crossOrigin"].Split(',');
                     builder.WithOrigins(origins)
                                         .AllowAnyHeader()
                                         .AllowAnyMethod()

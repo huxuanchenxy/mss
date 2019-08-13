@@ -43,30 +43,4 @@ namespace MSS.API.Model.Data
         public List<EquipmentType> rows { get; set; }
         public int total { get; set; }
     }
-
-
-    public class UploadFileEqpType
-    {
-        public int ID { get; set; }
-        public string FileName { get; set; }
-        public string FilePath { get; set; }
-        public int EqpTypeID { get; set; }
-        public int Type { get; set; }
-        public string TName { get; set; }
-    }
-
-    public class UploadFileEqpTypeMap : EntityMap<UploadFileEqpType>
-    {
-        public UploadFileEqpTypeMap()
-        {
-            Map(o => o.ID).ToColumn("id");
-            Map(o => o.FileName).ToColumn("file_name");
-            Map(o => o.FilePath).ToColumn("file_path");
-
-            Map(o => o.EqpTypeID).ToColumn("eqp_type_id");
-            Map(o => o.Type).ToColumn("type");
-            Map(o => o.TName).ToColumn("sub_code_name");
-        }
-    }
-
 }
