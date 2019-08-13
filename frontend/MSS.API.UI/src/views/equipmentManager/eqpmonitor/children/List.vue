@@ -29,7 +29,7 @@
           </div>
           <div class="input-group">
             <el-radio v-model="position" label="2" style="padding-right:5px;"></el-radio>
-            <label for="">正线轨行区</label>
+            <label for="">轨行区</label>
             <div class="inp">
               <el-select v-model="RailLineArea" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
@@ -59,7 +59,7 @@
           </div>
           <div class="input-group">
             <el-radio v-model="position" label="4" style="padding-right:5px;"></el-radio>
-            <label for="">车场生产区</label>
+            <label for="">车场</label>
             <div class="inp">
               <el-select v-model="ProductionArea" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
@@ -69,6 +69,17 @@
                   :label="item.areaName"
                   :value="item.id">
                 </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <el-radio v-model="position" label="5" style="padding-right:5px;"></el-radio>
+            <label for="">状态</label>
+            <div class="inp">
+              <el-select v-model="status" placeholder="请选择">
+                <el-option label="请选择" value=''></el-option>
+                <el-option label="故障" value='0'></el-option>
+                <el-option label="报警" value='1'></el-option>
               </el-select>
             </div>
           </div>
@@ -182,6 +193,7 @@ export default {
       RailLineArea: '',
       ProtectArea: '',
       ProductionArea: '',
+      status: '',
 
       dataList: [],
       alarmList: [],
@@ -238,8 +250,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      this.search()
-      // this.searchResult(1)
+      // this.search()
     },
     getAllAreaList () {
       // 车站
@@ -332,6 +343,9 @@ export default {
           })
           this.calcTrouble()
           this.updateEqpStatus()
+          if (this.position === '5') {
+            this.searchByStatus()
+          }
         }
       }).catch(err => console.log(err))
     },
@@ -356,7 +370,47 @@ export default {
       })
       return groups
     },
+    searchByStatus () {
+      let ids = []
+      if (this.status === '0') { // 故障
+        for (let key in this.alarmList) {
+          if (this.alarmList[key].isTrouble) {
+            ids.push(key)
+          }
+        }
+      } else if (this.status === '1') { // 报警
+        for (let key in this.alarmList) {
+          if (!this.alarmList[key].isTrouble) {
+            ids.push(key)
+          }
+        }
+      } else {
+        ids = Object.keys(this.alarmList)
+      }
+      if (ids.length === 0) {
+        this.dataList = []
+        this.total = 0
+        return
+      }
+      let parm = {
+        order: this.currentSort.order,
+        sort: this.currentSort.sort,
+        rows: 10,
+        page: this.currentPage,
+        ids: ids
+      }
+      this.loading = true
+      apiEvent.getAlarmEqp(parm).then(res => {
+        this.loading = false
+        this.dataList = res.data.rows
+        this.total = res.data.total
+      }).catch(err => console.log(err))
+    },
     search () {
+      if (this.position === '5') {
+        this.searchByStatus()
+        return
+      }
       this.loading = true
       let sub = ''
       switch (this.position) {
