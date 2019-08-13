@@ -114,6 +114,11 @@ namespace MSS.API.Model.Data
         public string LocationPath { get; set; }
     }
 
+    public class EqpQueryByIDParm : BaseQueryParm
+    {
+        public List<int> IDs { get; set; }
+    }
+
     public class AllArea
     {
         public int ID { get; set; }
