@@ -68,6 +68,9 @@ export default {
         border: 0;
         background: $color-main-btn;
       }
+      /deep/ .el-input__inner{
+        height: 30px !important;
+      }
     }
 
     .btn-group{

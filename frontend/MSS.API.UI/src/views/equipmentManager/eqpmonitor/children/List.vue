@@ -16,7 +16,7 @@
             <el-radio v-model="position" label="1" style="padding-right:5px;"></el-radio>
             <label for="name">车站</label>
             <div class="inp">
-              <el-select v-model="Station" placeholder="请选择">
+              <el-select v-model="Station" :disabled="checkDisable(1)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in StationList"
@@ -31,7 +31,7 @@
             <el-radio v-model="position" label="2" style="padding-right:5px;"></el-radio>
             <label for="">轨行区</label>
             <div class="inp">
-              <el-select v-model="RailLineArea" placeholder="请选择">
+              <el-select v-model="RailLineArea" :disabled="checkDisable(2)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in RailLineAreaList"
@@ -46,7 +46,7 @@
             <el-radio v-model="position" label="3" style="padding-right:5px;"></el-radio>
             <label for="">保护区</label>
             <div class="inp">
-              <el-select v-model="ProtectArea" placeholder="请选择">
+              <el-select v-model="ProtectArea" :disabled="checkDisable(3)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in ProtectAreaList"
@@ -61,7 +61,7 @@
             <el-radio v-model="position" label="4" style="padding-right:5px;"></el-radio>
             <label for="">车场</label>
             <div class="inp">
-              <el-select v-model="ProductionArea" placeholder="请选择">
+              <el-select v-model="ProductionArea" :disabled="checkDisable(4)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in ProductionAreaList"
@@ -76,7 +76,7 @@
             <el-radio v-model="position" label="5" style="padding-right:5px;"></el-radio>
             <label for="">状态</label>
             <div class="inp">
-              <el-select v-model="status" placeholder="请选择">
+              <el-select v-model="status" :disabled="checkDisable(5)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option label="故障" value='0'></el-option>
                 <el-option label="报警" value='1'></el-option>
@@ -246,6 +246,13 @@ export default {
     this.search()
   },
   methods: {
+    checkDisable (label) {
+      if (+this.position === label) {
+        return false
+      } else {
+        return true
+      }
+    },
     init () {
       this.bCheckAll = false
       this.checkAll()
