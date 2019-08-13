@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeEmergencyPlanList' }">返回</router-link></x-button>
+      <x-button class="active"><router-link :to="{ name: 'SeeRegulationList' }">返回</router-link></x-button>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -15,9 +15,9 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">应急场景<em class="validate-mark">*</em></span>
+              <span class="text">制度名称<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input placeholder="请输入应急场景" v-model="scene.text" @keyup.native="validateInput(scene)"></el-input>
+                <el-input placeholder="请输入制度名称" v-model="scene.text" @keyup.native="validateInput(scene)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ scene.tips }}</p>
@@ -55,7 +55,7 @@
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
-            <router-link :to="{name: 'SeeEmergencyPlanList'}">取消</router-link>
+            <router-link :to="{name: 'SeeRegulationList'}">取消</router-link>
           </x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
@@ -84,9 +84,9 @@ export default {
         value: 'id',
         children: 'children'
       },
-      systemResource: systemResource.emergencyPlan,
+      systemResource: systemResource.regulation,
       loading: false,
-      title: '| 添加应急预案',
+      title: '| 添加规章制度',
       ePlanID: '',
       scene: {text: '', tips: ''},
       keyword: {text: '', tips: ''},
@@ -103,7 +103,7 @@ export default {
   methods: {
     init () {
       if (this.$route.query.type !== 'Add') {
-        this.title = '| 修改应急预案'
+        this.title = '| 修改规章制度'
         this.loading = true
         // 部门加载
         apiOrg.getOrgAll().then(res => {
@@ -215,7 +215,7 @@ export default {
       if (this.$route.query.type === 'Add') {
         api.addEPlan(ePlan).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEmergencyPlanList'})
+            this.$router.push({name: 'SeeRegulationList'})
             this.$message({
               message: '添加成功',
               type: 'success'
@@ -231,7 +231,7 @@ export default {
         ePlan.ID = this.ePlanID
         api.updateEPlan(ePlan).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEmergencyPlanList'})
+            this.$router.push({name: 'SeeRegulationList'})
             this.$message({
               message: '修改成功',
               type: 'success'

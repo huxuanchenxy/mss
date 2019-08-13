@@ -60,5 +60,10 @@ export const btn = {
   },
   technicalData: {
     save: 81
+  },
+  regulation: {
+    save: 83,
+    delete: 84,
+    update: 85
   }
 }

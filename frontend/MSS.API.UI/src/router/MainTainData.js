@@ -54,6 +54,25 @@ const routes = [
               ]
             },
             {
+              path: 'regulation',
+              component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/regulation/Index.vue'),
+              children: [
+                {
+                  path: '/',
+                  name: 'regulation',
+                  redirect: 'list'
+                }, {
+                  path: 'list',
+                  name: 'SeeRegulationList',
+                  component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/regulation/children/SeeRegulationList.vue')
+                }, {
+                  path: 'Add',
+                  name: 'AddRegulation',
+                  component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/regulation/children/AddRegulation.vue')
+                }
+              ]
+            },
+            {
               path: 'TechnicalData',
               component: () => import(/* webpackChunkName: "MainTainData" */ '@/views/MainTainData/TechnicalData/Index.vue'),
               children: [
