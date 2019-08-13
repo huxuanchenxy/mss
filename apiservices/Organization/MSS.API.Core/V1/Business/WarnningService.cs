@@ -112,6 +112,59 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
+        public async Task<ApiResult> ListAlarmEqpByOrg(int? orgID, AlarmEqpParam param)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<PidTable> data = await _warnRepo.ListPidTableByOrg(orgID, null);
+
+                // 获取alarm
+                var services = await _consulServiceProvider.GetServiceAsync("RDBEssService");
+                IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                ApiResult result = await httpHelper.
+                    GetSingleItemRequest(services + "/api/v1/Ealarm/0");
+                if (result.code == Code.Success)
+                {
+                    List<int> eqps = new List<int>();
+                    List<Alarm> alarms = JsonConvert.DeserializeObject<List<Alarm>>(result.data.ToString());
+                    foreach (Alarm alarm in alarms)
+                    {
+                        PidTable pid = data.Where(c => c.pid == alarm.pid).FirstOrDefault();
+                        if (pid != null)
+                        {
+                            alarm.EqpCode = pid.EqpCode;
+                            alarm.EqpName = pid.EqpName;
+                            alarm.EqpTypeName = pid.EqpTypeName;
+                            alarm.EqpID = pid.EqpID;
+                            alarm.IsTrouble = pid.PidType == 1 ? true : false;
+
+                            if (pid.EqpID != null)
+                            {
+                                eqps.Add((int)pid.EqpID);
+                            }
+                        }
+                    }
+
+                    // 根据ids获取设备信息
+                    // 不可在此做分页处理 否则不能按其他类型排序。只能把所有报警设备传入另外接口做排序
+                    var eqpService = await _consulServiceProvider.GetServiceAsync("EqpService");
+                    // var url = "http://localhost:8084/api/v1/Equipment/ids";
+                    param.IDs = eqps.Distinct().ToList();
+                    ApiResult eqpRet = HttpClientHelper.PostResponse<ApiResult>(url, param);
+
+                    ret = eqpRet;
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
         public async Task<ApiResult> ListAlarmHistory(AlarmParam query)
         {
             switch (query.sort)

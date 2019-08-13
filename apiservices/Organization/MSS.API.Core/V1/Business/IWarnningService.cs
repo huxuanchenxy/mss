@@ -15,6 +15,9 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> ListNotificationByOrg(int? orgID);
         Task<ApiResult> ListAlarmByOrg(int? orgID);
 
+        // 获取报警后再取设备信息
+        Task<ApiResult> ListAlarmEqpByOrg(int? orgID, AlarmEqpParam param);
+
         // 查询报警历史记录
         Task<ApiResult> ListAlarmHistory(AlarmParam param);
 
