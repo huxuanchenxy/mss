@@ -149,7 +149,7 @@ namespace MSS.API.Core.V1.Business
                     // 根据ids获取设备信息
                     // 不可在此做分页处理 否则不能按其他类型排序。只能把所有报警设备传入另外接口做排序
                     var eqpService = await _consulServiceProvider.GetServiceAsync("EqpService");
-                    // var url = "http://localhost:8084/api/v1/Equipment/ids";
+                    var url = eqpService + "/api/v1/Equipment/ids";
                     param.IDs = eqps.Distinct().ToList();
                     ApiResult eqpRet = HttpClientHelper.PostResponse<ApiResult>(url, param);
 
