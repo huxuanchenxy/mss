@@ -254,7 +254,7 @@ export default {
 $con-height: $content-height - 56;
 // 内容区
 .content-wrap{
-  overflow: hidden;
+  // overflow: hidden;
   height: percent($con-height, $content-height);
   // text-align: center;
   .content-header{
@@ -278,6 +278,7 @@ $con-height: $content-height - 56;
     height: percent(50, $con-height)
   }
   /deep/ .el-tabs__content{
+    overflow: hidden;
     height: percent($con-height - 50, $con-height)
   }
   .pane-height{
@@ -291,7 +292,10 @@ $con-height: $content-height - 56;
   .scroll{
     height: percent($con-height - 50, $con-height)
   }
-
+  .el-scrollbar__thumb{
+    z-index: 99!important;
+    background: #1b7ec9!important;
+  }
   .list-wrap{
     .list{
       &:nth-of-type(even){
@@ -387,7 +391,7 @@ $con-height: $content-height - 56;
   margin-left: PXtoEm(25);
   margin-top: PXtoEm(25);
   margin-bottom: PXtoEm(25);
-  width: 400px;
+  width: 430px;
 }
 
 .btn-group{
