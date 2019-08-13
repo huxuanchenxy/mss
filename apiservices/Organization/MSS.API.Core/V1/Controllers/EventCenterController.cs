@@ -140,6 +140,36 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
 
+        [HttpGet("alarm/eqps")]
+        public async Task<ActionResult<ApiResult>> GetAlarmEqp([FromQuery] AlarmEqpParam param)
+        {
+            ApiResult ret = new ApiResult { code = Code.Failure };
+            ApiResult topOrg = await _orgService.GetTopNodeByUserID(_userId);
+            if (topOrg.code == Code.Success)
+            {
+                int topOrgID = 0;
+                if (topOrg.data != null)
+                {
+                    topOrgID = (topOrg.data as OrgTree).ID;
+                    ret = await _warnService.ListAlarmEqpByOrg(topOrgID, param);
+                }
+                else
+                {
+                    var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
+                    IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                    ApiResult result = await httpHelper.
+                        GetSingleItemRequest(_services + "/api/v1/user/" + _userId);
+                    JObject jobj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
+                    if ((bool)jobj["is_super"])
+                    {
+                        ret = await _warnService.ListAlarmEqpByOrg(null, param);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
         [HttpDelete("notification/{id}")]
         public async Task<ActionResult<ApiResult>> DeleteNotification(int id)
         {

@@ -264,5 +264,34 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
+
+        public async Task<ApiResult> ListEqpByIDs(EqpQueryByIDParm parm)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                parm.page = parm.page == 0 ? 1 : parm.page;
+                parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
+                parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
+                parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
+                EqpView ev = await _eqpRepo.ListEqpByIDs(parm);
+                List<Equipment> eqps = ev.rows;
+                List<AllArea> laa = await _eqpRepo.GetAllArea();
+                foreach (var item in eqps)
+                {
+                    var tmp = laa.Where(a => a.Tablename == item.LocationBy && a.ID == item.Location)
+                        .FirstOrDefault();
+                    if (tmp != null) item.LocationName = tmp.AreaName;
+                }
+                ret.data = ev;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
     }
 }

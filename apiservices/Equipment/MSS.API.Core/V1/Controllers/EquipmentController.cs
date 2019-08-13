@@ -85,5 +85,18 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _eqpService.CountAllEqp();
             return Ok(resp.Result);
         }
+
+        [HttpGet("ids")]
+        public ActionResult GetPageByParm([FromQuery] EqpQueryByIDParm parm)
+        {
+            var resp = _eqpService.ListEqpByIDs(parm);
+            return Ok(resp.Result);
+        }
+        [HttpPost("ids")]
+        public ActionResult GetPageByParmPost([FromBody] EqpQueryByIDParm parm)
+        {
+            var resp = _eqpService.ListEqpByIDs(parm);
+            return Ok(resp.Result);
+        }
     }
 }

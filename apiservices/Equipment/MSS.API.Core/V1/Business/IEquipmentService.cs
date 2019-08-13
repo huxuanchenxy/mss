@@ -20,5 +20,8 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> ListByPosition(int location, int locationBy, int eqpType);
         Task<ApiResult> GetAll();
         Task<ApiResult> CountAllEqp();
+
+        // 
+        Task<ApiResult> ListEqpByIDs(EqpQueryByIDParm parm);
     }
 }

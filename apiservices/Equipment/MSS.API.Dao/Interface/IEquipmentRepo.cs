@@ -22,6 +22,9 @@ namespace MSS.API.Dao.Interface
         // 所有设备数
         Task<int> CountAllEqp();
 
+        // 根据id获取设备
+        Task<EqpView> ListEqpByIDs(EqpQueryByIDParm parm);
+
         Task<bool> CodeIsRepeat(string code);
     }
 }
