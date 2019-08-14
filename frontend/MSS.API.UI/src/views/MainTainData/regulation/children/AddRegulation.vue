@@ -15,9 +15,9 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">制度名称<em class="validate-mark">*</em></span>
+              <span class="text">规章制度<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input placeholder="请输入制度名称" v-model="scene.text" @keyup.native="validateInput(scene)"></el-input>
+                <el-input placeholder="请输入规章制度名称" v-model="scene.text" @keyup.native="validateInput(scene)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ scene.tips }}</p>
@@ -210,7 +210,7 @@ export default {
         DeptPath: this.deptPath.text.join(','),
         Keyword: this.keyword.text,
         Type: this.systemResource,
-        UploadFiles: JSON.stringify(this.fileIDsEdit)
+        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
         api.addEPlan(ePlan).then(res => {

@@ -28,6 +28,7 @@ namespace MSS.API.Core.V1.Controllers
 
         }
         [HttpPost]
+        [RequestSizeLimit(52428800)]
         public ActionResult Save([FromForm]MyData myData,List<IFormFile> file)
         {
             var ret = _uploadService.Save(myData.type, myData.systemResource, file);

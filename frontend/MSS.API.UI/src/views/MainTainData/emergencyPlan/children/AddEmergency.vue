@@ -210,7 +210,7 @@ export default {
         DeptPath: this.deptPath.text.join(','),
         Keyword: this.keyword.text,
         Type: this.systemResource,
-        UploadFiles: JSON.stringify(this.fileIDsEdit)
+        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
         api.addEPlan(ePlan).then(res => {

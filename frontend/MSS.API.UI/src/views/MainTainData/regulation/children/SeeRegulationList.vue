@@ -13,9 +13,9 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">制度名称</label>
+            <label for="name">规章制度</label>
             <div class="inp">
-              <el-input v-model.trim="scene" placeholder="请输入制度名称"></el-input>
+              <el-input v-model.trim="scene" placeholder="请输入规章制度名称"></el-input>
             </div>
           </div>
           <div class="input-group">
@@ -43,9 +43,9 @@
           编号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('emergencyPlan_scene')">
-          制度名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.emergencyPlan_scene === 0 }, { 'el-icon-caret-top': headOrder.emergencyPlan_scene === 1 }, { 'el-icon-caret-bottom': headOrder.emergencyPlan_scene === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('emergency_scene')">
+          规章制度
+          <i :class="[{ 'el-icon-d-caret': headOrder.emergency_scene === 0 }, { 'el-icon-caret-top': headOrder.emergency_scene === 1 }, { 'el-icon-caret-bottom': headOrder.emergency_scene === 2 }]"></i>
         </li>
         <li class="list url">关键词</li>
         <li class="list upload-cascader">附件</li>
@@ -170,7 +170,7 @@ export default {
       },
       headOrder: {
         id: 1,
-        emergencyPlan_scene: 0,
+        emergency_scene: 0,
         dept_id: 0,
         updated_time: 0,
         updated_by: 0
@@ -227,7 +227,7 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.emergencyPlan_scene = 0
+        this.headOrder.emergency_scene = 0
         this.headOrder.dept_id = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
@@ -466,7 +466,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .number{
-    width: 4%;
+    width: 6%;
   }
 
   .name,

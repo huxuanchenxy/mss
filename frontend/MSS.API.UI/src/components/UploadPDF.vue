@@ -2,10 +2,10 @@
   <div>
     <el-upload
       action="http://10.89.36.204:5801/eqpapi/Upload"
-      :disabled="readOnly"
+      :disabled="isDisabled"
+      :headers="uploadHeaders"
       :multiple="true"
       :data="myData"
-      :headers="uploadHeaders"
       :accept="currentExt"
       :file-list="currentFileList"
       :show-file-list="false"
@@ -26,7 +26,7 @@
     <div v-for="(item) in fileList" :key="item.key">
       <el-upload
         action="http://10.89.36.204:5801/eqpapi/Upload"
-        :disabled="readOnly"
+        :disabled="isDisabled"
         :file-list="item.list"
         :on-remove="onRemove"
         :on-preview="preview">
@@ -71,6 +71,7 @@ export default {
   },
   data () {
     return {
+      isDisabled: this.readOnly,
       loading: false,
       label: '',
       myData: {
@@ -154,6 +155,13 @@ export default {
       return true
     },
     beforeUpload (file) {
+      if (file.size > 52428800) {
+        this.$message({
+          message: '单个文件不允许超过50M',
+          type: 'warning'
+        })
+        return false
+      }
       if (this.unSelectedEntity > 0) {
         let msg = '请选择' + this.intToStr(this.unSelectedEntity)
         this.$message({
@@ -177,6 +185,7 @@ export default {
         for (let i = 0; i < arr.length; i++) {
           if (('.' + myExt.toLowerCase()) === arr[i]) {
             this.loading = true
+            this.isDisabled = true
             return true
           }
         }
@@ -187,6 +196,7 @@ export default {
         return false
       }
       this.loading = true
+      this.isDisabled = true
     },
     intToStr (i) {
       switch (i) {
@@ -375,6 +385,7 @@ export default {
         }
       }
       this.loading = false
+      this.isDisabled = false
       this.$emit('getFileIDs', this.retFileList)
     }
   }

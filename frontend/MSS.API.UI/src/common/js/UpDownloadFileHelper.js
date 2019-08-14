@@ -36,7 +36,8 @@ export const isUploadFinished = fileIDsEdit => {
 
 export const isPreview = (id, name) => {
   let arr = name.split('.')
-  if (arr[arr.length - 1] === 'pdf' || arr[arr.length - 1] === 'mp4' || arr[arr.length - 1] === 'avi' || arr[arr.length - 1] === 'flv' || arr[arr.length - 1] === 'rmvb' || arr[arr.length - 1] === 'ogg') {
+  let ext = arr[arr.length - 1].toLowerCase()
+  if (ext === 'pdf' || ext === 'mp4' || ext === 'avi' || ext === 'flv' || ext === 'rmvb' || ext === 'ogg') {
     return true
   } else {
     downloadFile(id, name)
