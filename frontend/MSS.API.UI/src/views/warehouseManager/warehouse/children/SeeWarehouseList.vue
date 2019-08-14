@@ -13,15 +13,9 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">设备类型名称</label>
+            <label for="name">仓库名称</label>
             <div class="inp">
-              <el-input v-model.trim="eqpTypeName" placeholder="请输入设备类型名称"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="name">设备类型描述</label>
-            <div class="inp">
-              <el-input v-model.trim="description" placeholder="请输入设备类型描述"></el-input>
+              <el-input v-model.trim="warehouseName" placeholder="请输入仓库名称"></el-input>
             </div>
           </div>
         </div>
@@ -43,13 +37,13 @@
           编号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('type_name')">
+        <li class="list name c-pointer" @click="changeOrder('name')">
           名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.type_name === 0 }, { 'el-icon-caret-top': headOrder.type_name === 1 }, { 'el-icon-caret-bottom': headOrder.type_name === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.name === 0 }, { 'el-icon-caret-top': headOrder.name === 1 }, { 'el-icon-caret-bottom': headOrder.name === 2 }]"></i>
         </li>
-        <li class="list name">型号</li>
-        <li class="list url">描述</li>
-        <li class="list upload-cascader">上传文件</li>
+        <li class="list name">联系电话</li>
+        <li class="list name">联系人</li>
+        <li class="list url">地址</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -62,25 +56,16 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="item in eqpTypeList" :key="item.key">
+            <li class="list" v-for="item in warehouseList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editEqpTypeID" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editWarehouseID" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
-                <div class="name word-break">
-                  <router-link :to="{ name: 'SeeEqpList', params: { id: item.id } }">{{ item.tName }}</router-link>
-                </div>
-                <div class="name word-break">{{ item.model }}</div>
-                <div class="url word-break">{{ item.desc }}</div>
-                <div class="upload-cascader">
-                  <el-cascader clearable
-                    v-show="item.uploadFileArr.length != 0"
-                    @change="preview"
-                    :show-all-levels="false"
-                    :options="item.uploadFileArr">
-                  </el-cascader>
-                </div>
+                <div class="name">{{ item.name }}</div>
+                <div class="name word-break">{{ item.mobile }}</div>
+                <div class="name word-break">{{ item.contact }}</div>
+                <div class="url word-break">{{ item.address }}</div>
                 <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
                 <div class="last-update-time word-break">{{ item.updatedName }}</div>
               </div>
@@ -115,23 +100,15 @@
         <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
       </template>
     </el-dialog>
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
-    </el-dialog>
   </div>
 </template>
 <script>
-import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
-import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
+import { transformDate } from '@/common/js/utils.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
-import api from '@/api/eqpApi'
+import api from '@/api/wmsApi'
 export default {
-  name: 'SeeEqpTypeList',
+  name: 'SeeWarehouseList',
   components: {
     XButton
   },
@@ -142,11 +119,10 @@ export default {
         delete: false,
         update: false
       },
-      title: ' | 设备类型定义',
-      eqpTypeName: '',
-      description: '',
-      eqpTypeList: [],
-      editEqpTypeID: [],
+      title: ' | 仓库定义',
+      warehouseName: '',
+      warehouseList: [],
+      editWarehouseID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -162,13 +138,11 @@ export default {
       },
       headOrder: {
         id: 1,
-        type_name: 0,
+        name: 0,
         updated_time: 0,
         updated_by: 0
       },
-      centerDialogVisible: false,
-      uploadFile: {},
-      previewUrl: ''
+      centerDialogVisible: false
     }
   },
   created () {
@@ -176,13 +150,13 @@ export default {
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.eqpType.save
+        return item.actionID === btn.warehouse.save
       })
       this.btn.delete = !actions.some((item, index) => {
-        return item.actionID === btn.eqpType.delete
+        return item.actionID === btn.warehouse.delete
       })
       this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.eqpType.update
+        return item.actionID === btn.warehouse.update
       })
     }
     this.init()
@@ -197,19 +171,11 @@ export default {
       this.currentPage = 1
       // this.searchResult(1)
     },
-    preview (val) {
-      let id = val[val.length - 1]
-      if (isPreview(id, this.uploadFile[id].label)) {
-        this.centerDialogVisible = true
-        this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
-      }
-      // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
-    },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.type_name = 0
+        this.headOrder.name = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -230,80 +196,69 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
-      api.getEqpType({
+      api.getWarehouse({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.eqpTypeName,
-        searchDesc: this.description
+        SearchName: this.warehouseName
       }).then(res => {
         this.loading = false
         if (res.data.total === 0) {
-          this.eqpTypeList = []
+          this.warehouseList = []
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
-            if (item.uploadFiles !== null) {
-              item.uploadFileArr = JSON.parse(item.uploadFiles)
-              item.uploadFileArr.map(val => {
-                val.children.map(item => {
-                  this.uploadFile[item.value] = item
-                })
-              })
-            } else {
-              item.uploadFileArr = []
-            }
           })
-          this.eqpTypeList = res.data.rows
+          this.warehouseList = res.data.rows
         }
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
     add () {
       // 判断权限，符合则允许跳转
-      this.$router.push({name: 'AddEqpType', query: { type: 'Add' }})
+      this.$router.push({name: 'AddWarehouse', query: { type: 'Add' }})
     },
-    // 修改设备类型
+    // 修改仓库
     edit () {
-      if (!this.editEqpTypeID.length) {
+      if (!this.editWarehouseID.length) {
         this.$message({
-          message: '请选择修改操作的设备类型',
+          message: '请选择修改操作的仓库',
           type: 'warning'
         })
-      } else if (this.editEqpTypeID.length > 1) {
+      } else if (this.editWarehouseID.length > 1) {
         this.$message({
-          message: '修改的设备类型不能超过1个',
+          message: '修改的仓库不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddEqpType',
+          name: 'AddWarehouse',
           query: {
-            id: this.editEqpTypeID[0],
+            id: this.editWarehouseID[0],
             type: 'edit'
           }
         })
       }
     },
 
-    // 删除设备类型
+    // 删除仓库
     remove () {
-      if (!this.editEqpTypeID.length) {
+      if (!this.editWarehouseID.length) {
         this.$message({
-          message: '请选择需删除作的设备类型',
+          message: '请选择需删除作的仓库',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条设备类型信息?'
+        this.dialogVisible.text = '确定删除该条仓库信息?'
       }
     },
 
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 设备类型定义')
+      this.$emit('title', '| 仓库定义')
       this.loading = true
       this.init()
       this.searchResult(1)
@@ -311,9 +266,9 @@ export default {
 
     // 弹框确认是否删除
     dialogEnter () {
-      api.delEqpType(this.editEqpTypeID.join(',')).then(res => {
+      api.delWarehouse(this.editWarehouseID.join(',')).then(res => {
         if (res.code === 0) {
-          this.editEqpTypeID = []
+          this.editWarehouseID = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -331,14 +286,14 @@ export default {
       }).catch(err => console.log(err))
     },
 
-    // 获取修改设备类型id
+    // 获取修改仓库id
     emitEditID () {
-      this.$emit('editEqpTypeID', this.editEqpTypeID)
+      this.$emit('editWarehouseID', this.editWarehouseID)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.eqpTypeList.map(val => this.editEqpTypeID.push(val.id)) : this.editEqpTypeID = []
+      this.bCheckAll ? this.warehouseList.map(val => this.editWarehouseID.push(val.id)) : this.editWarehouseID = []
       this.emitEditID()
     },
 
@@ -455,7 +410,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .last-update-time{
-    width: 10%;
+    width: 15%;
     color: $color-content-text;
   }
 
@@ -468,7 +423,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .url{
-    width: 10%;
+    width: 15%;
   }
 
   .menuOrder{

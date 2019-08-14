@@ -65,5 +65,10 @@ export const btn = {
     save: 83,
     delete: 84,
     update: 85
+  },
+  warehouse: {
+    save: 87,
+    delete: 88,
+    update: 89
   }
 }
