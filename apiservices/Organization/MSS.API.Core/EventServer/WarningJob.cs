@@ -125,7 +125,12 @@ namespace MSS.API.Core.EventServer
 
         private void _checkRules(string pid, double value)
         {
-            PidTable pidInfo =  _globalDataManager.AllPID.Where(c => c.pid.Equals(pid)).FirstOrDefault();
+            PidTable pidInfo = null;
+            if (_globalDataManager.AllPID.ContainsKey(pid))
+            {
+                pidInfo = _globalDataManager.AllPID[pid];
+            }
+
             if (pidInfo != null)
             {
                 int eqpType = pidInfo.EqpTypeID;

@@ -30,7 +30,7 @@ namespace MSS.API.Core.EventServer
         private Dictionary<string, double?> _exValues = new Dictionary<string, double?>();
         
         // 预警规则中牵涉到的点位列表
-        private List<PidTable> _pids = new List<PidTable>();
+        private Dictionary<string, PidTable> _pids = new Dictionary<string, PidTable>();
 
         private List<Equipment> _allEqp = new List<Equipment>();
         private EquipmentConfig _EqpConfig;
@@ -65,7 +65,7 @@ namespace MSS.API.Core.EventServer
                 return _allEqp;
             }
         }
-        public List<PidTable> AllPID
+        public Dictionary<string, PidTable> AllPID
         {
             get
             {
@@ -110,6 +110,9 @@ namespace MSS.API.Core.EventServer
                             break;
                         case UpdateEventType.InitWarnSetting:
                             await this.initWarnSetting();
+                            break;
+                        case UpdateEventType.InitAllPid:
+                            await this.initAllPid();
                             break;
                         default:
                             _logger.LogError("未知的更新事件：" + type);
@@ -185,9 +188,20 @@ namespace MSS.API.Core.EventServer
                     }
                 }
             }
+            
+        }
+
+        public async Task initAllPid()
+        {
             // 查询设备类型和参数涵盖的pid
-            _pids = await _warnSettingRepo.ListPidTable(new List<int>(eqpTypeList),
-                new List<string>(propList));
+            List<PidTable> pids = await _warnSettingRepo.ListAllPid();
+            foreach (PidTable pid in pids)
+            {
+                if (!_pids.ContainsKey(pid.pid))
+                {
+                    _pids.Add(pid.pid, pid);
+                }
+            }
         }
 
         public void postUpdateEvent(UpdateEventType type)

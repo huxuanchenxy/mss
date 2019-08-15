@@ -131,8 +131,8 @@ namespace MSS.API.Core.EventServer
                     _logger.LogError("/api/v1/TableInfo 接口调用失败");
                 }
                 _logger.LogInformation("同步pid表结束");
-                // 发送通知 更新预警设定，预警设定中会牵涉到pid列表
-                _globalDataManager.postUpdateEvent(UpdateEventType.InitWarnSetting);
+                // 发送通知 更新pid内存表
+                _globalDataManager.postUpdateEvent(UpdateEventType.InitAllPid);
             }
             catch (Exception ex)
             {
