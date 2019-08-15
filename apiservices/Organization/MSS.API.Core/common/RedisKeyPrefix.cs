@@ -30,5 +30,8 @@ namespace MSS.API.Core.Common
 
         [Description("预警设置")]
         InitWarnSetting = 3,
+
+        [Description("所有pid列表")]
+        InitAllPid = 4,
     }
 }

@@ -288,5 +288,17 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<PidTable>> ListAllPid()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT a.*, b.eqp_type FROM pid_table a"
+                    + " JOIN equipment b on a.eqp_id=b.id";
+                var list = await c.QueryAsync<PidTable>(sql);
+
+                return list.ToList();
+            });
+        }
+
     }    
 }

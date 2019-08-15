@@ -35,6 +35,7 @@ namespace MSS.API.Core.EventServer
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitEquipment);
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitTopOrg);
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitWarnSetting);
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitAllPid);
 
             _logger.LogInformation("定时服务启动.");
             _scheduler = await _schedulerFactory.GetScheduler();

@@ -27,7 +27,7 @@ namespace MSS.API.Core.EventServer
         private readonly IDistributedCache _cache;
         private readonly EventQueues _queues;
         private readonly IConfiguration _config;
-        public AlarmJob(ILogger<WarningJob> logger, GlobalDataManager globalDataManager,
+        public AlarmJob(ILogger<AlarmJob> logger, GlobalDataManager globalDataManager,
             IServiceDiscoveryProvider consulServiceProvider, IDistributedCache cache,
             EventQueues queues, IConfiguration config)
         {
@@ -62,10 +62,15 @@ namespace MSS.API.Core.EventServer
                             {
                                 var cr = c.Consume();
                                 // Console.WriteLine($"Consumed message '{cr.Value}' at: '{cr.TopicPartitionOffset}'.");
+                                _logger.LogDebug(cr.Value);
                                 string msg = cr.Value;
                                 Alarm alarm = JsonConvert.DeserializeObject<Alarm>(cr.Value);
-                                PidTable pidInfo = _globalDataManager.AllPID
-                                    .Where(p =>p.pid.Equals(alarm.pid)).FirstOrDefault();
+                                PidTable pidInfo = null;
+                                if (_globalDataManager.AllPID.ContainsKey(alarm.pid))
+                                {
+                                    pidInfo = _globalDataManager.AllPID[alarm.pid];
+                                }
+                                
                                 if (pidInfo != null && pidInfo.EqpID != null)
                                 {
                                     var detial = new {
@@ -92,6 +97,11 @@ namespace MSS.API.Core.EventServer
                             catch (ConsumeException e)
                             {
                                 Console.WriteLine($"Error occured: {e.Error.Reason}");
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.LogError(e.Message);
+                                _logger.LogError(e.StackTrace);
                             }
                         }
                     }
