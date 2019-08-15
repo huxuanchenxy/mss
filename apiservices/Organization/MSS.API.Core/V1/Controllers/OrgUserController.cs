@@ -72,5 +72,12 @@ namespace MSS.API.Core.V1.Controllers
             }
             
         }
+
+        [HttpGet("usersintoporg")]
+        public async Task<ActionResult<ApiResult>> GetTopNodeWithUsers()
+        {
+            var ret = await _orgService.ListTopNodeWithUsers();
+            return ret;
+        }
     }
 }
