@@ -68,26 +68,26 @@ namespace MSS.API.Core
                 // options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
 
-            services.AddSignalR();
-            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-            // 注册quarz服务
-            services.AddHostedService<ScheduleService>();
-            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();//注册ISchedulerFactory的实例。
-            services.AddSingleton<IJobFactory, MssJobFactory>();
-            // 报警队列监控任务
-            services.AddTransient<MsgQueueWatcher>();
-            // 预警分析任务
-            services.AddTransient<WarningJob>();
-            // 设备维修通知任务
-            services.AddTransient<NotificationJob>();
-            // 报警事件监听任务
-            services.AddTransient<AlarmJob>();
-            services.AddTransient<InitPidTableJob>();
+            // services.AddSignalR();
+            // services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+            // // 注册quarz服务
+            // services.AddHostedService<ScheduleService>();
+            // services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();//注册ISchedulerFactory的实例。
+            // services.AddSingleton<IJobFactory, MssJobFactory>();
+            // // 报警队列监控任务
+            // services.AddTransient<MsgQueueWatcher>();
+            // // 预警分析任务
+            // services.AddTransient<WarningJob>();
+            // // 设备维修通知任务
+            // services.AddTransient<NotificationJob>();
+            // // 报警事件监听任务
+            // services.AddTransient<AlarmJob>();
+            // services.AddTransient<InitPidTableJob>();
             
-            // 报警队列
-            services.AddSingleton<EventQueues>();
-            // 更新全局数据任务
-            services.AddSingleton<GlobalDataManager>();
+            // // 报警队列
+            // services.AddSingleton<EventQueues>();
+            // // 更新全局数据任务
+            // services.AddSingleton<GlobalDataManager>();
             
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -104,10 +104,10 @@ namespace MSS.API.Core
             // app.UseCors(AllowSpecificOrigins);
             app.RegisterConsul(lifetime, consulService);
             app.UseCors();
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<MssEventHub>("/eventHub");
-            });
+            // app.UseSignalR(routes =>
+            // {
+            //     routes.MapHub<MssEventHub>("/eventHub");
+            // });
             app.UseMvc();
         }
     }

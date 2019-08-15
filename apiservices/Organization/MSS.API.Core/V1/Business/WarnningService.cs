@@ -23,16 +23,16 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<UserService> _logger;
         private readonly IWarnningRepo<EarlyWarnning> _warnRepo;
         private readonly IDistributedCache _cache;
-        private readonly EventQueues _queues;
+        // private readonly EventQueues _queues;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
 
         public WarnningService(IWarnningRepo<EarlyWarnning> warnRepo, IDistributedCache cache,
-            EventQueues queues, IServiceDiscoveryProvider consulServiceProvider)
+            IServiceDiscoveryProvider consulServiceProvider)
         {
             //_logger = logger;
             _warnRepo = warnRepo;
             _cache = cache;
-            _queues = queues;
+            // _queues = queues;
             _consulServiceProvider = consulServiceProvider;
         }
 
@@ -285,9 +285,10 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
+                Notification exist = null;
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    Notification exist = await _warnRepo.GetNotificationByID(notificationID);
+                    exist = await _warnRepo.GetNotificationByID(notificationID);
                     exist.UpdatedTime = DateTime.Now;
                     exist.Status = 1;
                     var data = await _warnRepo.UpdateNotification(exist);
@@ -297,20 +298,27 @@ namespace MSS.API.Core.V1.Business
                     // key为设备id_通知类型,value 为 此通知在通知表中的id
                     _cache.Remove(prefix + exist.EqpID + "_" + exist.NotificationType);
 
-                    // 发送通知
-                    MssEventMsg msg = new MssEventMsg();
-                    msg.msg = "off";
-                    msg.type = MssEventType.Notification;
-                    msg.eqp = new Equipment()
-                    {
-                        ID = exist.EqpID
-                    };
-                    _queues.AlarmQueue.Enqueue(msg);
+                    scope.Complete();
 
                     ret.code = Code.Success;
                     ret.data = data;
+                }
 
-                    scope.Complete();
+                // 发送通知
+                MssEventMsg msg = new MssEventMsg();
+                msg.msg = "off";
+                msg.type = MssEventType.Notification;
+                msg.eqp = new Equipment()
+                {
+                    ID = exist.EqpID
+                };
+                var services = await _consulServiceProvider.GetServiceAsync("eventService");
+                string url = services + "/api/v1/UpdateEvent/message";
+                // string url = "http://localhost:8087/api/v1/UpdateEvent/message";
+                ApiResult result = HttpClientHelper.PostResponse<ApiResult>(url, msg);
+                if (result.code != Code.Success)
+                {
+                    ret.msg = "发送消息通知失败";
                 }
                 
             }
