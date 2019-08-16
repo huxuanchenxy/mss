@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using MSS.API.Dao.Interface;
 using MSS.API.Model.Data;
-using MSS.API.Model.DTO;
 using Microsoft.Extensions.Caching.Distributed;
-using MSS.API.Core.V1.Business;
 using MSS.API.Common;
 using MSS.API.Core.Common;
 using MSS.API.Core.Models.Ex;
@@ -16,12 +13,14 @@ using Quartz;
 using System.Threading.Tasks.Dataflow;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using MSS.API.Model.DTO;
+using MSS.API.Dao.Interface;
+using MSS.API.Core.V1.Business;
 namespace MSS.API.Core.EventServer
 {
     public class GlobalDataManager : IJob
     {
         private readonly ILogger _logger;
-        private readonly IOrgRepo<OrgTree> _orgRepo;
         private readonly IDistributedCache _cache;
         private readonly IOrgService _orgService;
         private readonly IWarnningSettingRepo<EarlyWarnningSetting> _warnSettingRepo;
@@ -43,7 +42,6 @@ namespace MSS.API.Core.EventServer
             IServiceDiscoveryProvider consulServiceProvider)
         {
             _logger = logger;
-            _orgRepo = orgRepo;
             _cache = cache;
             _orgService = orgService;
             _warnSettingRepo = warnSettingRepo;
@@ -152,11 +150,14 @@ namespace MSS.API.Core.EventServer
         // 初始化所有顶级节点（公司）下所有用户，包括子节点
         public async Task initTopOrg()
         {
+            var services = await _consulServiceProvider.GetServiceAsync("OrgService");
+            string url = services + "/api/v1/orguser/usersintoporg";
+            ApiResult result = HttpClientHelper.GetResponse<ApiResult>(url);
+
             string prefix = RedisKeyPrefix.Org;
-            ApiResult result = await _orgService.ListTopNodeWithUsers();
             if (result.code == Code.Success)
             {
-                List<OrgUserView> orgs = result.data as List<OrgUserView>;
+                List<OrgUserView> orgs = JsonConvert.DeserializeObject<List<OrgUserView>>(result.data.ToString());
                 foreach (OrgUserView org in orgs)
                 {
                     _cache.SetString(prefix + org.ID, string.Join(",", org.UserIDs));
@@ -166,8 +167,7 @@ namespace MSS.API.Core.EventServer
 
         public async Task initWarnSetting()
         {
-            _settings = await _warnSettingRepo.ListWarnningSettingByPage(
-                null, null, null, null, null, null);
+            _settings = await _warnSettingRepo.ListAllWarnningSetting();
             HashSet<int> eqpTypeList = new HashSet<int>();
             HashSet<string> propList = new HashSet<string>();
             foreach (EarlyWarnningSetting item in _settings)

@@ -7,7 +7,6 @@ using MSS.Common.Consul;
 using MSS.API.Common.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MSS.API.Dao.Interface;
 using MSS.API.Model.Data;
 using System.Collections.Generic;
 using MSS.API.Core.Models.Ex;

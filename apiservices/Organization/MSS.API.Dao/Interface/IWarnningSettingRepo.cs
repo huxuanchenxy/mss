@@ -39,5 +39,8 @@ namespace MSS.API.Dao.Interface
 
         // 查询pid
         Task<List<PidTable>> ListPidTable(List<int> eqpTypeIDs, List<string> props);
+
+        // 查询所有pid
+        Task<List<PidTable>> ListAllPid();
     }
 }
