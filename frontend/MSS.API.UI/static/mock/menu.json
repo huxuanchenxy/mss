@@ -1,0 +1,318 @@
+{
+    "1": {
+        "id": 1,
+        "name": "系统管理",
+        "path": "/system",
+        "iconCls": "/MenuIcon/01系统管理.svg",
+        "iconClsActive": "/MenuIcon/01系统管理-1.svg",
+        "parentID": 0,
+        "order": 1,
+        "children": [
+            {
+                "id": 1,
+                "name": "权限组管理",
+                "path": "/System/ActionGroup",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 2,
+                "name": "权限管理",
+                "path": "/System/Action",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 3,
+                "name": "角色管理",
+                "path": "/System/Role",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 4,
+                "name": "人员管理",
+                "path": "/System/User",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 12,
+                "name": "组织架构",
+                "path": "/System/organization",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 39,
+                "name": "组织人员配置",
+                "path": "/System/orguser",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 21,
+                "name": "站区配置",
+                "path": "/System/Area1/list",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 19,
+                "name": "位置配置",
+                "path": "/System/Area2/list",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 22,
+                "name": "操作日志",
+                "path": "/System/Operlog",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 76,
+                "name": "服务监控",
+                "path": "/System/ProcessConsul",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 1,
+                "order": 0,
+                "children": null
+            }
+        ]
+    },
+    "2": {
+        "id": 20,
+        "name": "设备管理",
+        "path": "/equipmentManager",
+        "iconCls": "/MenuIcon/02基础数据.svg",
+        "iconClsActive": "/MenuIcon/02基础数据-1.svg",
+        "parentID": 0,
+        "order": 2,
+        "children": [
+            {
+                "id": 13,
+                "name": "设备类型定义",
+                "path": "/equipmentManager/eqpType",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 20,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 20,
+                "name": "设备定义",
+                "path": "/equipmentManager/equipment",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 20,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 23,
+                "name": "预警设置",
+                "path": "/equipmentManager/warnsetting",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 20,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 70,
+                "name": "厂商定义",
+                "path": "/equipmentManager/Firm",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 20,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 40,
+                "name": "到检提醒",
+                "path": "/System/MaintainConfig",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 20,
+                "order": 0,
+                "children": null
+            }
+        ]
+    },
+    "3": {
+        "id": 23,
+        "name": "生命周期",
+        "path": "/EquipmentLifeCycle",
+        "iconCls": "/MenuIcon/02基础数据.svg",
+        "iconClsActive": "/MenuIcon/02基础数据-1.svg",
+        "parentID": 0,
+        "order": 3,
+        "children": [
+            {
+                "id": 68,
+                "name": "履历查询",
+                "path": "/EquipmentLifeCycle/History",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 23,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 38,
+                "name": "维修登记",
+                "path": "/EquipmentLifeCycle/MaintainReg",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 23,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 67,
+                "name": "寿命与重点维保",
+                "path": "/EquipmentLifeCycle/LifeTimeKeyMaintain",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 23,
+                "order": 0,
+                "children": null
+            }
+        ]
+    },
+    "4": {
+        "id": 22,
+        "name": "维护资料",
+        "path": "/MainTainData",
+        "iconCls": "/MenuIcon/02基础数据.svg",
+        "iconClsActive": "/MenuIcon/02基础数据-1.svg",
+        "parentID": 0,
+        "order": 4,
+        "children": [
+            {
+                "id": 80,
+                "name": "技术资料维护",
+                "path": "/MaintainData/TechnicalData",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 22,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 25,
+                "name": "专家库管理",
+                "path": "/MaintainData/Expert",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 22,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 69,
+                "name": "应急预案",
+                "path": "/MaintainData/EmergencyPlan",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 22,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 82,
+                "name": "规章制度",
+                "path": "/MaintainData/regulation",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 22,
+                "order": 0,
+                "children": null
+            }
+        ]
+    },
+    "5": {
+        "id": 24,
+        "name": "仓库管理",
+        "path": "/warehouseManager",
+        "iconCls": "/MenuIcon/02基础数据.svg",
+        "iconClsActive": "/MenuIcon/02基础数据-1.svg",
+        "parentID": 0,
+        "order": 5,
+        "children": [
+            {
+                "id": 86,
+                "name": "仓库定义",
+                "path": "/warehouseManager/warehouse",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 24,
+                "order": 0,
+                "children": null
+            },
+            {
+                "id": 90,
+                "name": "物资定义",
+                "path": "/warehouseManager/spareParts",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 24,
+                "order": 0,
+                "children": null
+            }
+        ]
+    },
+    "6": {
+        "id": 25,
+        "name": "监控中心",
+        "path": "/monitorCenter",
+        "iconCls": "/MenuIcon/02基础数据.svg",
+        "iconClsActive": "/MenuIcon/02基础数据-1.svg",
+        "parentID": 0,
+        "order": 6,
+        "children": [
+            {
+                "id": 75,
+                "name": "设备监控",
+                "path": "/monitorCenter/eqpmonitor",
+                "iconCls": null,
+                "iconClsActive": null,
+                "parentID": 25,
+                "order": 0,
+                "children": null
+            }
+        ]
+    }
+}

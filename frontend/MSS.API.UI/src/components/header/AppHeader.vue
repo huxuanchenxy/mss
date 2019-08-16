@@ -78,7 +78,7 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  height: 120px;
+  height: 75px;
   margin: 0 auto;
 
   .sub-title{

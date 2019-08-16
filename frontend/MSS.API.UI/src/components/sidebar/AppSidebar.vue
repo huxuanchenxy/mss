@@ -2,11 +2,12 @@
   <div class="sidebar">
     <!-- 左边导航 -->
     <div class="left-nav-wrap" @mouseleave="hideSubNav">
-      <div class="sidebar-title" data-direction="bottom">菜单管理</div>
+    <!-- <div class="left-nav-wrap"> -->
+      <!-- <div class="sidebar-title" data-direction="bottom">菜单管理</div> -->
       <div class="nav-wrap" :style="`height: ${navHeight}px`">
-        <el-scrollbar :style="`height: ${navHeight}px`">
+        <!-- <el-scrollbar :style="`height: ${navHeight}px`"> -->
           <ul id="nav-move-wrap" class="nav-move-wrap" ref="navMoveWrap">
-            <router-link v-for="(item, index) in navList" :key="item.key" :to="{ path: item.path }" class="list" ref="nav" tag="li" @mouseenter.native="showSubNav(index)">
+            <router-link v-for="(item, index) in navList" :key="item.key" :to="{ path: item.path }" class="list" :ref="'navs'+index" tag="li" @mouseenter.native="showSubNav(index)">
               <a class="nav-link">
                 <img :src="item.iconCls" width="18" height="18" class="icon icon-info vertical-middle" alt="">
                 <img :src="item.iconClsActive" width="18" height="18" class="hide icon icon-active vertical-middle" alt="">
@@ -14,10 +15,21 @@
               </a>
             </router-link>
           </ul>
-        </el-scrollbar>
+        <!-- </el-scrollbar> -->
       </div>
       <!-- 二级菜单 -->
-      <div class="sub-nav-show" :class="{ active: bShowSubNav }" :style="`height: ${navHeight - 25}px`">
+      <div class="sub-nav-show active" :class="{ active: bShowSubNav }" :style="`height: ${navHeight - 25}px`">
+        <div class="sub-nav-wrap height-full">
+          <el-scrollbar>
+            <ul class="sub-nav active" v-for="item in navList" :key="item.key">
+              <li class="sub-nav-list" v-for="child in item.children" :key="child.key">
+                <router-link class="block" :to="child.path">{{ child.name }}</router-link>
+              </li>
+            </ul>
+          </el-scrollbar>
+        </div>
+      </div>
+      <!-- <div class="sub-nav-show" :class="{ active: bShowSubNav }" :style="`left: ${navChdleft}px`">
         <div class="sub-nav-wrap height-full">
           <el-scrollbar>
             <ul class="sub-nav" v-if="item.isShowSubNav" v-for="item in navList" :key="item.key" :class="{ active: item.isShowSubNav }">
@@ -27,7 +39,7 @@
             </ul>
           </el-scrollbar>
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- 右边警告提示 -->
     <div class="right-wrap" :class="{ active: !bMsgShrink }">
@@ -79,7 +91,7 @@ export default {
   name: 'sidebar',
   data () {
     return {
-      navHeight: '360px',
+      navHeight: '67px',
       navMoveNum: 0,
       bMsgShrink: false,
       bShowSubNav: false,
@@ -116,7 +128,8 @@ export default {
       ],
       activeColor: '#f91333',
       timer: null,
-      Conn: null
+      Conn: null,
+      navChdleft: 0
     }
   },
   created () {
@@ -267,7 +280,7 @@ export default {
 
     // 获取菜单
     getMenu () {
-      api.getMenu().then(res => {
+      api.getMenuMock().then(res => {
         let _data = {}
         for (let [, value] of Object.entries(res)) {
           value.isShowSubNav = false
@@ -281,6 +294,10 @@ export default {
 
     // 显示二级菜单
     showSubNav (index) {
+      // console.log(this.$refs['navs'+index][0].$el.offsetLeft)
+      // this.navChdleft = this.$refs['navs'+index][0].$el.offsetLeft
+      // this.$refs.nav[0].$el.offsetHeight * 4
+
       for (let [, value] of Object.entries(this.navList)) {
         value.isShowSubNav = false
       }
@@ -315,7 +332,8 @@ export default {
     }
   },
   mounted () {
-    this.navHeight = this.$refs.nav[0].$el.offsetHeight * 4
+    // test
+    // this.navHeight = this.$refs.nav[0].$el.offsetHeight * 4
   },
   destroyed () {
     if (this.Conn) {
@@ -332,6 +350,10 @@ export default {
 </script>
 <style lang="scss" scoped>
 $width: 180;
+
+.sidebar {
+  position: relative;
+}
 .left-nav-wrap,
 .right-wrap{
   position: fixed;
@@ -375,6 +397,30 @@ $width: 180;
 
   .not-bg{
     background: none !important;
+  }
+}
+
+// test
+.left-nav-wrap {
+  position: inherit;
+  width: 100%;
+  top: auto;
+  transform: translateY(0%);
+  background: #fff;
+  height: 67px;
+  .nav-wrap {
+height: 67px;
+    .nav-move-wrap {
+      width: 100%;
+      height: 67px;
+      display: flex; justify-content: flex-start; align-items: center;
+      box-sizing: border-box;
+      padding-left: 4.86111%;
+      li{
+        // background: #fff;
+        margin: 0 5px;
+      }
+    }
   }
 }
 
@@ -451,17 +497,19 @@ $width: 180;
   // 二级菜单
   .sub-nav-show{
     position: absolute;
-    right: 0;
-    top: PXtoEm(70);
+    left: 0;
+    // top: PXtoEm(70);
+    top: 66px;
     z-index: -1;
     overflow: hidden;
     @include opacity(0);
     width: 160px;
+    // width: 100%;
     height: 280px;
-    transition: .7s;
+    // transition: .7s;
 
     &.active{
-      right: -160px;
+      left: 0;
       @include opacity(1);
     }
   }
@@ -470,8 +518,9 @@ $width: 180;
     .sub-nav{
       width: 100%;
       @include opacity(0);
-      transition: .7s;
-
+      // transition: .7s;
+      // display: flex; justify-content: flex-start; align-items: center;
+      // background: #1b7ec9;
       &.active{
         @include opacity(1);
       }
@@ -612,5 +661,10 @@ $width: 180;
   to{
     @include opacity(0);
   }
+}
+</style>
+<style>
+#topbar{
+  z-index: 100;
 }
 </style>
