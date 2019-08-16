@@ -70,5 +70,10 @@ export const btn = {
     save: 87,
     delete: 88,
     update: 89
+  },
+  spareParts: {
+    save: 91,
+    delete: 92,
+    update: 93
   }
 }
