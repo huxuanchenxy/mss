@@ -21,11 +21,13 @@ namespace MSS.API.Dao
             optionsSection.Bind(options);
             services.AddSingleton<DapperOptions>(options);
             services.AddTransient<IWarehouseRepo<Warehouse>, WarehouseRepo>();
+            services.AddTransient<ISparePartsRepo<SpareParts>, SparePartsRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
                 //config.AddMap(new BaseEntityMap());
                 config.AddMap(new WarehouseMap());
+                config.AddMap(new SparePartsMap());
             });
             return services;
         }

@@ -28,6 +28,28 @@ const routes = [
             component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/warehouse/children/AddWarehouse.vue')
           }
         ]
+      }, {
+        path: 'spareParts',
+        component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/spareParts/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'spareParts',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeSparePartsList',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/SeeSparePartsList.vue')
+          }, {
+            path: 'add',
+            name: 'AddSpareParts',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/AddSpareParts.vue')
+          }, {
+            path: 'detail',
+            name: 'DetailSpareParts',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/DetailSpareParts.vue')
+          }
+        ]
       }
     ]
   }

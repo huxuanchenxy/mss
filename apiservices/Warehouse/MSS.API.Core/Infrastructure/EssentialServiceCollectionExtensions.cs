@@ -16,9 +16,9 @@ namespace MSS.API.Core.Infrastructure
         public static IServiceCollection AddEssentialService(this IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-
+            
             services.AddTransient<IWarehouseService, WarehouseService>();
-
+            services.AddTransient<ISparePartsService, SparePartsService>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
             services.AddTransient<IServiceDiscoveryProvider, ConsulServiceProvider>();
