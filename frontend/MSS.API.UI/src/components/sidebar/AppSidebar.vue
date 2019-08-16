@@ -7,10 +7,14 @@
       <div class="nav-wrap" :style="`height: ${navHeight}px`">
         <!-- <el-scrollbar :style="`height: ${navHeight}px`"> -->
           <ul id="nav-move-wrap" class="nav-move-wrap" ref="navMoveWrap">
-            <router-link v-for="(item, index) in navList" :key="item.key" :to="{ path: item.path }" class="list" :ref="'navs'+index" tag="li" @mouseenter.native="showSubNav(index)">
+            <router-link 
+            v-for="(item, index) in navList" :key="item.key" 
+            :to="{ path: item.path }" class="list" :ref="'navs'+index" tag="li" 
+            @mouseenter.native="showSubNav(index)">
               <a class="nav-link">
                 <img :src="item.iconCls" width="18" height="18" class="icon icon-info vertical-middle" alt="">
-                <img :src="item.iconClsActive" width="18" height="18" class="hide icon icon-active vertical-middle" alt="">
+                <img :src="item.iconClsActive" width="18" height="18" 
+                class="hide icon icon-active vertical-middle" alt="">
                 <span class="text vertical-middle">{{ item.name }}</span>
               </a>
             </router-link>
@@ -18,18 +22,20 @@
         <!-- </el-scrollbar> -->
       </div>
       <!-- 二级菜单 -->
-      <div class="sub-nav-show active" :class="{ active: bShowSubNav }" :style="`height: ${navHeight - 25}px`">
+      <!-- <div class="sub-nav-show active" :class="{ active: bShowSubNav }" :style="`height: ${navHeight - 25}px`">
         <div class="sub-nav-wrap height-full">
           <el-scrollbar>
-            <ul class="sub-nav active" v-for="item in navList" :key="item.key">
+            <ul class="sub-nav active" v-for="item in navList" :key="item.key" 
+            
+            >
               <li class="sub-nav-list" v-for="child in item.children" :key="child.key">
                 <router-link class="block" :to="child.path">{{ child.name }}</router-link>
               </li>
             </ul>
           </el-scrollbar>
         </div>
-      </div>
-      <!-- <div class="sub-nav-show" :class="{ active: bShowSubNav }" :style="`left: ${navChdleft}px`">
+      </div> -->
+      <div class="sub-nav-show" :class="{ active: bShowSubNav }" :style="`left: ${navChdleft}px`">
         <div class="sub-nav-wrap height-full">
           <el-scrollbar>
             <ul class="sub-nav" v-if="item.isShowSubNav" v-for="item in navList" :key="item.key" :class="{ active: item.isShowSubNav }">
@@ -39,7 +45,7 @@
             </ul>
           </el-scrollbar>
         </div>
-      </div> -->
+      </div>
     </div>
     <!-- 右边警告提示 -->
     <div class="right-wrap" :class="{ active: !bMsgShrink }">
@@ -280,7 +286,7 @@ export default {
 
     // 获取菜单
     getMenu () {
-      api.getMenuMock().then(res => {
+      api.getMenu().then(res => {
         let _data = {}
         for (let [, value] of Object.entries(res)) {
           value.isShowSubNav = false
@@ -295,7 +301,7 @@ export default {
     // 显示二级菜单
     showSubNav (index) {
       // console.log(this.$refs['navs'+index][0].$el.offsetLeft)
-      // this.navChdleft = this.$refs['navs'+index][0].$el.offsetLeft
+      this.navChdleft = this.$refs['navs'+index][0].$el.offsetLeft
       // this.$refs.nav[0].$el.offsetHeight * 4
 
       for (let [, value] of Object.entries(this.navList)) {
@@ -399,6 +405,7 @@ $width: 180;
     background: none !important;
   }
 }
+
 
 // test
 .left-nav-wrap {
