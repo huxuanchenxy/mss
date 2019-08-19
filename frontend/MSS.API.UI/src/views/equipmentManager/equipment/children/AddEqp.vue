@@ -510,7 +510,7 @@ export default {
         MediumRepair: this.mediumRepair.text,
         LargeRepair: this.largeRepair.text,
         OnlineAgain: this.timeAgain.text,
-        FileIDs: JSON.stringify(this.fileIDsEdit)
+        FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.ratedVoltage.text !== '') {
         eqp.RatedVoltage = this.ratedVoltage.text

@@ -319,7 +319,7 @@ $con-height: $content-height - 56;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 40px;
+    height: 40px !important;
     padding: 0 PXtoEm(24);
     background: rgba(36,128,198,.5);
 

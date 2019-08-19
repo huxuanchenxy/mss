@@ -43,9 +43,9 @@
           编号
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('emergencyPlan_scene')">
+        <li class="list name c-pointer" @click="changeOrder('emergency_scene')">
           应急场景
-          <i :class="[{ 'el-icon-d-caret': headOrder.emergencyPlan_scene === 0 }, { 'el-icon-caret-top': headOrder.emergencyPlan_scene === 1 }, { 'el-icon-caret-bottom': headOrder.emergencyPlan_scene === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.emergency_scene === 0 }, { 'el-icon-caret-top': headOrder.emergency_scene === 1 }, { 'el-icon-caret-bottom': headOrder.emergency_scene === 2 }]"></i>
         </li>
         <li class="list url">关键词</li>
         <li class="list upload-cascader">附件</li>
@@ -132,6 +132,7 @@
 </template>
 <script>
 import { transformDate, PDF_UPLOADED_VIEW_URL, FILE_SERVER_PATH } from '@/common/js/utils.js'
+import { systemResource } from '@/common/js/dictionary.js'
 import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
@@ -169,7 +170,7 @@ export default {
       },
       headOrder: {
         id: 1,
-        emergencyPlan_scene: 0,
+        emergency_scene: 0,
         dept_id: 0,
         updated_time: 0,
         updated_by: 0
@@ -225,7 +226,7 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.emergencyPlan_scene = 0
+        this.headOrder.emergency_scene = 0
         this.headOrder.dept_id = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
@@ -252,6 +253,7 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
+        type: systemResource.emergencyPlan,
         searchName: this.scene,
         searchDesc: this.keyword
       }).then(res => {
@@ -463,7 +465,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .number{
-    width: 4%;
+    width: 6%;
   }
 
   .name,

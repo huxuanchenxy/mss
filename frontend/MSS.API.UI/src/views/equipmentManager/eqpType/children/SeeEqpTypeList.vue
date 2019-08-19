@@ -446,7 +446,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .number{
-    width: 4%;
+    width: 6%;
   }
 
   .name,

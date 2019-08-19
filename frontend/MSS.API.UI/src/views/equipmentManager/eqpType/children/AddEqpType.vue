@@ -152,7 +152,7 @@ export default {
         TName: this.eqpTypeName.text,
         Desc: this.eqpTypeDesc.text,
         Model: this.model.text,
-        UploadFiles: JSON.stringify(this.fileIDsEdit)
+        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
         api.addEqpType(eqpType).then(res => {

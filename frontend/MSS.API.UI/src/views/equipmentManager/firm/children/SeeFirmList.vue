@@ -165,9 +165,7 @@ export default {
         updated_time: 0,
         updated_by: 0
       },
-      centerDialogVisible: false,
-      uploadFile: {},
-      previewUrl: ''
+      centerDialogVisible: false
     }
   },
   created () {
@@ -431,7 +429,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .number{
-    width: 4%;
+    width: 6%;
   }
 
   .name,

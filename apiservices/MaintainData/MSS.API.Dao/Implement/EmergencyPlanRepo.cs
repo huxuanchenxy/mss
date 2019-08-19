@@ -28,7 +28,7 @@ namespace MSS.API.Dao.Implement
                 try
                 {
                     sql = " insert into emergency_plan " +
-                        " values (0,@Scene,@Dept,@DeptPath,@Keyword,@Is_deleted, " +
+                        " values (0,@Scene,@Dept,@DeptPath,@Keyword,@Type,@Is_deleted, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, ePlan, trans);
@@ -131,9 +131,9 @@ namespace MSS.API.Dao.Implement
                 .Append(" FROM emergency_plan a ")
                 .Append(" left join org_tree o on a.dept_id=o.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
-                .Append(" left join user u2 on a.updated_by=u2.id where 1=1 ");
+                .Append(" left join user u2 on a.updated_by=u2.id ");
                 StringBuilder whereSql = new StringBuilder();
-                //whereSql.Append(" WHERE a.is_del=" + (int)IsDeleted.no);
+                whereSql.Append(" WHERE a.type=" + parm.Type);
                 if (!string.IsNullOrWhiteSpace(parm.SearchName))
                 {
                     whereSql.Append(" and a.emergency_scene like '%" + parm.SearchName + "%' ");
@@ -148,7 +148,7 @@ namespace MSS.API.Dao.Implement
                 EPlanView ret = new EPlanView();
                 ret.rows= (await c.QueryAsync<EmergencyPlan>(sql.ToString())).ToList();
                 ret.total = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from emergency_plan a where 1=1 " + whereSql.ToString());
+                    "select count(*) from emergency_plan a " + whereSql.ToString());
                 return ret;
             });
         }

@@ -19,7 +19,7 @@
         <div class="en-title">Intelligent Maintenance System</div>
       </div>
       <!-- 登录框 -->
-      <div class="content-wrap">
+      <div class="content-wrap" id="loginwrap">
         <div class="box">
           <div class="inp-wrap" :class="{ active: userName.active }">
             <span class="text">用户名</span>
@@ -200,7 +200,7 @@ export default {
   .content-wrap{
     box-sizing: border-box;
     width: 370px;
-    height: 380px;
+    height: 380px !important;
     padding: 60px 40px 40px;
     border-top: 1px solid transparent;
     background: url(./images/form-bg.png) no-repeat 0 0/100% 100%;

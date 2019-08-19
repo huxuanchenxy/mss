@@ -65,7 +65,7 @@
             <li class="list">
               <div class="inp-wrap">
                 <span class="text">描述</span>
-                <div class="inp">{{eqp.desc}}</div>
+                <div class="inp word-break">{{eqp.desc}}</div>
               </div>
             </li>
             <li class="list" >
