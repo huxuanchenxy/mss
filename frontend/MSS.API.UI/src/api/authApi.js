@@ -43,5 +43,10 @@ export default {
   addRole: parm => { return axios.post(`${api}/Role/Add`, parm).then(res => res.data) },
   updateRole: parm => { return axios.put(`${api}/Role/Update`, parm).then(res => res.data) },
   delRole: ids => { return axios.delete(`${api}/Role/${ids}`).then(res => res.data) },
-  getRoleAll: () => { return axios.get(`${api}/Role/All`).then(res => res.data) }
+  getRoleAll: () => { return axios.get(`${api}/Role/All`).then(res => res.data) },
+  getMenuMock: () => {
+    return axios.get(`/static/mock/menu.json`).then(res => {
+      return res.data
+    })
+  }
 }

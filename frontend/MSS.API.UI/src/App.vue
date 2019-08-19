@@ -3,7 +3,7 @@
   <div v-else-if="isLoadingCompleted === '2'" id="app">
     <app-header></app-header>
     <app-sidebar></app-sidebar>
-    <div id="main">
+    <div id="main" class="shrink">
       <router-view/>
     </div>
     <app-footer></app-footer>
@@ -59,16 +59,17 @@ export default {
   height: 100%;
 }
 #main{
-  position: fixed;
-  top: 15%;
-  left: 50%;
-  width: percent(960, 1440);
-  height: percent(550, 780);
+  position: relative;
+  top: 1%;
+  left: 47%;
+  width: 85%;
+  height: percent(646, 780);
   border-radius: $border-radius;
   transform: translateX(percent(-960 / 2, 960));
 
   &.shrink{
-    width: percent(1100, 1440);
+    left: 44%;
+    width: percent(1339, 1440);
     transform: translateX(percent(-960 / 2, 1100));
   }
 
@@ -81,7 +82,7 @@ export default {
       display: flex;
       align-items: center;
       position: relative;
-      height: percent(56, $content-height);
+      height: percent(30, $content-height);
 
       &:after{
         content: "";
@@ -109,4 +110,15 @@ export default {
     }
   }
 }
+</style>
+<style>
+  .box{
+      height: 16.36364%  !important
+    }
+    .content-wrap{
+      height: 81.45455% !important
+    }
+    .content-header{
+      height: 10.45455% !important
+    }
 </style>
