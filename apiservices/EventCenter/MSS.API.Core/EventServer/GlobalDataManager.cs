@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using MSS.API.Model.Data;
 using Microsoft.Extensions.Caching.Distributed;
@@ -16,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using MSS.API.Model.DTO;
 using MSS.API.Dao.Interface;
 using MSS.API.Core.V1.Business;
+using System.Threading;
 namespace MSS.API.Core.EventServer
 {
     public class GlobalDataManager : IJob
@@ -24,6 +26,7 @@ namespace MSS.API.Core.EventServer
         private readonly IDistributedCache _cache;
         private readonly IOrgService _orgService;
         private readonly IWarnningSettingRepo<EarlyWarnningSetting> _warnSettingRepo;
+        private readonly IGlobalDataManagerRepo _globalRepo;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
         private List<EarlyWarnningSetting> _settings;
         private Dictionary<string, double?> _exValues = new Dictionary<string, double?>();
@@ -36,16 +39,20 @@ namespace MSS.API.Core.EventServer
 
         // 事件队列
         private BufferBlock<UpdateEventType> _updateEventsBuffer = new BufferBlock<UpdateEventType>();
+        
+        // 
+        AutoResetEvent jobDoneEvent = new AutoResetEvent(false);
         public GlobalDataManager(ILogger<MsgQueueWatcher> logger, IOrgRepo<OrgTree> orgRepo,
             IDistributedCache cache, IOrgService orgService,
             IWarnningSettingRepo<EarlyWarnningSetting> warnSettingRepo,
-            IServiceDiscoveryProvider consulServiceProvider)
+            IServiceDiscoveryProvider consulServiceProvider, IGlobalDataManagerRepo globalRepo)
         {
             _logger = logger;
             _cache = cache;
             _orgService = orgService;
             _warnSettingRepo = warnSettingRepo;
             _consulServiceProvider = consulServiceProvider;
+            _globalRepo = globalRepo;
         }
 
         public EquipmentConfig EqpConfig
@@ -87,6 +94,10 @@ namespace MSS.API.Core.EventServer
             }
         }
 
+        public void WaitAllPidTask() {
+            jobDoneEvent.WaitOne();
+        }
+
         public async Task Execute(IJobExecutionContext context)
         {
             while (true)
@@ -111,6 +122,9 @@ namespace MSS.API.Core.EventServer
                             break;
                         case UpdateEventType.InitAllPid:
                             await this.initAllPid();
+                            break;
+                        case UpdateEventType.InitStatisticsDimention:
+                            await this.initStatisticsDimention();
                             break;
                         default:
                             _logger.LogError("未知的更新事件：" + type);
@@ -202,11 +216,52 @@ namespace MSS.API.Core.EventServer
                     _pids.Add(pid.pid, pid);
                 }
             }
+            jobDoneEvent.Set();
+        }
+
+        public async Task initStatisticsDimention()
+        {
+            List<StatisticsDimension> curDims = await _globalRepo.ListStatisticsDimension(); 
+            List<StatisticsDimension> list = await _globalRepo.ListEqpDimension();
+            List<AllArea> laa = await _globalRepo.GetAllArea();
+            foreach (StatisticsDimension dim in list)
+            {
+                int[] path = dim.LocationPath.Split(',').Select(int.Parse).ToArray();
+                for (int i = 0; i < path.Length; ++i)
+                {
+                    var area = laa.Where(a => a.Tablename == i && a.ID == path[i]).FirstOrDefault();
+                    if (area != null)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                dim.LocationLevel1 = area.ID;
+                                dim.LocationLevel1Name = area.AreaName;
+                                break;
+                            case 1:
+                                dim.LocationLevel2 = area.ID;
+                                dim.LocationLevel2Name = area.AreaName;
+                                break;
+                            case 2:
+                                dim.LocationLevel3 = area.ID;
+                                dim.LocationLevel3Name = area.AreaName;
+                                break;
+                        }
+                    }
+                }
+
+                StatisticsDimension exist = curDims.Where(c => c.EqpID == dim.EqpID).FirstOrDefault();
+                if (exist == null)
+                {
+                    await _globalRepo.SaveStatisticsDimension(new List<StatisticsDimension>{dim});
+                }
+            }
         }
 
         public void postUpdateEvent(UpdateEventType type)
         {
             _updateEventsBuffer.Post(type);
+            
         }
     }
 }
