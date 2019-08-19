@@ -7,14 +7,10 @@
       <div class="nav-wrap" :style="`height: ${navHeight}px`">
         <!-- <el-scrollbar :style="`height: ${navHeight}px`"> -->
           <ul id="nav-move-wrap" class="nav-move-wrap" ref="navMoveWrap">
-            <router-link 
-            v-for="(item, index) in navList" :key="item.key" 
-            :to="{ path: item.path }" class="list" :ref="'navs'+index" tag="li" 
-            @mouseenter.native="showSubNav(index)">
+            <router-link v-for="(item, index) in navList" :key="item.key" :to="{ path: item.path }" class="list" :ref="'navs'+index" tag="li" @mouseenter.native="showSubNav(index)">
               <a class="nav-link">
                 <img :src="item.iconCls" width="18" height="18" class="icon icon-info vertical-middle" alt="">
-                <img :src="item.iconClsActive" width="18" height="18" 
-                class="hide icon icon-active vertical-middle" alt="">
+                <img :src="item.iconClsActive" width="18" height="18" class="hide icon icon-active vertical-middle" alt="">
                 <span class="text vertical-middle">{{ item.name }}</span>
               </a>
             </router-link>
@@ -25,9 +21,7 @@
       <!-- <div class="sub-nav-show active" :class="{ active: bShowSubNav }" :style="`height: ${navHeight - 25}px`">
         <div class="sub-nav-wrap height-full">
           <el-scrollbar>
-            <ul class="sub-nav active" v-for="item in navList" :key="item.key" 
-            
-            >
+            <ul class="sub-nav active" v-for="item in navList" :key="item.key">
               <li class="sub-nav-list" v-for="child in item.children" :key="child.key">
                 <router-link class="block" :to="child.path">{{ child.name }}</router-link>
               </li>
@@ -301,7 +295,7 @@ export default {
     // 显示二级菜单
     showSubNav (index) {
       // console.log(this.$refs['navs'+index][0].$el.offsetLeft)
-      this.navChdleft = this.$refs['navs'+index][0].$el.offsetLeft
+      this.navChdleft = this.$refs['navs' + index][0].$el.offsetLeft
       // this.$refs.nav[0].$el.offsetHeight * 4
 
       for (let [, value] of Object.entries(this.navList)) {
@@ -406,7 +400,6 @@ $width: 180;
   }
 }
 
-
 // test
 .left-nav-wrap {
   position: inherit;
@@ -414,13 +407,15 @@ $width: 180;
   top: auto;
   transform: translateY(0%);
   background: #fff;
-  height: 67px;
+  height: 50px;
   .nav-wrap {
-height: 67px;
+height: 50px;
     .nav-move-wrap {
       width: 100%;
-      height: 67px;
-      display: flex; justify-content: flex-start; align-items: center;
+      height: 50px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
       box-sizing: border-box;
       padding-left: 4.86111%;
       li{
@@ -506,7 +501,7 @@ height: 67px;
     position: absolute;
     left: 0;
     // top: PXtoEm(70);
-    top: 66px;
+    top: 43px;
     z-index: -1;
     overflow: hidden;
     @include opacity(0);
