@@ -13,6 +13,9 @@ namespace MSS.API.Core.Common
         // 通知
         public const string Notification = "notification";
 
+        // 报警分析
+        public const string AlarmStatistic = "alarm-statistic";
+
         // 事件中心，管理员用户组
         public const string SuperGroup = "superGroup";
     }
@@ -33,5 +36,8 @@ namespace MSS.API.Core.Common
 
         [Description("所有pid列表")]
         InitAllPid = 4,
+
+        [Description("所有pid列表")]
+        InitStatisticsDimention = 5,
     }
 }

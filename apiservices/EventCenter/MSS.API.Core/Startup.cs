@@ -83,6 +83,8 @@ namespace MSS.API.Core
             // 报警事件监听任务
             services.AddTransient<AlarmJob>();
             services.AddTransient<InitPidTableJob>();
+            // 报警事件分析任务
+            services.AddTransient<AlarmStatisticJob>();
             
             // 报警队列
             services.AddSingleton<EventQueues>();

@@ -35,14 +35,13 @@ namespace MSS.API.Core.EventServer
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitEquipment);
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitTopOrg);
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitWarnSetting);
+            _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitStatisticsDimention);
             _globalDataManager.postUpdateEvent(Common.UpdateEventType.InitAllPid);
-
+            
             _logger.LogInformation("定时服务启动.");
             _scheduler = await _schedulerFactory.GetScheduler();
             _scheduler.JobFactory = _mssJobFactory;
             await _scheduler.Start();
-
-            
 
             // 全局数据更新job
             IJobDetail job_globalData = JobBuilder.Create<GlobalDataManager>()
@@ -51,6 +50,8 @@ namespace MSS.API.Core.EventServer
                 .StartNow()
                 .Build();
             await _scheduler.ScheduleJob(job_globalData, trigger_globalData);
+
+            _globalDataManager.WaitAllPidTask();
 
             // 消息队列监听
             IJobDetail job = JobBuilder.Create<MsgQueueWatcher>()
@@ -96,6 +97,14 @@ namespace MSS.API.Core.EventServer
                 .StartNow()
                 .Build();
             await _scheduler.ScheduleJob(job_alarm, trigger_alarm);
+
+            // 报警统计任务
+            IJobDetail job_alarmstatistic = JobBuilder.Create<AlarmStatisticJob>()
+                .Build();
+            ITrigger trigger_alarmstatistic = TriggerBuilder.Create()
+                .StartNow()
+                .Build();
+            await _scheduler.ScheduleJob(job_alarmstatistic, trigger_alarmstatistic);
             
         }
 

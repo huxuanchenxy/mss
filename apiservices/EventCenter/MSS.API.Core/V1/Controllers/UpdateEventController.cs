@@ -50,7 +50,6 @@ namespace MSS.API.Core.V1.Controllers
             ApiResult ret = new ApiResult { code = Code.Success };
             _queues.AlarmQueue.Enqueue(msg);
             return ret;
-            
         }
 
     }
