@@ -35,11 +35,12 @@ export default {
 </script>
 <style lang="scss" scoped>
 .footer{
-  position: fixed;
+  position: relative;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 20px;
+  top:11px;
 }
 
 .footer-nav-wrap{

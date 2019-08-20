@@ -129,7 +129,7 @@ export default {
       activeColor: '#f91333',
       timer: null,
       Conn: null,
-      navChdleft: 0
+      navChdleft: -600
     }
   },
   created () {
@@ -309,6 +309,7 @@ export default {
     // 隐藏二级菜单
     hideSubNav () {
       this.bShowSubNav = false
+      this.navChdleft = -600
       for (let [, value] of Object.entries(this.navList)) {
         value.isShowSubNav = false
       }
@@ -663,10 +664,5 @@ height: 50px;
   to{
     @include opacity(0);
   }
-}
-</style>
-<style>
-#topbar{
-  z-index: 100;
 }
 </style>
