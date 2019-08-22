@@ -26,7 +26,8 @@ namespace MSS.API.Dao
             FluentMapper.Initialize(config =>
             {
                 config.AddMap(new BaseEntityMap());
-                config.AddMap(new EarlyWarnningMap());
+                config.AddMap(new StatisticsDimensionMap());
+                config.AddMap(new StatisticsAlarmMap());
             });
             return services;
         }

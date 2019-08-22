@@ -9,6 +9,7 @@ namespace MSS.API.Core.V1.Business
 {
     public interface IStatisticsService
     {
-        
+        Task<ApiResult> ListStatisticsAlarm(StatisticsParam param,
+            List<string> groupby, int dateType);
     }
 }
