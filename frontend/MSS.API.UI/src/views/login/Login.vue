@@ -6,15 +6,15 @@
       <div class="logo">
         <img src="./images/logo.png" alt="">
       </div>
-      <div class="contact">
+      <!-- <div class="contact">
         <img class="icon-phone" src="./images/icon-phone.svg" alt="">
         <img class="icon-wechat" src="./images/icon-wechat.svg" alt="">
-      </div>
+      </div> -->
     </div>
     <!-- 主内容区域 -->
     <div class="content">
       <div class="text-wrap">
-        <p class="con-sub-title">上海电气自动化设计研究所有限公司</p>
+        <!-- <p class="con-sub-title">上海电气自动化设计研究所有限公司</p> -->
         <h2 class="con-title">上海轨道交通18号线智能运维系统</h2>
         <div class="en-title">Intelligent Maintenance System</div>
       </div>
@@ -66,12 +66,12 @@ export default {
     return {
       userName: {
         str: 'seari',
-        active: false,
+        active: true,
         isShowIcon: 'hide'
       },
       userPassword: {
         str: '123456',
-        active: false,
+        active: true,
         isShowIcon: 'hide'
       },
       isLoginIn: true
@@ -174,7 +174,7 @@ export default {
 
   .en-title{
     position: relative;
-    width: 400px;
+    // width: 400px;
     font-size: 30px;
 
     &:after{

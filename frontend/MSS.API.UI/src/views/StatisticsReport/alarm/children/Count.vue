@@ -26,6 +26,28 @@
               </el-date-picker>
             </div>
             <div class="list">
+              <span class="lable">子系统</span>
+              <el-select v-model="subSystem" multiple collapse-tags clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in subSystemList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="list">
+              <span class="lable">设备类型</span>
+              <el-select v-model="eqpType" multiple collapse-tags  clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in eqpTypeList"
+                  :key="item.key"
+                  :label="item.tName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="list">
               <span class="lable">日/月统计</span>
               <el-radio-group v-model="dateType">
                 <el-radio :label=0>日</el-radio>
@@ -45,77 +67,46 @@
           <!-- 隐藏部分 -->
           <div class="hide-more" v-show="searchHideMore">
             <div class="select-wrap">
-              <span class="lable">管廊名称</span>
-              <el-select v-model="tunnel" value-key="TunnelID" filterable placeholder="请选择" @change="choseTunnel(tunnel.TunnelID)">
-                <el-option :value="{TunnelID:''}" label="所有管廊"></el-option>
-                <el-option
-                  v-for="item in tunnelList"
-                  :key="item.key"
-                  :label="item.TunnelName"
-                  :value="item">
-                </el-option>
-              </el-select>
+              <span class="lable">安装位置</span>
+              <el-cascader clearable
+                change-on-select
+                :props="areaParams"
+                :show-all-levels="true"
+                :options="areaList"
+                v-model="area">
+              </el-cascader>
             </div>
-            <div class="select-wrap" :class="{disable:parDisable}">
-              <span class="lable">分区名称</span>
-              <el-select v-model="partition" value-key="PartitionID" filterable placeholder="请选择"
-                :disabled="parDisable" @change="chosePartition(partition.PartitionID)" >
-                <el-option :value="{PartitionID:''}" label="所有分区"></el-option>
+            <div class="select-wrap">
+              <span class="lable">供应商</span>
+              <el-select v-model="supplier" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
-                  v-for="item in partitionList"
+                  v-for="item in supplierList"
                   :key="item.key"
-                  :label="item.PartionName"
-                  :value="item">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="select-wrap" :class="{disable:eqpTypeDisable}">
-              <span class="lable">设备类型</span>
-              <el-select v-model="eqpType" value-key="eqpTypeID" filterable placeholder="请选择"
-                :disabled="eqpTypeDisable" @change="choseEqpType(eqpType.eqpTypeID)">
-                <el-option :value="{eqpTypeID:''}" label="所有设备类型"></el-option>
-                <el-option
-                  v-for="item in eqpTypeList"
-                  :key="item.key"
-                  :label="item.eqpTypeName"
-                  :value="item">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="select-wrap" :class="{disable:eqpDisable}">
-              <span class="lable">设备名称</span>
-              <el-select v-model="eqp" value-key="eqpID" collapse-tags size="small"
-                :disabled="eqpDisable" placeholder="请选择" @change="choseEqp()">
-                <el-option
-                  v-for="item in eqpList"
-                  :key="item.key"
-                  :label="item.eqpName"
-                  :value="item">
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
             <div class="select-wrap">
-              <span class="lable">巡检周期</span>
-              <el-select v-model="period" value-key="PeriodID" filterable placeholder="请选择" @change="chosePeriod()">
+              <span class="lable">制造商</span>
+              <el-select v-model="manufacturer" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
-                  v-for="item in periodList"
+                  v-for="item in manufacturerList"
                   :key="item.key"
-                  :label="item.PeriodName"
-                  :value="item">
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
             <div class="select-wrap">
-              <span class="lable">巡检人员</span>
-              <el-select v-model="toPerson" value-key="UserID" filterable placeholder="请选择" @change="choseUser()">
-                <el-option value="{UserID:''}" label="请选择"></el-option>
-                <el-option
-                  v-for="item in userList"
-                  :key="item.key"
-                  :label="item.UserName"
-                  :value="item">
-                </el-option>
-              </el-select>
+              <span class="lable">班组</span>
+              <el-cascader clearable
+                change-on-select
+                :props="areaParams"
+                :show-all-levels="true"
+                :options="teamList"
+                v-model="team">
+              </el-cascader>
             </div>
           </div>
           <div class="show-result">
@@ -145,9 +136,13 @@
 </template>
 <script>
 import XButton from '@/components/button'
+import { dictionary } from '@/common/js/dictionary.js'
 import { ApiRESULT } from '@/common/js/utils.js'
 import api from '@/api/statisticsApi'
 import mychart from './chart'
+import apiAuth from '@/api/authApi'
+import apiEqp from '@/api/eqpApi'
+import apiArea from '@/api/AreaApi.js'
 
 export default {
   name: 'InspectionManagementList',
@@ -157,6 +152,9 @@ export default {
   data () {
     return {
       title: '| 报警统计',
+      subSystem: '',
+      subSystemList: [],
+      eqpType: '',
       time: {
         text: '',
         tips: ''
@@ -195,7 +193,6 @@ export default {
       taskStatus: '',
       tunnel: '',
       partition: '',
-      eqpType: '',
       eqp: [],
       period: '',
       toPerson: '',
@@ -206,7 +203,14 @@ export default {
       eqpList: [],
       periodList: [],
       userList: [],
-
+      area: '',
+      areaList: [],
+      supplier: '',
+      supplierList: [],
+      manufacturer: '',
+      manufacturerList: [],
+      team: '',
+      teamList: [],
       parDisable: true,
       eqpTypeDisable: true,
       eqpDisable: true,
@@ -245,7 +249,7 @@ export default {
     }
   },
   created () {
-    // this.initSelect()
+    this.initSelect()
     // this.init()
   },
   activated () {
@@ -411,8 +415,8 @@ export default {
       this.eqpDisable = true
       this.partitionList = []
       this.partition = {} // {PartitionID: ''}
-      this.eqpType = {eqpTypeID: ''}
-      this.eqpTypeList = []
+      // this.eqpType = {eqpTypeID: ''}
+      // this.eqpTypeList = []
       this.eqp = {} // {eqpID: ''}
       this.eqpList = []
       // 获取分区
@@ -434,11 +438,6 @@ export default {
       this.eqpTypeList = []
       this.eqp = {} // {eqpID: ''}
       this.eqpList = []
-      // 获取设备类型
-      window.axios.post('/UtilityTunnel/GetEquipmentTypeByTunnelPartition',
-        {tunnelID: this.tunnel.TunnelID, partitionID: partitionID}).then(res => {
-        this.eqpTypeList = res.data
-      }).catch(err => console.log(err))
     },
     choseEqpType (eqpTypeID) {
       if (this.eqpType.eqpTypeID !== '') {
@@ -487,25 +486,20 @@ export default {
       }).catch(err => console.log(err))
     },
     initSelect () {
-      // 获取巡检周期
-      window.axios.post('/Template/GetPeroidItem').then(res => {
-        this.periodList = res.data.list
+      // 子系统加载
+      apiAuth.getSubCode(dictionary.subSystem).then(res => {
+        this.subSystemList = res.data
       }).catch(err => console.log(err))
 
-      // 获取任务状态
-      window.axios.post('/Division/GetSubTypeValueByTypeValue', {typeValue: 'TaskStatus'}).then(res => {
-        this.statusList = res.data
+      // 设备类型加载
+      apiEqp.getEqpTypeAll().then(res => {
+        this.eqpTypeList = res.data
       }).catch(err => console.log(err))
 
-      // 获取管廊
-      window.axios.post('/UtilityTunnel/GetTunnelByUserID').then(res => {
-        this.tunnelList = res.data
-        // this.tunnel = {TunnelID: ''}
-        // this.choseTunnel(this.tunnel.TunnelID)
-        // this.init()
+      // 安装位置加载
+      apiArea.SelectConfigAreaData().then(res => {
+        this.areaList = res.data.dicAreaList
       }).catch(err => console.log(err))
-      // 获取人员
-      this.getUserList('')
     },
 
     init () {
@@ -552,6 +546,7 @@ export default {
     },
     // 搜索
     searchResult () {
+      // console.log(this.subSystem)
       var sTime = ''
       var eTime = ''
       if (this.time.text) {
@@ -718,9 +713,9 @@ export default {
     margin-right: 10px;
   }
 
-  .el-select{
-    width: 160px;
-  }
+  // .el-select{
+  //   width: 160px;
+  // }
 
   .middle-content-wrap{
     box-sizing: border-box;

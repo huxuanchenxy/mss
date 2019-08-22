@@ -35,7 +35,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .footer{
-  position: relative;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -96,7 +96,7 @@ export default {
 }
 
 .copyright{
-  position: absolute;
+  position: inherit;
   bottom: 5px;
   left: 50%;
   font-size: $font-size-small;
