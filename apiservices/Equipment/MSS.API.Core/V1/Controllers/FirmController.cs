@@ -58,10 +58,17 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
-        [HttpGet("All")]
-        public ActionResult GetAll()
+        [HttpGet("ListByType/{type}")]
+        public ActionResult ListByType(int? type)
         {
-            var resp = _firmService.GetAll();
+            var resp = _firmService.ListByType(type);
+            return Ok(resp.Result);
+        }
+
+        [HttpGet("All")]
+        public ActionResult ListAll()
+        {
+            var resp = _firmService.ListAll();
             return Ok(resp.Result);
         }
     }

@@ -13,6 +13,7 @@ namespace MSS.API.Dao.Interface
         Task<int> Delete(string[] ids, int userID);
         Task<object> GetPageByParm(FirmQueryParm parm);
         Task<Firm> GetByID(int id);
-        Task<List<Firm>> GetAll();
+        Task<List<Firm>> ListByType(int? type);
+        Task<List<Firm>> ListAll();
     }
 }

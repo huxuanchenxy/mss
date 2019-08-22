@@ -9,14 +9,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace MSS.API.Core.V1.Business
 {
-    public interface IFirmService
+    public interface IWarehouseAlarmService
     {
-        Task<ApiResult> Save(Firm firm);
-        Task<ApiResult> Update(Firm firm);
+        Task<ApiResult> Save(WarehouseAlarm warehouseAlarm);
+        Task<ApiResult> Update(WarehouseAlarm warehouseAlarm);
         Task<ApiResult> Delete(string ids);
-        Task<ApiResult> GetPageByParm(FirmQueryParm parm);
+        Task<ApiResult> GetPageByParm(WarehouseAlarmQueryParm parm);
         Task<ApiResult> GetByID(int id);
-        Task<ApiResult> ListByType(int? type);
-        Task<ApiResult> ListAll();
     }
 }
