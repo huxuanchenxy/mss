@@ -54,7 +54,8 @@ namespace MSS.API.Core.EventServer
                         continue;
                     }
                     TimeSpan sTime;
-                    TimeSpan eTime = DateTime.Now - DateTime.Parse("1970-1-1");
+                    TimeSpan eTime = DateTime.UtcNow - DateTime.Parse("1970-1-1");
+                    // TimeSpan eTime = Convert.ToDateTime("2019-08-22 02:36:50") - DateTime.Parse("1970-1-1");
 
                     if (_lastTime == null)
                     {
@@ -65,9 +66,12 @@ namespace MSS.API.Core.EventServer
                         sTime = (TimeSpan)_lastTime;
                     }
                     _lastTime = eTime;
-                    string sql = "&q=SELECT time, Value FROM testlog where"
-                        + " PID='r_s01_t1_a_0393' and time > " + (long)sTime.TotalMilliseconds + "ms and"
+                    string sql = "&q=SELECT * FROM one_day.testlog where"
+                        + " time > " + (long)sTime.TotalMilliseconds + "ms and"
                         + " time <= " + (long)eTime.TotalMilliseconds + "ms";
+                    // string sql = "&q=SELECT * FROM one_day.testlog where"
+                    //     + " time > " + DateTime.Now.AddHours(-11).Millisecond + "ms and"
+                    //     + " time <= " + DateTime.Now.Millisecond + "ms";
                     // string sql = "&q=SELECT * FROM testlog where"
                     //     + " PID='r_s01_t1_a_0393' and time > " + 1560846493559 + "ms and"
                     //     + " time <= " + 1560866593559 + "ms";
@@ -76,7 +80,7 @@ namespace MSS.API.Core.EventServer
                         GetSingleItemRequest(query + sql);
                     if (result.results[0].series != null)
                     {
-                        int pidIdx = -1, valueIdx = -1;
+                        int pidIdx = -1, valueIdx = -1, timeIdx = -1;
                         for (int i = 0; i < result.results[0].series[0].columns.Count; ++i)
                         {
                             string col = result.results[0].series[0].columns[i];
@@ -87,6 +91,9 @@ namespace MSS.API.Core.EventServer
                                     break;
                                 case "Value":
                                     valueIdx = i;
+                                    break;
+                                case "time":
+                                    timeIdx = i;
                                     break;
                             }
                         }
@@ -197,22 +204,22 @@ namespace MSS.API.Core.EventServer
                         string warnContent = "";
                         if (up != null)
                         {
-                            double upLimit = (double)up * (setting.ParamLimitUpper/100.0);
+                            double upLimit = (double)up * (1 + setting.ParamLimitUpper/100.0);
                             if (value > upLimit)
                             {
                                 needWarn = true;
-                                warnContent = pidInfo.Des+"超过上限值（"+upLimit+"）:" + value;
+                                warnContent = pidInfo.Des+ "当前值为" + value  + ", 超过预警上限值（"+upLimit+"）";
                                 
                             }
                         }
                         if (dw != null)
                         {
-                            double dwLimit = (double)dw * (setting.ParamLimitLower / 100.0);
+                            double dwLimit = (double)dw * (1 - setting.ParamLimitLower / 100.0);
                             if (value < dwLimit)
                             {
                                 // 报警
                                 needWarn = true;
-                                warnContent = pidInfo.Des + "低于下限值（" + dwLimit + "）:" + value;
+                                warnContent = pidInfo.Des + "当前值为" + value + ", 低于预警下限值（" + dwLimit + "）";
                             }
                         }
                         // redis中查找看是否有预警存在
