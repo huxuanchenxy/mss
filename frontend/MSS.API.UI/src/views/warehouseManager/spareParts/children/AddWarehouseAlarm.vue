@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeEmergencyPlanList' }">返回</router-link></x-button>
+      <x-button class="active"><router-link :to="{ name: 'SetWarehouseAlarm' }">返回</router-link></x-button>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -15,47 +15,35 @@
         <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">应急场景<em class="validate-mark">*</em></span>
+              <span class="text">仓库<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input placeholder="请输入应急场景" v-model="scene.text" @keyup.native="validateInput(scene)"></el-input>
+                <el-select v-model="warehouse.text" clearable filterable placeholder="请选择仓库" @change="validateSelect(warehouse)">
+                <el-option
+                  v-for="item in warehouseList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
               </div>
             </div>
-            <p class="validate-tips">{{ scene.tips }}</p>
+            <p class="validate-tips">{{ warehouse.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">关键词<em class="validate-mark">*</em></span>
+              <span class="text">安全库存<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input v-model="keyword.text" placeholder="请输入关键词" @keyup.native="validateInput(keyword)"></el-input>
+                <el-input placeholder="请输入计划价格" v-model="safeStorage.text" @keyup.native="validateNumber(safeStorage)"></el-input>
               </div>
             </div>
-            <p class="validate-tips">{{ keyword.tips }}</p>
+            <p class="validate-tips">{{ safeStorage.tips }}</p>
           </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">上传部门</span>
-              <div class="inp">
-                <el-cascader class="cascader_width" clearable ref='dept'
-                  expand-trigger="hover"
-                  change-on-select
-                  :props="defaultParams"
-                  @change="cascader_change"
-                  :show-all-levels="true"
-                  :options="deptList"
-                  v-model="deptPath.text">
-                </el-cascader>
-              </div>
-            </div>
-            <p class="validate-tips">{{ deptPath.tips }}</p>
-          </li>
-          <div class="upload-list">
-            <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
-          </div>
+          <li class="list"/>
         </ul>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
-            <router-link :to="{name: 'SeeEmergencyPlanList'}">取消</router-link>
+            <router-link :to="{name: 'SetWarehouseAlarm'}">取消</router-link>
           </x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
@@ -64,37 +52,22 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, nullToEmpty } from '@/common/js/utils.js'
-import { systemResource } from '@/common/js/dictionary.js'
-import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
+import { validateNumberCommon } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import apiOrg from '@/api/orgApi'
-import api from '@/api/ExpertApi.js'
-import MyUploadPDF from '@/components/UploadPDF'
+import api from '@/api/wmsApi'
 export default {
-  name: 'AddEmergency',
+  name: 'AddWarehouseAlarm',
   components: {
-    XButton,
-    'upload-pdf': MyUploadPDF
+    XButton
   },
   data () {
     return {
-      defaultParams: {
-        label: 'label',
-        value: 'id',
-        children: 'children'
-      },
-      systemResource: systemResource.emergencyPlan,
       loading: false,
-      title: '| 添加应急预案',
-      ePlanID: '',
-      scene: {text: '', tips: ''},
-      keyword: {text: '', tips: ''},
-      dept: '',
-      deptList: [],
-      deptPath: {text: [], tips: ''},
-      fileIDs: '',
-      fileIDsEdit: []
+      title: '| 添加安全库存',
+      warehouseAlarmID: '',
+      warehouse: {text: '', tips: ''},
+      warehouseList: [],
+      safeStorage: {text: 0, tips: ''}
     }
   },
   created () {
@@ -103,89 +76,46 @@ export default {
   methods: {
     init () {
       if (this.$route.query.type !== 'Add') {
-        this.title = '| 修改应急预案'
+        this.title = this.$route.query.title + ' | 修改安全库存'
         this.loading = true
-        // 部门加载
-        apiOrg.getOrgAll().then(res => {
-          this.deptList = res.data
-          this.getEPlan()
+        // 仓库加载
+        api.getWarehouseAll().then(res => {
+          this.warehouseList = res.data
+          this.getWarehouseAlarm()
         }).catch(err => console.log(err))
       } else {
-        debugger
-        // 部门加载
-        apiOrg.getOrgAll().then(res => {
-          this.deptList = res.data
+        this.title = this.$route.query.title + ' | 添加安全库存'
+        // 仓库加载
+        api.getWarehouseAll().then(res => {
+          this.warehouseList = res.data
         }).catch(err => console.log(err))
       }
     },
-    getFileIDs (ids) {
-      this.fileIDsEdit = ids
-    },
-    cascader_change (val) {
-      let selectedDept = val[val.length - 1]
-      let obj = this.getCascaderObj(selectedDept, this.deptList)
-      if (obj.node_type === 2) {
-        this.dept = selectedDept
-        this.deptPath.tips = ''
-      } else {
-        this.deptPath.tips = '您选择的不是部门'
-      }
-      // let el = document.querySelector('.pop-team')
-      // el.style.display = 'none'
-    },
-    getCascaderObj (val, opt) {
-      for (let i = 0; i < opt.length; ++i) {
-        let item = opt[i]
-        if (val === item.id) {
-          return item
-        } else {
-          if (item.children) {
-            let ret = this.getCascaderObj(val, item.children)
-            if (ret) {
-              return ret
-            }
-          }
-        }
-      }
-    },
-    getEPlan () {
-      api.getEPlanByID(this.$route.query.id).then(res => {
+    getWarehouseAlarm () {
+      api.getWarehouseAlarmByID(this.$route.query.id).then(res => {
         if (res.code === 0) {
           let data = res.data
-          this.ePlanID = data.id
-          this.scene.text = data.scene
-          this.keyword.text = nullToEmpty(data.keyword)
-          this.deptPath.text = this.strToIntArr(data.deptPath)
-          this.fileIDs = data.uploadFiles
+          this.warehouseAlarmID = data.id
+          this.warehouse.text = data.warehouse
+          this.safeStorage.text = data.safeStorage
         }
         this.loading = false
       }).catch(err => console.log(err))
     },
-    strToIntArr (str) {
-      let arr = str.split(',')
-      let ret = []
-      for (let i = 0; i < arr.length; i++) {
-        ret.push(parseInt(arr[i]))
-      }
-      return ret
+    validateNumber (val) {
+      validateNumberCommon(val)
     },
-    validateInputNull (val) {
-      if (!vInput(val.text)) {
-        val.tips = '此项含有非法字符'
+    validateSelect (val) {
+      if (val.text === '') {
+        val.tips = '此项必选'
         return false
       } else {
         val.tips = ''
         return true
       }
     },
-    validateInput (val) {
-      if (!validateInputCommon(val)) {
-        return false
-      }
-      return true
-    },
     validateInputAll () {
-      if (!this.validateInput(this.scene) || !this.validateInput(this.keyword)) {
+      if (!this.validateSelect(this.warehouse) || !validateNumberCommon(this.safeStorage)) {
         return false
       }
       return true
@@ -198,25 +128,15 @@ export default {
         })
         return
       }
-      if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
-        this.$message({
-          message: '文件正在上传中，请耐心等待',
-          type: 'warning'
-        })
-        return
-      }
-      let ePlan = {
-        Scene: this.scene.text,
-        Dept: this.dept,
-        DeptPath: this.deptPath.text.join(','),
-        Keyword: this.keyword.text,
-        Type: this.systemResource,
-        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+      let WarehouseAlarm = {
+        SpareParts: this.$route.query.spareParts,
+        Warehouse: this.warehouse.text,
+        safeStorage: this.safeStorage.text
       }
       if (this.$route.query.type === 'Add') {
-        api.addEPlan(ePlan).then(res => {
+        api.addWarehouseAlarm(WarehouseAlarm).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEmergencyPlanList'})
+            this.$router.push({name: 'SetWarehouseAlarm'})
             this.$message({
               message: '添加成功',
               type: 'success'
@@ -229,10 +149,10 @@ export default {
           }
         }).catch(err => console.log(err))
       } else {
-        ePlan.ID = this.ePlanID
-        api.updateEPlan(ePlan).then(res => {
+        WarehouseAlarm.ID = this.warehouseAlarmID
+        api.updateWarehouseAlarm(WarehouseAlarm).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEmergencyPlanList'})
+            this.$router.push({name: 'SetWarehouseAlarm'})
             this.$message({
               message: '修改成功',
               type: 'success'
@@ -375,6 +295,16 @@ export default {
       justify-content: flex-end;
     }
   }
+
+  .list-block{
+    width: 100%;
+    .span-block{
+      width: 8.5%;
+    }
+    .whole-line{
+        width: 86.5%;
+      }
+  }
 }
 .cause{
   display: flex;
@@ -451,13 +381,9 @@ export default {
 .upload-list{
   margin-top: PXtoEm(25);
   margin-bottom: PXtoEm(25);
-  width: 50%;
+  width: -webkit-fill-available;
 }
 .left{
   text-indent: 9.5%
-}
-
-.cascader_width{
-  width: 100%!important;
 }
 </style>

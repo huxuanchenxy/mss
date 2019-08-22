@@ -398,8 +398,8 @@ export default {
       width: 8.5%;
     }
     .whole-line{
-        width: 86.5%;
-      }
+      width: 86.5%;
+    }
   }
 }
 .cause{

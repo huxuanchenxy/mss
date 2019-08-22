@@ -9,8 +9,6 @@
       </h2>
       <x-button class="active"><router-link :to="{ name: 'SeeSparePartsList' }">返回</router-link></x-button>
     </div>
-    <div class="scroll">
-      <el-scrollbar>
         <!-- 列表 -->
         <ul class="con-padding-horizontal input-group">
           <li class="list">
@@ -62,11 +60,80 @@
             </div>
           </li>
         </ul>
-      </el-scrollbar>
-    </div>
+        <div class="box">
+          <!-- 搜索框 -->
+          <div class="con-padding-horizontal search-wrap">
+            <div class="wrap">
+              <div class="input-group">
+                <label for="name">仓库</label>
+                <div class="inp">
+                  <el-select v-model="warehouse" clearable filterable placeholder="请选择仓库">
+                    <el-option
+                      v-for="item in warehouseList"
+                      :key="item.key"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </div>
+            </div>
+            <div class="search-btn" @click="searchRes">
+              <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
+            </div>
+          </div>
+        </div>
+        <!-- 内容 -->
+        <div class="content-wrap">
+          <ul class="content-header">
+            <li class="list url c-pointer" @click="changeOrder('warehouse')">
+              仓库
+              <i :class="[{ 'el-icon-d-caret': headOrder.warehouse === 0 }, { 'el-icon-caret-top': headOrder.warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.warehouse === 2 }]"></i>
+            </li>
+            <li class="list name c-pointer" @click="changeOrder('safe_storage')">
+              安全库存
+              <i :class="[{ 'el-icon-d-caret': headOrder.safe_storage === 0 }, { 'el-icon-caret-top': headOrder.safe_storage === 1 }, { 'el-icon-caret-bottom': headOrder.safe_storage === 2 }]"></i>
+            </li>
+            <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
+              最后更新时间
+              <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
+            </li>
+            <li class="list name c-pointer" @click="changeOrder('updated_by')">
+              最后更新人
+              <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="item in warehouseAlarmList" :key="item.key">
+                  <div class="list-content">
+                    <div class="url">{{ item.warehouseName }}</div>
+                    <div class="name word-break">{{ item.safeStorage }}</div>
+                    <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
+                    <div class="name word-break">{{ item.updatedName }}</div>
+                  </div>
+                </li>
+              </ul>
+            <!-- 分页 -->
+              <el-pagination
+                :current-page.sync="currentPage"
+                @current-change="handleCurrentChange"
+                @prev-click="prevPage"
+                @next-click="nextPage"
+                layout="slot, jumper, prev, pager, next"
+                prev-text="上一页"
+                next-text="下一页"
+                :total="total">
+                <span>总共 {{ total }} 条记录</span>
+              </el-pagination>
+            </el-scrollbar>
+          </div>
+        </div>
   </div>
 </template>
 <script>
+import { transformDate } from '@/common/js/utils.js'
 import api from '@/api/wmsApi'
 import XButton from '@/components/button'
 export default {
@@ -88,10 +155,29 @@ export default {
         planPrice: 0,
         englishDes: '',
         remark: ''
+      },
+      warehouse: '',
+      warehouseList: [],
+      warehouseAlarmList: [],
+      total: 0,
+      currentPage: 1,
+      currentSort: {
+        sort: 'ID',
+        order: 'asc'
+      },
+      headOrder: {
+        warehouse: 1,
+        safe_storage: 0,
+        updated_time: 0,
+        updated_by: 0
       }
     }
   },
   created () {
+    // 仓库加载
+    api.getWarehouseAll().then(res => {
+      this.warehouseList = res.data
+    }).catch(err => console.log(err))
     this.getSpareParts()
   },
   methods: {
@@ -108,111 +194,197 @@ export default {
           this.spareParts.planPrice = data.planPrice
           this.spareParts.englishDes = data.englishDes
           this.spareParts.remark = data.remark
-        }
-        this.loading = false
+          this.searchResult(1)
+        } else this.loading = false
       }).catch(err => console.log(err))
+    },
+    // 改变排序
+    changeOrder (sort) {
+      if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
+        this.headOrder.warehouse = 0
+        this.headOrder.safe_storage = 0
+        this.headOrder.updated_by = 0
+        this.headOrder.updated_time = 0
+        this.currentSort.order = 'asc'
+        this.headOrder[sort] = 1
+      } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
+        this.currentSort.order = 'asc'
+        this.headOrder[sort] = 1
+      } else { // 同一字段升序变降序
+        this.currentSort.order = 'desc'
+        this.headOrder[sort] = 2
+      }
+      this.currentSort.sort = sort
+      this.searchResult(this.currentPage)
+    },
+    // 搜索
+    searchResult (page) {
+      this.currentPage = page
+      this.loading = true
+      api.getWarehouseAlarm({
+        order: this.currentSort.order,
+        sort: this.currentSort.sort,
+        rows: 10,
+        page: page,
+        SearchSpareParts: this.spareParts.id,
+        SearchType: this.warehouse
+      }).then(res => {
+        this.loading = false
+        if (res.data.total === 0) {
+          this.warehouseAlarmList = []
+        } else {
+          res.data.rows.map(item => {
+            item.updatedTime = transformDate(item.updatedTime)
+          })
+          this.warehouseAlarmList = res.data.rows
+        }
+        this.total = res.data.total
+      }).catch(err => console.log(err))
+    },
+    // 搜索功能
+    searchRes () {
+      this.loading = true
+      this.searchResult(1)
+    },
+    // 序号、指定页翻页
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.searchResult(val)
+    },
+
+    // 上一页
+    prevPage (val) {
+      this.currentPage = val
+      this.searchResult(val)
+    },
+
+    // 下一页
+    nextPage (val) {
+      this.currentPage = val
+      this.searchResult(val)
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-// 显示大图容器
-.el-dialog__wrapper{
-  width: 100%;
-  height: 100%;
-
-  .el-carousel{
-    height: 100%;
-  }
-}
-
-.header{
-  display: flex;
-  justify-content: space-between;
-}
-
-// 顶部信息
-.middle{
-  position: relative;
-  margin-bottom: 10px;
-  padding-bottom: 20px;
-
-  .text-right{
-    text-align: right !important;
-  }
-
-  [class*="list-wrap"]{
+$con-height: $content-height - 145 - 56;
+// 内容区
+.content-wrap{
+  overflow: hidden;
+  height: percent($con-height, $content-height);
+  text-align: center;
+  .content-header{
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
+    align-items: center;
+    height: percent(50, $con-height);
+    padding: 0 PXtoEm(24);
+    background: rgba(36,128,198,.5);
 
-    .list{
-      margin-top: 20px;
-      padding: 0 2%;
-      border-right: 1px solid #C9CACD;
-      text-align: center;
-
-      &:first-of-type{
-        padding-left: 0;
-        text-align: left;
-      }
-
-      &:last-of-type{
-        padding-right: 0;
-        border: 0;
-        text-align: right;
-      }
+    .last-update-time{
+      color: $color-white;
     }
+  }
+
+  .scroll{
+    height: percent($con-height - 50 - 70, $con-height);
   }
 
   .list-wrap{
     .list{
-      width: 16%;
+      &:nth-of-type(even){
+        .list-content{
+          background: rgba(186,186,186,.5);
+        }
+      }
+    }
 
-      span{
-        display: inline-block;
-        width: 100%;
-        @extend %ellipsis;
+    .list-content{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: PXtoEm(15) PXtoEm(24);
+    }
+
+    .left-title{
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    // 隐藏内容
+    .sub-content{
+      overflow: hidden;
+      height: 0;
+      font-size: $font-size-small;
+      text-align: left;
+      color: $color-content-text;
+
+      &.active{
+        overflow: inherit;
+        height: auto;
+        transition: .7s .2s;
+      }
+    }
+
+    .sub-con-list{
+      display: flex;
+      padding: PXtoEm(15) PXtoEm(24);
+      border-top: 1px solid $color-main-background;
+      background: rgba(0,0,0,.2);
+
+      .right-wrap{
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .list{
+        margin-right: 10px;
       }
     }
   }
 
-  .sub-list-wrap{
-    .list{
-      margin-right: 40px;
-      padding: 0;
-      border: 0;
-      text-align: left;
-    }
+  .number{
+    width: 6%;
+  }
 
-    .text{
-      color: $color-content-text;
-    }
+  .name,
+  .btn-wrap{
+    width: 8%;
+  }
 
-    &:after{
-      content: "";
-      flex: auto;
-    }
+  .last-update-time{
+    width: 15%;
+    color: $color-content-text;
+  }
+
+  .last-maintainer{
+    width: 10%;
+  }
+
+  .upload-cascader{
+    width: 13%;
+  }
+
+  .url{
+    width: 15%;
+  }
+
+  .menuOrder{
+    width: 10%;
   }
 }
 
-.scroll{
-  /**
-   * percent函数转换百分比
-   * $content-height内容区域总高度
-   * 页面标题栏高度：56
-   */
-  height: percent($content-height - 56, $content-height);
-  .upload-wrap{
-    display: flex;
-    align-items: center;
+.box{
+  margin-top: PXtoEm(20);
+  margin-bottom: PXtoEm(20);
+  height: percent(56, $content-height)!important;
+  .search-wrap{
+    height: 100%!important;
   }
-  /deep/ .el-collapse-item{
-    .img-list{
-      margin: 20px 10px 0 0;
-      cursor: pointer;
-    }
-  }
+}
+.header{
+  display: flex;
+  justify-content: space-between;
 }
 
 .input-group{
