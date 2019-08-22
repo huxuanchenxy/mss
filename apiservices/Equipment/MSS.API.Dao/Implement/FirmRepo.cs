@@ -91,7 +91,22 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<List<Firm>> GetAll()
+        public async Task<List<Firm>> ListByType(int? type)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM firm";
+                if (type!=null)
+                {
+                    sql += " where type="+type;
+                }
+                var result = (await c.QueryAsync<Firm>(
+                    sql)).ToList();
+                return result;
+            });
+        }
+
+        public async Task<List<Firm>> ListAll()
         {
             return await WithConnection(async c =>
             {

@@ -48,6 +48,36 @@ const routes = [
             path: 'detail',
             name: 'DetailSpareParts',
             component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/DetailSpareParts.vue')
+          }, {
+            path: 'setAlarm',
+            name: 'SetWarehouseAlarm',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/SetWarehouseAlarm.vue')
+          }, {
+            path: 'addAlarm',
+            name: 'AddWarehouseAlarm',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/AddWarehouseAlarm.vue')
+          }
+        ]
+      }, {
+        path: 'stockOperation',
+        component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/stockOperation/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'stockOperation',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeStockReceiveList',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/stockOperation/children/SeeStockReceiveList.vue')
+          }, {
+            path: 'add',
+            name: 'AddStockReceive',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/stockOperation/children/AddStockReceive.vue')
+          }, {
+            path: 'detail',
+            name: 'DetailStockOperation',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/stockOperation/children/DetailStockOperation.vue')
           }
         ]
       }

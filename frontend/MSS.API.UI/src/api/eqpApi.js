@@ -25,6 +25,7 @@ export default {
   updateFirm: parm => { return axios.put(`${api}/Firm`, parm).then(res => res.data) },
   delFirm: ids => { return axios.delete(`${api}/Firm/${ids}`).then(res => res.data) },
   getFirmAll: () => { return axios.get(`${api}/Firm/All`).then(res => res.data) },
+  getFirmByType: type => { return axios.get(`${api}/Firm/ListByType/${type}`).then(res => res.data) },
 
   // deleteUploadFile: id => { return axios.delete(`${api}/Upload/${id}`).then(res => res.data) },
   getUploadFileByIDs: ids => { return axios.get(`${api}/Upload/${ids}`).then(res => res.data) },

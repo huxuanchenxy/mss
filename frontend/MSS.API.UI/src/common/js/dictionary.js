@@ -2,7 +2,8 @@ export const dictionary = {
   actionGroupType: 5,
   subSystem: 17,
   firmType: 22,
-  sparePartsType: 59
+  sparePartsType: 59,
+  currency: 94
 }
 
 export const firmType = {

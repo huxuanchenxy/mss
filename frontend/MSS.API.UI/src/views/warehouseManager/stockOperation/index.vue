@@ -1,7 +1,7 @@
 <template>
   <div class="wrap height-full">
     <div class="content">
-      <keep-alive include="SeeSparePartsList,SetWarehouseAlarm">
+      <keep-alive include="SeeStockReceiveList">
         <router-view @title="getTitle"/>
       </keep-alive>
     </div>
@@ -10,7 +10,7 @@
 <script>
 import XButton from '@/components/button'
 export default {
-  name: 'spareParts',
+  name: 'stockOperation',
   components: {
     XButton
   },
