@@ -31,6 +31,7 @@ import EquipmentLifeCycle from './EquipmentLifeCycle'
 import EventCenter from './EventCenter'
 import MonitorCenter from './MonitorCenter'
 import WarehouseManager from './warehouseManager'
+import Statistics from './StatisticsReport'
 
 routes = routes.concat(system)
 routes = routes.concat(MainTainData)
@@ -45,6 +46,8 @@ routes = routes.concat(EventCenter)
 routes = routes.concat(MonitorCenter)
 // 仓库管理
 routes = routes.concat(WarehouseManager)
+// 统计报表
+routes = routes.concat(Statistics)
 // // 基础数据
 // import dataBasic from './dataBasic'
 // routes = routes.concat(dataBasic)
