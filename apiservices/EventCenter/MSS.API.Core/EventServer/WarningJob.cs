@@ -238,7 +238,7 @@ namespace MSS.API.Core.EventServer
                             // redis中存在预警 则取消预警
                             if (warnID != null)
                             {
-                                _deleteWarning(Convert.ToInt32(warnID), prefix + pid);
+                                _deleteWarning(Convert.ToInt32(warnID), prefix + pid, (int)pidInfo.EqpID);
                             }
                         }
                         
@@ -268,7 +268,7 @@ namespace MSS.API.Core.EventServer
             // 发送预警
             _sendWarn(warn.EqpID, "on");
         }
-        private async void _deleteWarning(int id, string redisKey)
+        private async void _deleteWarning(int id, string redisKey, int eqpID)
         {
             EarlyWarnning warn = new EarlyWarnning();
             warn.ID = id;
@@ -278,7 +278,7 @@ namespace MSS.API.Core.EventServer
             // 删除redis
             _cache.Remove(redisKey);
             // 发送预警恢复
-            _sendWarn(warn.EqpID, "off");
+            _sendWarn(eqpID, "off");
         }
 
         private void _sendWarn(int eqpID, string content)
