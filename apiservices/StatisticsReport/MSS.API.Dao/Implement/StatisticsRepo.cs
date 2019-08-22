@@ -17,6 +17,85 @@ namespace MSS.API.Dao.Implement
     {
         public StatisticsRepo(DapperOptions options) : base(options) { }
 
-    
+        public async Task<List<StatisticsAlarm>> ListStatisticsAlarmByDate(StatisticsParam param,
+            List<string> groupby, int dateType)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                string datecol = "DATE_FORMAT(a.occur_time,'%Y-%m-%d')";
+                if (dateType == 1)
+                {
+                    datecol = "DATE_FORMAT(a.occur_time,'%Y-%m')";
+                }
+                sql.Append("SELECT " + datecol + " as date, count(*) as num, avg(a.elapsed_time) avgtime");
+                // foreach (string item in groupby)
+                // {
+                //     sql.Append(", b." + item);
+                // }
+                sql.Append(", 'split', b.*");
+                sql.Append(" FROM statistics_alarm a");
+                sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id");
+                sql.Append(" WHERE 1=1");
+                if (param.StartTime != null)
+                {
+                    sql.Append(" AND a.occur_time >= '" + param.StartTime + "'");
+                }
+                if (param.EndTime != null)
+                {
+                    sql.Append(" AND a.occur_time <= '" + param.EndTime + "'");
+                }
+                if (!string.IsNullOrWhiteSpace(param.EqpTypeIDs))
+                {
+                    sql.Append(" AND b.eqp_type_id IN (" + param.EqpTypeIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel1s))
+                {
+                    sql.Append(" AND b.location_level1 IN (" + param.LocationLevel1s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel2s))
+                {
+                    sql.Append(" AND b.location_level2 IN (" + param.LocationLevel2s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel3s))
+                {
+                    sql.Append(" AND b.location_level3 IN (" + param.LocationLevel3s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.ManufacturerIDs))
+                {
+                    sql.Append(" AND b.manufacturer_id IN (" + param.ManufacturerIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.SupplierIDs))
+                {
+                    sql.Append(" AND b.supplier_id IN (" + param.SupplierIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.SubSystemIDs))
+                {
+                    sql.Append(" AND b.sub_system_id IN (" + param.SubSystemIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.TeamIDs))
+                {
+                    sql.Append(" AND b.team_id IN (" + param.TeamIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.TopOrgIDs))
+                {
+                    sql.Append(" AND b.top_org_id IN (" + param.TopOrgIDs + ")");
+                }
+                sql.Append(" GROUP BY date");
+                foreach (string item in groupby)
+                {
+                    sql.Append(", b." + item);
+                }
+                // var data = await c.QueryAsync<StatisticsAlarm>(sql.ToString());
+                var data = await c.QueryAsync<StatisticsAlarm, StatisticsDimension, StatisticsAlarm>(
+                        sql.ToString(), (alarm, dimension) =>
+                        {
+                            alarm.dimension = dimension;
+                            return alarm;
+                        },
+                        splitOn: "split");
+                return data.ToList();
+            });
+        }
     }    
 }

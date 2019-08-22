@@ -29,11 +29,16 @@ namespace MSS.API.Core.V1.Controllers
             _userId = _authHelper.GetUserId();
         }
 
-        [HttpGet("all")]
-        public async Task<ActionResult<ApiResult>> Get()
+        [HttpGet("alarm")]
+        public async Task<ActionResult<ApiResult>> Alarm([FromQuery]StatisticsParam param, string groupby, int dateType)
         {
-            // var ret = await _orgService.GetAllOrg();
-            return Ok();
+            List<string> group = new List<string>();
+            if (!string.IsNullOrWhiteSpace(groupby))
+            {
+                group.AddRange(groupby.Split(','));
+            }
+            var ret = await _statisticsService.ListStatisticsAlarm(param, group, dateType);
+            return ret;
         }
     }
 }

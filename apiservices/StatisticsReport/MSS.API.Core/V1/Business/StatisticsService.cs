@@ -26,5 +26,25 @@ namespace MSS.API.Core.V1.Business
             _statisticsRepo = statisticsRepo;
         }
 
+        public async Task<ApiResult> ListStatisticsAlarm(StatisticsParam param,
+            List<string> groupby, int dateType)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
+                    groupby, dateType);
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
     }
 }
