@@ -67,64 +67,46 @@
           <!-- 隐藏部分 -->
           <div class="hide-more" v-show="searchHideMore">
             <div class="select-wrap">
-              <span class="lable">管廊名称</span>
-              <el-select v-model="tunnel" value-key="TunnelID" filterable placeholder="请选择" @change="choseTunnel(tunnel.TunnelID)">
-                <el-option :value="{TunnelID:''}" label="所有管廊"></el-option>
-                <el-option
-                  v-for="item in tunnelList"
-                  :key="item.key"
-                  :label="item.TunnelName"
-                  :value="item">
-                </el-option>
-              </el-select>
+              <span class="lable">安装位置</span>
+              <el-cascader clearable
+                change-on-select
+                :props="areaParams"
+                :show-all-levels="true"
+                :options="areaList"
+                v-model="area">
+              </el-cascader>
             </div>
-            <div class="select-wrap" :class="{disable:parDisable}">
-              <span class="lable">分区名称</span>
-              <el-select v-model="partition" value-key="PartitionID" filterable placeholder="请选择"
-                :disabled="parDisable" @change="chosePartition(partition.PartitionID)" >
-                <el-option :value="{PartitionID:''}" label="所有分区"></el-option>
+            <div class="select-wrap">
+              <span class="lable">供应商</span>
+              <el-select v-model="supplier" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
-                  v-for="item in partitionList"
+                  v-for="item in supplierList"
                   :key="item.key"
-                  :label="item.PartionName"
-                  :value="item">
-                </el-option>
-              </el-select>
-            </div>
-            <div class="select-wrap" :class="{disable:eqpDisable}">
-              <span class="lable">设备名称</span>
-              <el-select v-model="eqp" value-key="eqpID" collapse-tags size="small"
-                :disabled="eqpDisable" placeholder="请选择" @change="choseEqp()">
-                <el-option
-                  v-for="item in eqpList"
-                  :key="item.key"
-                  :label="item.eqpName"
-                  :value="item">
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
             <div class="select-wrap">
-              <span class="lable">巡检周期</span>
-              <el-select v-model="period" value-key="PeriodID" filterable placeholder="请选择" @change="chosePeriod()">
+              <span class="lable">制造商</span>
+              <el-select v-model="manufacturer" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
-                  v-for="item in periodList"
+                  v-for="item in manufacturerList"
                   :key="item.key"
-                  :label="item.PeriodName"
-                  :value="item">
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
             <div class="select-wrap">
-              <span class="lable">巡检人员</span>
-              <el-select v-model="toPerson" value-key="UserID" filterable placeholder="请选择" @change="choseUser()">
-                <el-option value="{UserID:''}" label="请选择"></el-option>
-                <el-option
-                  v-for="item in userList"
-                  :key="item.key"
-                  :label="item.UserName"
-                  :value="item">
-                </el-option>
-              </el-select>
+              <span class="lable">班组</span>
+              <el-cascader clearable
+                change-on-select
+                :props="areaParams"
+                :show-all-levels="true"
+                :options="areaList"
+                v-model="area">
+              </el-cascader>
             </div>
           </div>
           <div class="show-result">
@@ -160,6 +142,7 @@ import api from '@/api/statisticsApi'
 import mychart from './chart'
 import apiAuth from '@/api/authApi'
 import apiEqp from '@/api/eqpApi'
+import apiArea from '@/api/AreaApi.js'
 
 export default {
   name: 'InspectionManagementList',
@@ -504,6 +487,11 @@ export default {
       // 设备类型加载
       apiEqp.getEqpTypeAll().then(res => {
         this.eqpTypeList = res.data
+      }).catch(err => console.log(err))
+
+      // 安装位置加载
+      apiArea.SelectConfigAreaData().then(res => {
+        this.areaList = res.data.dicAreaList
       }).catch(err => console.log(err))
     },
 
