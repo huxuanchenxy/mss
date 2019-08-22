@@ -104,8 +104,8 @@
                 change-on-select
                 :props="areaParams"
                 :show-all-levels="true"
-                :options="areaList"
-                v-model="area">
+                :options="teamList"
+                v-model="team">
               </el-cascader>
             </div>
           </div>
@@ -203,7 +203,14 @@ export default {
       eqpList: [],
       periodList: [],
       userList: [],
-
+      area: '',
+      areaList: [],
+      supplier: '',
+      supplierList: [],
+      manufacturer: '',
+      manufacturerList: [],
+      team: '',
+      teamList: [],
       parDisable: true,
       eqpTypeDisable: true,
       eqpDisable: true,
