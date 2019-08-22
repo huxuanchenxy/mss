@@ -36,10 +36,14 @@
               </div>
               <div class="list-sub-con" v-for="children in item.children" :key="children.key" v-show="item.shrink">
                 <el-checkbox-group v-model="roleActionInfo">
-                  <el-checkbox class="chk-col" :label="children.id">{{ children.text }}</el-checkbox>
-                  <el-checkbox-group class="chk-list" v-model="roleActionInfo" v-for="operation in children.children" :key="operation.key">
-                    <el-checkbox class="chk-col" :label="operation.id">{{ operation.text }}</el-checkbox>
-                  </el-checkbox-group>
+                  <div class="chk-col">
+                    <el-checkbox :label="children.id">{{ children.text }}</el-checkbox>
+                    <div class="chk-list">
+                      <el-checkbox-group v-model="roleActionInfo" v-for="operation in children.children" :key="operation.key">
+                        <el-checkbox  class="chk-con" :label="operation.id">{{ operation.text }}</el-checkbox>
+                      </el-checkbox-group>
+                    </div>
+                  </div>
                 </el-checkbox-group>
               </div>
             </li>
@@ -328,12 +332,20 @@ $height: $content-height - 56;
     }
 
     .chk-list{
-      display: inline;
-      margin-left: 5%;
+      display: flex;
+      margin-left: 20px;
+      flex-wrap: wrap;
+      width: -webkit-fill-available;
+      .chk-con{
+        margin-left: 20px;
+        // width: 120px;
+      }
     }
 
     .chk-col{
-      width: 120px;
+      display: flex;
+      // word-wrap: break-word;
+      // word-break: normal;
     }
   }
 
@@ -352,5 +364,9 @@ $height: $content-height - 56;
       margin-left: $btn-margin-left;
     }
   }
+}
+
+.el-checkbox{
+  width: 120px;
 }
 </style>

@@ -470,7 +470,7 @@ height: 50px;
 
       // 箭头
       &:after{
-        content: "\e605";
+        content: "\e65e";
         @include opacity(0);
         font-family: "iconfont";
       }

@@ -4,41 +4,23 @@
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
-      <h2 class="title">
+      <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
+      <x-button class="active"><router-link :to="{ name: 'SeeSparePartsList' }">&#160;返&#8194;回&#160;</router-link></x-button>
     </div>
     <div class="box">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">物资名称</label>
+            <label for="name">仓库</label>
             <div class="inp">
-              <el-input v-model.trim="sparePartsName" placeholder="请输入物资名称"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="name">物资类型</label>
-            <div class="inp">
-              <el-select v-model="type" clearable filterable placeholder="请选择物资类型">
+              <el-select v-model="warehouse" clearable filterable placeholder="请选择仓库">
                 <el-option
-                  v-for="item in typeList"
+                  v-for="item in warehouseList"
                   :key="item.key"
                   :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="">适用设备类型</label>
-            <div class="inp">
-              <el-select v-model="eqpType" clearable filterable placeholder="请选择设备类型">
-                <el-option
-                  v-for="item in eqpTypeList"
-                  :key="item.key"
-                  :label="item.tName"
                   :value="item.id">
                 </el-option>
               </el-select>
@@ -53,31 +35,20 @@
         <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
         <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
         <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
-        <li class="list" @click="setAlarm" :disabled="btn.set"><x-button>仓库预警设定</x-button></li>
-        <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('id')">
-          编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
+        <li class="list url c-pointer" @click="changeOrder('warehouse')">
+          仓库
+          <i :class="[{ 'el-icon-d-caret': headOrder.warehouse === 0 }, { 'el-icon-caret-top': headOrder.warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.warehouse === 2 }]"></i>
         </li>
-        <li class="list url c-pointer" @click="changeOrder('name')">
-          物资名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.name === 0 }, { 'el-icon-caret-top': headOrder.name === 1 }, { 'el-icon-caret-bottom': headOrder.name === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('safe_storage')">
+          安全库存
+          <i :class="[{ 'el-icon-d-caret': headOrder.safe_storage === 0 }, { 'el-icon-caret-top': headOrder.safe_storage === 1 }, { 'el-icon-caret-bottom': headOrder.safe_storage === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('type')">
-          物资类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.type === 0 }, { 'el-icon-caret-top': headOrder.type === 1 }, { 'el-icon-caret-bottom': headOrder.type === 2 }]"></i>
-        </li>
-        <li class="list name c-pointer" @click="changeOrder('eqp_type')">
-          适用类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.eqp_type === 0 }, { 'el-icon-caret-top': headOrder.eqp_type === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_type === 2 }]"></i>
-        </li>
-        <li class="list name">计量单位</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -90,16 +61,13 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="item in sparePartsList" :key="item.key">
+            <li class="list" v-for="item in warehouseAlarmList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editSparePartsID" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editwarehouseAlarmID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.id }}</div>
-                <div class="url">{{ item.name }}</div>
-                <div class="name word-break">{{ item.typeName }}</div>
-                <div class="name word-break">{{ item.eqpTypeName }}</div>
-                <div class="name word-break">{{ item.unit }}</div>
+                <div class="url">{{ item.warehouseName }}</div>
+                <div class="name word-break">{{ item.safeStorage }}</div>
                 <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
                 <div class="name word-break">{{ item.updatedName }}</div>
               </div>
@@ -139,13 +107,10 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import { btn } from '@/element/btn.js'
-import { dictionary } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
-import apiAuth from '@/api/authApi'
-import apiEqp from '@/api/eqpApi'
 import api from '@/api/wmsApi'
 export default {
-  name: 'SeeSparePartsList',
+  name: 'SetWarehouseAlarm',
   components: {
     XButton
   },
@@ -154,17 +119,14 @@ export default {
       btn: {
         save: false,
         delete: false,
-        update: false,
-        set: false
+        update: false
       },
-      title: ' | 物资定义',
-      sparePartsName: '',
-      type: '',
-      typeList: [],
-      eqpType: '',
-      eqpTypeList: [],
-      sparePartsList: [],
-      editSparePartsID: [],
+      title: ' | ' + this.$route.params.name + '（' + this.$route.params.unit + '）',
+      sparePartsID: this.$route.params.id,
+      warehouse: '',
+      warehouseList: [],
+      warehouseAlarmList: [],
+      editwarehouseAlarmID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -179,10 +141,8 @@ export default {
         btn: true
       },
       headOrder: {
-        id: 1,
-        name: 0,
-        type: 0,
-        eqp_type: 0,
+        warehouse: 1,
+        safe_storage: 0,
         updated_time: 0,
         updated_by: 0
       },
@@ -194,24 +154,19 @@ export default {
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.spareParts.save
+        return item.actionID === btn.warehouseAlarm.save
       })
       this.btn.delete = !actions.some((item, index) => {
-        return item.actionID === btn.spareParts.delete
+        return item.actionID === btn.warehouseAlarm.delete
       })
       this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.spareParts.update
-      })
-      this.btn.set = !actions.some((item, index) => {
-        return item.actionID === btn.spareParts.set
+        return item.actionID === btn.warehouseAlarm.update
       })
     }
-    apiAuth.getSubCode(dictionary.sparePartsType).then(res => {
-      this.typeList = res.data
-    }).catch(err => console.log(err))
-    // 设备类型加载
-    apiEqp.getEqpTypeAll().then(res => {
-      this.eqpTypeList = res.data
+    this.title = ' | ' + this.$route.params.name + '（' + this.$route.params.unit + '）'
+    // 仓库加载
+    api.getWarehouseAll().then(res => {
+      this.warehouseList = res.data
     }).catch(err => console.log(err))
     this.init()
   },
@@ -228,10 +183,8 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.id = 0
-        this.headOrder.name = 0
-        this.headOrder.type = 0
-        this.headOrder.eqp_type = 0
+        this.headOrder.warehouse = 0
+        this.headOrder.safe_storage = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -252,49 +205,50 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
-      api.getSpareParts({
+      api.getWarehouseAlarm({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchName: this.sparePartsName,
-        SearchType: this.type,
-        SearchEqpType: this.eqpType
+        SearchSpareParts: this.sparePartsID,
+        SearchType: this.warehouse
       }).then(res => {
         this.loading = false
         if (res.data.total === 0) {
-          this.sparePartsList = []
+          this.warehouseAlarmList = []
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
           })
-          this.sparePartsList = res.data.rows
+          this.warehouseAlarmList = res.data.rows
         }
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
     add () {
       // 判断权限，符合则允许跳转
-      this.$router.push({name: 'AddSpareParts', query: { type: 'Add' }})
+      this.$router.push({name: 'AddWarehouseAlarm', query: { type: 'Add', title: this.title, spareParts: this.sparePartsID }})
     },
     // 修改物资
     edit () {
-      if (!this.editSparePartsID.length) {
+      if (!this.editwarehouseAlarmID.length) {
         this.$message({
           message: '请选择修改操作的物资',
           type: 'warning'
         })
-      } else if (this.editSparePartsID.length > 1) {
+      } else if (this.editwarehouseAlarmID.length > 1) {
         this.$message({
           message: '修改的物资不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddSpareParts',
+          name: 'AddWarehouseAlarm',
           query: {
-            id: this.editSparePartsID[0],
-            type: 'edit'
+            id: this.editwarehouseAlarmID[0],
+            type: 'edit',
+            title: this.title,
+            spareParts: this.sparePartsID
           }
         })
       }
@@ -302,7 +256,7 @@ export default {
 
     // 删除物资
     remove () {
-      if (!this.editSparePartsID.length) {
+      if (!this.editwarehouseAlarmID.length) {
         this.$message({
           message: '请选择需删除作的物资',
           type: 'warning'
@@ -314,55 +268,6 @@ export default {
       }
     },
 
-    // 查看物资明细
-    detail () {
-      if (!this.editSparePartsID.length) {
-        this.$message({
-          message: '请选择需要查看的物资',
-          type: 'warning'
-        })
-      } else if (this.editSparePartsID.length > 1) {
-        this.$message({
-          message: '查看的物资不能超过1个',
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'DetailSpareParts',
-          params: {
-            id: this.editSparePartsID[0]
-            // sourceName: 'SeeEqpList'
-          }
-        })
-      }
-    },
-    // 仓库预警设定
-    setAlarm () {
-      if (!this.editSparePartsID.length) {
-        this.$message({
-          message: '请选择需要设定的物资',
-          type: 'warning'
-        })
-      } else if (this.editSparePartsID.length > 1) {
-        this.$message({
-          message: '设定的物资不能超过1个',
-          type: 'warning'
-        })
-      } else {
-        let tmp = this.sparePartsList.find((item, index) => {
-          return item.id === this.editSparePartsID[0]
-        })
-        this.$router.push({
-          name: 'SetWarehouseAlarm',
-          params: {
-            id: tmp.id,
-            name: tmp.name,
-            unit: tmp.unit,
-            sourceName: 'SeeSparePartsList'
-          }
-        })
-      }
-    },
     // 搜索功能
     searchRes () {
       this.$emit('title', '| 物资定义')
@@ -373,9 +278,9 @@ export default {
 
     // 弹框确认是否删除
     dialogEnter () {
-      api.delSpareParts(this.editSparePartsID.join(',')).then(res => {
+      api.delWarehouseAlarm(this.editwarehouseAlarmID.join(',')).then(res => {
         if (res.code === 0) {
-          this.editSparePartsID = []
+          this.editwarehouseAlarmID = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -395,12 +300,12 @@ export default {
 
     // 获取修改物资id
     emitEditID () {
-      this.$emit('editSparePartsID', this.editSparePartsID)
+      this.$emit('editwarehouseAlarmID', this.editwarehouseAlarmID)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.sparePartsList.map(val => this.editSparePartsID.push(val.id)) : this.editSparePartsID = []
+      this.bCheckAll ? this.warehouseAlarmList.map(val => this.editwarehouseAlarmID.push(val.id)) : this.editwarehouseAlarmID = []
       this.emitEditID()
     },
 
@@ -557,5 +462,10 @@ $con-height: $content-height - 145 - 56;
       color: #D8D8D8;
     }
   }
+}
+
+.header{
+  display: flex;
+  justify-content: space-between;
 }
 </style>

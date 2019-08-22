@@ -50,30 +50,39 @@ export const btn = {
   },
   firm: {
     save: 71,
-    delete: 72,
-    update: 73
+    delete: 73,
+    update: 72
   },
   emergencyPlan: {
     save: 77,
-    delete: 78,
-    update: 79
+    delete: 79,
+    update: 78
   },
   technicalData: {
     save: 81
   },
   regulation: {
     save: 83,
-    delete: 84,
-    update: 85
+    delete: 85,
+    update: 84
   },
   warehouse: {
     save: 87,
-    delete: 88,
-    update: 89
+    delete: 89,
+    update: 88
   },
   spareParts: {
     save: 91,
-    delete: 92,
-    update: 93
+    delete: 93,
+    update: 92,
+    set: 94
+  },
+  warehouseAlarm: {
+    save: 95,
+    delete: 96,
+    update: 97
+  },
+  stockReceive: {
+    save: 99
   }
 }
