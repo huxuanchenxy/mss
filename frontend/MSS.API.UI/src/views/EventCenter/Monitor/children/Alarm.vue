@@ -117,7 +117,7 @@
             <li class="list number">
               设备类型
             </li>
-            <li class="list number">
+            <li class="list content">
               内容
             </li>
             <li class="list last-update-time">
@@ -132,7 +132,7 @@
                     <div class="number">{{ item.eqpCode }}</div>
                     <div class="number">{{ item.eqpName }}</div>
                     <div class="number">{{ item.eqpTypeName }}</div>
-                    <div class="number">{{ item.content }}</div>
+                    <div class="content">{{ item.content }}</div>
                     <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
                   </div>
                 </li>
@@ -411,7 +411,7 @@ $con-height: $content-height - 56;
     width: 10%;
   }
   .content{
-    width: 15%;
+    width: 25%;
   }
   /deep/ .el-checkbox__label{
     display: none;
