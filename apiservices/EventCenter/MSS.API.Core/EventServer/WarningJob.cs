@@ -195,6 +195,10 @@ namespace MSS.API.Core.EventServer
                                 break;
                             }
                         }
+                        else
+                        {
+                            conform = false;
+                        }
                     }
 
                     // 附加条件符合后 再判断是否在预警区间
