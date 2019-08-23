@@ -62,7 +62,7 @@ export default {
   position: relative;
   top: 1%;
   left: 47%;
-  width: 85%;
+  width: 93%;
   height: percent(630, 780);
   border-radius: $border-radius;
   transform: translateX(percent(-960 / 2, 960));
