@@ -19,6 +19,7 @@ namespace MSS.API.Model.Data
         public string FromWarehouseName { get; set; }
         public string PickerName { get; set; }
         public int? Picker { get; set; }
+        public string PickerDeptName { get; set; }
         public string SupplierName { get; set; }
         public int? Supplier { get; set; }
         public string Agreement { get; set; }
@@ -46,6 +47,7 @@ namespace MSS.API.Model.Data
             Map(o => o.FromWarehouseName).ToColumn("fromWName");
             Map(o => o.Picker).ToColumn("picker");
             Map(o => o.PickerName).ToColumn("pname");
+            Map(o => o.PickerDeptName).ToColumn("pdname");
             Map(o => o.Supplier).ToColumn("supplier");
             Map(o => o.SupplierName).ToColumn("sname");
             Map(o => o.BudgetDept).ToColumn("budget_dept");
@@ -63,9 +65,12 @@ namespace MSS.API.Model.Data
 
     public class StockOperationQueryParm:BaseQueryParm
     {
+        public int? SearchType { get; set; }
         public int? SearchReason { get; set; }
+        public int? SearchFromWarehouse { get; set; }
         public int? SearchWarehouse { get; set; }
         public int? SearchSupplier { get; set; }
+        public int? SearchPicker { get; set; }
         public DateTime? SearchStart { get; set; }
         public DateTime? SearchEnd { get; set; }
     }

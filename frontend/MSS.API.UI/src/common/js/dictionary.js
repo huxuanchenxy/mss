@@ -20,7 +20,7 @@ export const systemResource = {
   regulation: 58
 }
 
-export const sparePartsOptionType = {
+export const sparePartsOperationType = {
   receive: 68,
   delivery: 69,
   adjust: 70,

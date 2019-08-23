@@ -58,19 +58,29 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,u3.user_name as sname, ")
-                .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname ")
+                .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname,ot.name as pdname ")
                 .Append(" FROM stock_operation a ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.picker=u2.id ")
+                .Append(" left join org_user ou on a.picker=ou.user_id and ou.is_del=0 ")
+                .Append(" left join org_tree ot on ou.org_node_id=ot.id ")
                 .Append(" left join user u3 on a.supplier=u3.id ")
                 .Append(" left join dictionary_tree dt on a.reason=dt.id ")
                 .Append(" left join warehouse w1 on a.warehouse=w1.id ")
-                .Append(" left join warehouse w2 on a.from_warehouse=w1.id ")
+                .Append(" left join warehouse w2 on a.from_warehouse=w2.id ")
                 .Append(" left join org_tree o on a.budget_dept=o.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
+                if (parm.SearchType != null)
+                {
+                    whereSql.Append(" and a.type = " + parm.SearchType);
+                }
                 if (parm.SearchReason!=null)
                 {
                     whereSql.Append(" and a.reason = " + parm.SearchReason);
+                }
+                if (parm.SearchFromWarehouse != null)
+                {
+                    whereSql.Append(" and a.from_warehouse = " + parm.SearchFromWarehouse);
                 }
                 if (parm.SearchWarehouse != null)
                 {
@@ -79,6 +89,10 @@ namespace MSS.API.Dao.Implement
                 if (parm.SearchSupplier != null)
                 {
                     whereSql.Append(" and a.supplier = " + parm.SearchSupplier);
+                }
+                if (parm.SearchPicker != null)
+                {
+                    whereSql.Append(" and a.picker = " + parm.SearchPicker);
                 }
                 if (parm.SearchStart != null)
                 {
@@ -112,14 +126,16 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,u3.user_name as sname, ")
-                .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname ")
+                .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname,ot.name as pdname ")
                 .Append(" FROM stock_operation a ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.picker=u2.id ")
+                .Append(" left join org_user ou on a.picker=ou.user_id and ou.is_del=0 ")
+                .Append(" left join org_tree ot on ou.org_node_id=ot.id ")
                 .Append(" left join user u3 on a.supplier=u3.id ")
                 .Append(" left join dictionary_tree dt on a.reason=dt.id ")
                 .Append(" left join warehouse w1 on a.warehouse=w1.id ")
-                .Append(" left join warehouse w2 on a.from_warehouse=w1.id ")
+                .Append(" left join warehouse w2 on a.from_warehouse=w2.id ")
                 .Append(" left join org_tree o on a.budget_dept=o.id where a.id=@id ");
                 var result = await c.QueryFirstOrDefaultAsync<StockOperation>(
                     sql.ToString(), new { id = id });

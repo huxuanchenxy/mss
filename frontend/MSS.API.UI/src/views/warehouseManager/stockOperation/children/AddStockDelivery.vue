@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeStockReceiveList' }">返回</router-link></x-button>
+      <x-button class="active"><router-link :to="{ name: 'SeeStockDeliveryList' }">返回</router-link></x-button>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -47,54 +47,19 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">供应商</span>
+              <span class="text">领料人<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="supplier.text" clearable filterable placeholder="请选择供应商" @change="validateSelect(supplier)">
-                <el-option
-                  v-for="item in supplierList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                <el-select v-model="picker.text" clearable filterable placeholder="请选择领料人"  @change="validateSelect(picker)">
+                  <el-option
+                    v-for="item in pickerList"
+                    :key="item.key"
+                    :label="item.user_name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
-            <p class="validate-tips">{{ supplier.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">合同</span>
-              <div class="inp">
-                <el-input placeholder="请输入合同" v-model="agreement.text" @keyup.native="validateInputNull(agreement)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ agreement.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">预算部门</span>
-              <div class="inp">
-                <el-cascader class="cascader_width" clearable ref='dept'
-                  expand-trigger="hover"
-                  change-on-select
-                  :props="defaultParams"
-                  @change="cascader_change"
-                  :show-all-levels="true"
-                  :options="deptList"
-                  v-model="deptPath.text">
-                </el-cascader>
-              </div>
-            </div>
-            <p class="validate-tips">{{ deptPath.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">预算项目</span>
-              <div class="inp">
-                <el-input placeholder="请输入预算项目" v-model="budgetItems.text" @keyup.native="validateInputNull(budgetItems)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ budgetItems.tips }}</p>
+            <p class="validate-tips">{{ picker.tips }}</p>
           </li>
           <li class="list list-block">
             <div class="inp-wrap">
@@ -125,7 +90,7 @@
             <div class="inp-wrap">
               <span class="text">数量<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input placeholder="请输入接收数量" v-model="countNo.text" @keyup.native="validateNumber(countNo)"></el-input>
+                <el-input placeholder="请输入发放数量" v-model="countNo.text" @keyup.native="validateNumber(countNo)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ countNo.tips }}</p>
@@ -156,15 +121,6 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">汇率<em class="validate-mark">*</em></span>
-              <div class="inp">
-                <el-input placeholder="请输入汇率" v-model="exchangeRate.text" @keyup.native="validateDouble4(exchangeRate)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ exchangeRate.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
               <span class="text">发票号</span>
               <div class="inp">
                 <el-input placeholder="请输入发票号" v-model="invoice.text" @keyup.native="validateInputNull(invoice)"></el-input>
@@ -172,6 +128,7 @@
             </div>
             <p class="validate-tips">{{ invoice.tips }}</p>
           </li>
+          <li class="list"/>
           <li class="list list-block">
             <div class="inp-wrap">
               <span class="text span-block">备注</span>
@@ -218,8 +175,6 @@
                     <div class="name word-break">{{ item.unitPrice }}</div>
                     <div class="name word-break">{{ item.amount }}</div>
                     <div class="name word-break">{{ item.currencyName }}</div>
-                    <div class="name word-break">{{ item.exchangeRate }}</div>
-                    <div class="name word-break">{{ item.totalAmount }}</div>
                     <div class="name word-break">{{ item.invoice }}</div>
                     <div class="name word-break">{{ item.remark }}</div>
                   </div>
@@ -231,9 +186,9 @@
         <!-- 按钮 -->
         <div v-show="!isAdd" class="btn-commit-group">
           <x-button class="close">
-            <router-link :to="{name: 'SeeStockReceiveList'}">取消</router-link>
+            <router-link :to="{name: 'SeeStockDeliveryList'}">取消</router-link>
           </x-button>
-          <x-button class="active" @click.native="save">接收</x-button>
+          <x-button class="active" @click.native="save">发放</x-button>
         </div>
       </el-scrollbar>
     </div>
@@ -241,14 +196,12 @@
 </template>
 <script>
 import { vInput, validateNumberCommon, vdouble4, vdouble2 } from '@/common/js/utils.js'
-import { sparePartsOperationType, firmType, dictionary } from '@/common/js/dictionary.js'
+import { sparePartsOperationType, dictionary } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
-import apiOrg from '@/api/orgApi'
 import api from '@/api/wmsApi'
 import apiAuth from '@/api/authApi'
-import apiEqp from '@/api/eqpApi'
 export default {
-  name: 'AddStockReceive',
+  name: 'AddStockDelivery',
   components: {
     XButton
   },
@@ -261,18 +214,14 @@ export default {
       },
       isAdd: false,
       loading: false,
-      title: '| 物资接收过账',
+      title: '| 物资发放过账',
       bCheckAll: false,
       reasonList: [],
       reason: {text: '', tips: ''},
       warehouseList: [],
       warehouse: {text: '', tips: ''},
-      supplierList: [],
-      supplier: {text: '', tips: ''},
-      agreement: {text: '', tips: ''},
-      deptList: [],
-      deptPath: {text: [], tips: ''},
-      budgetItems: {text: '', tips: ''},
+      pickerList: [],
+      picker: {text: '', tips: ''},
       remark: {text: '', tips: ''},
       detailList: [],
       editID: [],
@@ -284,18 +233,13 @@ export default {
       countNo: {text: '', tips: ''},
       unitPrice: {text: '', tips: ''},
       currency: {text: '', tips: ''},
-      exchangeRate: {text: 1, tips: ''},
       invoice: {text: '', tips: ''},
       remarkAdd: {text: '', tips: ''}
     }
   },
   created () {
-    // 部门加载
-    apiOrg.getOrgAll().then(res => {
-      this.deptList = res.data
-    }).catch(err => console.log(err))
     // 事务原因列表
-    apiAuth.getSubCode(sparePartsOperationType.receive).then(res => {
+    apiAuth.getSubCode(sparePartsOperationType.delivery).then(res => {
       this.reasonList = res.data
     }).catch(err => console.log(err))
     // 币种
@@ -311,15 +255,15 @@ export default {
     api.getSparePartsAll().then(res => {
       this.sparePartsList = res.data
     }).catch(err => console.log(err))
-    // 供应商加载
-    apiEqp.getFirmByType(firmType.supplier).then(res => {
-      this.supplierList = res.data
+    // 领料人加载
+    apiAuth.getUserAll().then(res => {
+      this.pickerList = res.data
     }).catch(err => console.log(err))
   },
   methods: {
     insert () {
       if (!this.validateSelect(this.spareParts) || !this.validateNumber(this.countNo) || !this.validateDouble2(this.unitPrice) ||
-        !this.validateDouble4(this.exchangeRate) || !this.validateInputNull(this.invoice) || !this.validateInputNull(this.remarkAdd)) {
+        !this.validateInputNull(this.invoice) || !this.validateInputNull(this.remarkAdd)) {
         this.$message({
           message: '验证失败，请查看提示信息',
           type: 'error'
@@ -347,28 +291,26 @@ export default {
         amount: tmp,
         currency: this.currency,
         currencyName: this.$refs.currency.selected.label,
-        exchangeRate: this.exchangeRate.text,
-        totalAmount: (this.exchangeRate.text * tmp).toFixed(2),
         invoice: this.invoice.text,
         remark: this.remarkAdd.text
       }
-      if (this.title === '| 物资接收过账 | 添加物资明细') {
+      if (this.title === '| 物资发放过账 | 添加物资明细') {
         detail.orderNo = this.detailList.length + 1
         this.detailList.push(detail)
       } else {
         detail.orderNo = this.editID[0]
         this.detailList.splice(this.editID[0] - 1, 1, detail)
         this.isAdd = false
-        this.title = '| 物资接收过账'
+        this.title = '| 物资发放过账'
       }
     },
     cancel () {
       this.isAdd = false
-      this.title = '| 物资接收过账'
+      this.title = '| 物资发放过账'
     },
     add () {
       this.isAdd = true
-      this.title = '| 物资接收过账 | 添加物资明细'
+      this.title = '| 物资发放过账 | 添加物资明细'
     },
     remove () {
       this.editID.reverse().map(val => {
@@ -392,7 +334,7 @@ export default {
         })
       } else {
         this.isAdd = true
-        this.title = '| 物资接收过账 | 修改物资明细'
+        this.title = '| 物资发放过账 | 修改物资明细'
         let editObj = this.detailList.find(val => {
           return val.orderNo === this.editID[0]
         })
@@ -400,7 +342,6 @@ export default {
         this.countNo.text = editObj.countNo
         this.unitPrice.text = editObj.unitPrice
         this.currency = editObj.currency
-        this.exchangeRate.text = editObj.exchangeRate
         this.invoice.text = editObj.invoice
         this.remarkAdd.text = editObj.remarkAdd
       }
@@ -501,8 +442,7 @@ export default {
       }
     },
     validateInputAll () {
-      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) || !this.validateSelect(this.supplier) ||
-        !this.validateInputNull(this.agreement) || !this.validateInputNull(this.budgetItems) || !this.validateInputNull(this.remark)) {
+      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) || !this.validateSelect(this.picker) || !this.validateInputNull(this.remark)) {
         return false
       }
       return true
@@ -515,28 +455,25 @@ export default {
         })
         return
       }
-      if (!this.validateInputAll() || this.deptPath.tips !== '') {
+      if (!this.validateInputAll()) {
         this.$message({
           message: '验证失败，请查看提示信息',
           type: 'error'
         })
         return
       }
-      let stockReceive = {
-        Type: sparePartsOperationType.receive,
+      let stockDelivery = {
+        Type: sparePartsOperationType.delivery,
         Reason: this.reason.text,
         Warehouse: this.warehouse.text,
         Remark: this.remark.text,
-        Supplier: this.supplier.text,
-        Agreement: this.agreement.text,
-        BudgetDept: this.deptPath.text[this.deptPath.text.length - 1],
-        BudgetItems: this.budgetItems.text,
+        Picker: this.picker.text,
         DetailList: JSON.stringify(this.detailList)
       }
       if (this.$route.query.type === 'Add') {
-        api.addStockOperation(stockReceive).then(res => {
+        api.addStockOperation(stockDelivery).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeStockReceiveList'})
+            this.$router.push({name: 'SeeStockDeliveryList'})
             this.$message({
               message: '添加成功',
               type: 'success'

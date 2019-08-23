@@ -1,7 +1,7 @@
 <template>
   <div class="wrap height-full">
     <div class="content">
-      <keep-alive include="SeeStockReceiveList">
+      <keep-alive include="SeeStockReceiveList,SeeStockDeliveryList,SeeStockAdjustList,SeeStockMoveList">
         <router-view @title="getTitle"/>
       </keep-alive>
     </div>

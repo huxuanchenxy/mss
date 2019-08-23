@@ -11,8 +11,8 @@
     </div>
     <div class="scroll">
       <el-scrollbar>
-        <!-- 列表 -->
-        <ul class="con-padding-horizontal input-group">
+        <!-- 接收列表 -->
+        <ul v-show="curOperationType === operationType.receive" class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
               <span class="text">事务原因</span>
@@ -56,6 +56,93 @@
             </div>
           </li>
         </ul>
+        <!-- 发放列表 -->
+        <ul v-show="curOperationType === operationType.delivery" class="con-padding-horizontal input-group">
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">事务原因</span>
+              <div class="inp">{{stockOperation.reasonName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">仓库</span>
+              <div class="inp">{{stockOperation.warehouseName}}</div>
+            </div>
+          </li>
+          <li class="list"></li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">领料人</span>
+              <div class="inp">{{stockOperation.pickerName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">领料人部门</span>
+              <div class="inp">{{stockOperation.pickerDeptName}}</div>
+            </div>
+          </li>
+          <li class="list"></li>
+          <li class="list list-block">
+            <div class="inp-wrap">
+              <span class="text span-block">备注</span>
+              <div class="inp word-break">{{stockOperation.remark}}</div>
+            </div>
+          </li>
+        </ul>
+        <!-- 调整列表 -->
+        <ul v-show="curOperationType === operationType.adjust" class="con-padding-horizontal input-group">
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">事务原因</span>
+              <div class="inp">{{stockOperation.reasonName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">仓库</span>
+              <div class="inp">{{stockOperation.warehouseName}}</div>
+            </div>
+          </li>
+          <li class="list"></li>
+          <li class="list"></li>
+          <li class="list list-block">
+            <div class="inp-wrap">
+              <span class="text span-block">备注</span>
+              <div class="inp word-break">{{stockOperation.remark}}</div>
+            </div>
+          </li>
+        </ul>
+        <!-- 调整列表 -->
+        <ul v-show="curOperationType === operationType.move" class="con-padding-horizontal input-group">
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">事务原因</span>
+              <div class="inp">{{stockOperation.reasonName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">移出仓库</span>
+              <div class="inp">{{stockOperation.fromWarehouseName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">移入仓库</span>
+              <div class="inp">{{stockOperation.warehouseName}}</div>
+            </div>
+          </li>
+          <li class="list"></li>
+          <li class="list"></li>
+          <li class="list list-block">
+            <div class="inp-wrap">
+              <span class="text span-block">备注</span>
+              <div class="inp word-break">{{stockOperation.remark}}</div>
+            </div>
+          </li>
+        </ul>
         <!-- 内容 -->
         <div class="content-wrap">
           <ul class="content-header">
@@ -67,9 +154,11 @@
             <li class="list name">单价</li>
             <li class="list name">金额</li>
             <li class="list name">币种</li>
-            <li class="list name">汇率</li>
-            <li class="list name">本币总金额</li>
+            <li v-show="curOperationType === operationType.receive" class="list name">汇率</li>
+            <li v-show="curOperationType === operationType.receive" class="list name">本币总金额</li>
             <li class="list name">发票号</li>
+            <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">采购单</li>
+            <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">送修单</li>
             <li class="list name">备注</li>
           </ul>
           <div class="scroll">
@@ -85,9 +174,11 @@
                     <div class="name word-break">{{ item.UnitPrice }}</div>
                     <div class="name word-break">{{ item.Amount }}</div>
                     <div class="name word-break">{{ item.CurrencyName }}</div>
-                    <div class="name word-break">{{ item.ExchangeRate }}</div>
-                    <div class="name word-break">{{ item.TotalAmount }}</div>
+                    <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.ExchangeRate }}</div>
+                    <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.TotalAmount }}</div>
                     <div class="name word-break">{{ item.Invoice }}</div>
+                    <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Purchase }}</div>
+                    <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Repair }}</div>
                     <div class="name word-break">{{ item.Remark }}</div>
                   </div>
                 </li>
@@ -101,7 +192,7 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import { sparePartsOptionType } from '@/common/js/dictionary.js'
+import { sparePartsOperationType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/wmsApi'
 export default {
@@ -116,10 +207,10 @@ export default {
       curOperationType: '',
       sourceName: '',
       operationType: {
-        receive: sparePartsOptionType.receive,
-        delivery: sparePartsOptionType.delivery,
-        adjust: sparePartsOptionType.adjust,
-        move: sparePartsOptionType.move
+        receive: sparePartsOperationType.receive,
+        delivery: sparePartsOperationType.delivery,
+        adjust: sparePartsOperationType.adjust,
+        move: sparePartsOperationType.move
       },
       stockOperation: {
         id: '',
@@ -130,6 +221,7 @@ export default {
         remark: '',
         fromWarehouseName: '',
         pickerName: '',
+        pickerDeptName: '',
         supplierName: '',
         agreement: '',
         budgetDeptName: '',
@@ -163,6 +255,7 @@ export default {
           this.stockOperation.warehouseName = data.warehouseName
           this.stockOperation.fromWarehouseName = data.fromWarehouseName
           this.stockOperation.pickerName = data.pickerName
+          this.stockOperation.pickerDeptName = data.pickerDeptName
           this.stockOperation.supplierName = data.supplierName
           this.stockOperation.agreement = data.agreement
           this.stockOperation.budgetDeptName = data.budgetDeptName
