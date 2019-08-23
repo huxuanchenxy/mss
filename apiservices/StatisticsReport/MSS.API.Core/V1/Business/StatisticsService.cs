@@ -46,5 +46,85 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
+        public async Task<ApiResult> ListStatisticsAlarmGroupByEqpType(StatisticsParam param, int dateType)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
+                    new List<string> { "eqp_type_id" }, dateType, false);
+                
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> ListStatisticsAlarmGroupBySupplier(StatisticsParam param, int dateType)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
+                    new List<string> { "supplier_id" }, dateType);
+
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> ListStatisticsAlarmGroupByManufacturer(StatisticsParam param, int dateType)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
+                    new List<string> { "manufacturer_id" }, dateType);
+
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> ListStatisticsAlarmGroupBySubSystem(StatisticsParam param, int dateType)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
+                    new List<string> { "sub_system_id" }, dateType);
+
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
     }
 }

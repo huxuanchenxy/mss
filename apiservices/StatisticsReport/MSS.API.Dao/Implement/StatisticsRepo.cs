@@ -18,7 +18,7 @@ namespace MSS.API.Dao.Implement
         public StatisticsRepo(DapperOptions options) : base(options) { }
 
         public async Task<List<StatisticsAlarm>> ListStatisticsAlarmByDate(StatisticsParam param,
-            List<string> groupby, int dateType)
+            List<string> groupby, int dateType, bool defaultByDate = true)
         {
             return await WithConnection(async c =>
             {
@@ -81,11 +81,44 @@ namespace MSS.API.Dao.Implement
                 {
                     sql.Append(" AND b.top_org_id IN (" + param.TopOrgIDs + ")");
                 }
-                sql.Append(" GROUP BY date");
-                foreach (string item in groupby)
+                if (!string.IsNullOrWhiteSpace(param.OrgPath))
                 {
-                    sql.Append(", b." + item);
+                    string[] local = param.OrgPath.Split(',');
+                    for (int i = 0; i < local.Length; ++i)
+                    {
+                        sql.Append(" AND FIND_IN_SET(" + local[i] + ",b.team_path)="
+                        + (i + 1));
+                    }
                 }
+                if (defaultByDate)
+                {
+                    sql.Append(" GROUP BY date");
+                    foreach (string item in groupby)
+                    {
+                        sql.Append(", b." + item);
+                    }
+                }
+                else
+                {
+                    sql.Append(" GROUP BY ");
+                    for (int i = 0; i < groupby.Count; ++i)
+                    {
+                        if (i == 0)
+                        {
+                            sql.Append(" b." + groupby[i]);
+                        }
+                        else
+                        {
+                            sql.Append(", b." + groupby[i]);
+                        }
+                    }
+                    foreach (string item in groupby)
+                    {
+                        sql.Append(", b." + item);
+                    }
+                }
+                
+                
                 // var data = await c.QueryAsync<StatisticsAlarm>(sql.ToString());
                 var data = await c.QueryAsync<StatisticsAlarm, StatisticsDimension, StatisticsAlarm>(
                         sql.ToString(), (alarm, dimension) =>
