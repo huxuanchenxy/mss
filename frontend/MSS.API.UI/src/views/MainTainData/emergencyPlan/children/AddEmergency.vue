@@ -111,7 +111,6 @@ export default {
           this.getEPlan()
         }).catch(err => console.log(err))
       } else {
-        debugger
         // 部门加载
         apiOrg.getOrgAll().then(res => {
           this.deptList = res.data
