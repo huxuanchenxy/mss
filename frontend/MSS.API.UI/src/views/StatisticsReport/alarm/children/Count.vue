@@ -129,6 +129,22 @@
             <el-col :span="12"><div style="width:100%; height:300px;" ref="countChart"></div></el-col>
             <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChart"></div></el-col>
           </el-row>
+          <el-row v-show="showEqpTypeChart">
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByEqpType" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType" v-resize="onResize"></div></el-col>
+          </el-row>
+          <el-row v-show="showSupplierChart">
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySupplier"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier"></div></el-col>
+          </el-row>
+          <el-row v-show="showManufacturerChart">
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByManufacturer"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer"></div></el-col>
+          </el-row>
+          <el-row v-show="showSubSystemChart">
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySubSystemID"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystemID"></div></el-col>
+          </el-row>
         </el-main>
       </el-container>
     </div>
@@ -143,11 +159,15 @@ import mychart from './chart'
 import apiAuth from '@/api/authApi'
 import apiEqp from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
+import resize from 'vue-resize-directive'
 
 export default {
   name: 'InspectionManagementList',
   components: {
     XButton
+  },
+  directives: {
+    resize
   },
   data () {
     return {
@@ -189,6 +209,20 @@ export default {
       resultAvgHistory: [],
       subTitleCount: [],
       subTitleAvg: [],
+
+      dateChartCount: null,
+      dateChartAvg: null,
+      eqpTypeChartCount: null,
+      eqpTypeChartAvg: null,
+      supplierChartCount: null,
+      supplierChartAvg: null,
+      manufacturerChartCount: null,
+      manufacturerChartAvg: null,
+
+      showEqpTypeChart: false,
+      showSupplierChart: false,
+      showManufacturerChart: false,
+      showSubSystemChart: false,
 
       taskStatus: '',
       tunnel: '',
@@ -257,6 +291,20 @@ export default {
     // this.drawChart()
   },
   methods: {
+    onResize (el) {
+      if (this.dateChartCount) {
+        this.dateChartCount.resize()
+      }
+      if (this.dateChartAvg) {
+        this.dateChartAvg.resize()
+      }
+      if (this.eqpTypeChartCount) {
+        this.eqpTypeChartCount.resize()
+      }
+      if (this.eqpTypeChartAvg) {
+        this.eqpTypeChartAvg.resize()
+      }
+    },
     showStatus (status) {
       var des = '--'
       switch (status) {
@@ -367,28 +415,92 @@ export default {
         this.resultCountHistory.push({param: param, data: data})
       }
 
-      let countChart = this.$echarts.init(this.$refs.countChart)
-      countChart.clear()
-      countChart.on('click', this.goCount)
+      this.dateChartCount = this.$echarts.init(this.$refs.countChart)
+      this.dateChartCount.clear()
+      this.dateChartCount.on('click', this.goCount)
       mychart.optionCount.toolbox.feature.myTool.onclick = this.backCount
       mychart.optionCount.title.subtext = this.subTitleCount.join('->')
       let groupModel = this.groups[this.groupby[this.groupidxForCount]]
       mychart.prepareChartData(data, groupModel)
-      countChart.setOption(mychart.optionCount)
+      this.dateChartCount.setOption(mychart.optionCount)
     },
     drawAvgChart (param, data, store) {
       if (store) {
         this.resultAvgHistory.push({param: param, data: data})
       }
 
-      let avgChart = this.$echarts.init(this.$refs.avgTimeChart)
-      avgChart.on('click', this.goAvg)
+      this.dateChartAvg = this.$echarts.init(this.$refs.avgTimeChart)
+      this.dateChartAvg.on('click', this.goAvg)
       mychart.optionAvg.toolbox.feature.myTool.onclick = this.backAvg
       mychart.optionAvg.title.subtext = this.subTitleAvg.join('->')
       let groupModel = this.groups[this.groupby[this.groupidxForAvg]]
       mychart.prepareChartData(data, groupModel)
-      avgChart.clear()
-      avgChart.setOption(mychart.optionAvg)
+      this.dateChartAvg.clear()
+      this.dateChartAvg.setOption(mychart.optionAvg)
+    },
+
+    drawEqpTypeChart (data) {
+      this.showEqpTypeChart = true
+      this.eqpTypeChartCount = this.$echarts.init(this.$refs.countChartByEqpType)
+      this.eqpTypeChartAvg = this.$echarts.init(this.$refs.avgTimeChartByEqpType)
+      this.eqpTypeChartCount.clear()
+      this.eqpTypeChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data, 'eqpTypeName')
+      mychart.optionEqpTypeCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionEqpTypeCount.series = chartData.seariescount
+      this.eqpTypeChartCount.setOption(mychart.optionEqpTypeCount)
+
+      mychart.optionEqpTypeAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionEqpTypeAvg.series = chartData.seariesavg
+      this.eqpTypeChartAvg.setOption(mychart.optionEqpTypeAvg)
+    },
+
+    drawSupplierChart (data) {
+      this.showSupplierChart = true
+      this.supplierChartCount = this.$echarts.init(this.$refs.countChartBySupplier)
+      this.supplierChartAvg = this.$echarts.init(this.$refs.avgTimeChartBySupplier)
+      this.supplierChartCount.clear()
+      this.supplierChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data, 'supplierName')
+      mychart.optionSupplierCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionSupplierCount.series = chartData.seariescount
+      this.supplierChartCount.setOption(mychart.optionSupplierCount)
+
+      mychart.optionSupplierAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionSupplierAvg.series = chartData.seariesavg
+      this.supplierChartAvg.setOption(mychart.optionSupplierAvg)
+    },
+
+    drawManufacturerChart (data) {
+      this.showManufacturerChart = true
+      this.manufacturerChartCount = this.$echarts.init(this.$refs.countChartByManufacturer)
+      this.manufacturerChartAvg = this.$echarts.init(this.$refs.avgTimeChartByManufacturer)
+      this.manufacturerChartCount.clear()
+      this.manufacturerChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data, 'manufacturerName')
+      mychart.optionManufacturerCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionManufacturerCount.series = chartData.seariescount
+      this.manufacturerChartCount.setOption(mychart.optionManufacturerCount)
+
+      mychart.optionManufacturerAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionManufacturerAvg.series = chartData.seariesavg
+      this.manufacturerChartAvg.setOption(mychart.optionManufacturerAvg)
+    },
+
+    drawSubSystemChart (data) {
+      this.showSubSystemChart = true
+      this.subSystemChartCount = this.$echarts.init(this.$refs.countChartBySubSystem)
+      this.subSystemChartAvg = this.$echarts.init(this.$refs.avgTimeChartBySubSystem)
+      this.subSystemChartCount.clear()
+      this.subSystemChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data, 'subSystemName')
+      mychart.optionSubSystemCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionSubSystemCount.series = chartData.seariescount
+      this.subSystemChartCount.setOption(mychart.optionSubSystemCount)
+
+      mychart.optionSubSystemAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionSubSystemAvg.series = chartData.seariesavg
+      this.subSystemChartAvg.setOption(mychart.optionSubSystemAvg)
     },
     choseTunnel (tunnelID) {
       this.condition.splice(0, 4, '', '', '', '')
@@ -554,6 +666,12 @@ export default {
         eTime = this.time.text[1] + ' 23:59:59'
       }
       var param = {
+        SubSystemIDs: this.subSystem,
+        EqpTypeIDs: this.eqpType,
+        LocationPath: '1,23', // this.area,
+        SupplierIDs: this.supplier,
+        ManufacturerIDs: this.manufacturer,
+        OrgPath: '1,16', // this.team,
         startTime: sTime,
         endTime: eTime,
         dateType: this.dateType,
@@ -566,6 +684,46 @@ export default {
       this.subTitleCount = []
       this.subTitleAvg = []
       this.search(param, [this.drawCountChart, this.drawAvgChart])
+
+      if (param.EqpTypeIDs) {
+        api.reportSubChartEqpType(param).then(res => {
+          if (res.code === ApiRESULT.Success) {
+            this.drawEqpTypeChart(res.data)
+          }
+        }).catch(err => console.log(err))
+      } else {
+        this.showEqpTypeChart = false
+      }
+
+      if (param.SupplierIDs) {
+        api.reportSubChartSupplier(param).then(res => {
+          if (res.code === ApiRESULT.Success) {
+            this.drawSupplierChart(res.data)
+          }
+        }).catch(err => console.log(err))
+      } else {
+        this.showSupplierChart = false
+      }
+
+      if (param.ManufacturerIDs) {
+        api.reportSubChartManufacturer(param).then(res => {
+          if (res.code === ApiRESULT.Success) {
+            this.drawManufacturerChart(res.data)
+          }
+        }).catch(err => console.log(err))
+      } else {
+        this.showManufacturerChart = false
+      }
+
+      if (param.SubSystemIDs) {
+        api.reportSubChartSubSystem(param).then(res => {
+          if (res.code === ApiRESULT.Success) {
+            this.drawSubSystemChart(res.data)
+          }
+        }).catch(err => console.log(err))
+      } else {
+        this.showSubSystemChart = false
+      }
     },
     // 修改
     edit () {
