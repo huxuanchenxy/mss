@@ -25,7 +25,7 @@
                 end-placeholder="计划结束日期">
               </el-date-picker>
             </div>
-            <div class="list">
+            <div class="list" >
               <span class="lable">子系统</span>
               <el-select v-model="subSystem" multiple collapse-tags clearable filterable placeholder="请选择">
                 <el-option
@@ -36,7 +36,7 @@
                 </el-option>
               </el-select>
             </div>
-            <div class="list">
+            <div class="list" >
               <span class="lable">设备类型</span>
               <el-select v-model="eqpType" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
@@ -68,13 +68,24 @@
           <div class="hide-more" v-show="searchHideMore">
             <div class="select-wrap">
               <span class="lable">安装位置</span>
-              <el-cascader clearable
-                change-on-select
-                :props="areaParams"
-                :show-all-levels="true"
-                :options="areaList"
-                v-model="area">
-              </el-cascader>
+                <el-cascader clearable
+                  change-on-select
+                  :props="areaParams"
+                  :show-all-levels="true"
+                  :options="areaList"
+                  v-model="area">
+                </el-cascader>
+            </div>
+            <div class="select-wrap">
+              <span class="lable">负责班组</span>
+               <el-cascader class="cascader_width" clearable
+                    :props="defaultParams"
+                    change-on-select
+                    @change="cascader_change_copy"
+                    :show-all-levels="true"
+                    :options="teamList"
+                    v-model="teamPath.text">
+                  </el-cascader>
             </div>
             <div class="select-wrap">
               <span class="lable">供应商</span>
@@ -97,16 +108,6 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-            </div>
-            <div class="select-wrap">
-              <span class="lable">班组</span>
-              <el-cascader clearable
-                change-on-select
-                :props="areaParams"
-                :show-all-levels="true"
-                :options="teamList"
-                v-model="team">
-              </el-cascader>
             </div>
           </div>
           <div class="show-result">
@@ -136,13 +137,14 @@
 </template>
 <script>
 import XButton from '@/components/button'
-import { dictionary } from '@/common/js/dictionary.js'
+import { dictionary, firmType } from '@/common/js/dictionary.js'
 import { ApiRESULT } from '@/common/js/utils.js'
 import api from '@/api/statisticsApi'
 import mychart from './chart'
 import apiAuth from '@/api/authApi'
 import apiEqp from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
+import apiOrg from '@/api/orgApi'
 
 export default {
   name: 'InspectionManagementList',
@@ -189,7 +191,10 @@ export default {
       resultAvgHistory: [],
       subTitleCount: [],
       subTitleAvg: [],
-
+      teamPath: {
+        text: [],
+        tips: ''
+      },
       taskStatus: '',
       tunnel: '',
       partition: '',
@@ -205,12 +210,22 @@ export default {
       userList: [],
       area: '',
       areaList: [],
+      areaParams: {
+        label: 'areaName',
+        value: 'id',
+        children: 'children'
+      },
       supplier: '',
       supplierList: [],
       manufacturer: '',
       manufacturerList: [],
       team: '',
       teamList: [],
+      defaultParams: {
+        label: 'label',
+        value: 'id',
+        children: 'children'
+      },
       parDisable: true,
       eqpTypeDisable: true,
       eqpDisable: true,
@@ -500,6 +515,17 @@ export default {
       apiArea.SelectConfigAreaData().then(res => {
         this.areaList = res.data.dicAreaList
       }).catch(err => console.log(err))
+
+      // 班组加载
+      apiOrg.getOrgAll().then(res => {
+        this.teamList = res.data
+      }).catch(err => console.log(err))
+
+      // 供应商/制造商加载
+      apiEqp.getFirmAll().then(res => {
+        this.supplierList = res.data.filter((item) => { return item.type === firmType.supplier })
+        this.manufacturerList = res.data.filter((item) => { return item.type === firmType.manufacturer })
+      }).catch(err => console.log(err))
     },
 
     init () {
@@ -700,6 +726,13 @@ export default {
       this.checkAll()
       this.currentPage = val
       this.searchResult(val)
+    },
+
+    // 班组下拉选中，过滤非班组
+    cascader_change_copy (val) {
+      var arr = this.teamPath.text
+      let id = arr[arr.length - 1]
+      this.teamGroupid = id
     }
   }
 }
@@ -707,15 +740,11 @@ export default {
 <style lang="scss" scoped>
 .middle{
   position: relative;
-  height: percent(140, $content-height) !important;
+  height: 12% !important;
 
   .lable{
     margin-right: 10px;
   }
-
-  // .el-select{
-  //   width: 160px;
-  // }
 
   .middle-content-wrap{
     box-sizing: border-box;
@@ -726,17 +755,18 @@ export default {
     width: 100%;
 
     .content{
-      min-height: 100%;
+      // min-height: 100%;
+      height: 72px;
       background: #313035;
     }
 
     &.active{
       background: rgba(0,0,0,.7);
-
       .content{
         min-height: initial;
         padding-bottom: 10px;
         background: #313035;
+        height: 137px;
       }
     }
   }
@@ -935,4 +965,26 @@ export default {
     }
   }
 }
+</style>
+<style>
+/* .el-select {
+  display: inline-flex;
+    position: relative;
+    width: 79%;
+} */
+.el-select__tags {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  max-width: 250px !important;
+}
+.el-input__inner {
+  height: 30px !important;
+}
+.el-date-editor {
+  width:253px !important;
+}
+.select-wrap {
+  width:unset !important;
+}
+
 </style>
