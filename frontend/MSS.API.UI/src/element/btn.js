@@ -84,5 +84,14 @@ export const btn = {
   },
   stockReceive: {
     save: 99
+  },
+  stockDelivery: {
+    save: 101
+  },
+  stockAdjust: {
+    save: 103
+  },
+  stockMove: {
+    save: 105
   }
 }

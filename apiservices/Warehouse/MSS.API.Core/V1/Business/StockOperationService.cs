@@ -44,12 +44,14 @@ namespace MSS.API.Core.V1.Business
                 DateTime dt = DateTime.Now;
                 stockOperation.CreatedTime = dt;
                 stockOperation.CreatedBy = userID;
-                long tmp = Convert.ToInt64(_cache.GetString(SWarehouse.RECEIVENO)) + 1;
-                stockOperation.OperationID = SWarehouse.GetOperationID(tmp, SWarehouse.RECEIVENO);
+                StockOperationType t = (StockOperationType)stockOperation.Type;
+                string redisKey = GetRedisKey(t);
+                long tmp = Convert.ToInt64(_cache.GetString(redisKey)) + 1;
+                stockOperation.OperationID = GetOperationID(tmp, t);
                 ret.data = await _stockOperationRepo.Save(stockOperation);
                 if (ret.data != null)
                 {
-                    _cache.SetString(SWarehouse.RECEIVENO, tmp.ToString());
+                    _cache.SetString(redisKey, tmp.ToString());
                 }
                 return ret;
             }

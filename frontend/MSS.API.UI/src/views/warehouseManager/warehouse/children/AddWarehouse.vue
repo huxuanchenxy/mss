@@ -140,7 +140,6 @@ export default {
         Contact: this.contact.text,
         Address: this.address.text
       }
-      debugger
       if (this.$route.query.type === 'Add') {
         api.addWarehouse(warehouse).then(res => {
           if (res.code === 0) {

@@ -239,6 +239,10 @@ export default {
     // 设备类型加载
     api.getEqpTypeAll().then(res => {
       this.eqpTypeList = res.data
+      if (this.$route.params.id !== undefined) {
+        this.eqpType = this.$route.params.id
+        this.searchResult(1)
+      }
     }).catch(err => console.log(err))
 
     // 安装位置加载

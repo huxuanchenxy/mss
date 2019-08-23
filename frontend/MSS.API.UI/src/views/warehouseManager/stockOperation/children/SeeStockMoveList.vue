@@ -26,11 +26,11 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="name">仓库</label>
+            <label for="name">移出仓库</label>
             <div class="inp">
-              <el-select v-model="warehouse" clearable filterable placeholder="请选择仓库">
+              <el-select v-model="fromWarehouse" clearable filterable placeholder="请选择移出仓库">
                 <el-option
-                  v-for="item in warehouseList"
+                  v-for="item in fromWarehouseList"
                   :key="item.key"
                   :label="item.name"
                   :value="item.id">
@@ -39,11 +39,11 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="name">供应商</label>
+            <label for="name">移入仓库</label>
             <div class="inp">
-              <el-select v-model="supplier" clearable filterable placeholder="请选择供应商">
+              <el-select v-model="warehouse" clearable filterable placeholder="请选择移入仓库">
                 <el-option
-                  v-for="item in supplierList"
+                  v-for="item in warehouseList"
                   :key="item.key"
                   :label="item.name"
                   :value="item.id">
@@ -73,7 +73,7 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button :disabled="btn.save">接收过账</x-button></li>
+        <li class="list" @click="add"><x-button :disabled="btn.save">移库过账</x-button></li>
         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
     </div>
@@ -82,22 +82,21 @@
       <ul class="content-header">
         <li class="list number"></li>
         <li class="list name c-pointer" @click="changeOrder('operation_id')">
-          接收流水号
+          移库流水号
           <i :class="[{ 'el-icon-d-caret': headOrder.operation_id === 0 }, { 'el-icon-caret-top': headOrder.operation_id === 1 }, { 'el-icon-caret-bottom': headOrder.operation_id === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('reason')">
           事务原因
           <i :class="[{ 'el-icon-d-caret': headOrder.reason === 0 }, { 'el-icon-caret-top': headOrder.reason === 1 }, { 'el-icon-caret-bottom': headOrder.reason === 2 }]"></i>
         </li>
+        <li class="list name c-pointer" @click="changeOrder('from_warehouse')">
+          移出仓库
+          <i :class="[{ 'el-icon-d-caret': headOrder.from_warehouse === 0 }, { 'el-icon-caret-top': headOrder.from_warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.from_warehouse === 2 }]"></i>
+        </li>
         <li class="list name c-pointer" @click="changeOrder('warehouse')">
-          仓库
+          移入仓库
           <i :class="[{ 'el-icon-d-caret': headOrder.warehouse === 0 }, { 'el-icon-caret-top': headOrder.warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.warehouse === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('supplier')">
-          供应商
-          <i :class="[{ 'el-icon-d-caret': headOrder.supplier === 0 }, { 'el-icon-caret-top': headOrder.supplier === 1 }, { 'el-icon-caret-bottom': headOrder.supplier === 2 }]"></i>
-        </li>
-        <li class="list name">合同</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
           过账时间
           <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
@@ -110,16 +109,15 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="item in stockReceiveList" :key="item.key">
+            <li class="list" v-for="item in stockMoveList" :key="item.key">
               <div class="list-content">
                 <div class="number">
-                  <input type="radio" v-model="editStockReceiveID" :value="item.id">
+                  <input type="radio" v-model="editStockMoveID" :value="item.id">
                 </div>
                 <div class="name">{{ item.operationID }}</div>
                 <div class="name">{{ item.reasonName }}</div>
+                <div class="name word-break">{{ item.fromWarehouseName }}</div>
                 <div class="name word-break">{{ item.warehouseName }}</div>
-                <div class="name word-break">{{ item.supplierName }}</div>
-                <div class="name word-break">{{ item.agreement }}</div>
                 <div class="last-update-time color-white word-break">{{ item.createdTime }}</div>
                 <div class="last-update-time word-break">{{ item.createdName }}</div>
               </div>
@@ -145,13 +143,12 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import { btn } from '@/element/btn.js'
-import { sparePartsOperationType, firmType } from '@/common/js/dictionary.js'
+import { sparePartsOperationType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/wmsApi'
 import apiAuth from '@/api/authApi'
-import apiEqp from '@/api/eqpApi'
 export default {
-  name: 'SeeStockReceiveList',
+  name: 'SeeStockMoveList',
   components: {
     XButton
   },
@@ -162,15 +159,17 @@ export default {
         delete: false,
         update: false
       },
-      title: ' | 物资接收',
+      title: ' | 物资移库',
       reason: '',
       reasonList: [],
+      fromWarehouse: '',
+      fromWarehouseList: [],
       warehouse: '',
       warehouseList: [],
       supplier: '',
       supplierList: [],
-      editStockReceiveID: '',
-      stockReceiveList: [],
+      editStockMoveID: '',
+      stockMoveList: [],
       total: 0,
       currentPage: 1,
       loading: false,
@@ -181,8 +180,8 @@ export default {
       headOrder: {
         operation_id: 1,
         reason: 0,
+        from_warehouse: 0,
         warehouse: 0,
-        supplier: 0,
         created_time: 0,
         created_by: 0
       },
@@ -194,20 +193,17 @@ export default {
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.stockReceive.save
+        return item.actionID === btn.stockMove.save
       })
     }
     // 事务原因列表
-    apiAuth.getSubCode(sparePartsOperationType.receive).then(res => {
+    apiAuth.getSubCode(sparePartsOperationType.move).then(res => {
       this.reasonList = res.data
     }).catch(err => console.log(err))
     // 仓库加载
     api.getWarehouseAll().then(res => {
       this.warehouseList = res.data
-    }).catch(err => console.log(err))
-    // 供应商加载
-    apiEqp.getFirmByType(firmType.supplier).then(res => {
-      this.supplierList = res.data
+      this.fromWarehouseList = res.data
     }).catch(err => console.log(err))
     this.init()
   },
@@ -217,15 +213,14 @@ export default {
   methods: {
     init () {
       this.currentPage = 1
-      // this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.operation_id = 0
         this.headOrder.reason = 0
+        this.headOrder.from_warehouse = 0
         this.headOrder.warehouse = 0
-        this.headOrder.supplier = 0
         this.headOrder.created_time = 0
         this.headOrder.created_by = 0
         this.currentSort.order = 'asc'
@@ -254,34 +249,34 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchType: sparePartsOperationType.receive,
+        SearchType: sparePartsOperationType.move,
         SearchReason: this.reason,
+        SearchFromWarehouse: this.fromWarehouse,
         SearchWarehouse: this.warehouse,
-        SearchSupplier: this.supplier,
         SearchStart: st,
         SearchEnd: et
       }).then(res => {
         this.loading = false
         if (res.data.total === 0) {
-          this.stockReceiveList = []
+          this.stockMoveList = []
         } else {
           res.data.rows.map(item => {
             item.createdTime = transformDate(item.createdTime)
           })
-          this.stockReceiveList = res.data.rows
+          this.stockMoveList = res.data.rows
         }
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
     add () {
-      this.$router.push({name: 'AddStockReceive', query: { type: 'Add' }})
+      this.$router.push({name: 'AddStockMove', query: { type: 'Add' }})
     },
     detail () {
       this.$router.push({
         name: 'DetailStockOperation',
         params: {
-          id: this.editStockReceiveID,
-          sourceName: 'SeeStockReceiveList'
+          id: this.editStockMoveID,
+          sourceName: 'SeeStockMoveList'
         }
       })
     },
