@@ -740,7 +740,7 @@ export default {
 <style lang="scss" scoped>
 .middle{
   position: relative;
-  height: percent(140, $content-height) !important;
+  height: 12% !important;
 
   .lable{
     margin-right: 10px;
