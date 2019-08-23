@@ -160,11 +160,8 @@ import mychart from './chart'
 import apiAuth from '@/api/authApi'
 import apiEqp from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
-<<<<<<< HEAD
 import resize from 'vue-resize-directive'
-=======
 import apiOrg from '@/api/orgApi'
->>>>>>> 9bd4b4a617f06bb4ef7639e97213b86cccdcc9b6
 
 export default {
   name: 'InspectionManagementList',
@@ -214,7 +211,6 @@ export default {
       resultAvgHistory: [],
       subTitleCount: [],
       subTitleAvg: [],
-<<<<<<< HEAD
 
       dateChartCount: null,
       dateChartAvg: null,
@@ -230,12 +226,10 @@ export default {
       showManufacturerChart: false,
       showSubSystemChart: false,
 
-=======
       teamPath: {
         text: [],
         tips: ''
       },
->>>>>>> 9bd4b4a617f06bb4ef7639e97213b86cccdcc9b6
       taskStatus: '',
       tunnel: '',
       partition: '',
