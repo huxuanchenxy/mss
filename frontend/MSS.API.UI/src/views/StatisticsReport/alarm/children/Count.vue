@@ -67,7 +67,7 @@
           <!-- 隐藏部分 -->
           <div class="hide-more" v-show="searchHideMore">
             <div class="select-wrap">
-              <span for="lable">安装位置</span>
+              <span class="lable">安装位置</span>
                 <el-cascader clearable
                   change-on-select
                   :props="areaParams"
@@ -755,17 +755,18 @@ export default {
     width: 100%;
 
     .content{
-      min-height: 100%;
+      // min-height: 100%;
+      height: 72px;
       background: #313035;
     }
 
     &.active{
       background: rgba(0,0,0,.7);
-
       .content{
         min-height: initial;
         padding-bottom: 10px;
         background: #313035;
+        height: 137px;
       }
     }
   }
@@ -982,4 +983,8 @@ export default {
 .el-date-editor {
   width:253px !important;
 }
+.select-wrap {
+  width:unset !important;
+}
+
 </style>
