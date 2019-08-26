@@ -26,6 +26,32 @@ const optionCount = {
     x: 'right',
     y: 'top',
     feature: {
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          console.info(opt)
+          var axisData = opt.xAxis[0].data
+          var series = opt.series
+          var tdHeaders = '<td>时间</td>' // 表头
+          series.forEach(function (item) {
+            tdHeaders += '<td>' + item.name + '</td>' // 组装表头
+          })
+          var table = '<div class="table-responsive"><table class="table table-bordered table-striped table-hover" style="text-align:center"><tbody><tr style="background-color:cyan;">' + tdHeaders + '</tr>'
+          var tdBodys = '' // 数据
+          for (let i = 0, l = axisData.length; i < l; i++) {
+            for (let j = 0; j < series.length; j++) {
+              tdBodys += '<td>' + series[j].data[i] + '</td>' // 组装表数据
+            }
+            table += '<tr><td style="padding: 0 10px">' + axisData[i] + '</td>' + tdBodys + '</tr>'
+            tdBodys = ''
+          }
+
+          table += '</tbody></table></div>'
+          console.info(table)
+          return table
+        }
+      },
       myTool: {
         show: true,
         title: '返回',
