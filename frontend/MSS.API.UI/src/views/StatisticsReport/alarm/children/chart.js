@@ -457,6 +457,98 @@ const optionSubSystemAvg = {
   ]
 }
 
+const optionLocationCount = {
+  title: {
+    text: '报警次数(以位置信息统计)',
+    subtext: ''
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby']
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: []
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value'
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionLocationAvg = {
+  title: {
+    text: '平均恢复时间(小时)(以位置信息统计)',
+    subtext: ''
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby']
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: []
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value'
+    }
+  ],
+  series: [
+  ]
+}
+
 // groupModel 为alarmData数据以什么字段聚合，modelName和modelID为数据中属性名（modelID为值，modelName为显示名）
 // 以设备类型为例，modelID=eqpTypeID modelName=eqpTypeName。
 function prepareChartData (data, groupModel) {
@@ -565,6 +657,8 @@ export default {
   optionManufacturerCount: optionManufacturerCount,
   optionSubSystemAvg: optionSubSystemAvg,
   optionSubSystemCount: optionSubSystemCount,
+  optionLocationAvg: optionLocationAvg,
+  optionLocationCount: optionLocationCount,
   prepareChartData: prepareChartData,
   prepareSubChartData: prepareSubChartData
 }
