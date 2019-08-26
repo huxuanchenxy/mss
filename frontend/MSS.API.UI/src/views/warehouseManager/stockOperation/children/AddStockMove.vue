@@ -174,6 +174,7 @@
             <li class="list name">金额</li>
             <li class="list name">币种</li>
             <li class="list name">发票号</li>
+            <li class="list name">工单号</li>
             <li class="list name">采购单</li>
             <li class="list name">送修单</li>
             <li class="list name">备注</li>
@@ -193,6 +194,7 @@
                     <div class="name word-break">{{ item.amount }}</div>
                     <div class="name word-break">{{ item.currencyName }}</div>
                     <div class="name word-break">{{ item.invoice }}</div>
+                    <div class="name word-break">{{ item.workingOrder }}</div>
                     <div class="name word-break">{{ item.purchase }}</div>
                     <div class="name word-break">{{ item.repair }}</div>
                     <div class="name word-break">{{ item.remark }}</div>
@@ -241,6 +243,7 @@ export default {
       fromWarehouse: {text: '', tips: ''},
       warehouseList: [],
       warehouse: {text: '', tips: ''},
+      workingOrder: {text: '', tips: ''},
       remark: {text: '', tips: ''},
       detailList: [],
       editID: [],
@@ -310,6 +313,7 @@ export default {
         amount: tmp,
         currency: this.currency,
         currencyName: this.$refs.currency.selected.label,
+        workingOrder: this.workingOrder.text,
         purchase: this.purchase.text,
         repair: this.repair.text,
         invoice: this.invoice.text,

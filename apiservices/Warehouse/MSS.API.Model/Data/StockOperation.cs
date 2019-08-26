@@ -89,6 +89,7 @@ namespace MSS.API.Model.Data
         public int Currency { get; set; }
         public string CurrencyName { get; set; }
         public string Invoice { get; set; }
+        public string WorkingOrder { get; set; }
         public string Purchase { get; set; }
         public string Repair { get; set; }
         public int Operation { get; set; }
@@ -113,6 +114,7 @@ namespace MSS.API.Model.Data
             Map(o => o.Currency).ToColumn("currency");
             Map(o => o.CurrencyName).ToColumn("cname");
             Map(o => o.Invoice).ToColumn("invoice");
+            Map(o => o.WorkingOrder).ToColumn("working_order");
             Map(o => o.Purchase).ToColumn("purchase");
             Map(o => o.Repair).ToColumn("repair");
             Map(o => o.Operation).ToColumn("operation");

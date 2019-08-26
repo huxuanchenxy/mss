@@ -38,7 +38,7 @@ namespace MSS.API.Dao.Implement
                     }
                     sql = " insert into stock_operation_detail " +
                     " values (0,@SpareParts,@OrderNo,@CountNo,@UnitPrice, " +
-                    " @Amount,@Currency,@Invoice,@Purchase,@Repair, " +
+                    " @Amount,@Currency,@Invoice,@WorkingOrder,@Purchase,@Repair, " +
                     " @Operation,@ExchangeRate,@TotalAmount,@Remark) ";
                     int ret = await c.ExecuteAsync(sql, sods, trans);
                     trans.Commit();

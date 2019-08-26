@@ -128,7 +128,15 @@
             </div>
             <p class="validate-tips">{{ invoice.tips }}</p>
           </li>
-          <li class="list"/>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">工单号</span>
+              <div class="inp">
+                <el-input placeholder="请输入工单号" v-model="workingOrder.text" @keyup.native="validateInputNull(workingOrder)"></el-input>
+              </div>
+            </div>
+            <p class="validate-tips">{{ workingOrder.tips }}</p>
+          </li>
           <li class="list list-block">
             <div class="inp-wrap">
               <span class="text span-block">备注</span>
@@ -156,9 +164,8 @@
             <li class="list name">单价</li>
             <li class="list name">金额</li>
             <li class="list name">币种</li>
-            <li class="list name">汇率</li>
-            <li class="list name">本币总金额</li>
             <li class="list name">发票号</li>
+            <li class="list name">工单号</li>
             <li class="list name">备注</li>
           </ul>
           <div class="scroll">
@@ -176,6 +183,7 @@
                     <div class="name word-break">{{ item.amount }}</div>
                     <div class="name word-break">{{ item.currencyName }}</div>
                     <div class="name word-break">{{ item.invoice }}</div>
+                    <div class="name word-break">{{ item.workingOrder }}</div>
                     <div class="name word-break">{{ item.remark }}</div>
                   </div>
                 </li>
@@ -222,6 +230,7 @@ export default {
       warehouse: {text: '', tips: ''},
       pickerList: [],
       picker: {text: '', tips: ''},
+      workingOrder: {text: '', tips: ''},
       remark: {text: '', tips: ''},
       detailList: [],
       editID: [],
@@ -273,11 +282,11 @@ export default {
       let spName = ''
       let isRepeat = this.detailList.some(val => {
         spName = val.sparePartsName
-        return val.spareParts === this.spareParts.text
+        return val.spareParts === this.spareParts.text && val.workingOrder === this.workingOrder.text
       })
       if (isRepeat) {
         this.$message({
-          message: '物资-' + spName + ' 不可重复添加',
+          message: '相同工单中的物资-' + spName + ' 不可重复添加',
           type: 'warning'
         })
         return
@@ -292,6 +301,7 @@ export default {
         currency: this.currency,
         currencyName: this.$refs.currency.selected.label,
         invoice: this.invoice.text,
+        workingOrder: this.workingOrder.text,
         remark: this.remarkAdd.text
       }
       if (this.title === '| 物资发放过账 | 添加物资明细') {
@@ -442,7 +452,7 @@ export default {
       }
     },
     validateInputAll () {
-      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) || !this.validateSelect(this.picker) || !this.validateInputNull(this.remark)) {
+      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) || !this.validateSelect(this.picker) || !this.validateInputNull(this.workingOrder) || !this.validateInputNull(this.remark)) {
         return false
       }
       return true

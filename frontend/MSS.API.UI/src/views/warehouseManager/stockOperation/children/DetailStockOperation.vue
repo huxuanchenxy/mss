@@ -157,6 +157,7 @@
             <li v-show="curOperationType === operationType.receive" class="list name">汇率</li>
             <li v-show="curOperationType === operationType.receive" class="list name">本币总金额</li>
             <li class="list name">发票号</li>
+            <li v-show="curOperationType !== operationType.receive" class="list name">工单号</li>
             <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">采购单</li>
             <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">送修单</li>
             <li class="list name">备注</li>
@@ -174,6 +175,7 @@
                     <div class="name word-break">{{ item.UnitPrice }}</div>
                     <div class="name word-break">{{ item.Amount }}</div>
                     <div class="name word-break">{{ item.CurrencyName }}</div>
+                    <div v-show="curOperationType !== operationType.receive" class="name word-break">{{ item.WorkingOrder }}</div>
                     <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.ExchangeRate }}</div>
                     <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.TotalAmount }}</div>
                     <div class="name word-break">{{ item.Invoice }}</div>
