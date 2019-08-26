@@ -630,7 +630,11 @@ const optionSubSystemAvg = {
 const optionLocationCount = {
   title: {
     text: '报警次数(以位置信息统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -646,7 +650,11 @@ const optionLocationCount = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   toolbox: {
     show: true,
@@ -661,12 +669,22 @@ const optionLocationCount = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -676,7 +694,11 @@ const optionLocationCount = {
 const optionLocationAvg = {
   title: {
     text: '平均恢复时间(小时)(以位置信息统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -692,7 +714,11 @@ const optionLocationAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   toolbox: {
     show: true,
@@ -707,12 +733,22 @@ const optionLocationAvg = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
