@@ -25,7 +25,7 @@ import 'echarts/lib/chart/line'
 // import 'echarts/lib/chart/pie'
 
 // // 引入气泡图
-// import 'echarts/lib/chart/scatter'
+import 'echarts/lib/chart/scatter'
 
 // // 引入提示框和标题组件
 import 'echarts/lib/component/tooltip'
