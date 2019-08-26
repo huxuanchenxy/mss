@@ -12,19 +12,6 @@
       <div class="middle-content-wrap height-full" :class="{ active: searchHideMore }" :style="{ height: searchHideMoreHeight }">
         <div class="content con-padding-horizontal">
           <div class="top-input-group" ref="middleTopInput">
-            <div class="list">
-              <span class="lable">时间</span>
-              <el-date-picker
-                v-model="time.text"
-                type="daterange"
-                prefix-icon="el-icon-date"
-                :unlink-panels="true"
-                value-format="yyyy-MM-dd"
-                range-separator="至"
-                start-placeholder="计划开始日期"
-                end-placeholder="计划结束日期">
-              </el-date-picker>
-            </div>
             <div class="list" >
               <span class="lable">子系统</span>
               <el-select v-model="subSystem" multiple collapse-tags clearable filterable placeholder="请选择">
@@ -46,6 +33,19 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+            </div>
+            <div class="list">
+              <span class="lable">时间</span>
+              <el-date-picker
+                v-model="time.text"
+                type="daterange"
+                prefix-icon="el-icon-date"
+                :unlink-panels="true"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="计划开始日期"
+                end-placeholder="计划结束日期">
+              </el-date-picker>
             </div>
             <div class="list">
               <span class="lable">日/月统计</span>
@@ -148,7 +148,7 @@
 <script>
 import XButton from '@/components/button'
 import { dictionary, firmType } from '@/common/js/dictionary.js'
-import { ApiRESULT } from '@/common/js/utils.js'
+import { getNowFormatDate, ApiRESULT } from '@/common/js/utils.js'
 import api from '@/api/statisticsApi'
 import mychart from './chart'
 import apiAuth from '@/api/authApi'
@@ -301,6 +301,11 @@ export default {
     this.initSelect()
     this.searchResult()
     // this.init()
+    var nowDate = getNowFormatDate()
+    var d = new Date()
+    d.setDate(d.getDate() - 30)
+    var startDate = getNowFormatDate(d)
+    this.time.text = [startDate, nowDate]
   },
   activated () {
     // this.searchResult(this.currentPage)
@@ -734,6 +739,9 @@ export default {
     // 搜索
     searchResult () {
       // console.log(this.subSystem)
+      // this.searchHideMoreHeight = '100%'
+      this.shrinkText = '更多'
+      this.searchHideMore = false
       var sTime = ''
       var eTime = ''
       if (this.time.text) {

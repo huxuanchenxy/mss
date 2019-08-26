@@ -26,6 +26,7 @@ const optionCount = {
     x: 'right',
     y: 'top',
     feature: {
+      dataView: { show: true, readOnly: false },
       myTool: {
         show: true,
         title: '返回',
