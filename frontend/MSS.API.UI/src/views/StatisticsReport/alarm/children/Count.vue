@@ -110,16 +110,6 @@
               </el-select>
             </div>
           </div>
-          <div class="show-result">
-            <ul class="left">
-              <li class="list" v-for="(item, index) in condition" :key="item.key" v-if="item !== ''">
-                <el-tooltip class="item" effect="dark" :content="item" placement="top">
-                  <el-button class="text">{{ item }}</el-button>
-                </el-tooltip>
-                <i class="el-icon-circle-close" @click="closeCondition(index)"></i>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
     </div>
@@ -1107,7 +1097,8 @@ export default {
    * 操作按钮组：70
    * 表头高度：50
    */
-  height: percent($content-height - 56 - 140 - 70 - 50, $content-height);
+  // height: percent($content-height - 56 - 140 - 70 - 50, $content-height);
+  height: 82%;
 
   .list-con{
     height: initial;
