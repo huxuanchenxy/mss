@@ -26,6 +26,7 @@ const optionCount = {
     x: 'right',
     y: 'top',
     feature: {
+      dataView: { show: true, readOnly: false },
       myTool: {
         show: true,
         title: '返回',
@@ -787,9 +788,7 @@ function prepareChartData (data, groupModel) {
       let objavg = {
         id: key,
         name: legendData[key],
-        type: 'bar',
-        stack: 'test',
-        barWidth: 20,
+        type: 'line',
         data: []
       }
       for (let x in xAxisData) {
@@ -814,6 +813,43 @@ function prepareChartData (data, groupModel) {
     optionAvg.legend.data = Object.values(legendData)
     optionAvg.xAxis[0].data = Object.keys(xAxisData)
     optionAvg.series = seariesavg
+    if (optionCount.xAxis[0].data.length === 0) {
+      optionCount.xAxis[0].data.push('无数据')
+      optionAvg.xAxis[0].data.push('无数据')
+    }
+    // 补数据
+    for (let i = 0; i < groupModel.legend.length; ++i) {
+      let needadd = true
+      for (let j = 0; j < optionCount.legend.data.length; ++j) {
+        if (optionCount.legend.data[j] === groupModel.legend[i]) {
+          needadd = false
+          break
+        }
+      }
+      if (needadd) {
+        optionCount.legend.data.push(groupModel.legend[i])
+        optionAvg.legend.data.push(groupModel.legend[i])
+        let dataAvg = {
+          name: groupModel.legend[i],
+          type: 'line',
+          data: []
+        }
+        let dataCount = {
+          name: groupModel.legend[i],
+          type: 'bar',
+          stack: 'test',
+          barWidth: 20,
+          data: []
+        }
+        for (let i = 0; i < optionCount.xAxis[0].data.length; ++i) {
+          dataCount.data.push(0)
+          dataAvg.data.push(0)
+        }
+
+        optionCount.series.push(dataCount)
+        optionAvg.series.push(dataAvg)
+      }
+    }
   }
 }
 
@@ -832,9 +868,7 @@ function prepareSubChartData (data, groupby) {
     }
     let objavg = {
       name: 'groupby',
-      type: 'bar',
-      stack: 'test',
-      barWidth: 20,
+      type: 'line',
       data: []
     }
     for (let i = 0; i < data.length; ++i) {

@@ -81,7 +81,6 @@
                <el-cascader class="cascader_width" clearable
                     :props="defaultParams"
                     change-on-select
-                    @change="cascader_change_copy"
                     :show-all-levels="true"
                     :options="teamList"
                     v-model="teamPath.text">
@@ -180,22 +179,26 @@ export default {
         sub_system_id: {
           modelID: 'subSystemID',
           modelName: 'subSystemName',
-          reqParamKey: 'SubSystemIDs'
+          reqParamKey: 'SubSystemIDs',
+          legend: []
         },
         eqp_type_id: {
           modelID: 'eqpTypeID',
           modelName: 'eqpTypeName',
-          reqParamKey: 'EqpTypeIDs'
+          reqParamKey: 'EqpTypeIDs',
+          legend: []
         },
         manufacturer_id: {
           modelID: 'manufacturerID',
           modelName: 'manufacturerName',
-          reqParamKey: 'ManufacturerIDs'
+          reqParamKey: 'ManufacturerIDs',
+          legend: []
         },
         team_id: {
           modelID: 'teamID',
           modelName: 'teamName',
-          reqParamKey: 'TeamIDs'
+          reqParamKey: 'TeamIDs',
+          legend: []
         }
       },
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
@@ -229,19 +232,8 @@ export default {
         text: [],
         tips: ''
       },
-      taskStatus: '',
-      tunnel: '',
-      partition: '',
-      eqp: [],
-      period: '',
-      toPerson: '',
-      statusList: [],
-      tunnelList: [],
-      partitionList: [],
+
       eqpTypeList: [],
-      eqpList: [],
-      periodList: [],
-      userList: [],
       area: [],
       areaList: [],
       areaParams: {
@@ -260,47 +252,16 @@ export default {
         value: 'id',
         children: 'children'
       },
-      parDisable: true,
-      eqpTypeDisable: true,
-      eqpDisable: true,
 
       searchHideMore: false,
       searchHideMoreHeight: '100%',
       shrinkText: '更多',
 
-      checkedID: [],
-      condition: ['', '', '', '', '', ''],
-      dataList: [],
-      bCheckAll: false,
-      total: 0,
-      currentPage: 1,
-      loading: false,
-      currentSort: {
-        sort: 'PMTaskOrderID',
-        order: 'asc'
-      },
-      headOrder: {
-        PMTaskOrderID: 1,
-        Status: 0,
-        IsInvalid: 0,
-        TunnelName: 0,
-        PartionName: 0,
-        EqpTypeName: 0,
-        EqpName: 0,
-        PeriodID: 0
-      }, // 默认UserID升序asc，箭头朝上，同时只可能按照一个字段排序，不排序的字段不出现箭头,0不排序、1升序、2降序，切换时默认升序
-      dialogVisible: {
-        isShow: false,
-        text: '',
-        // true 为两个按钮，false 为一个按钮
-        btn: true
-      }
+      loading: false
     }
   },
   created () {
     this.initSelect()
-    this.searchResult()
-    // this.init()
   },
   activated () {
     // this.searchResult(this.currentPage)
@@ -343,64 +304,6 @@ export default {
       }
       if (this.locationChartAvg && el.id === 'avgTimeChartByLocation') {
         this.locationChartAvg.resize()
-      }
-    },
-    onResize0 () {},
-    onResize1 () {},
-    onResize2 () {},
-    onResize3 () {},
-    onResize4 () {},
-    onResize5 () {},
-    onResize6 () {},
-    onResize7 () {},
-    onResize8 () {},
-    showStatus (status) {
-      var des = '--'
-      switch (status) {
-        case 'NotStart':
-          des = '未开始'
-          break
-        case 'Starting':
-          des = '未完成'
-          break
-        case 'Finished':
-          des = '已完成'
-          break
-      }
-      return des
-    },
-    closeCondition (index) {
-      switch (index) {
-        case 0:
-          this.tunnel = {TunnelID: ''}
-          this.condition.splice(0, 4, '', '', '', '')
-          this.choseTunnel(this.tunnel.TunnelID)
-          break
-        case 1:
-          this.partition = {PartitionID: ''}
-          this.condition.splice(1, 3, '', '', '')
-          // this.choseTunnel(this.tunnel.TunnelID)
-          this.chosePartition(this.partition.PartitionID)
-          break
-        case 2:
-          this.eqpType = {eqpTypeID: ''}
-          this.condition.splice(2, 2, '', '')
-          // this.chosePartition(this.partition.PartitionID)
-          this.choseEqpType(this.eqpType.eqpTypeID)
-          break
-        case 3:
-          this.eqp = {eqpID: ''}
-          this.condition.splice(3, 1, '')
-          // this.choseEqpType(this.eqpType.eqpTypeID)
-          break
-        case 4:
-          this.period = {PeriodID: ''}
-          this.condition.splice(4, 1, '')
-          break
-        case 5:
-          this.toPerson = {UserID: ''}
-          this.condition.splice(5, 1, '')
-          break
       }
     },
 
@@ -566,105 +469,11 @@ export default {
       mychart.optionLocationAvg.series = chartData.seariesavg
       this.locationChartAvg.setOption(mychart.optionLocationAvg)
     },
-    choseTunnel (tunnelID) {
-      this.condition.splice(0, 4, '', '', '', '')
-      this.condition.splice(5, 1, '')
-      this.getUserList(tunnelID)
-      // if (tunnelID === '') {
-      //   this.parDisable = true
-      //   this.eqpTypeDisable = true
-      //   this.eqpDisable = true
-      //   this.partitionList = []
-      //   this.partition = {PartitionID: ''}
-      //   this.eqpType = {eqpTypeID: ''}
-      //   this.eqpTypeList = []
-      //   this.eqp = {eqpID: ''}
-      //   this.eqpList = []
-      //   return
-      // }
-      if (tunnelID !== '') {
-        this.condition[0] = ('管廊：' + this.tunnel.TunnelName)
-      }
-
-      this.parDisable = false
-      this.eqpTypeDisable = true
-      this.eqpDisable = true
-      this.partitionList = []
-      this.partition = {} // {PartitionID: ''}
-      // this.eqpType = {eqpTypeID: ''}
-      // this.eqpTypeList = []
-      this.eqp = {} // {eqpID: ''}
-      this.eqpList = []
-      // 获取分区
-      window.axios.post('/UtilityTunnel/GetTunnelIDPartition', {TunnelID: tunnelID}).then(res => {
-        this.partitionList = res.data
-      }).catch(err => console.log(err))
-    },
-    chosePartition (partitionID) {
-      if (this.partition.PartitionID !== '') {
-        this.condition[1] = ('分区：' + this.partition.PartionName)
-        this.condition.splice(2, 2, '', '')
-      } else {
-        this.condition.splice(1, 3, '', '', '')
-      }
-      this.parDisable = false
-      this.eqpTypeDisable = false
-      this.eqpDisable = true
-      this.eqpType = {} // {eqpTypeID: ''}
-      this.eqpTypeList = []
-      this.eqp = {} // {eqpID: ''}
-      this.eqpList = []
-    },
-    choseEqpType (eqpTypeID) {
-      if (this.eqpType.eqpTypeID !== '') {
-        this.condition[2] = ('设备类型：' + this.eqpType.eqpTypeName)
-        this.condition.splice(3, 1, '')
-      } else {
-        this.condition.splice(2, 2, '', '')
-      }
-      this.parDisable = false
-      this.eqpTypeDisable = false
-      this.eqpDisable = false
-      this.eqp = {} // {eqpID: ''}
-      this.eqpList = []
-      // 获取设备
-      window.axios.post('/UtilityTunnel/GetEquipmentByType',
-        {tunnelID: this.tunnel.TunnelID, partitionID: this.partition.PartitionID, eqpTypeID: eqpTypeID}).then(res => {
-        this.eqpList = res.data
-      }).catch(err => console.log(err))
-    },
-    choseEqp () {
-      if (this.eqp.eqpID !== '') {
-        this.condition[3] = ('设备：' + this.eqp.eqpName)
-      } else {
-        this.condition.splice(3, 1, '')
-      }
-    },
-    chosePeriod () {
-      if (this.period.PeriodID !== '') {
-        this.condition[4] = ('周期：' + this.period.PeriodName)
-      } else {
-        this.condition.splice(4, 1, '')
-      }
-    },
-    choseUser () {
-      if (this.toPerson.UserID !== '') {
-        this.condition[5] = ('巡检人员：' + this.toPerson.UserName)
-      } else {
-        this.condition.splice(5, 1, '')
-      }
-    },
-    getUserList (tunnelID) {
-      // 获取巡检人员
-      window.axios.post('/UserInfo/GetUserByTunnelID', {tunnelID: tunnelID}).then(res => {
-        this.userList = res.data
-        this.toPerson = {UserID: ''}
-      }).catch(err => console.log(err))
-    },
     initSelect () {
       // 子系统加载
       apiAuth.getSubCode(dictionary.subSystem).then(res => {
         this.subSystemList = res.data
+        this.searchResult()
       }).catch(err => console.log(err))
 
       // 设备类型加载
@@ -689,37 +498,6 @@ export default {
       }).catch(err => console.log(err))
     },
 
-    init () {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = 1
-      // this.searchResult()
-    },
-    // 改变排序
-    changeOrder (sort) {
-      // console.log(this.headOrder[sort])
-      if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.PMTaskOrderID = 0
-        this.headOrder.Status = 0
-        this.headOrder.IsInvalid = 0
-        this.headOrder.TunnelName = 0
-        this.headOrder.PartionName = 0
-        this.headOrder.EqpTypeName = 0
-        this.headOrder.EqpName = 0
-        this.headOrder.PeriodID = 0
-        this.currentSort.order = 'asc'
-        this.headOrder[sort] = 1
-      } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
-        this.currentSort.order = 'asc'
-        this.headOrder[sort] = 1
-      } else { // 同一字段升序变降序
-        this.currentSort.order = 'desc'
-        this.headOrder[sort] = 2
-      }
-      this.currentSort.sort = sort
-      this.searchResult(this.currentPage)
-    },
-
     search (param, callbacks) {
       this.loading = true
       api.reportAlarm(param).then(res => {
@@ -730,6 +508,28 @@ export default {
           }
         }
       }).catch(err => console.log(err))
+    },
+    getSubSystemSelected () {
+      let legend = []
+      if (this.subSystem.length > 0) {
+        for (let i = 0; i < this.subSystem.length; ++i) {
+          let name = ''
+          for (let j = 0; j < this.subSystemList.length; j++) {
+            if (this.subSystem[i] === this.subSystemList[j].id) {
+              name = this.subSystemList[j].name
+              break
+            }
+          }
+          if (name) {
+            legend.push(name)
+          }
+        }
+      } else {
+        for (let i = 0; i < this.subSystemList.length; i++) {
+          legend.push(this.subSystemList[i].name)
+        }
+      }
+      this.groups.sub_system_id.legend = legend
     },
     // 搜索
     searchResult () {
@@ -758,6 +558,8 @@ export default {
       this.resultAvgHistory = []
       this.subTitleCount = []
       this.subTitleAvg = []
+      // 获取当前子系统类别
+      this.getSubSystemSelected()
       this.search(param, [this.drawCountChart, this.drawAvgChart])
 
       if (param.EqpTypeIDs) {
@@ -830,147 +632,6 @@ export default {
       } else {
         // this.showLocationChart = false
       }
-    },
-    // 修改
-    edit () {
-      if (!this.checkedID.length) {
-        this.$message({
-          message: '请选择需要操作的任务单',
-          duration: 2000,
-          type: 'warning'
-        })
-      } else if (this.checkedID.length > 1) {
-        this.$message({
-          message: '选择的任务单不能超过1个',
-          duration: 2000
-        })
-      } else {
-        var curItem
-        for (var i = 0; i < this.dataList.length; ++i) {
-          if (this.dataList[i].PMTaskOrderID === this.checkedID[0]) {
-            curItem = this.dataList[i]
-            break
-          }
-        }
-        if (curItem.Invalid === 1) {
-          this.$message({
-            message: '此任务单已作废',
-            type: 'warning'
-          })
-          return
-        }
-        this.$router.push({name: 'InspectionManagementEditDetail', query: { TaskOrderID: this.checkedID[0] }})
-      }
-    },
-
-    // 查看
-    see () {
-      if (!this.checkedID.length) {
-        this.$message({
-          message: '请选择需要操作的任务单',
-          duration: 2000,
-          type: 'warning'
-        })
-      } else if (this.checkedID.length > 1) {
-        this.$message({
-          message: '选择的任务单不能超过1个',
-          duration: 2000
-        })
-      } else {
-        this.$router.push({name: 'InspectionManagementSeeDetail', query: { TaskOrderID: this.checkedID[0], prePage: 'InspectionManagementList' }})
-      }
-    },
-
-    del () {
-      if (!this.checkedID.length) {
-        this.$message({
-          message: '请选择要删除的任务单',
-          type: 'warning'
-        })
-      } else {
-        for (var i = 0; i < this.checkedID.length; ++i) {
-          for (var j = 0; j < this.dataList.length; ++j) {
-            if (this.dataList[j].PMTaskOrderID === this.checkedID[i]) {
-              let curItem = this.dataList[j]
-              if (curItem.Status === 'Starting') {
-                this.$message({
-                  message: '不能删除未结束的任务单',
-                  type: 'warning'
-                })
-                return
-              }
-              if (curItem.Invalid === 1) {
-                this.$message({
-                  message: '不能删除已作废的任务单',
-                  type: 'warning'
-                })
-                return
-              }
-            }
-          }
-        }
-
-        this.dialogVisible.isShow = true
-        this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条巡检任务?'
-      }
-    },
-    // 弹框确认是否删除
-    dialogEnter () {
-      // 隐藏dialog
-      this.dialogVisible.isShow = false
-      window.axios.post('/PMTaskOrder/DelOrder', {
-        SelectedIDs: this.checkedID.join(',')
-      }).then(res => {
-        if (res.data.result === 'OK') {
-          // this.init()
-          this.searchResult(this.currentPage)
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-        } else {
-          this.$message({
-            message: '删除失败',
-            type: 'error'
-          })
-        }
-      }).catch(err => console.log(err))
-    },
-    // 全选
-    checkAll () {
-      this.bCheckAll ? this.dataList.map(val => this.checkedID.push(val.PMTaskOrderID)) : this.checkedID = []
-    },
-
-    // 序号、指定页翻页
-    handleCurrentChange (val) {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = val
-      this.searchResult(val)
-    },
-
-    // 上一页
-    prevPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = val
-      this.searchResult(val)
-    },
-
-    // 下一页
-    nextPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = val
-      this.searchResult(val)
-    },
-
-    // 班组下拉选中，过滤非班组
-    cascader_change_copy (val) {
-      var arr = this.teamPath.text
-      let id = arr[arr.length - 1]
-      this.teamGroupid = id
     }
   }
 }
