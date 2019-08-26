@@ -124,6 +124,26 @@ namespace MSS.API.Common.Utility
             }
         }
 
+        public static string PutResponse(string url, object postData)
+        {
+            if (url.StartsWith("https"))
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+
+            HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json");
+            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage response = httpClient.PutAsync(url, httpContent).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    return result;
+                }
+                return null;
+            }
+        }
+
 
     }
 }
