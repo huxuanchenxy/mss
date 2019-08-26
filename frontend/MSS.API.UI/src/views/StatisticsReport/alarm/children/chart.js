@@ -1,8 +1,12 @@
-const backicon = require('../images/icon-user.svg')
+const backicon = require('../images/return.svg')
 const optionCount = {
   title: {
     text: '报警次数',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -11,7 +15,10 @@ const optionCount = {
     }
   },
   legend: {
-    data: []
+    data: [],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -32,12 +39,22 @@ const optionCount = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -47,7 +64,11 @@ const optionCount = {
 const optionAvg = {
   title: {
     text: '平均恢复时间（小时）',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -56,7 +77,10 @@ const optionAvg = {
     }
   },
   legend: {
-    data: []
+    data: [],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -77,12 +101,22 @@ const optionAvg = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -92,7 +126,11 @@ const optionAvg = {
 const optionEqpTypeCount = {
   title: {
     text: '报警次数(以设备类型统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -108,7 +146,10 @@ const optionEqpTypeCount = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -123,12 +164,22 @@ const optionEqpTypeCount = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -138,7 +189,11 @@ const optionEqpTypeCount = {
 const optionEqpTypeAvg = {
   title: {
     text: '平均恢复时间(小时)(以设备类型统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -154,7 +209,10 @@ const optionEqpTypeAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -169,12 +227,22 @@ const optionEqpTypeAvg = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -184,7 +252,11 @@ const optionEqpTypeAvg = {
 const optionSupplierCount = {
   title: {
     text: '报警次数(以供应商统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -200,7 +272,10 @@ const optionSupplierCount = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -215,12 +290,22 @@ const optionSupplierCount = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -230,7 +315,11 @@ const optionSupplierCount = {
 const optionSupplierAvg = {
   title: {
     text: '平均恢复时间(小时)(以供应商统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -246,7 +335,10 @@ const optionSupplierAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -261,12 +353,22 @@ const optionSupplierAvg = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -276,7 +378,11 @@ const optionSupplierAvg = {
 const optionManufacturerCount = {
   title: {
     text: '报警次数(以制造商统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -292,7 +398,10 @@ const optionManufacturerCount = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -307,12 +416,22 @@ const optionManufacturerCount = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -322,7 +441,11 @@ const optionManufacturerCount = {
 const optionManufacturerAvg = {
   title: {
     text: '平均恢复时间(小时)(以制造商统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -338,7 +461,10 @@ const optionManufacturerAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -353,12 +479,22 @@ const optionManufacturerAvg = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -368,7 +504,11 @@ const optionManufacturerAvg = {
 const optionSubSystemCount = {
   title: {
     text: '报警次数(以子系统统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -384,7 +524,10 @@ const optionSubSystemCount = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -399,12 +542,22 @@ const optionSubSystemCount = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -414,7 +567,11 @@ const optionSubSystemCount = {
 const optionSubSystemAvg = {
   title: {
     text: '平均恢复时间(小时)(以子系统统计)',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -430,7 +587,10 @@ const optionSubSystemAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby']
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -445,12 +605,22 @@ const optionSubSystemAvg = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
