@@ -17,6 +17,7 @@
           <el-container style="height:100%;">
             <el-header height="200px" style="padding:0px">
               <el-container style="height:100%;">
+                <div><span class="headtip">一级报警</span></div>
                 <el-header height="40px" style="padding:0px">
                   <ul class="content-header">
                     <li class="list number">
@@ -59,9 +60,10 @@
                 </el-main>
               </el-container>
             </el-header>
-            <el-main style="padding:0px">
+            <el-main style="padding:0px;padding-top: 28px;">
               <!-- level 大于2 -->
               <el-container style="height:100%;">
+                <div><span class="headtip">其他级别报警</span></div>
                 <el-header height="40px" style="padding:0px">
                   <ul class="content-header">
                     <li class="list number">
@@ -437,4 +439,10 @@ $con-height: $content-height - 56;
   }
 }
 
+</style>
+<style>
+.headtip{
+  float:left;
+  color:red;
+}
 </style>

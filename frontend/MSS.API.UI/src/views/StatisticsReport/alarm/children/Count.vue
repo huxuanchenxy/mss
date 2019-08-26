@@ -4,7 +4,7 @@
       element-loading-spinner="el-icon-loading">
     <div ref="header" class="header con-padding-horizontal">
       <h2>
-        <!-- <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }} -->
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
     <!-- 搜索 -->
@@ -12,19 +12,6 @@
       <div class="middle-content-wrap height-full" :class="{ active: searchHideMore }" :style="{ height: searchHideMoreHeight }">
         <div class="content con-padding-horizontal">
           <div class="top-input-group" ref="middleTopInput">
-            <div class="list">
-              <span class="lable">时间</span>
-              <el-date-picker
-                v-model="time.text"
-                type="daterange"
-                prefix-icon="el-icon-date"
-                :unlink-panels="true"
-                value-format="yyyy-MM-dd"
-                range-separator="至"
-                start-placeholder="计划开始日期"
-                end-placeholder="计划结束日期">
-              </el-date-picker>
-            </div>
             <div class="list" >
               <span class="lable">子系统</span>
               <el-select v-model="subSystem" multiple collapse-tags clearable filterable placeholder="请选择">
@@ -46,6 +33,19 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+            </div>
+            <div class="list">
+              <span class="lable">时间</span>
+              <el-date-picker
+                v-model="time.text"
+                type="daterange"
+                prefix-icon="el-icon-date"
+                :unlink-panels="true"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="计划开始日期"
+                end-placeholder="计划结束日期">
+              </el-date-picker>
             </div>
             <div class="list">
               <span class="lable">日/月统计</span>
@@ -147,7 +147,7 @@
 <script>
 import XButton from '@/components/button'
 import { dictionary, firmType } from '@/common/js/dictionary.js'
-import { ApiRESULT } from '@/common/js/utils.js'
+import { getNowFormatDate, ApiRESULT } from '@/common/js/utils.js'
 import api from '@/api/statisticsApi'
 import mychart from './chart'
 import apiAuth from '@/api/authApi'
@@ -262,6 +262,12 @@ export default {
   },
   created () {
     this.initSelect()
+    // this.init()
+    var nowDate = getNowFormatDate()
+    var d = new Date()
+    d.setDate(d.getDate() - 30)
+    var startDate = getNowFormatDate(d)
+    this.time.text = [startDate, nowDate]
   },
   activated () {
     // this.searchResult(this.currentPage)
@@ -534,6 +540,9 @@ export default {
     // 搜索
     searchResult () {
       // console.log(this.subSystem)
+      // this.searchHideMoreHeight = '100%'
+      this.shrinkText = '更多'
+      this.searchHideMore = false
       var sTime = ''
       var eTime = ''
       if (this.time.text) {
@@ -887,4 +896,53 @@ export default {
   width:unset !important;
 }
 
+table {
+    /* cellspacing:0 ; */
+    border-collapse: collapse; /* IE7 and lower */
+    border-spacing: 0;
+    width: 100%;
+    background-color: brown;
+}
+.bordered tr:hover {
+    background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+.bordered th {
+    padding: 7px;
+    text-align: center;
+    cellspacing:0;
+}
+
+.bordered td{
+    padding: 7px;
+    text-align: center;
+    cellspacing:0;
+}
+.bordered th {
+
+      background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+      background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+      background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+      background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+      background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
+      background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
+}
+.bordered td:first-child, .bordered th:first-child {
+    border-left: none;
+}
+.bordered  tr:nth-of-type(2n){background:#FFFFFF;cursor: pointer;}
+.bordered  tr:nth-of-type(2n+1){background:#F7FAFC;cursor: pointer;}
+
+.bordered  tbody tr:hover{  background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
 </style>
