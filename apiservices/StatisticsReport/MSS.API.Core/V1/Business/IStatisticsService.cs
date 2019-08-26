@@ -15,5 +15,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> ListStatisticsAlarmGroupBySupplier(StatisticsParam param, int dateType);
         Task<ApiResult> ListStatisticsAlarmGroupByManufacturer(StatisticsParam param, int dateType);
         Task<ApiResult> ListStatisticsAlarmGroupBySubSystem(StatisticsParam param, int dateType);
+        Task<ApiResult> ListStatisticsAlarmGroupByLocation(StatisticsParam param, int dateType);
+        Task<ApiResult> ListStatisticsAlarmGroupByOrg(StatisticsParam param, int dateType);
     }
 }

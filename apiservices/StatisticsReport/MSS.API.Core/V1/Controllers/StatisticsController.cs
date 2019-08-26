@@ -163,5 +163,57 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _statisticsService.ListStatisticsAlarmGroupBySubSystem(param, dateType);
             return ret;
         }
+
+        [HttpGet("alarm/groupbylocation")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupByLocation([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupByLocation(param, dateType);
+            return ret;
+        }
+
+        [HttpGet("alarm/groupbyorg")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupByOrg([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupByOrg(param, dateType);
+            return ret;
+        }
     }
 }

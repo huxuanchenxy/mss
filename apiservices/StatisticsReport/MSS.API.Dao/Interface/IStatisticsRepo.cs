@@ -11,5 +11,8 @@ namespace MSS.API.Dao.Interface
     {
         Task<List<StatisticsAlarm>> ListStatisticsAlarmByDate(StatisticsParam param,
             List<string> groupby, int dateType, bool defaultByDate = true);
+
+        // 查询报警列表 不做分组统计
+        Task<List<StatisticsAlarm>> ListStatisticsAlarm(StatisticsParam param);
     }
 }

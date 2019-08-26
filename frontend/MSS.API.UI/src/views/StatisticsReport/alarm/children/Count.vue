@@ -117,24 +117,28 @@
       <el-container style="height:100%;">
         <el-main style="padding:0px">
           <el-row>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChart"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChart"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChart" id="countChart" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChart" id="avgTimeChart" v-resize="onResize"></div></el-col>
           </el-row>
           <el-row v-show="showEqpTypeChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByEqpType" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByEqpType" id="countChartByEqpType" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType" id="avgTimeChartByEqpType" v-resize="onResize"></div></el-col>
           </el-row>
           <el-row v-show="showSupplierChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySupplier"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySupplier" id="countChartBySupplier" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier" id="avgTimeChartBySupplier" v-resize="onResize"></div></el-col>
           </el-row>
           <el-row v-show="showManufacturerChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByManufacturer"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByManufacturer" id="countChartByManufacturer" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer" id="avgTimeChartByManufacturer" v-resize="onResize"></div></el-col>
           </el-row>
           <el-row v-show="showSubSystemChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySubSystemID"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystemID"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySubSystem" id="countChartBySubSystem" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystem" id="avgTimeChartBySubSystem" v-resize="onResize"></div></el-col>
+          </el-row>
+          <el-row v-show="showLocationChart">
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByLocation" id="countChartByLocation" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByLocation" id="avgTimeChartByLocation" v-resize="onResize"></div></el-col>
           </el-row>
         </el-main>
       </el-container>
@@ -164,14 +168,14 @@ export default {
   data () {
     return {
       title: '| 报警统计',
-      subSystem: '',
+      subSystem: [],
       subSystemList: [],
-      eqpType: '',
+      eqpType: [],
       time: {
         text: '',
         tips: ''
       },
-      dateType: 1,
+      dateType: 0,
       groups: {
         sub_system_id: {
           modelID: 'subSystemID',
@@ -210,11 +214,16 @@ export default {
       supplierChartAvg: null,
       manufacturerChartCount: null,
       manufacturerChartAvg: null,
+      subSystemChartCount: null,
+      subSystemChartAvg: null,
+      locationChartCount: null,
+      locationChartAvg: null,
 
       showEqpTypeChart: false,
       showSupplierChart: false,
       showManufacturerChart: false,
       showSubSystemChart: false,
+      showLocationChart: false,
 
       teamPath: {
         text: [],
@@ -233,16 +242,16 @@ export default {
       eqpList: [],
       periodList: [],
       userList: [],
-      area: '',
+      area: [],
       areaList: [],
       areaParams: {
         label: 'areaName',
         value: 'id',
         children: 'children'
       },
-      supplier: '',
+      supplier: [],
       supplierList: [],
-      manufacturer: '',
+      manufacturer: [],
       manufacturerList: [],
       team: '',
       teamList: [],
@@ -290,6 +299,7 @@ export default {
   },
   created () {
     this.initSelect()
+    this.searchResult()
     // this.init()
   },
   activated () {
@@ -298,19 +308,52 @@ export default {
   },
   methods: {
     onResize (el) {
-      if (this.dateChartCount) {
+      if (this.dateChartCount && el.id === 'countChart') {
         this.dateChartCount.resize()
       }
-      if (this.dateChartAvg) {
+      if (this.dateChartAvg && el.id === 'avgTimeChart') {
         this.dateChartAvg.resize()
       }
-      if (this.eqpTypeChartCount) {
+      if (this.eqpTypeChartCount && el.id === 'countChartByEqpType') {
         this.eqpTypeChartCount.resize()
       }
-      if (this.eqpTypeChartAvg) {
+      if (this.eqpTypeChartAvg && el.id === 'avgTimeChartByEqpType') {
         this.eqpTypeChartAvg.resize()
       }
+      if (this.supplierChartCount && el.id === 'countChartBySupplier') {
+        this.supplierChartCount.resize()
+      }
+      if (this.supplierChartAvg && el.id === 'avgTimeChartBySupplier') {
+        this.supplierChartAvg.resize()
+      }
+      if (this.manufacturerChartCount && el.id === 'countChartByManufacturer') {
+        this.manufacturerChartCount.resize()
+      }
+      if (this.manufacturerChartAvg && el.id === 'avgTimeChartByManufacturer') {
+        this.manufacturerChartAvg.resize()
+      }
+      if (this.subSystemChartCount && el.id === 'countChartBySubSystem') {
+        this.subSystemChartCount.resize()
+      }
+      if (this.subSystemChartAvg && el.id === 'avgTimeChartBySubSystem') {
+        this.subSystemChartAvg.resize()
+      }
+      if (this.locationChartCount && el.id === 'countChartByLocation') {
+        this.locationChartCount.resize()
+      }
+      if (this.locationChartAvg && el.id === 'avgTimeChartByLocation') {
+        this.locationChartAvg.resize()
+      }
     },
+    onResize0 () {},
+    onResize1 () {},
+    onResize2 () {},
+    onResize3 () {},
+    onResize4 () {},
+    onResize5 () {},
+    onResize6 () {},
+    onResize7 () {},
+    onResize8 () {},
     showStatus (status) {
       var des = '--'
       switch (status) {
@@ -508,6 +551,21 @@ export default {
       mychart.optionSubSystemAvg.series = chartData.seariesavg
       this.subSystemChartAvg.setOption(mychart.optionSubSystemAvg)
     },
+    drawLocationChart (data) {
+      this.showLocationChart = true
+      this.locationChartCount = this.$echarts.init(this.$refs.countChartByLocation)
+      this.locationChartAvg = this.$echarts.init(this.$refs.avgTimeChartByLocation)
+      this.locationChartCount.clear()
+      this.locationChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data.data, data.groupby)
+      mychart.optionLocationCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionLocationCount.series = chartData.seariescount
+      this.locationChartCount.setOption(mychart.optionLocationCount)
+
+      mychart.optionLocationAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionLocationAvg.series = chartData.seariesavg
+      this.locationChartAvg.setOption(mychart.optionLocationAvg)
+    },
     choseTunnel (tunnelID) {
       this.condition.splice(0, 4, '', '', '', '')
       this.condition.splice(5, 1, '')
@@ -635,7 +693,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      // this.searchResult(1)
+      // this.searchResult()
     },
     // 改变排序
     changeOrder (sort) {
@@ -683,12 +741,12 @@ export default {
         eTime = this.time.text[1] + ' 23:59:59'
       }
       var param = {
-        SubSystemIDs: this.subSystem,
-        EqpTypeIDs: this.eqpType,
-        LocationPath: '1,23', // this.area,
-        SupplierIDs: this.supplier,
-        ManufacturerIDs: this.manufacturer,
-        OrgPath: '1,16', // this.team,
+        SubSystemIDs: this.subSystem.join(','),
+        EqpTypeIDs: this.eqpType.join(','),
+        LocationPath: this.area.join(','),
+        SupplierIDs: this.supplier.join(','),
+        ManufacturerIDs: this.manufacturer.join(','),
+        OrgPath: this.teamPath.text.join(','),
         startTime: sTime,
         endTime: eTime,
         dateType: this.dateType,
@@ -704,8 +762,10 @@ export default {
 
       if (param.EqpTypeIDs) {
         api.reportSubChartEqpType(param).then(res => {
-          if (res.code === ApiRESULT.Success) {
+          if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawEqpTypeChart(res.data)
+          } else {
+            this.showEqpTypeChart = false
           }
         }).catch(err => console.log(err))
       } else {
@@ -714,8 +774,10 @@ export default {
 
       if (param.SupplierIDs) {
         api.reportSubChartSupplier(param).then(res => {
-          if (res.code === ApiRESULT.Success) {
+          if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSupplierChart(res.data)
+          } else {
+            this.showSupplierChart = false
           }
         }).catch(err => console.log(err))
       } else {
@@ -724,8 +786,10 @@ export default {
 
       if (param.ManufacturerIDs) {
         api.reportSubChartManufacturer(param).then(res => {
-          if (res.code === ApiRESULT.Success) {
+          if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawManufacturerChart(res.data)
+          } else {
+            this.showManufacturerChart = false
           }
         }).catch(err => console.log(err))
       } else {
@@ -734,12 +798,37 @@ export default {
 
       if (param.SubSystemIDs) {
         api.reportSubChartSubSystem(param).then(res => {
-          if (res.code === ApiRESULT.Success) {
+          if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSubSystemChart(res.data)
+          } else {
+            this.showSubSystemChart = false
           }
         }).catch(err => console.log(err))
       } else {
         this.showSubSystemChart = false
+      }
+
+      if (param.LocationPath) {
+        api.reportSubChartLocation(param).then(res => {
+          if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
+            this.drawLocationChart(res.data)
+          } else {
+            this.showLocationChart = false
+          }
+        }).catch(err => console.log(err))
+      } else {
+        this.showLocationChart = false
+      }
+      if (param.OrgPath) {
+        api.reportSubChartOrg(param).then(res => {
+          if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
+            // this.drawLocationChart(res.data)
+          } else {
+            // this.showLocationChart = false
+          }
+        }).catch(err => console.log(err))
+      } else {
+        // this.showLocationChart = false
       }
     },
     // 修改
