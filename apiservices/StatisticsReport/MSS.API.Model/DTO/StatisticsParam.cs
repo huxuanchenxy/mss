@@ -21,6 +21,10 @@ namespace MSS.API.Model.DTO
 
         public string LocationLevel3s { get; set; }
 
+        public string LocationPath { get; set; }
+
+        public string OrgPath { get; set; }
+
         public string TopOrgIDs { get; set; }
 
         public string TeamIDs { get; set; }

@@ -37,7 +37,182 @@ namespace MSS.API.Core.V1.Controllers
             {
                 group.AddRange(groupby.Split(','));
             }
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
             var ret = await _statisticsService.ListStatisticsAlarm(param, group, dateType);
+            return ret;
+        }
+
+        [HttpGet("alarm/groupbyeqptype")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupByEqpType([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupByEqpType(param, dateType);
+            return ret;
+        }
+
+        [HttpGet("alarm/groupbysupplier")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupBySupplier([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupBySupplier(param, dateType);
+            return ret;
+        }
+
+        [HttpGet("alarm/groupbymanufacturer")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupByManufacturer([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupByManufacturer(param, dateType);
+            return ret;
+        }
+
+        [HttpGet("alarm/groupbysubsystem")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupBySubSystem([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupBySubSystem(param, dateType);
+            return ret;
+        }
+
+        [HttpGet("alarm/groupbylocation")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupByLocation([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupByLocation(param, dateType);
+            return ret;
+        }
+
+        [HttpGet("alarm/groupbyorg")]
+        public async Task<ActionResult<ApiResult>> AlarmGroupByOrg([FromQuery]StatisticsParam param, int dateType)
+        {
+            if (!string.IsNullOrEmpty(param.LocationPath))
+            {
+                string[] levels = param.LocationPath.Split(',');
+                for (int i = 0; i < levels.Length; ++i)
+                {
+                    if (i == 0)
+                    {
+                        param.LocationLevel1s = levels[i];
+                    }
+                    if (i == 1)
+                    {
+                        param.LocationLevel2s = levels[i];
+                    }
+                    if (i == 2)
+                    {
+                        param.LocationLevel3s = levels[i];
+                    }
+                }
+            }
+            var ret = await _statisticsService.ListStatisticsAlarmGroupByOrg(param, dateType);
             return ret;
         }
     }

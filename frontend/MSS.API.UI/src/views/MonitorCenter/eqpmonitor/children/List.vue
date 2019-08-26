@@ -89,15 +89,18 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        设备总数：{{totalEqp}}
+        <span style="padding-left:5px">
+          全线设备总数：
+          <font style="color:#fff;font-size:17px;">{{totalEqp}}</font>
+        </span>
         <span style="padding-left:5px">
           , 有
-          <font style="color:#be0909">{{troubleCount}}</font>
+          <font style="color:#be0909;font-size:17px;">{{troubleCount}}</font>
           台设备故障
         </span>
         <span style="padding-left:5px">
           , 有
-          <font style="color:#f79707">{{otherCount}}</font>
+          <font style="color:#f79707;font-size:17px;">{{otherCount}}</font>
           台设备报警
         </span>
       </ul>

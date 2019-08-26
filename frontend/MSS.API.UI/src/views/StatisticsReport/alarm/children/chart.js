@@ -1,17 +1,24 @@
-const backicon = require('../images/icon-user.svg')
+const backicon = require('../images/return.svg')
 const optionCount = {
   title: {
     text: '报警次数',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
     }
   },
   legend: {
-    data: []
+    data: [],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -32,12 +39,22 @@ const optionCount = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -47,7 +64,11 @@ const optionCount = {
 const optionAvg = {
   title: {
     text: '平均恢复时间（小时）',
-    subtext: ''
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
   },
   tooltip: {
     trigger: 'axis',
@@ -56,7 +77,10 @@ const optionAvg = {
     }
   },
   legend: {
-    data: []
+    data: [],
+    textStyle: {
+      color: '#fff'
+    }
   },
   toolbox: {
     show: true,
@@ -77,12 +101,654 @@ const optionAvg = {
   xAxis: [
     {
       type: 'category',
-      data: []
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
-      type: 'value'
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionEqpTypeCount = {
+  title: {
+    text: '报警次数(以设备类型统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionEqpTypeAvg = {
+  title: {
+    text: '平均恢复时间(小时)(以设备类型统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionSupplierCount = {
+  title: {
+    text: '报警次数(以供应商统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionSupplierAvg = {
+  title: {
+    text: '平均恢复时间(小时)(以供应商统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionManufacturerCount = {
+  title: {
+    text: '报警次数(以制造商统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionManufacturerAvg = {
+  title: {
+    text: '平均恢复时间(小时)(以制造商统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionSubSystemCount = {
+  title: {
+    text: '报警次数(以子系统统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionSubSystemAvg = {
+  title: {
+    text: '平均恢复时间(小时)(以子系统统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionLocationCount = {
+  title: {
+    text: '报警次数(以位置信息统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionLocationAvg = {
+  title: {
+    text: '平均恢复时间(小时)(以位置信息统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
     }
   ],
   series: [
@@ -151,8 +817,54 @@ function prepareChartData (data, groupModel) {
   }
 }
 
+function prepareSubChartData (data, groupby) {
+  let xAxisData = []
+  let seariescount = []
+  let seariesavg = []
+  let result = {}
+  if (data) {
+    let objcount = {
+      name: 'groupby',
+      type: 'bar',
+      stack: 'test',
+      barWidth: 20,
+      data: []
+    }
+    let objavg = {
+      name: 'groupby',
+      type: 'bar',
+      stack: 'test',
+      barWidth: 20,
+      data: []
+    }
+    for (let i = 0; i < data.length; ++i) {
+      let obj = data[i]
+      xAxisData.push(obj.dimension[groupby])
+      objcount.data.push(obj.num)
+      objavg.data.push((obj.avgtime / (1000 * 60 * 60)).toFixed(1))
+    }
+    seariescount.push(objcount)
+    seariesavg.push(objavg)
+  }
+  result['xAxisData'] = xAxisData
+  result['seariescount'] = seariescount
+  result['seariesavg'] = seariesavg
+  return result
+}
+
 export default {
   optionCount: optionCount,
   optionAvg: optionAvg,
-  prepareChartData: prepareChartData
+  optionEqpTypeAvg: optionEqpTypeAvg,
+  optionEqpTypeCount: optionEqpTypeCount,
+  optionSupplierAvg: optionSupplierAvg,
+  optionSupplierCount: optionSupplierCount,
+  optionManufacturerAvg: optionManufacturerAvg,
+  optionManufacturerCount: optionManufacturerCount,
+  optionSubSystemAvg: optionSubSystemAvg,
+  optionSubSystemCount: optionSubSystemCount,
+  optionLocationAvg: optionLocationAvg,
+  optionLocationCount: optionLocationCount,
+  prepareChartData: prepareChartData,
+  prepareSubChartData: prepareSubChartData
 }
