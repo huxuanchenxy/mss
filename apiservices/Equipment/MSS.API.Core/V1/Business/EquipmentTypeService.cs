@@ -172,5 +172,81 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
+
+        public async Task<ApiResult> MockData()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<int> subsystems = new List<int>{
+                    18, 19, 20, 21
+                };
+                // 部门
+                Dictionary<int, string> org = new Dictionary<int, string>();
+                org.Add(4, "1,2,4");
+                org.Add(6, "1,2,6");
+                org.Add(7, "1,3,7");
+                org.Add(16, "1,16");
+                org.Add(17, "8,17");
+
+                Dictionary<int, string> location = new Dictionary<int, string>();
+                location.Add(17, "2,17");
+                location.Add(18, "1,18");
+                location.Add(22, "1,22");
+                location.Add(23, "1,23");
+                location.Add(24, "1,24");
+                location.Add(25, "2,25");
+                location.Add(27, "2,27");
+                location.Add(28, "3,28");
+                location.Add(29, "3,29");
+                location.Add(34, "1,34");
+                location.Add(35, "1,35");
+                location.Add(37, "1,37");
+                location.Add(43, "4,43");
+                location.Add(44, "4,44");
+
+                List<EquipmentType> types = await _eqpTypeRepo.GetAll();
+                
+                foreach (EquipmentType type in types)
+                {
+                    for (int i = 0; i < 100; ++i)
+                    {
+                        Equipment eqp = new Equipment();
+                        eqp.Code = type.ID + "_" + i;
+                        eqp.Name = type.TName + i;
+                        eqp.Type = type.ID;
+                        eqp.SubSystem = subsystems[i%4];
+                        int radomKey = org.Keys.ToArray()[i%5];
+                        eqp.Team = radomKey;
+                        eqp.TeamPath = org[radomKey];
+                        eqp.TopOrg = Convert.ToInt32(eqp.TeamPath.Split(',')[0]);
+
+                        radomKey = location.Keys.ToArray()[i % 14];
+                        eqp.Location = radomKey;
+                        eqp.LocationBy = 1;
+                        eqp.LocationPath = location[radomKey];
+
+                        eqp.MediumRepair = 30;
+                        eqp.LargeRepair = 90;
+                        eqp.CreatedBy = 1;
+                        eqp.CreatedTime = DateTime.Now;
+                        eqp.UpdatedBy = 1;
+                        eqp.UpdatedTime = DateTime.Now;
+                        eqp.IsDel = false;
+
+                        await _eqpRepo.Save(eqp);
+                    }
+                    
+                }
+                ret.data = null;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
     }
 }

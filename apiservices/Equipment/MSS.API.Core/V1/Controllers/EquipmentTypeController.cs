@@ -64,5 +64,12 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _eqpTypeService.GetAll();
             return Ok(resp.Result);
         }
+
+        [HttpGet("mockdata")]
+        public ActionResult MockData()
+        {
+            var resp = _eqpTypeService.MockData();
+            return Ok(resp.Result);
+        }
     }
 }
