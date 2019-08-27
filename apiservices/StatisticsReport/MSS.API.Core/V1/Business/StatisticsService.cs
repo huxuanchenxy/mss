@@ -174,6 +174,7 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarm(param);
+                List<StatisticsAlarm> groupResult = new List<StatisticsAlarm>();
 
                 var services = await _consulServiceProvider.GetServiceAsync("OrgService");
                 string[] path = param.OrgPath.Split(',');
@@ -184,14 +185,32 @@ namespace MSS.API.Core.V1.Business
                 {
                     List<OrgNodeView> org = JsonConvert.DeserializeObject<List<OrgNodeView>>(
                         result.data.ToString());
+                    // 循环设备，定位设备属于哪个分组
+                    foreach (StatisticsAlarm eqp in data)
+                    {
+                        OrgNodeView parent = _getParentNode(eqp.dimension.TeamID, org[0].children);
+                        eqp.dimension.TeamID = parent.id;
+                        eqp.dimension.TeamName = parent.label;
+                    }
+
                     
+                    IEnumerable<IGrouping<int, StatisticsAlarm>> groups = data.GroupBy(c => c.dimension.TeamID);
+                    foreach (IGrouping<int, StatisticsAlarm> group in groups)
+                    {
+                        StatisticsAlarm first = group.First();
+                        first.num = group.Count().ToString();
+                        first.avgtime = (group.Sum(item => item.ElapsedTime)/group.Count()).ToString();
+                        groupResult.Add(first);
+                    }
                 }
+
+                
 
                 ret.code = Code.Success;
                 ret.data = new
                 {
-                    data = data,
-                    groupby = ""
+                    data = groupResult,
+                    groupby = "teamName"
                 };
             }
             catch (Exception ex)
@@ -203,5 +222,49 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
+        private OrgNodeView _getParentNode(int teamId, List<OrgNodeView> nodes)
+        {
+            OrgNodeView parentNode = null;
+            foreach (OrgNodeView node in nodes)
+            {
+                if (node.id == teamId)
+                {
+                    parentNode = node;
+                    break;
+                }
+                else if (node.children != null && node.children.Count > 0)
+                {
+                    bool ret = _isInChild(teamId, node.children);
+                    if (ret)
+                    {
+                        parentNode = node;
+                        break;
+                    }
+                }
+            }
+            return parentNode;
+        }
+
+        private bool _isInChild (int teamId, List<OrgNodeView> nodes)
+        {
+            bool ret = false;
+            foreach (OrgNodeView node in nodes)
+            {
+                if (node.id == teamId)
+                {
+                    ret = true;
+                    break;
+                }
+                else if (node.children != null && node.children.Count > 0)
+                {
+                    ret = _isInChild(teamId, node.children);
+                    if (ret)
+                    {
+                        break;
+                    }
+                }
+            }
+            return ret;
+        }
     }
 }
