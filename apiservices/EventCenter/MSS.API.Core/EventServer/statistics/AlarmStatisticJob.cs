@@ -62,6 +62,9 @@ namespace MSS.API.Core.EventServer
                                 _logger.LogDebug($"Consumed message '{cr.Value}' at: '{cr.TopicPartitionOffset}'.");
                                 string msg = cr.Value;
                                 Alarm alarm = JsonConvert.DeserializeObject<Alarm>(cr.Value);
+                                if (alarm.Ack != 0) {
+                                    _logger.LogDebug($"Consumed message '{cr.Value}' at: '{cr.TopicPartitionOffset}'.");
+                                }
                                 PidTable pidInfo = null;
                                 if (_globalDataManager.AllPID.ContainsKey(alarm.pid))
                                 {
@@ -123,8 +126,12 @@ namespace MSS.API.Core.EventServer
             alarmRecord.RecoverTime = end.ETime;
             alarmRecord.Prop = start.PidDes;
             alarmRecord.Content = start.Des;
-            alarmRecord.ElapsedTime = (int)(end.ETime - start.ETime).TotalMilliseconds;
-            _statisticsRepo.SaveStatisticsAlarm(alarmRecord);
+            int elapsedtime = (int)(end.ETime - start.ETime).TotalMilliseconds;
+            alarmRecord.ElapsedTime = elapsedtime > 0 ? elapsedtime : 0;
+            if (alarmRecord.ElapsedTime > 0)
+            {
+                _statisticsRepo.SaveStatisticsAlarm(alarmRecord);
+            }
         }
     }
 }
