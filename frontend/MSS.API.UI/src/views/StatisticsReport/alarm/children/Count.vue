@@ -116,8 +116,8 @@
       <el-container style="height:100%;">
         <el-main style="padding:0px">
           <el-row>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChart" id="countChart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChart" id="avgTimeChart" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChart" id="countChart" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChart" id="avgTimeChart" class="echart" v-resize="onResize"></div></el-col>
           </el-row>
           <el-row v-show="showEqpTypeChart">
             <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByEqpType" id="countChartByEqpType" v-resize="onResize"></div></el-col>
@@ -896,53 +896,20 @@ export default {
   width:unset !important;
 }
 
-table {
+.tableechart {
     /* cellspacing:0 ; */
     border-collapse: collapse; /* IE7 and lower */
     border-spacing: 0;
     width: 100%;
-    background-color: brown;
-}
-.bordered tr:hover {
-    background: #fbf8e9;
-    -o-transition: all 0.1s ease-in-out;
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
+    /* color:black; */
+    /* background-color: brown; */
+    /* background: rgba(49, 48, 53, 0.5); */
 }
 
-.bordered th {
-    padding: 7px;
-    text-align: center;
-    cellspacing:0;
+div.echart > div:last-child {
+  background-color: rgba(49, 48, 53, 1) !important;
 }
-
-.bordered td{
-    padding: 7px;
-    text-align: center;
-    cellspacing:0;
-}
-.bordered th {
-
-      background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
-      background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
-      background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
-      background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
-      background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
-      background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
-}
-.bordered td:first-child, .bordered th:first-child {
-    border-left: none;
-}
-.bordered  tr:nth-of-type(2n){background:#FFFFFF;cursor: pointer;}
-.bordered  tr:nth-of-type(2n+1){background:#F7FAFC;cursor: pointer;}
-
-.bordered  tbody tr:hover{  background: #fbf8e9;
-    -o-transition: all 0.1s ease-in-out;
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
+div.echart > div:last-child > div:last-child > div:first-child {
+  display:none;
 }
 </style>
