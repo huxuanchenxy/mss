@@ -139,6 +139,10 @@
             <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByLocation" id="countChartByLocation" v-resize="onResize"></div></el-col>
             <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByLocation" id="avgTimeChartByLocation" v-resize="onResize"></div></el-col>
           </el-row>
+          <el-row v-show="showOrgChart">
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByOrg" id="countChartByOrg" v-resize="onResize"></div></el-col>
+            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByOrg" id="avgTimeChartByOrg" v-resize="onResize"></div></el-col>
+          </el-row>
         </el-main>
       </el-container>
     </div>
@@ -221,12 +225,15 @@ export default {
       subSystemChartAvg: null,
       locationChartCount: null,
       locationChartAvg: null,
+      orgChartCount: null,
+      orgChartAvg: null,
 
       showEqpTypeChart: false,
       showSupplierChart: false,
       showManufacturerChart: false,
       showSubSystemChart: false,
       showLocationChart: false,
+      showOrgChart: false,
 
       teamPath: {
         text: [],
@@ -310,6 +317,12 @@ export default {
       }
       if (this.locationChartAvg && el.id === 'avgTimeChartByLocation') {
         this.locationChartAvg.resize()
+      }
+      if (this.orgChartCount && el.id === 'countChartByOrg') {
+        this.orgChartCount.resize()
+      }
+      if (this.orgChartAvg && el.id === 'avgTimeChartByOrg') {
+        this.orgChartAvg.resize()
       }
     },
 
@@ -475,6 +488,21 @@ export default {
       mychart.optionLocationAvg.series = chartData.seariesavg
       this.locationChartAvg.setOption(mychart.optionLocationAvg)
     },
+    drawOrgChart (data) {
+      this.showOrgChart = true
+      this.orgChartCount = this.$echarts.init(this.$refs.countChartByOrg)
+      this.orgChartAvg = this.$echarts.init(this.$refs.avgTimeChartByOrg)
+      this.orgChartCount.clear()
+      this.orgChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data.data, data.groupby)
+      mychart.optionOrgCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionOrgCount.series = chartData.seariescount
+      this.orgChartCount.setOption(mychart.optionOrgCount)
+
+      mychart.optionOrgAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionOrgAvg.series = chartData.seariesavg
+      this.orgChartAvg.setOption(mychart.optionOrgAvg)
+    },
     initSelect () {
       // 子系统加载
       apiAuth.getSubCode(dictionary.subSystem).then(res => {
@@ -633,13 +661,13 @@ export default {
       if (param.OrgPath) {
         api.reportSubChartOrg(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
-            // this.drawLocationChart(res.data)
+            this.drawOrgChart(res.data)
           } else {
-            // this.showLocationChart = false
+            this.showOrgChart = false
           }
         }).catch(err => console.log(err))
       } else {
-        // this.showLocationChart = false
+        this.showOrgChart = false
       }
     }
   }

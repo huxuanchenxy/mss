@@ -89,7 +89,7 @@ const optionCount = {
 
 const optionAvg = {
   title: {
-    text: '平均恢复时间（小时）',
+    text: '平均恢复时间（秒）',
     subtext: '',
     textStyle: {
       color: '#fff',
@@ -214,7 +214,7 @@ const optionEqpTypeCount = {
 
 const optionEqpTypeAvg = {
   title: {
-    text: '平均恢复时间(小时)(以设备类型统计)',
+    text: '平均恢复时间(秒)(以设备类型统计)',
     subtext: '',
     textStyle: {
       color: '#fff',
@@ -340,7 +340,7 @@ const optionSupplierCount = {
 
 const optionSupplierAvg = {
   title: {
-    text: '平均恢复时间(小时)(以供应商统计)',
+    text: '平均恢复时间(秒)(以供应商统计)',
     subtext: '',
     textStyle: {
       color: '#fff',
@@ -466,7 +466,7 @@ const optionManufacturerCount = {
 
 const optionManufacturerAvg = {
   title: {
-    text: '平均恢复时间(小时)(以制造商统计)',
+    text: '平均恢复时间(秒)(以制造商统计)',
     subtext: '',
     textStyle: {
       color: '#fff',
@@ -592,7 +592,7 @@ const optionSubSystemCount = {
 
 const optionSubSystemAvg = {
   title: {
-    text: '平均恢复时间(小时)(以子系统统计)',
+    text: '平均恢复时间(秒)(以子系统统计)',
     subtext: '',
     textStyle: {
       color: '#fff',
@@ -719,7 +719,135 @@ const optionLocationCount = {
 
 const optionLocationAvg = {
   title: {
-    text: '平均恢复时间(小时)(以位置信息统计)',
+    text: '平均恢复时间(秒)(以位置信息统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionOrgCount = {
+  title: {
+    text: '报警次数(以部门信息统计)',
+    subtext: '',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['groupby'],
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      saveAsImage: { show: true }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionOrgAvg = {
+  title: {
+    text: '平均恢复时间(秒)(以部门信息统计)',
     subtext: '',
     textStyle: {
       color: '#fff',
@@ -822,7 +950,7 @@ function prepareChartData (data, groupModel) {
         for (let i = 0; i < xAxisData[x].length; ++i) {
           if (xAxisData[x][i].dimension[groupModel.modelID] === +key) {
             count = xAxisData[x][i].num
-            avg = (xAxisData[x][i].avgtime / (1000 * 60 * 60)).toFixed(1)
+            avg = (xAxisData[x][i].avgtime / (1000)).toFixed(1)
             break
           }
         }
@@ -900,7 +1028,7 @@ function prepareSubChartData (data, groupby) {
       let obj = data[i]
       xAxisData.push(obj.dimension[groupby])
       objcount.data.push(obj.num)
-      objavg.data.push((obj.avgtime / (1000 * 60 * 60)).toFixed(1))
+      objavg.data.push((obj.avgtime / (1000)).toFixed(1))
     }
     seariescount.push(objcount)
     seariesavg.push(objavg)
@@ -924,6 +1052,8 @@ export default {
   optionSubSystemCount: optionSubSystemCount,
   optionLocationAvg: optionLocationAvg,
   optionLocationCount: optionLocationCount,
+  optionOrgAvg: optionOrgAvg,
+  optionOrgCount: optionOrgCount,
   prepareChartData: prepareChartData,
   prepareSubChartData: prepareSubChartData
 }
