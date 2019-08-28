@@ -87,7 +87,7 @@ namespace MSS.API.Core.V1.Business
                 if (result.code == Code.Success)
                 {
                     List<Alarm> alarms = JsonConvert.DeserializeObject<List<Alarm>>(result.data.ToString());
-                    List<Alarm> alarm_data = new List<Alarm>();
+                    Dictionary<int, Alarm> alarm_data = new Dictionary<int, Alarm>();
                     foreach (Alarm alarm in alarms)
                     {
                         PidTable pid = data.Where(c => c.pid == alarm.pid).FirstOrDefault();
@@ -99,11 +99,19 @@ namespace MSS.API.Core.V1.Business
                             alarm.EqpID = pid.EqpID;
                             alarm.IsTrouble = pid.PidType == 1 ? true : false;
 
-                            alarm_data.Add(alarm);
+                            if (alarm_data.ContainsKey((int)alarm.EqpID)) {
+                                if(alarm.IsTrouble)
+                                {
+                                    alarm_data[(int)alarm.EqpID] = alarm;
+                                }
+                            } else {
+                                alarm_data.Add((int)alarm.EqpID, alarm);
+                            }
+                            
                         }
                     }
                     ret.code = Code.Success;
-                    ret.data = alarm_data;
+                    ret.data = alarm_data.Values.ToList();
                 }
             }
             catch (Exception ex)

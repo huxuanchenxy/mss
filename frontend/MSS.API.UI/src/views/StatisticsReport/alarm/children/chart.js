@@ -40,7 +40,7 @@ const optionCount = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     }
   },
   legend: {
@@ -69,8 +69,7 @@ const optionCount = {
         title: '返回',
         icon: `image://${backicon}`,
         onclick: this.back
-      },
-      saveAsImage: { show: true }
+      }
     }
   },
   calculable: true,
@@ -119,7 +118,7 @@ const optionAvg = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     }
   },
   legend: {
@@ -148,8 +147,7 @@ const optionAvg = {
         title: '返回',
         icon: `image://${backicon}`,
         onclick: this.back
-      },
-      saveAsImage: { show: true }
+      }
     }
   },
   calculable: true,
@@ -182,6 +180,9 @@ const optionEqpTypeCount = {
   title: {
     text: '报警次数(以设备类型统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -190,7 +191,7 @@ const optionEqpTypeCount = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -212,7 +213,15 @@ const optionEqpTypeCount = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          // console.info(opt)
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -245,6 +254,9 @@ const optionEqpTypeAvg = {
   title: {
     text: '平均恢复时间(秒)(以设备类型统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -253,7 +265,7 @@ const optionEqpTypeAvg = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -275,7 +287,14 @@ const optionEqpTypeAvg = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -308,6 +327,9 @@ const optionSupplierCount = {
   title: {
     text: '报警次数(以供应商统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -316,7 +338,7 @@ const optionSupplierCount = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -338,7 +360,14 @@ const optionSupplierCount = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -371,6 +400,9 @@ const optionSupplierAvg = {
   title: {
     text: '平均恢复时间(秒)(以供应商统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -379,7 +411,7 @@ const optionSupplierAvg = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -401,7 +433,14 @@ const optionSupplierAvg = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -434,6 +473,9 @@ const optionManufacturerCount = {
   title: {
     text: '报警次数(以制造商统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -442,7 +484,7 @@ const optionManufacturerCount = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -464,7 +506,14 @@ const optionManufacturerCount = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -497,6 +546,9 @@ const optionManufacturerAvg = {
   title: {
     text: '平均恢复时间(秒)(以制造商统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -505,7 +557,7 @@ const optionManufacturerAvg = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -527,7 +579,14 @@ const optionManufacturerAvg = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -560,6 +619,9 @@ const optionSubSystemCount = {
   title: {
     text: '报警次数(以子系统统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -568,7 +630,7 @@ const optionSubSystemCount = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -590,7 +652,14 @@ const optionSubSystemCount = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -623,6 +692,9 @@ const optionSubSystemAvg = {
   title: {
     text: '平均恢复时间(秒)(以子系统统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -631,7 +703,7 @@ const optionSubSystemAvg = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -653,7 +725,14 @@ const optionSubSystemAvg = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -686,6 +765,9 @@ const optionLocationCount = {
   title: {
     text: '报警次数(以位置信息统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -694,7 +776,7 @@ const optionLocationCount = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -717,7 +799,14 @@ const optionLocationCount = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -750,6 +839,9 @@ const optionLocationAvg = {
   title: {
     text: '平均恢复时间(秒)(以位置信息统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -758,7 +850,7 @@ const optionLocationAvg = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -781,7 +873,14 @@ const optionLocationAvg = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -814,6 +913,9 @@ const optionOrgCount = {
   title: {
     text: '报警次数(以部门信息统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -822,7 +924,7 @@ const optionOrgCount = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -845,7 +947,14 @@ const optionOrgCount = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -878,6 +987,9 @@ const optionOrgAvg = {
   title: {
     text: '平均恢复时间(秒)(以部门信息统计)',
     subtext: '',
+    x: '45%',
+    y: '87%',
+    textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -886,7 +998,7 @@ const optionOrgAvg = {
   tooltip: {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
     },
     formatter: function (params) {
       var res = params[0].name
@@ -909,7 +1021,14 @@ const optionOrgAvg = {
     x: 'right',
     y: 'top',
     feature: {
-      saveAsImage: { show: true }
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
     }
   },
   calculable: true,
@@ -940,7 +1059,7 @@ const optionOrgAvg = {
 
 // groupModel 为alarmData数据以什么字段聚合，modelName和modelID为数据中属性名（modelID为值，modelName为显示名）
 // 以设备类型为例，modelID=eqpTypeID modelName=eqpTypeName。
-function prepareChartData (data, groupModel) {
+function prepareChartData (data, groupModel, cursor) {
   let legendData = {}
   let xAxisData = {}
   if (data) {
@@ -965,12 +1084,14 @@ function prepareChartData (data, groupModel) {
         type: 'bar',
         stack: 'test',
         barWidth: 20,
+        cursor: cursor,
         data: []
       }
       let objavg = {
         id: key,
         name: legendData[key],
         type: 'line',
+        cursor: cursor,
         data: []
       }
       for (let x in xAxisData) {
@@ -1014,6 +1135,7 @@ function prepareChartData (data, groupModel) {
         let dataAvg = {
           name: groupModel.legend[i],
           type: 'line',
+          cursor: cursor,
           data: []
         }
         let dataCount = {
@@ -1021,6 +1143,7 @@ function prepareChartData (data, groupModel) {
           type: 'bar',
           stack: 'test',
           barWidth: 20,
+          cursor: cursor,
           data: []
         }
         for (let i = 0; i < optionCount.xAxis[0].data.length; ++i) {
@@ -1046,11 +1169,13 @@ function prepareSubChartData (data, groupby) {
       type: 'bar',
       stack: 'test',
       barWidth: 20,
+      cursor: 'default',
       data: []
     }
     let objavg = {
       name: 'groupby',
       type: 'line',
+      cursor: 'default',
       data: []
     }
     for (let i = 0; i < data.length; ++i) {
