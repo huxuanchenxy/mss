@@ -24,9 +24,9 @@ const optionCount = {
   title: {
     text: '报警次数',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -102,9 +102,9 @@ const optionAvg = {
   title: {
     text: '平均恢复时间（秒）',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -180,9 +180,9 @@ const optionEqpTypeCount = {
   title: {
     text: '报警次数(以设备类型统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -254,9 +254,9 @@ const optionEqpTypeAvg = {
   title: {
     text: '平均恢复时间(秒)(以设备类型统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -327,9 +327,9 @@ const optionSupplierCount = {
   title: {
     text: '报警次数(以供应商统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -400,9 +400,9 @@ const optionSupplierAvg = {
   title: {
     text: '平均恢复时间(秒)(以供应商统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -473,9 +473,9 @@ const optionManufacturerCount = {
   title: {
     text: '报警次数(以制造商统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -546,9 +546,9 @@ const optionManufacturerAvg = {
   title: {
     text: '平均恢复时间(秒)(以制造商统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -619,9 +619,9 @@ const optionSubSystemCount = {
   title: {
     text: '报警次数(以子系统统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -692,9 +692,9 @@ const optionSubSystemAvg = {
   title: {
     text: '平均恢复时间(秒)(以子系统统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -765,9 +765,9 @@ const optionLocationCount = {
   title: {
     text: '报警次数(以位置信息统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -839,9 +839,9 @@ const optionLocationAvg = {
   title: {
     text: '平均恢复时间(秒)(以位置信息统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -913,9 +913,9 @@ const optionOrgCount = {
   title: {
     text: '报警次数(以部门信息统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -987,9 +987,9 @@ const optionOrgAvg = {
   title: {
     text: '平均恢复时间(秒)(以部门信息统计)',
     subtext: '',
-    x: '45%',
-    y: '87%',
-    textAlign: 'center',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
     textStyle: {
       color: '#fff',
       fontSize: 12
