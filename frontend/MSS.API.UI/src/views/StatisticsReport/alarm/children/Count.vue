@@ -116,32 +116,39 @@
       <el-container style="height:100%;">
         <el-main style="padding:0px">
           <el-row>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChart" id="countChart" class="echart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChart" id="avgTimeChart" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChart" v-resize="onResize">
+              <!-- <div style="width:100%; height:300px;" ref="countChart" id="countChart" class="echart" v-resize="onResize"></div> -->
+              <div style="width:100%; height:300px;" ref="countChart"  class="echart" ></div>
+              <div style="position: relative;bottom: 30px;left: 50%;">{{bottomDesForCount}}</div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChart" v-resize="onResize">
+              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart" ></div>
+              <div style="position: relative;bottom: 30px;left: 50%;">{{bottomDesForAvg}}</div>
+              </el-col>
           </el-row>
           <el-row v-show="showEqpTypeChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByEqpType" id="countChartByEqpType" class="echart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType" id="avgTimeChartByEqpType" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartByEqpType" v-resize="onResize" ><div style="width:100%; height:300px;" ref="countChartByEqpType"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartByEqpType" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showSupplierChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySupplier" id="countChartBySupplier" class="echart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier" id="avgTimeChartBySupplier" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartBySupplier"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showManufacturerChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByManufacturer" id="countChartByManufacturer" class="echart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer" id="avgTimeChartByManufacturer" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartByManufacturer" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByManufacturer"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartByManufacturer" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showSubSystemChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySubSystem" id="countChartBySubSystem" class="echart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystem" id="avgTimeChartBySubSystem" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartBySubSystem" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartBySubSystem"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartBySubSystem" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystem"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showLocationChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByLocation" id="countChartByLocation" class="echart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByLocation" id="avgTimeChartByLocation" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartByLocation" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByLocation" class="echart"></div></el-col>
+            <el-col :span="12" id="avgTimeChartByLocation" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByLocation"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showOrgChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByOrg" id="countChartByOrg" class="echart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByOrg" id="avgTimeChartByOrg" class="echart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartByOrg" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByOrg"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartByOrg" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByOrg"  class="echart" ></div></el-col>
           </el-row>
         </el-main>
       </el-container>
@@ -263,6 +270,9 @@ export default {
       searchHideMore: false,
       searchHideMoreHeight: '100%',
       shrinkText: '更多',
+
+      bottomDesForCount: '',
+      bottomDesForAvg: '',
 
       loading: false
     }
@@ -396,6 +406,19 @@ export default {
       if (this.groupidxForCount === 3) {
         cursor = 'default'
       }
+      switch (this.groupidxForCount) {
+        case 0:
+          this.bottomDesForCount = '以子系统统计'
+          break
+        case 1:
+          this.bottomDesForCount = '以设备类型统计'
+          break
+        case 2:
+          this.bottomDesForCount = '以供应商统计'
+          break
+        case 3:
+          this.bottomDesForCount = '以班组统计'
+      }
       mychart.prepareChartData(data, groupModel, cursor)
       this.dateChartCount.setOption(mychart.optionCount)
     },
@@ -413,6 +436,19 @@ export default {
       if (this.groupidxForAvg === 3) {
         cursor = 'default'
       }
+      switch (this.bottomDesForAvg) {
+        case 0:
+          this.bottomDesForAvg = '以子系统统计'
+          break
+        case 1:
+          this.bottomDesForAvg = '以设备类型统计'
+          break
+        case 2:
+          this.bottomDesForAvg = '以供应商统计'
+          break
+        case 3:
+          this.bottomDesForAvg = '以班组统计'
+      }
       mychart.prepareChartData(data, groupModel, cursor)
       this.dateChartAvg.clear()
       this.dateChartAvg.setOption(mychart.optionAvg)
@@ -424,6 +460,7 @@ export default {
       this.eqpTypeChartAvg = this.$echarts.init(this.$refs.avgTimeChartByEqpType)
       this.eqpTypeChartCount.clear()
       this.eqpTypeChartAvg.clear()
+      this.eqpTypeChartCount.resize()
       let chartData = mychart.prepareSubChartData(data, 'eqpTypeName')
       mychart.optionEqpTypeCount.xAxis[0].data = chartData.xAxisData
       mychart.optionEqpTypeCount.series = chartData.seariescount
@@ -595,12 +632,34 @@ export default {
       }
       this.groups.eqp_type_id.legend = legend
     },
+    getManufacturerSelected () {
+      let legend = []
+      if (this.manufacturer.length > 0) {
+        for (let i = 0; i < this.manufacturer.length; ++i) {
+          let name = ''
+          for (let j = 0; j < this.manufacturerList.length; j++) {
+            if (this.manufacturer[i] === this.manufacturerList[j].id) {
+              name = this.manufacturerList[j].name
+              break
+            }
+          }
+          if (name) {
+            legend.push(name)
+          }
+        }
+      } else {
+        for (let i = 0; i < this.manufacturerList.length; i++) {
+          legend.push(this.manufacturerList[i].name)
+        }
+      }
+      this.groups.manufacturer_id.legend = legend
+    },
     // 搜索
     searchResult () {
       // console.log(this.subSystem)
       // this.searchHideMoreHeight = '100%'
       this.shrinkText = '更多'
-      this.searchHideMoreHeight = '100%'
+      // this.searchHideMoreHeight = '100%'
       this.searchHideMore = false
       var sTime = ''
       var eTime = ''
@@ -630,6 +689,8 @@ export default {
       this.getSubSystemSelected()
       // 获取当前设备类型
       this.getEqpTypeSelected()
+      // 获取当前制造商
+      this.getManufacturerSelected()
       this.search(param, [this.drawCountChart, this.drawAvgChart])
 
       if (param.EqpTypeIDs) {

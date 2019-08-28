@@ -152,7 +152,15 @@ namespace MSS.API.Core.V1.Business
                 }
                 List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
                     new List<string> { groupby }, dateType, false);
-
+                if (groupby.Equals("location_level3"))
+                {
+                    data = data.Where(c => c.dimension.LocationLevel3 != 0).ToList();
+                }
+                if (groupby.Equals("location_level2"))
+                {
+                    data = data.Where(c => c.dimension.LocationLevel2 != 0).ToList();
+                }
+                   
                 ret.code = Code.Success;
                 ret.data = new {
                     data = data,
