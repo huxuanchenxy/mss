@@ -595,6 +595,28 @@ export default {
       }
       this.groups.eqp_type_id.legend = legend
     },
+    getManufacturerSelected () {
+      let legend = []
+      if (this.manufacturer.length > 0) {
+        for (let i = 0; i < this.manufacturer.length; ++i) {
+          let name = ''
+          for (let j = 0; j < this.manufacturerList.length; j++) {
+            if (this.manufacturer[i] === this.manufacturerList[j].id) {
+              name = this.manufacturerList[j].name
+              break
+            }
+          }
+          if (name) {
+            legend.push(name)
+          }
+        }
+      } else {
+        for (let i = 0; i < this.manufacturerList.length; i++) {
+          legend.push(this.manufacturerList[i].name)
+        }
+      }
+      this.groups.manufacturer_id.legend = legend
+    },
     // 搜索
     searchResult () {
       // console.log(this.subSystem)
@@ -629,6 +651,8 @@ export default {
       this.getSubSystemSelected()
       // 获取当前设备类型
       this.getEqpTypeSelected()
+      // 获取当前制造商
+      this.getManufacturerSelected()
       this.search(param, [this.drawCountChart, this.drawAvgChart])
 
       if (param.EqpTypeIDs) {
