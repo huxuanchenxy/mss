@@ -604,9 +604,9 @@ export default {
           }
         }
       } else {
-        for (let i = 0; i < this.subSystemList.length; i++) {
-          legend.push(this.subSystemList[i].name)
-        }
+        // for (let i = 0; i < this.subSystemList.length; i++) {
+        //   legend.push(this.subSystemList[i].name)
+        // }
       }
       this.groups.sub_system_id.legend = legend
     },
@@ -626,9 +626,9 @@ export default {
           }
         }
       } else {
-        for (let i = 0; i < this.eqpTypeList.length; i++) {
-          legend.push(this.eqpTypeList[i].tName)
-        }
+        // for (let i = 0; i < this.eqpTypeList.length; i++) {
+        //   legend.push(this.eqpTypeList[i].tName)
+        // }
       }
       this.groups.eqp_type_id.legend = legend
     },
@@ -648,9 +648,9 @@ export default {
           }
         }
       } else {
-        for (let i = 0; i < this.manufacturerList.length; i++) {
-          legend.push(this.manufacturerList[i].name)
-        }
+        // for (let i = 0; i < this.manufacturerList.length; i++) {
+        //   legend.push(this.manufacturerList[i].name)
+        // }
       }
       this.groups.manufacturer_id.legend = legend
     },
