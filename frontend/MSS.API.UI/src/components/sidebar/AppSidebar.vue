@@ -508,7 +508,7 @@ height: 50px;
     @include opacity(0);
     width: 160px;
     // width: 100%;
-    height: 280px;
+    height: 195px;
     // transition: .7s;
 
     &.active{
@@ -532,7 +532,7 @@ height: 50px;
         display: flex;
         align-items: center;
         position: relative;
-        height: PXtoEm(70);
+        height: 38px;
         padding: 0 10px;
 
         &:after{
