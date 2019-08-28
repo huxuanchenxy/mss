@@ -45,8 +45,12 @@ const optionCount = {
   },
   legend: {
     data: [],
+    itemWidth: 10,
+    itemHeight: 7,
+    itemGap: 5,
     textStyle: {
-      color: '#fff'
+      color: '#fff',
+      fontSize: 11
     }
   },
   toolbox: {
@@ -123,8 +127,12 @@ const optionAvg = {
   },
   legend: {
     data: [],
+    itemWidth: 10,
+    itemHeight: 7,
+    itemGap: 5,
     textStyle: {
-      color: '#fff'
+      color: '#fff',
+      fontSize: 11
     }
   },
   toolbox: {
