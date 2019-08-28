@@ -436,7 +436,7 @@ export default {
       if (this.groupidxForAvg === 3) {
         cursor = 'default'
       }
-      switch (this.bottomDesForAvg) {
+      switch (this.groupidxForAvg) {
         case 0:
           this.bottomDesForAvg = '以子系统统计'
           break
