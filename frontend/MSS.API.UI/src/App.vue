@@ -59,18 +59,19 @@ export default {
   height: 100%;
 }
 #main{
-  position: absolute;
-  top: 14%;
+  position: relative;
+  top: 1%;
   // left: 47%;
-  width: 95%;
+  width: 93%;
   // height: percent(630, 780);
+  height: 80%;
   border-radius: $border-radius;
   // transform: translateX(percent(-960 / 2, 960));
-  bottom:3%;
+  bottom:6%;
   padding-left: 2%;
   &.shrink{
     // left: 44%;
-    width: 95%;
+    width: 93%;
     // transform: translateX(percent(-960 / 2, 1100));
   }
 
