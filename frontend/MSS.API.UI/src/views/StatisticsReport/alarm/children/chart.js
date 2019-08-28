@@ -1,7 +1,7 @@
 function getTable (opt) {
   var axisData = opt.xAxis[0].data
   var series = opt.series
-  var tdHeaders = '<td>时间</td>' // 表头
+  var tdHeaders = '<td>' + opt.xAxisTypeName + '</td>' // 表头
   series.forEach(function (item) {
     tdHeaders += '<td>' + item.name + '</td>' // 组装表头
   })
@@ -21,6 +21,7 @@ function getTable (opt) {
 }
 const backicon = require('../images/return.svg')
 const optionCount = {
+  xAxisTypeName: '时间',
   title: {
     text: '报警次数',
     subtext: '',
@@ -103,6 +104,7 @@ const optionCount = {
 }
 
 const optionAvg = {
+  xAxisTypeName: '时间',
   title: {
     text: '平均恢复时间（秒）',
     subtext: '',
@@ -185,6 +187,7 @@ const optionAvg = {
 }
 
 const optionEqpTypeCount = {
+  xAxisTypeName: '设备类型',
   title: {
     text: '报警次数(以设备类型统计)',
     subtext: '',
@@ -210,7 +213,7 @@ const optionEqpTypeCount = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['报警次数'],
     textStyle: {
       color: '#fff'
     }
@@ -259,6 +262,7 @@ const optionEqpTypeCount = {
 }
 
 const optionEqpTypeAvg = {
+  xAxisTypeName: '设备类型',
   title: {
     text: '平均恢复时间(秒)(以设备类型统计)',
     subtext: '',
@@ -284,7 +288,7 @@ const optionEqpTypeAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['平均恢复时间(秒)'],
     textStyle: {
       color: '#fff'
     }
@@ -332,6 +336,7 @@ const optionEqpTypeAvg = {
 }
 
 const optionSupplierCount = {
+  xAxisTypeName: '供应商',
   title: {
     text: '报警次数(以供应商统计)',
     subtext: '',
@@ -357,7 +362,7 @@ const optionSupplierCount = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['报警次数'],
     textStyle: {
       color: '#fff'
     }
@@ -405,6 +410,7 @@ const optionSupplierCount = {
 }
 
 const optionSupplierAvg = {
+  xAxisTypeName: '供应商',
   title: {
     text: '平均恢复时间(秒)(以供应商统计)',
     subtext: '',
@@ -430,7 +436,7 @@ const optionSupplierAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['平均恢复时间(秒)'],
     textStyle: {
       color: '#fff'
     }
@@ -478,6 +484,7 @@ const optionSupplierAvg = {
 }
 
 const optionManufacturerCount = {
+  xAxisTypeName: '制造商',
   title: {
     text: '报警次数(以制造商统计)',
     subtext: '',
@@ -503,7 +510,7 @@ const optionManufacturerCount = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['报警次数'],
     textStyle: {
       color: '#fff'
     }
@@ -551,6 +558,7 @@ const optionManufacturerCount = {
 }
 
 const optionManufacturerAvg = {
+  xAxisTypeName: '制造商',
   title: {
     text: '平均恢复时间(秒)(以制造商统计)',
     subtext: '',
@@ -576,7 +584,7 @@ const optionManufacturerAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['平均恢复时间(秒)'],
     textStyle: {
       color: '#fff'
     }
@@ -624,6 +632,7 @@ const optionManufacturerAvg = {
 }
 
 const optionSubSystemCount = {
+  xAxisTypeName: '子系统',
   title: {
     text: '报警次数(以子系统统计)',
     subtext: '',
@@ -649,7 +658,7 @@ const optionSubSystemCount = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['报警次数'],
     textStyle: {
       color: '#fff'
     }
@@ -697,6 +706,7 @@ const optionSubSystemCount = {
 }
 
 const optionSubSystemAvg = {
+  xAxisTypeName: '子系统',
   title: {
     text: '平均恢复时间(秒)(以子系统统计)',
     subtext: '',
@@ -722,7 +732,7 @@ const optionSubSystemAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['平均恢复时间(秒)'],
     textStyle: {
       color: '#fff'
     }
@@ -770,6 +780,7 @@ const optionSubSystemAvg = {
 }
 
 const optionLocationCount = {
+  xAxisTypeName: '位置',
   title: {
     text: '报警次数(以位置信息统计)',
     subtext: '',
@@ -795,7 +806,7 @@ const optionLocationCount = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['报警次数'],
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -844,6 +855,7 @@ const optionLocationCount = {
 }
 
 const optionLocationAvg = {
+  xAxisTypeName: '位置',
   title: {
     text: '平均恢复时间(秒)(以位置信息统计)',
     subtext: '',
@@ -869,7 +881,7 @@ const optionLocationAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['平均恢复时间(秒)'],
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -918,6 +930,7 @@ const optionLocationAvg = {
 }
 
 const optionOrgCount = {
+  xAxisTypeName: '部门',
   title: {
     text: '报警次数(以部门信息统计)',
     subtext: '',
@@ -943,7 +956,7 @@ const optionOrgCount = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['报警次数'],
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -992,6 +1005,7 @@ const optionOrgCount = {
 }
 
 const optionOrgAvg = {
+  xAxisTypeName: '部门',
   title: {
     text: '平均恢复时间(秒)(以部门信息统计)',
     subtext: '',
@@ -1017,7 +1031,7 @@ const optionOrgAvg = {
   },
   legend: {
     show: false,
-    data: ['groupby'],
+    data: ['平均恢复时间(秒)'],
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -1173,7 +1187,7 @@ function prepareSubChartData (data, groupby) {
   let result = {}
   if (data) {
     let objcount = {
-      name: 'groupby',
+      name: '报警次数',
       type: 'bar',
       stack: 'test',
       barWidth: 20,
@@ -1181,7 +1195,7 @@ function prepareSubChartData (data, groupby) {
       data: []
     }
     let objavg = {
-      name: 'groupby',
+      name: '平均恢复时间(秒)',
       type: 'line',
       cursor: 'default',
       data: []
