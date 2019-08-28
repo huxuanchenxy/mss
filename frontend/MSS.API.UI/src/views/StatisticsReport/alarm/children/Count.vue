@@ -119,11 +119,11 @@
             <el-col :span="12" id="countChart" v-resize="onResize">
               <!-- <div style="width:100%; height:300px;" ref="countChart" id="countChart" class="echart" v-resize="onResize"></div> -->
               <div style="width:100%; height:300px;" ref="countChart"  class="echart" ></div>
-              <div style="position: relative;bottom: 30px;left: 50%;">{{bottomDesForCount}}</div>
+              <div class="echartsubtitle">{{bottomDesForCount}}</div>
             </el-col>
             <el-col :span="12" id="avgTimeChart" v-resize="onResize">
               <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart" ></div>
-              <div style="position: relative;bottom: 30px;left: 50%;">{{bottomDesForAvg}}</div>
+              <div class="echartsubtitle">{{bottomDesForAvg}}</div>
               </el-col>
           </el-row>
           <el-row v-show="showEqpTypeChart">
@@ -1033,5 +1033,15 @@ div.echart > div:last-child {
 }
 div.echart > div:last-child > div:last-child > div:first-child {
   display:none;
+}
+div.echart h4 {
+  display:none;
+}
+.echartsubtitle {
+    position: relative;
+    top: -35px;
+    padding-left: 9%;
+    width: 80%;
+    text-align: center;
 }
 </style>
