@@ -622,6 +622,7 @@ export default {
       // console.log(this.subSystem)
       // this.searchHideMoreHeight = '100%'
       this.shrinkText = '更多'
+      this.searchHideMoreHeight = '100%'
       this.searchHideMore = false
       var sTime = ''
       var eTime = ''
