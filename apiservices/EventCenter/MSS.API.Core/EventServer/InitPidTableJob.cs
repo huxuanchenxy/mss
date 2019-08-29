@@ -41,6 +41,32 @@ namespace MSS.API.Core.EventServer
         {
             try
             {
+                Dictionary<int, string> eqptype = new Dictionary<int, string>();
+                eqptype.Add(1, "小系统风机");
+                eqptype.Add(3, "水泵");
+                eqptype.Add(5, "照明");
+                eqptype.Add(6, "双波长");
+                eqptype.Add(13, "事故风机");
+                eqptype.Add(14, "射流风机");
+                eqptype.Add(15, "排热风机");
+                eqptype.Add(16, "回排风机");
+                eqptype.Add(17, "组合式空调");
+                eqptype.Add(18, "压差开关");
+                eqptype.Add(19, "防烟防火阀");
+                eqptype.Add(20, "排烟防火阀");
+                eqptype.Add(21, "冷冻水泵");
+                eqptype.Add(22, "冷却水泵");
+                eqptype.Add(23, "冷却塔");
+                eqptype.Add(24, "液位开关");
+                eqptype.Add(25, "二通调节阀");
+                eqptype.Add(26, "压差旁通阀");
+                eqptype.Add(27, "温度,湿度");
+                eqptype.Add(28, "二氧化碳");
+                eqptype.Add(29, "电磁");
+                eqptype.Add(30, "空气流量");
+                eqptype.Add(31, "水管温度");
+
+
                 _logger.LogInformation("开始同步pid表");
                 var _services = await _consulServiceProvider.GetServiceAsync("RDBRTDBService");
                 IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
@@ -77,12 +103,13 @@ namespace MSS.API.Core.EventServer
                                 // 根据设备code查mss中设备id
                                 string eqpCode = pid_seg[3];
                                 newdata.EqpID = null;
-                                Equipment eqp = list.Where(c => c.EqpCode.Equals(eqpCode))
-                                    .FirstOrDefault();
-                                if (eqp != null)
-                                {
-                                    newdata.EqpID = eqp.ID;
-                                }
+                                // Equipment eqp = list.Where(c => c.EqpCode.Equals(eqpCode))
+                                //     .FirstOrDefault();
+                                // if (eqp != null)
+                                // {
+                                //     newdata.EqpID = eqp.ID;
+                                // }
+                                
                                 // 设备属性
                                 newdata.prop = pid_seg[4];
                                 newdata.Des = item_pid["Des"].ToString();
@@ -91,6 +118,34 @@ namespace MSS.API.Core.EventServer
                                 {
                                     newdata.PidType = 1;
                                 }
+
+                                // 模拟数据
+                                int eqptypeid = 0;
+                                foreach (var item_eqptype in eqptype)
+                                {
+                                    bool isThistype = false;
+                                    string[] deskeys = item_eqptype.Value.Split(',');
+                                    for (int i = 0; i < deskeys.Count(); ++i)
+                                    {
+                                        if (newdata.Des.IndexOf(deskeys[i]) > 0)
+                                        {
+                                            isThistype = true;
+                                            break;
+                                        }
+                                    }
+                                    if (isThistype)
+                                    {
+                                        eqptypeid = item_eqptype.Key;
+                                    }
+                                }
+                                if (eqptypeid > 0)
+                                {
+                                    List<Equipment> eqps = list.Where(c => c.EqpType.Equals(eqptypeid)).ToList();
+                                    Random random = new Random();
+                                    int idx = random.Next(eqps.Count - 1);
+                                    newdata.EqpID = eqps[idx].ID;
+                                }
+
                                 if (item_pid["UP"] != null && item_pid["UP"].Type != JTokenType.Null)
                                 {
                                     newdata.UP = Convert.ToDouble(item_pid["UP"]);

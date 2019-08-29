@@ -4,7 +4,7 @@
       element-loading-spinner="el-icon-loading">
     <div ref="header" class="header con-padding-horizontal">
       <h2>
-        <!-- <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }} -->
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
     <!-- 搜索 -->
@@ -12,19 +12,6 @@
       <div class="middle-content-wrap height-full" :class="{ active: searchHideMore }" :style="{ height: searchHideMoreHeight }">
         <div class="content con-padding-horizontal">
           <div class="top-input-group" ref="middleTopInput">
-            <div class="list">
-              <span class="lable">时间</span>
-              <el-date-picker
-                v-model="time.text"
-                type="daterange"
-                prefix-icon="el-icon-date"
-                :unlink-panels="true"
-                value-format="yyyy-MM-dd"
-                range-separator="至"
-                start-placeholder="计划开始日期"
-                end-placeholder="计划结束日期">
-              </el-date-picker>
-            </div>
             <div class="list" >
               <span class="lable">子系统</span>
               <el-select v-model="subSystem" multiple collapse-tags clearable filterable placeholder="请选择">
@@ -46,6 +33,19 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+            </div>
+            <div class="list">
+              <span class="lable">时间</span>
+              <el-date-picker
+                v-model="time.text"
+                type="daterange"
+                prefix-icon="el-icon-date"
+                :unlink-panels="true"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="计划开始日期"
+                end-placeholder="计划结束日期">
+              </el-date-picker>
             </div>
             <div class="list">
               <span class="lable">日/月统计</span>
@@ -81,7 +81,6 @@
                <el-cascader class="cascader_width" clearable
                     :props="defaultParams"
                     change-on-select
-                    @change="cascader_change_copy"
                     :show-all-levels="true"
                     :options="teamList"
                     v-model="teamPath.text">
@@ -117,28 +116,39 @@
       <el-container style="height:100%;">
         <el-main style="padding:0px">
           <el-row>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChart" id="countChart" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChart" id="avgTimeChart" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChart" v-resize="onResize">
+              <!-- <div style="width:100%; height:300px;" ref="countChart" id="countChart" class="echart" v-resize="onResize"></div> -->
+              <div style="width:100%; height:300px;" ref="countChart"  class="echart" ></div>
+              <div class="echartsubtitle">{{bottomDesForCount}}</div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChart" v-resize="onResize">
+              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart" ></div>
+              <div class="echartsubtitle">{{bottomDesForAvg}}</div>
+              </el-col>
           </el-row>
           <el-row v-show="showEqpTypeChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByEqpType" id="countChartByEqpType" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType" id="avgTimeChartByEqpType" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartByEqpType" v-resize="onResize" ><div style="width:100%; height:300px;" ref="countChartByEqpType"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartByEqpType" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showSupplierChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySupplier" id="countChartBySupplier" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier" id="avgTimeChartBySupplier" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartBySupplier"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showManufacturerChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByManufacturer" id="countChartByManufacturer" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer" id="avgTimeChartByManufacturer" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartByManufacturer" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByManufacturer"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartByManufacturer" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showSubSystemChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartBySubSystem" id="countChartBySubSystem" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystem" id="avgTimeChartBySubSystem" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartBySubSystem" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartBySubSystem"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartBySubSystem" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystem"  class="echart" ></div></el-col>
           </el-row>
           <el-row v-show="showLocationChart">
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="countChartByLocation" id="countChartByLocation" v-resize="onResize"></div></el-col>
-            <el-col :span="12"><div style="width:100%; height:300px;" ref="avgTimeChartByLocation" id="avgTimeChartByLocation" v-resize="onResize"></div></el-col>
+            <el-col :span="12" id="countChartByLocation" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByLocation" class="echart"></div></el-col>
+            <el-col :span="12" id="avgTimeChartByLocation" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByLocation"  class="echart" ></div></el-col>
+          </el-row>
+          <el-row v-show="showOrgChart">
+            <el-col :span="12" id="countChartByOrg" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByOrg"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartByOrg" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByOrg"  class="echart" ></div></el-col>
           </el-row>
         </el-main>
       </el-container>
@@ -148,7 +158,7 @@
 <script>
 import XButton from '@/components/button'
 import { dictionary, firmType } from '@/common/js/dictionary.js'
-import { ApiRESULT } from '@/common/js/utils.js'
+import { getNowFormatDate, ApiRESULT } from '@/common/js/utils.js'
 import api from '@/api/statisticsApi'
 import mychart from './chart'
 import apiAuth from '@/api/authApi'
@@ -180,22 +190,26 @@ export default {
         sub_system_id: {
           modelID: 'subSystemID',
           modelName: 'subSystemName',
-          reqParamKey: 'SubSystemIDs'
+          reqParamKey: 'SubSystemIDs',
+          legend: []
         },
         eqp_type_id: {
           modelID: 'eqpTypeID',
           modelName: 'eqpTypeName',
-          reqParamKey: 'EqpTypeIDs'
+          reqParamKey: 'EqpTypeIDs',
+          legend: []
         },
         manufacturer_id: {
           modelID: 'manufacturerID',
           modelName: 'manufacturerName',
-          reqParamKey: 'ManufacturerIDs'
+          reqParamKey: 'ManufacturerIDs',
+          legend: []
         },
         team_id: {
           modelID: 'teamID',
           modelName: 'teamName',
-          reqParamKey: 'TeamIDs'
+          reqParamKey: 'TeamIDs',
+          legend: []
         }
       },
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
@@ -218,30 +232,22 @@ export default {
       subSystemChartAvg: null,
       locationChartCount: null,
       locationChartAvg: null,
+      orgChartCount: null,
+      orgChartAvg: null,
 
       showEqpTypeChart: false,
       showSupplierChart: false,
       showManufacturerChart: false,
       showSubSystemChart: false,
       showLocationChart: false,
+      showOrgChart: false,
 
       teamPath: {
         text: [],
         tips: ''
       },
-      taskStatus: '',
-      tunnel: '',
-      partition: '',
-      eqp: [],
-      period: '',
-      toPerson: '',
-      statusList: [],
-      tunnelList: [],
-      partitionList: [],
+
       eqpTypeList: [],
-      eqpList: [],
-      periodList: [],
-      userList: [],
       area: [],
       areaList: [],
       areaParams: {
@@ -260,47 +266,25 @@ export default {
         value: 'id',
         children: 'children'
       },
-      parDisable: true,
-      eqpTypeDisable: true,
-      eqpDisable: true,
 
       searchHideMore: false,
       searchHideMoreHeight: '100%',
       shrinkText: '更多',
 
-      checkedID: [],
-      condition: ['', '', '', '', '', ''],
-      dataList: [],
-      bCheckAll: false,
-      total: 0,
-      currentPage: 1,
-      loading: false,
-      currentSort: {
-        sort: 'PMTaskOrderID',
-        order: 'asc'
-      },
-      headOrder: {
-        PMTaskOrderID: 1,
-        Status: 0,
-        IsInvalid: 0,
-        TunnelName: 0,
-        PartionName: 0,
-        EqpTypeName: 0,
-        EqpName: 0,
-        PeriodID: 0
-      }, // 默认UserID升序asc，箭头朝上，同时只可能按照一个字段排序，不排序的字段不出现箭头,0不排序、1升序、2降序，切换时默认升序
-      dialogVisible: {
-        isShow: false,
-        text: '',
-        // true 为两个按钮，false 为一个按钮
-        btn: true
-      }
+      bottomDesForCount: '',
+      bottomDesForAvg: '',
+
+      loading: false
     }
   },
   created () {
     this.initSelect()
-    this.searchResult()
     // this.init()
+    var nowDate = getNowFormatDate()
+    var d = new Date()
+    d.setDate(d.getDate() - 30)
+    var startDate = getNowFormatDate(d)
+    this.time.text = [startDate, nowDate]
   },
   activated () {
     // this.searchResult(this.currentPage)
@@ -344,63 +328,11 @@ export default {
       if (this.locationChartAvg && el.id === 'avgTimeChartByLocation') {
         this.locationChartAvg.resize()
       }
-    },
-    onResize0 () {},
-    onResize1 () {},
-    onResize2 () {},
-    onResize3 () {},
-    onResize4 () {},
-    onResize5 () {},
-    onResize6 () {},
-    onResize7 () {},
-    onResize8 () {},
-    showStatus (status) {
-      var des = '--'
-      switch (status) {
-        case 'NotStart':
-          des = '未开始'
-          break
-        case 'Starting':
-          des = '未完成'
-          break
-        case 'Finished':
-          des = '已完成'
-          break
+      if (this.orgChartCount && el.id === 'countChartByOrg') {
+        this.orgChartCount.resize()
       }
-      return des
-    },
-    closeCondition (index) {
-      switch (index) {
-        case 0:
-          this.tunnel = {TunnelID: ''}
-          this.condition.splice(0, 4, '', '', '', '')
-          this.choseTunnel(this.tunnel.TunnelID)
-          break
-        case 1:
-          this.partition = {PartitionID: ''}
-          this.condition.splice(1, 3, '', '', '')
-          // this.choseTunnel(this.tunnel.TunnelID)
-          this.chosePartition(this.partition.PartitionID)
-          break
-        case 2:
-          this.eqpType = {eqpTypeID: ''}
-          this.condition.splice(2, 2, '', '')
-          // this.chosePartition(this.partition.PartitionID)
-          this.choseEqpType(this.eqpType.eqpTypeID)
-          break
-        case 3:
-          this.eqp = {eqpID: ''}
-          this.condition.splice(3, 1, '')
-          // this.choseEqpType(this.eqpType.eqpTypeID)
-          break
-        case 4:
-          this.period = {PeriodID: ''}
-          this.condition.splice(4, 1, '')
-          break
-        case 5:
-          this.toPerson = {UserID: ''}
-          this.condition.splice(5, 1, '')
-          break
+      if (this.orgChartAvg && el.id === 'avgTimeChartByOrg') {
+        this.orgChartAvg.resize()
       }
     },
 
@@ -470,7 +402,24 @@ export default {
       mychart.optionCount.toolbox.feature.myTool.onclick = this.backCount
       mychart.optionCount.title.subtext = this.subTitleCount.join('->')
       let groupModel = this.groups[this.groupby[this.groupidxForCount]]
-      mychart.prepareChartData(data, groupModel)
+      let cursor = 'pointer'
+      if (this.groupidxForCount === 3) {
+        cursor = 'default'
+      }
+      switch (this.groupidxForCount) {
+        case 0:
+          this.bottomDesForCount = '以子系统统计'
+          break
+        case 1:
+          this.bottomDesForCount = '以设备类型统计'
+          break
+        case 2:
+          this.bottomDesForCount = '以供应商统计'
+          break
+        case 3:
+          this.bottomDesForCount = '以班组统计'
+      }
+      mychart.prepareChartData(data, groupModel, cursor)
       this.dateChartCount.setOption(mychart.optionCount)
     },
     drawAvgChart (param, data, store) {
@@ -483,7 +432,24 @@ export default {
       mychart.optionAvg.toolbox.feature.myTool.onclick = this.backAvg
       mychart.optionAvg.title.subtext = this.subTitleAvg.join('->')
       let groupModel = this.groups[this.groupby[this.groupidxForAvg]]
-      mychart.prepareChartData(data, groupModel)
+      let cursor = 'pointer'
+      if (this.groupidxForAvg === 3) {
+        cursor = 'default'
+      }
+      switch (this.groupidxForAvg) {
+        case 0:
+          this.bottomDesForAvg = '以子系统统计'
+          break
+        case 1:
+          this.bottomDesForAvg = '以设备类型统计'
+          break
+        case 2:
+          this.bottomDesForAvg = '以供应商统计'
+          break
+        case 3:
+          this.bottomDesForAvg = '以班组统计'
+      }
+      mychart.prepareChartData(data, groupModel, cursor)
       this.dateChartAvg.clear()
       this.dateChartAvg.setOption(mychart.optionAvg)
     },
@@ -494,6 +460,7 @@ export default {
       this.eqpTypeChartAvg = this.$echarts.init(this.$refs.avgTimeChartByEqpType)
       this.eqpTypeChartCount.clear()
       this.eqpTypeChartAvg.clear()
+      this.eqpTypeChartCount.resize()
       let chartData = mychart.prepareSubChartData(data, 'eqpTypeName')
       mychart.optionEqpTypeCount.xAxis[0].data = chartData.xAxisData
       mychart.optionEqpTypeCount.series = chartData.seariescount
@@ -566,105 +533,26 @@ export default {
       mychart.optionLocationAvg.series = chartData.seariesavg
       this.locationChartAvg.setOption(mychart.optionLocationAvg)
     },
-    choseTunnel (tunnelID) {
-      this.condition.splice(0, 4, '', '', '', '')
-      this.condition.splice(5, 1, '')
-      this.getUserList(tunnelID)
-      // if (tunnelID === '') {
-      //   this.parDisable = true
-      //   this.eqpTypeDisable = true
-      //   this.eqpDisable = true
-      //   this.partitionList = []
-      //   this.partition = {PartitionID: ''}
-      //   this.eqpType = {eqpTypeID: ''}
-      //   this.eqpTypeList = []
-      //   this.eqp = {eqpID: ''}
-      //   this.eqpList = []
-      //   return
-      // }
-      if (tunnelID !== '') {
-        this.condition[0] = ('管廊：' + this.tunnel.TunnelName)
-      }
+    drawOrgChart (data) {
+      this.showOrgChart = true
+      this.orgChartCount = this.$echarts.init(this.$refs.countChartByOrg)
+      this.orgChartAvg = this.$echarts.init(this.$refs.avgTimeChartByOrg)
+      this.orgChartCount.clear()
+      this.orgChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data.data, data.groupby)
+      mychart.optionOrgCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionOrgCount.series = chartData.seariescount
+      this.orgChartCount.setOption(mychart.optionOrgCount)
 
-      this.parDisable = false
-      this.eqpTypeDisable = true
-      this.eqpDisable = true
-      this.partitionList = []
-      this.partition = {} // {PartitionID: ''}
-      // this.eqpType = {eqpTypeID: ''}
-      // this.eqpTypeList = []
-      this.eqp = {} // {eqpID: ''}
-      this.eqpList = []
-      // 获取分区
-      window.axios.post('/UtilityTunnel/GetTunnelIDPartition', {TunnelID: tunnelID}).then(res => {
-        this.partitionList = res.data
-      }).catch(err => console.log(err))
-    },
-    chosePartition (partitionID) {
-      if (this.partition.PartitionID !== '') {
-        this.condition[1] = ('分区：' + this.partition.PartionName)
-        this.condition.splice(2, 2, '', '')
-      } else {
-        this.condition.splice(1, 3, '', '', '')
-      }
-      this.parDisable = false
-      this.eqpTypeDisable = false
-      this.eqpDisable = true
-      this.eqpType = {} // {eqpTypeID: ''}
-      this.eqpTypeList = []
-      this.eqp = {} // {eqpID: ''}
-      this.eqpList = []
-    },
-    choseEqpType (eqpTypeID) {
-      if (this.eqpType.eqpTypeID !== '') {
-        this.condition[2] = ('设备类型：' + this.eqpType.eqpTypeName)
-        this.condition.splice(3, 1, '')
-      } else {
-        this.condition.splice(2, 2, '', '')
-      }
-      this.parDisable = false
-      this.eqpTypeDisable = false
-      this.eqpDisable = false
-      this.eqp = {} // {eqpID: ''}
-      this.eqpList = []
-      // 获取设备
-      window.axios.post('/UtilityTunnel/GetEquipmentByType',
-        {tunnelID: this.tunnel.TunnelID, partitionID: this.partition.PartitionID, eqpTypeID: eqpTypeID}).then(res => {
-        this.eqpList = res.data
-      }).catch(err => console.log(err))
-    },
-    choseEqp () {
-      if (this.eqp.eqpID !== '') {
-        this.condition[3] = ('设备：' + this.eqp.eqpName)
-      } else {
-        this.condition.splice(3, 1, '')
-      }
-    },
-    chosePeriod () {
-      if (this.period.PeriodID !== '') {
-        this.condition[4] = ('周期：' + this.period.PeriodName)
-      } else {
-        this.condition.splice(4, 1, '')
-      }
-    },
-    choseUser () {
-      if (this.toPerson.UserID !== '') {
-        this.condition[5] = ('巡检人员：' + this.toPerson.UserName)
-      } else {
-        this.condition.splice(5, 1, '')
-      }
-    },
-    getUserList (tunnelID) {
-      // 获取巡检人员
-      window.axios.post('/UserInfo/GetUserByTunnelID', {tunnelID: tunnelID}).then(res => {
-        this.userList = res.data
-        this.toPerson = {UserID: ''}
-      }).catch(err => console.log(err))
+      mychart.optionOrgAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionOrgAvg.series = chartData.seariesavg
+      this.orgChartAvg.setOption(mychart.optionOrgAvg)
     },
     initSelect () {
       // 子系统加载
       apiAuth.getSubCode(dictionary.subSystem).then(res => {
         this.subSystemList = res.data
+        this.searchResult()
       }).catch(err => console.log(err))
 
       // 设备类型加载
@@ -689,37 +577,6 @@ export default {
       }).catch(err => console.log(err))
     },
 
-    init () {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = 1
-      // this.searchResult()
-    },
-    // 改变排序
-    changeOrder (sort) {
-      // console.log(this.headOrder[sort])
-      if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.PMTaskOrderID = 0
-        this.headOrder.Status = 0
-        this.headOrder.IsInvalid = 0
-        this.headOrder.TunnelName = 0
-        this.headOrder.PartionName = 0
-        this.headOrder.EqpTypeName = 0
-        this.headOrder.EqpName = 0
-        this.headOrder.PeriodID = 0
-        this.currentSort.order = 'asc'
-        this.headOrder[sort] = 1
-      } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
-        this.currentSort.order = 'asc'
-        this.headOrder[sort] = 1
-      } else { // 同一字段升序变降序
-        this.currentSort.order = 'desc'
-        this.headOrder[sort] = 2
-      }
-      this.currentSort.sort = sort
-      this.searchResult(this.currentPage)
-    },
-
     search (param, callbacks) {
       this.loading = true
       api.reportAlarm(param).then(res => {
@@ -731,9 +588,79 @@ export default {
         }
       }).catch(err => console.log(err))
     },
+    getSubSystemSelected () {
+      let legend = []
+      if (this.subSystem.length > 0) {
+        for (let i = 0; i < this.subSystem.length; ++i) {
+          let name = ''
+          for (let j = 0; j < this.subSystemList.length; j++) {
+            if (this.subSystem[i] === this.subSystemList[j].id) {
+              name = this.subSystemList[j].name
+              break
+            }
+          }
+          if (name) {
+            legend.push(name)
+          }
+        }
+      } else {
+        // for (let i = 0; i < this.subSystemList.length; i++) {
+        //   legend.push(this.subSystemList[i].name)
+        // }
+      }
+      this.groups.sub_system_id.legend = legend
+    },
+    getEqpTypeSelected () {
+      let legend = []
+      if (this.eqpType.length > 0) {
+        for (let i = 0; i < this.eqpType.length; ++i) {
+          let name = ''
+          for (let j = 0; j < this.eqpTypeList.length; j++) {
+            if (this.eqpType[i] === this.eqpTypeList[j].id) {
+              name = this.eqpTypeList[j].tName
+              break
+            }
+          }
+          if (name) {
+            legend.push(name)
+          }
+        }
+      } else {
+        // for (let i = 0; i < this.eqpTypeList.length; i++) {
+        //   legend.push(this.eqpTypeList[i].tName)
+        // }
+      }
+      this.groups.eqp_type_id.legend = legend
+    },
+    getManufacturerSelected () {
+      let legend = []
+      if (this.manufacturer.length > 0) {
+        for (let i = 0; i < this.manufacturer.length; ++i) {
+          let name = ''
+          for (let j = 0; j < this.manufacturerList.length; j++) {
+            if (this.manufacturer[i] === this.manufacturerList[j].id) {
+              name = this.manufacturerList[j].name
+              break
+            }
+          }
+          if (name) {
+            legend.push(name)
+          }
+        }
+      } else {
+        // for (let i = 0; i < this.manufacturerList.length; i++) {
+        //   legend.push(this.manufacturerList[i].name)
+        // }
+      }
+      this.groups.manufacturer_id.legend = legend
+    },
     // 搜索
     searchResult () {
       // console.log(this.subSystem)
+      // this.searchHideMoreHeight = '100%'
+      this.shrinkText = '更多'
+      this.searchHideMoreHeight = '100%'
+      this.searchHideMore = false
       var sTime = ''
       var eTime = ''
       if (this.time.text) {
@@ -758,6 +685,12 @@ export default {
       this.resultAvgHistory = []
       this.subTitleCount = []
       this.subTitleAvg = []
+      // 获取当前子系统类别
+      this.getSubSystemSelected()
+      // 获取当前设备类型
+      this.getEqpTypeSelected()
+      // 获取当前制造商
+      this.getManufacturerSelected()
       this.search(param, [this.drawCountChart, this.drawAvgChart])
 
       if (param.EqpTypeIDs) {
@@ -822,155 +755,14 @@ export default {
       if (param.OrgPath) {
         api.reportSubChartOrg(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
-            // this.drawLocationChart(res.data)
+            this.drawOrgChart(res.data)
           } else {
-            // this.showLocationChart = false
+            this.showOrgChart = false
           }
         }).catch(err => console.log(err))
       } else {
-        // this.showLocationChart = false
+        this.showOrgChart = false
       }
-    },
-    // 修改
-    edit () {
-      if (!this.checkedID.length) {
-        this.$message({
-          message: '请选择需要操作的任务单',
-          duration: 2000,
-          type: 'warning'
-        })
-      } else if (this.checkedID.length > 1) {
-        this.$message({
-          message: '选择的任务单不能超过1个',
-          duration: 2000
-        })
-      } else {
-        var curItem
-        for (var i = 0; i < this.dataList.length; ++i) {
-          if (this.dataList[i].PMTaskOrderID === this.checkedID[0]) {
-            curItem = this.dataList[i]
-            break
-          }
-        }
-        if (curItem.Invalid === 1) {
-          this.$message({
-            message: '此任务单已作废',
-            type: 'warning'
-          })
-          return
-        }
-        this.$router.push({name: 'InspectionManagementEditDetail', query: { TaskOrderID: this.checkedID[0] }})
-      }
-    },
-
-    // 查看
-    see () {
-      if (!this.checkedID.length) {
-        this.$message({
-          message: '请选择需要操作的任务单',
-          duration: 2000,
-          type: 'warning'
-        })
-      } else if (this.checkedID.length > 1) {
-        this.$message({
-          message: '选择的任务单不能超过1个',
-          duration: 2000
-        })
-      } else {
-        this.$router.push({name: 'InspectionManagementSeeDetail', query: { TaskOrderID: this.checkedID[0], prePage: 'InspectionManagementList' }})
-      }
-    },
-
-    del () {
-      if (!this.checkedID.length) {
-        this.$message({
-          message: '请选择要删除的任务单',
-          type: 'warning'
-        })
-      } else {
-        for (var i = 0; i < this.checkedID.length; ++i) {
-          for (var j = 0; j < this.dataList.length; ++j) {
-            if (this.dataList[j].PMTaskOrderID === this.checkedID[i]) {
-              let curItem = this.dataList[j]
-              if (curItem.Status === 'Starting') {
-                this.$message({
-                  message: '不能删除未结束的任务单',
-                  type: 'warning'
-                })
-                return
-              }
-              if (curItem.Invalid === 1) {
-                this.$message({
-                  message: '不能删除已作废的任务单',
-                  type: 'warning'
-                })
-                return
-              }
-            }
-          }
-        }
-
-        this.dialogVisible.isShow = true
-        this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条巡检任务?'
-      }
-    },
-    // 弹框确认是否删除
-    dialogEnter () {
-      // 隐藏dialog
-      this.dialogVisible.isShow = false
-      window.axios.post('/PMTaskOrder/DelOrder', {
-        SelectedIDs: this.checkedID.join(',')
-      }).then(res => {
-        if (res.data.result === 'OK') {
-          // this.init()
-          this.searchResult(this.currentPage)
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-        } else {
-          this.$message({
-            message: '删除失败',
-            type: 'error'
-          })
-        }
-      }).catch(err => console.log(err))
-    },
-    // 全选
-    checkAll () {
-      this.bCheckAll ? this.dataList.map(val => this.checkedID.push(val.PMTaskOrderID)) : this.checkedID = []
-    },
-
-    // 序号、指定页翻页
-    handleCurrentChange (val) {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = val
-      this.searchResult(val)
-    },
-
-    // 上一页
-    prevPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = val
-      this.searchResult(val)
-    },
-
-    // 下一页
-    nextPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
-      this.currentPage = val
-      this.searchResult(val)
-    },
-
-    // 班组下拉选中，过滤非班组
-    cascader_change_copy (val) {
-      var arr = this.teamPath.text
-      let id = arr[arr.length - 1]
-      this.teamGroupid = id
     }
   }
 }
@@ -1226,4 +1018,30 @@ export default {
   width:unset !important;
 }
 
+.tableechart {
+    /* cellspacing:0 ; */
+    border-collapse: collapse; /* IE7 and lower */
+    border-spacing: 0;
+    width: 100%;
+    /* color:black; */
+    /* background-color: brown; */
+    /* background: rgba(49, 48, 53, 0.5); */
+}
+
+div.echart > div:last-child {
+  background-color: rgba(49, 48, 53, 1) !important;
+}
+div.echart > div:last-child > div:last-child > div:first-child {
+  display:none;
+}
+div.echart h4 {
+  display:none;
+}
+.echartsubtitle {
+    position: relative;
+    top: -35px;
+    padding-left: 9%;
+    width: 80%;
+    text-align: center;
+}
 </style>

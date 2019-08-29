@@ -295,7 +295,7 @@ export default {
     // 显示二级菜单
     showSubNav (index) {
       // console.log(this.$refs['navs'+index][0].$el.offsetLeft)
-      this.navChdleft = this.$refs['navs' + index][0].$el.offsetLeft
+      this.navChdleft = this.$refs['navs' + index][0].$el.offsetLeft + 10
       // this.$refs.nav[0].$el.offsetHeight * 4
 
       for (let [, value] of Object.entries(this.navList)) {
@@ -409,6 +409,7 @@ $width: 180;
   transform: translateY(0%);
   background: #fff;
   height: 50px;
+      font-size: 17px;
   .nav-wrap {
 height: 50px;
     .nav-move-wrap {
@@ -508,7 +509,7 @@ height: 50px;
     @include opacity(0);
     width: 160px;
     // width: 100%;
-    height: 280px;
+    height: 195px;
     // transition: .7s;
 
     &.active{
@@ -532,7 +533,7 @@ height: 50px;
         display: flex;
         align-items: center;
         position: relative;
-        height: PXtoEm(70);
+        height: 38px;
         padding: 0 10px;
 
         &:after{

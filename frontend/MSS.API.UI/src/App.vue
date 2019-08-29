@@ -61,16 +61,18 @@ export default {
 #main{
   position: relative;
   top: 1%;
-  left: 47%;
+  // left: 47%;
   width: 93%;
-  height: percent(630, 780);
+  // height: percent(630, 780);
+  height: 80%;
   border-radius: $border-radius;
-  transform: translateX(percent(-960 / 2, 960));
-
+  // transform: translateX(percent(-960 / 2, 960));
+  bottom:6%;
+  padding-left: 2%;
   &.shrink{
-    left: 44%;
-    width: percent(1339, 1440);
-    transform: translateX(percent(-960 / 2, 1100));
+    // left: 44%;
+    width: 93%;
+    // transform: translateX(percent(-960 / 2, 1100));
   }
 
   > .wrap{

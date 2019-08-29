@@ -37,7 +37,7 @@ namespace MSS.API.Core.Models.Ex
         public string pid { get; set; }
         public int eLevel { get; set; }
         public int Ack { get; set; }
-        public DateTime OriginTime { get; set; }
+        public DateTime? OriginTime { get; set; }
         public DateTime? RestoreTime { get; set; }
         public DateTime? AckTime { get; set; }
         public string NodeID { get; set; }

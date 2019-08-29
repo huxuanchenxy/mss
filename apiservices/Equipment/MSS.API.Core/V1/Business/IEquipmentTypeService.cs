@@ -17,5 +17,8 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetPageByParm(EqpTypeQueryParm parm);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> GetAll();
+
+        // 插入模拟数据
+        Task<ApiResult> MockData();
     }
 }
