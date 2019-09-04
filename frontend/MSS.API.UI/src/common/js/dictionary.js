@@ -26,3 +26,7 @@ export const sparePartsOperationType = {
   adjust: 70,
   move: 71
 }
+
+export const sparePartsOperationDetailType = {
+  purchaseReturn: 72
+}

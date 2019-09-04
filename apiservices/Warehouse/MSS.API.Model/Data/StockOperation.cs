@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using Dapper;
 using Dapper.FluentMap.Mapping;
+
+/// <summary>
+/// 库存总表 sum from 仓库明细 sum from 存货明细——库存操作明细 detail of 库存操作
+/// </summary>
 namespace MSS.API.Model.Data
 {
+    #region 库存操作：出入库、调整、移库
     public class StockOperation
     {
         public int ID { get; set; }
@@ -30,6 +35,7 @@ namespace MSS.API.Model.Data
         public int CreatedBy { get; set; }
         public DateTime CreatedTime { get; set; }
         public string DetailList { get; set; }
+        public string DetailEditList { get; set; }
     }
 
     public class StockOperationMap : EntityMap<StockOperation>
@@ -75,6 +81,18 @@ namespace MSS.API.Model.Data
         public DateTime? SearchEnd { get; set; }
     }
 
+    public class StockOperationSaveParm
+    {
+        public StockOperation stockOperation { get; set; }
+        public List<StockOperationDetail> stockOperationDetails { get; set; }
+        public List<Stock> stocks { get; set; }
+        public List<StockDetail> stockDetails { get; set; }
+        public bool isAddStockDetails { get; set; }
+        public List<StockSum> stockSums { get; set; }
+    }
+    #endregion
+
+    #region 库存操作明细
     public class StockOperationDetail
     {
         public int ID { get; set; }
@@ -89,11 +107,13 @@ namespace MSS.API.Model.Data
         public int Currency { get; set; }
         public string CurrencyName { get; set; }
         public string Invoice { get; set; }
+        public DateTime? LifeDate { get; set; }
+        public string WorkingOrder { get; set; }
         public string Purchase { get; set; }
         public string Repair { get; set; }
         public int Operation { get; set; }
-        public double? ExchangeRate { get; set; }
-        public double? TotalAmount { get; set; }
+        public double ExchangeRate { get; set; }
+        public double TotalAmount { get; set; }
         public string Remark { get; set; }
     }
 
@@ -113,6 +133,8 @@ namespace MSS.API.Model.Data
             Map(o => o.Currency).ToColumn("currency");
             Map(o => o.CurrencyName).ToColumn("cname");
             Map(o => o.Invoice).ToColumn("invoice");
+            Map(o => o.LifeDate).ToColumn("life_date");
+            Map(o => o.WorkingOrder).ToColumn("working_order");
             Map(o => o.Purchase).ToColumn("purchase");
             Map(o => o.Repair).ToColumn("repair");
             Map(o => o.Operation).ToColumn("operation");
@@ -121,6 +143,162 @@ namespace MSS.API.Model.Data
             Map(o => o.Remark).ToColumn("remark");
         }
     }
+    #endregion
 
+    #region 仓库明细，仓库维度
+    public class Stock
+    {
+        public int ID { get; set; }
+        public int SpareParts { get; set; }
+        public int StockNo { get; set; }
+        public int TroubleNo { get; set; }
+        public int InStockNo { get; set; }
+        public int InspectionNo { get; set; }
+        public int RepairNo { get; set; }
+        public double Amount { get; set; }
+        public int Warehouse { get; set; }
+        public string WarehouseName { get; set; }
+        public bool isAdd { get; set; }
+    }
+
+    public class StockMap : EntityMap<Stock>
+    {
+        public StockMap()
+        {
+            Map(o => o.SpareParts).ToColumn("spare_parts");
+            Map(o => o.StockNo).ToColumn("stock_no");
+            Map(o => o.TroubleNo).ToColumn("trouble_no");
+            Map(o => o.InStockNo).ToColumn("in_stock_no");
+            Map(o => o.InspectionNo).ToColumn("inspection_no");
+            Map(o => o.RepairNo).ToColumn("repair_no");
+            Map(o => o.Amount).ToColumn("amount");
+            Map(o => o.Warehouse).ToColumn("warehouse");
+            Map(o => o.WarehouseName).ToColumn("name");
+        }
+    }
+    #endregion
+
+    #region 存货明细，以采购接收/其他接收为原始记录
+    public class StockDetail
+    {
+        public int ID { get; set; }
+        public int SpareParts { get; set; }
+        public int StockOperationDetail { get; set; }
+        public int StockNo { get; set; }
+        public int TroubleNo { get; set; }
+        public int InStockNo { get; set; }
+        public int InspectionNo { get; set; }
+        public int RepairNo { get; set; }
+        public int Status { get; set; }
+        public int Warehouse { get; set; }
+        public string WarehouseName { get; set; }
+        /// <summary>
+        /// 接收数量
+        /// </summary>
+        public int AcceptNo { get; set; }
+        /// <summary>
+        /// 接收日期
+        /// </summary>
+        public DateTime AcceptDate { get; set; }
+        /// <summary>
+        /// 供应商
+        /// </summary>
+        public string SupplierName { get; set; }
+        /// <summary>
+        /// 保质期
+        /// </summary>
+        public DateTime LifeDate { get; set; }
+        /// <summary>
+        /// 接收单价
+        /// </summary>
+        public double AcceptUnitPrice { get; set; }
+        /// <summary>
+        /// 接收金额
+        /// </summary>
+        public double AcceptAmount { get; set; }
+        /// <summary>
+        /// 接收币种
+        /// </summary>
+        public string CurrencyName { get; set; }
+    }
+
+    public class StockDetailMap : EntityMap<StockDetail>
+    {
+        public StockDetailMap()
+        {
+            Map(o => o.SpareParts).ToColumn("spare_parts");
+            Map(o => o.StockOperationDetail).ToColumn("stock_operation_detail");
+            Map(o => o.StockNo).ToColumn("stock_no");
+            Map(o => o.TroubleNo).ToColumn("trouble_no");
+            Map(o => o.InStockNo).ToColumn("in_stock_no");
+            Map(o => o.InspectionNo).ToColumn("inspection_no");
+            Map(o => o.RepairNo).ToColumn("repair_no");
+            Map(o => o.Status).ToColumn("status");
+            Map(o => o.Warehouse).ToColumn("warehouse");
+            Map(o => o.WarehouseName).ToColumn("name");
+            Map(o => o.SupplierName).ToColumn("sname");
+            Map(o => o.AcceptDate).ToColumn("created_time");
+            Map(o => o.AcceptNo).ToColumn("count_no");
+            Map(o => o.LifeDate).ToColumn("life_date");
+            Map(o => o.AcceptUnitPrice).ToColumn("unit_price");
+            Map(o => o.CurrencyName).ToColumn("cname");
+        }
+    }
+
+    public class StockDetailEdit
+    {
+        /// <summary>
+        /// StockOperationDetail表的主键ID
+        /// </summary>
+        public int StockOperationDetailID { get; set; }
+        /// <summary>
+        /// 修改数量
+        /// </summary>
+        public int EditNo { get; set; }
+    }
+    #endregion
+
+    #region 库存总表，物资维度
+    public class StockSum
+    {
+        public int ID { get; set; }
+        public int SpareParts { get; set; }
+        public string SparePartsName { get; set; }
+        public int StockNo { get; set; }
+        public int TroubleNo { get; set; }
+        public int InStockNo { get; set; }
+        public int InspectionNo { get; set; }
+        public int RepairNo { get; set; }
+        public double Amount { get; set; }
+        public bool isAdd { get; set; }
+        public List<Stock> stocks { get; set; }
+    }
+
+    public class StockSumMap : EntityMap<StockSum>
+    {
+        public StockSumMap()
+        {
+            Map(o => o.SpareParts).ToColumn("spare_parts");
+            Map(o => o.SparePartsName).ToColumn("name");
+            Map(o => o.StockNo).ToColumn("stock_no");
+            Map(o => o.TroubleNo).ToColumn("trouble_no");
+            Map(o => o.InStockNo).ToColumn("in_stock_no");
+            Map(o => o.InspectionNo).ToColumn("inspection_no");
+            Map(o => o.RepairNo).ToColumn("repair_no");
+            Map(o => o.Amount).ToColumn("amount");
+        }
+    }
+
+    public class StockSumQueryParm : BaseQueryParm
+    {
+        public int? SearchSpareParts { get; set; }
+    }
+
+    public class StockSumView
+    {
+        public List<StockSum> rows { get; set; }
+        public int total { get; set; }
+    }
+    #endregion
 
 }

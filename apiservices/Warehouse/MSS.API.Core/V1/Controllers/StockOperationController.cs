@@ -43,5 +43,19 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _stockOperationService.GetByID(id);
             return Ok(resp.Result);
         }
+
+        [HttpGet("ListStockSum")]
+        public ActionResult GetStockSumPageByParm([FromQuery] StockSumQueryParm parm)
+        {
+            var resp = _stockOperationService.GetStockSumPageByParm(parm);
+            return Ok(resp.Result);
+        }
+
+        [HttpGet("ListStockDetail/{spareParts}")]
+        public ActionResult ListStockDetailBySPs(int spareParts)
+        {
+            var resp = _stockOperationService.ListStockDetailBySPs(spareParts);
+            return Ok(resp.Result);
+        }
     }
 }
