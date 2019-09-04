@@ -276,13 +276,20 @@ export default {
       this.$router.push({name: 'AddStockDelivery', query: { type: 'Add' }})
     },
     detail () {
-      this.$router.push({
-        name: 'DetailStockOperation',
-        params: {
-          id: this.editStockDeliveryID,
-          sourceName: 'SeeStockDeliveryList'
-        }
-      })
+      if (this.editStockMoveID === '') {
+        this.$message({
+          message: '请选择需要查看的发放流水号',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailStockOperation',
+          params: {
+            id: this.editStockDeliveryID,
+            sourceName: 'SeeStockDeliveryList'
+          }
+        })
+      }
     },
     // 搜索功能
     searchRes () {

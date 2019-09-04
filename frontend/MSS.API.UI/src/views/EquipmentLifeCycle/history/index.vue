@@ -45,7 +45,7 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 80%;
+      height: 56%;
       // height: percent(80, 145);
       background: rgba(128, 128, 128, 0.1);
       color: $color-white;

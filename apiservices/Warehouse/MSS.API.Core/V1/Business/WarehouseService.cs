@@ -22,12 +22,15 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IWarehouseRepo<Warehouse> _warehouseRepo;
+        private readonly IStockOperationRepo<StockOperation> _stockOperationRepo;
 
         private readonly int userID;
-        public WarehouseService(IWarehouseRepo<Warehouse> warehouseRepo, IAuthHelper auth)
+        public WarehouseService(IWarehouseRepo<Warehouse> warehouseRepo, IAuthHelper auth,
+            IStockOperationRepo<StockOperation> stockOperationRepo)
         {
             //_logger = logger;
             _warehouseRepo = warehouseRepo;
+            _stockOperationRepo = stockOperationRepo;
             userID = auth.GetUserId();
         }
 
@@ -85,8 +88,17 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                // 判断设备类型下有没有挂设备，有的话不允许删除
-                ret.data = await _warehouseRepo.Delete(ids.Split(','),userID);
+                string[] tmp = ids.Split(',');
+                // 有关联的仓库不允许删除
+                if (await _stockOperationRepo.hasWarehouse(tmp))
+                {
+                    ret.code = Code.DataIsExist;
+                    ret.msg = "仓库中含有物资库存，不可删除";
+                }
+                else
+                {
+                    ret.data = await _warehouseRepo.Delete(tmp, userID);
+                }
                 return ret;
             }
             catch (Exception ex)

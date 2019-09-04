@@ -205,7 +205,7 @@
               <div class="inp-wrap">
                 <span class="text">上线日期<em class="validate-mark">*</em></span>
                 <div class="inp">
-                  <el-date-picker width="80%"
+                  <el-date-picker class="el-date-width"
                     v-model="time.text"
                     type="date"
                     value-format="yyyy-MM-dd"

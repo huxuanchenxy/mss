@@ -9,186 +9,182 @@
       </h2>
       <i @click="back"><x-button class="active">返回</x-button></i>
     </div>
-    <div class="scroll">
-      <el-scrollbar>
-        <!-- 接收列表 -->
-        <ul v-show="curOperationType === operationType.receive" class="con-padding-horizontal input-group">
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">事务原因</span>
-              <div class="inp">{{stockOperation.reasonName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">仓库</span>
-              <div class="inp">{{stockOperation.warehouseName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">供应商</span>
-              <div class="inp">{{stockOperation.supplierName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">合同</span>
-              <div class="inp">{{stockOperation.agreement}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">预算部门</span>
-              <div class="inp">{{stockOperation.budgetDeptName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">预算项目</span>
-              <div class="inp">{{stockOperation.budgetItems}}</div>
-            </div>
-          </li>
-          <li class="list list-block">
-            <div class="inp-wrap">
-              <span class="text span-block">备注</span>
-              <div class="inp word-break">{{stockOperation.remark}}</div>
-            </div>
-          </li>
-        </ul>
-        <!-- 发放列表 -->
-        <ul v-show="curOperationType === operationType.delivery" class="con-padding-horizontal input-group">
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">事务原因</span>
-              <div class="inp">{{stockOperation.reasonName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">仓库</span>
-              <div class="inp">{{stockOperation.warehouseName}}</div>
-            </div>
-          </li>
-          <li class="list"></li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">领料人</span>
-              <div class="inp">{{stockOperation.pickerName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">领料人部门</span>
-              <div class="inp">{{stockOperation.pickerDeptName}}</div>
-            </div>
-          </li>
-          <li class="list"></li>
-          <li class="list list-block">
-            <div class="inp-wrap">
-              <span class="text span-block">备注</span>
-              <div class="inp word-break">{{stockOperation.remark}}</div>
-            </div>
-          </li>
-        </ul>
-        <!-- 调整列表 -->
-        <ul v-show="curOperationType === operationType.adjust" class="con-padding-horizontal input-group">
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">事务原因</span>
-              <div class="inp">{{stockOperation.reasonName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">仓库</span>
-              <div class="inp">{{stockOperation.warehouseName}}</div>
-            </div>
-          </li>
-          <li class="list"></li>
-          <li class="list"></li>
-          <li class="list list-block">
-            <div class="inp-wrap">
-              <span class="text span-block">备注</span>
-              <div class="inp word-break">{{stockOperation.remark}}</div>
-            </div>
-          </li>
-        </ul>
-        <!-- 调整列表 -->
-        <ul v-show="curOperationType === operationType.move" class="con-padding-horizontal input-group">
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">事务原因</span>
-              <div class="inp">{{stockOperation.reasonName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">移出仓库</span>
-              <div class="inp">{{stockOperation.fromWarehouseName}}</div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">移入仓库</span>
-              <div class="inp">{{stockOperation.warehouseName}}</div>
-            </div>
-          </li>
-          <li class="list"></li>
-          <li class="list"></li>
-          <li class="list list-block">
-            <div class="inp-wrap">
-              <span class="text span-block">备注</span>
-              <div class="inp word-break">{{stockOperation.remark}}</div>
-            </div>
-          </li>
-        </ul>
-        <!-- 内容 -->
-        <div class="content-wrap">
-          <ul class="content-header">
-            <li class="list number">序号</li>
-            <li class="list name">物资名称</li>
-            <li class="list name">规格型号</li>
-            <li class="list name">单位</li>
-            <li class="list name">数量</li>
-            <li class="list name">单价</li>
-            <li class="list name">金额</li>
-            <li class="list name">币种</li>
-            <li v-show="curOperationType === operationType.receive" class="list name">汇率</li>
-            <li v-show="curOperationType === operationType.receive" class="list name">本币总金额</li>
-            <li class="list name">发票号</li>
-            <li v-show="curOperationType !== operationType.receive" class="list name">工单号</li>
-            <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">采购单</li>
-            <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">送修单</li>
-            <li class="list name">备注</li>
-          </ul>
-          <div class="scroll">
-            <el-scrollbar>
-              <ul class="list-wrap">
-                <li class="list" v-for="item in stockOperation.detailList" :key="item.key">
-                  <div class="list-content">
-                    <div class="number">{{ item.OrderNo}}</div>
-                    <div class="name">{{ item.SparePartsName }}</div>
-                    <div class="name">{{ item.SparePartsModel }}</div>
-                    <div class="name">{{ item.SparePartsUnit }}</div>
-                    <div class="name word-break">{{ item.CountNo }}</div>
-                    <div class="name word-break">{{ item.UnitPrice }}</div>
-                    <div class="name word-break">{{ item.Amount }}</div>
-                    <div class="name word-break">{{ item.CurrencyName }}</div>
-                    <div v-show="curOperationType !== operationType.receive" class="name word-break">{{ item.WorkingOrder }}</div>
-                    <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.ExchangeRate }}</div>
-                    <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.TotalAmount }}</div>
-                    <div class="name word-break">{{ item.Invoice }}</div>
-                    <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Purchase }}</div>
-                    <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Repair }}</div>
-                    <div class="name word-break">{{ item.Remark }}</div>
-                  </div>
-                </li>
-              </ul>
-            </el-scrollbar>
-          </div>
+    <!-- 接收列表 -->
+    <ul v-show="curOperationType === operationType.receive" class="con-padding-horizontal input-group">
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">事务原因</span>
+          <div class="inp">{{stockOperation.reasonName}}</div>
         </div>
-      </el-scrollbar>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">仓库</span>
+          <div class="inp">{{stockOperation.warehouseName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">供应商</span>
+          <div class="inp">{{stockOperation.supplierName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">合同</span>
+          <div class="inp">{{stockOperation.agreement}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">预算部门</span>
+          <div class="inp">{{stockOperation.budgetDeptName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">预算项目</span>
+          <div class="inp">{{stockOperation.budgetItems}}</div>
+        </div>
+      </li>
+      <li class="list list-block">
+        <div class="inp-wrap">
+          <span class="text span-block">备注</span>
+          <div class="inp word-break">{{stockOperation.remark}}</div>
+        </div>
+      </li>
+    </ul>
+    <!-- 发放列表 -->
+    <ul v-show="curOperationType === operationType.delivery" class="con-padding-horizontal input-group">
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">事务原因</span>
+          <div class="inp">{{stockOperation.reasonName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">仓库</span>
+          <div class="inp">{{stockOperation.warehouseName}}</div>
+        </div>
+      </li>
+      <li class="list"></li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">领料人</span>
+          <div class="inp">{{stockOperation.pickerName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">领料人部门</span>
+          <div class="inp">{{stockOperation.pickerDeptName}}</div>
+        </div>
+      </li>
+      <li class="list"></li>
+      <li class="list list-block">
+        <div class="inp-wrap">
+          <span class="text span-block">备注</span>
+          <div class="inp word-break">{{stockOperation.remark}}</div>
+        </div>
+      </li>
+    </ul>
+    <!-- 调整列表 -->
+    <ul v-show="curOperationType === operationType.adjust" class="con-padding-horizontal input-group">
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">事务原因</span>
+          <div class="inp">{{stockOperation.reasonName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">仓库</span>
+          <div class="inp">{{stockOperation.warehouseName}}</div>
+        </div>
+      </li>
+      <li class="list"></li>
+      <li class="list"></li>
+      <li class="list list-block">
+        <div class="inp-wrap">
+          <span class="text span-block">备注</span>
+          <div class="inp word-break">{{stockOperation.remark}}</div>
+        </div>
+      </li>
+    </ul>
+    <!-- 调整列表 -->
+    <ul v-show="curOperationType === operationType.move" class="con-padding-horizontal input-group">
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">事务原因</span>
+          <div class="inp">{{stockOperation.reasonName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">移出仓库</span>
+          <div class="inp">{{stockOperation.fromWarehouseName}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">移入仓库</span>
+          <div class="inp">{{stockOperation.warehouseName}}</div>
+        </div>
+      </li>
+      <li class="list"></li>
+      <li class="list"></li>
+      <li class="list list-block">
+        <div class="inp-wrap">
+          <span class="text span-block">备注</span>
+          <div class="inp word-break">{{stockOperation.remark}}</div>
+        </div>
+      </li>
+    </ul>
+    <!-- 内容 -->
+    <div class="content-wrap">
+      <ul class="content-header">
+        <li class="list number">序号</li>
+        <li class="list name">物资名称</li>
+        <li class="list name">规格型号</li>
+        <li class="list name">单位</li>
+        <li class="list name">数量</li>
+        <li class="list name">单价</li>
+        <li class="list name">金额</li>
+        <li class="list name">币种</li>
+        <li v-show="curOperationType === operationType.receive" class="list name">汇率</li>
+        <li v-show="curOperationType === operationType.receive" class="list name">本币总金额</li>
+        <li class="list name">发票号</li>
+        <li v-show="curOperationType !== operationType.receive" class="list name">工单号</li>
+        <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">采购单</li>
+        <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">送修单</li>
+        <li class="list name">备注</li>
+      </ul>
+      <div class="scroll">
+        <el-scrollbar>
+          <ul class="list-wrap">
+            <li class="list" v-for="item in stockOperation.detailList" :key="item.key">
+              <div class="list-content">
+                <div class="number">{{ item.OrderNo}}</div>
+                <div class="name">{{ item.SparePartsName }}</div>
+                <div class="name">{{ item.SparePartsModel }}</div>
+                <div class="name">{{ item.SparePartsUnit }}</div>
+                <div class="name word-break">{{ item.CountNo }}</div>
+                <div class="name word-break">{{ item.UnitPrice }}</div>
+                <div class="name word-break">{{ item.Amount }}</div>
+                <div class="name word-break">{{ item.CurrencyName }}</div>
+                <div v-show="curOperationType !== operationType.receive" class="name word-break">{{ item.WorkingOrder }}</div>
+                <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.ExchangeRate }}</div>
+                <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.TotalAmount }}</div>
+                <div class="name word-break">{{ item.Invoice }}</div>
+                <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Purchase }}</div>
+                <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Repair }}</div>
+                <div class="name word-break">{{ item.Remark }}</div>
+              </div>
+            </li>
+          </ul>
+        </el-scrollbar>
+      </div>
     </div>
   </div>
 </template>
@@ -301,8 +297,8 @@ $con-height: $content-height - 145 - 56;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: percent(50, $con-height);
-    padding: PXtoEm(12) PXtoEm(24);
+    height: percent(20, $con-height)!important;
+    padding: 0 PXtoEm(24);
     margin-top: PXtoEm(12);
     background: rgba(36,128,198,.5);
 
@@ -312,7 +308,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .scroll{
-    height: percent($con-height - 50, $con-height);
+    height: percent($con-height - 20, $con-height);
   }
 
   .list-wrap{

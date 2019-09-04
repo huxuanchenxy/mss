@@ -16,13 +16,15 @@ namespace MSS.API.Dao.Implement
     public class StockOperationRepo : BaseRepo, IStockOperationRepo<StockOperation>
     {
         public StockOperationRepo(DapperOptions options) : base(options) { }
-
-        public async Task<StockOperation> Save(StockOperation stockOperation)
+        #region 库存操作
+        public async Task<int> Save(StockOperationSaveParm parm)
         {
             return await WithConnection(async c =>
             {
-                List<StockOperationDetail> sods = JsonConvert.DeserializeObject<List<StockOperationDetail>>(stockOperation.DetailList);
+                StockOperation stockOperation = parm.stockOperation;
+                List<StockOperationDetail> sods = parm.stockOperationDetails;
                 IDbTransaction trans = c.BeginTransaction();
+                int ret;
                 string sql = " insert into stock_operation " +
                     " values (0,@OperationID,@Type,@Reason,@Warehouse, " +
                     " @FromWarehouse,@Remark,@Picker,@Supplier,@Agreement, " +
@@ -32,17 +34,68 @@ namespace MSS.API.Dao.Implement
                 {
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, stockOperation, trans);
                     stockOperation.ID = newid;
+                    int i = 0;
                     foreach (var item in sods)
                     {
                         item.Operation = newid;
+                        sql = " insert into stock_operation_detail " +
+                            " values (0,@SpareParts,@OrderNo,@CountNo,@UnitPrice, " +
+                            " @Amount,@Currency,@Invoice,@LifeDate,@WorkingOrder,@Purchase,@Repair, " +
+                            " @Operation,@ExchangeRate,@TotalAmount,@Remark); ";
+                        sql += "SELECT LAST_INSERT_ID()";
+                        ret = await c.QueryFirstOrDefaultAsync<int>(sql, item, trans);
+                        parm.stockDetails[i].StockOperationDetail = ret;
+                        i++;
                     }
-                    sql = " insert into stock_operation_detail " +
-                    " values (0,@SpareParts,@OrderNo,@CountNo,@UnitPrice, " +
-                    " @Amount,@Currency,@Invoice,@WorkingOrder,@Purchase,@Repair, " +
-                    " @Operation,@ExchangeRate,@TotalAmount,@Remark) ";
-                    int ret = await c.ExecuteAsync(sql, sods, trans);
+                    if (parm.isAddStockDetails)
+                    {
+                        sql = " insert into stock_detail " +
+                            " values (0,@SpareParts,@StockOperationDetail,@StockNo,@TroubleNo,@InStockNo, " +
+                            " @InspectionNo,@RepairNo,@Warehouse,@Status) ";
+                    }
+                    else
+                    {
+                        sql = " update stock_detail set stock_no=@StockNo,inspection_no=@InspectionNo,repair_no=@RepairNo," +
+                            " trouble_no=@TroubleNo,in_stock_no=@InStockNo, " +
+                            " warehouse=@Warehouse,status=@Status where id = @id ";
+                    }
+                    ret = await c.ExecuteAsync(sql, parm.stockDetails, trans);
+
+                    foreach (var item in parm.stocks)
+                    {
+                        if (item.isAdd)
+                        {
+                            sql = " insert into stock " +
+                                " values (0,@SpareParts,@StockNo,@TroubleNo,@InStockNo, " +
+                                " @InspectionNo,@RepairNo,@Warehouse,@Amount) ";
+                        }
+                        else
+                        {
+                            sql = " update stock set stock_no=@StockNo,inspection_no=@InspectionNo,repair_no=@RepairNo," +
+                                " trouble_no=@TroubleNo,in_stock_no=@InStockNo, " +
+                                " warehouse=@Warehouse,amount=@Amount where id = @id ";
+                        }
+                        ret = await c.ExecuteAsync(sql, item, trans);
+                    }
+
+                    foreach (var item in parm.stockSums)
+                    {
+                        if (item.isAdd)
+                        {
+                            sql = " insert into stock_sum " +
+                                " values (0,@SpareParts,@StockNo,@TroubleNo,@InStockNo, " +
+                                " @InspectionNo,@RepairNo,@Amount) ";
+                        }
+                        else
+                        {
+                            sql = " update stock_sum set stock_no=@StockNo,inspection_no=@InspectionNo,repair_no=@RepairNo," +
+                                " trouble_no=@TroubleNo,in_stock_no=@InStockNo,amount=@Amount " +
+                                " where id = @id ";
+                        }
+                        ret = await c.ExecuteAsync(sql, item, trans);
+                    }
                     trans.Commit();
-                    return stockOperation;
+                    return ret;
                 }
                 catch (Exception ex)
                 {
@@ -143,6 +196,91 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        #endregion
+
+        #region 库存分页查询
+        public async Task<StockSumView> GetStockSumPageByParm(StockSumQueryParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                StockSumView ret = new StockSumView();
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT a.*,sp.name ")
+                .Append(" FROM stock_sum a ")
+                .Append(" left join spare_parts sp on a.spare_parts=sp.id where 1=1 ");
+                StringBuilder whereSql = new StringBuilder();
+                if (parm.SearchSpareParts != null)
+                {
+                    whereSql.Append(" and a.spare_parts = " + parm.SearchSpareParts);
+                }
+                sql.Append(whereSql)
+                .Append(" order by a." + parm.sort + " " + parm.order)
+                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
+                var tmp = await c.QueryAsync<StockSum>(sql.ToString());
+                if (tmp != null && tmp.Count() > 0)
+                {
+                    ret.rows = tmp.ToList();
+                    ret.total = await c.QueryFirstOrDefaultAsync<int>(
+                        "select count(*) from stock_sum a where 1=1 " + whereSql.ToString());
+                }
+                else
+                {
+                    ret.rows = new List<StockSum>();
+                    ret.total = 0;
+                }
+                return ret;
+            });
+        }
+
+        #endregion
+
+        #region 根据不同的条件查询
+        public async Task<List<StockSum>> ListBySPs(List<int> spareParts)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM stock_sum WHERE spare_parts in @spareParts";
+                var result = await c.QueryAsync<StockSum>(
+                    sql, new { spareParts });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockSum>();
+            });
+        }
+
+        public async Task<List<Stock>> ListBySPsAndWH(List<int> spareParts,int warehouse)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM stock WHERE spare_parts in @spareParts and warehouse=@warehouse";
+                var result = await c.QueryAsync<Stock>(
+                    sql, new { spareParts, warehouse });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<Stock>();
+            });
+        }
+        public async Task<List<Stock>> ListStockBySPs(List<int> spareParts)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT s.*,ss.name FROM stock s" +
+                " left join warehouse ss on s.warehouse=ss.id " +
+                " WHERE spare_parts in @spareParts";
+                var result = await c.QueryAsync<Stock>(
+                    sql, new { spareParts });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<Stock>();
+            });
+        }
+
         public async Task<List<StockOperationDetail>> ListByOperation(int operation)
         {
             return await WithConnection(async c =>
@@ -159,5 +297,53 @@ namespace MSS.API.Dao.Implement
                 return new List<StockOperationDetail>();
             });
         }
+
+        public async Task<List<StockDetail>> ListStockDetailBySPs(List<int> spareParts)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price," +
+                " w.name,f.name as sname,dt.name as cname FROM stock_detail sd" +
+                " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
+                " left join dictionary_tree dt on sod.currency=dt.id " +
+                " left join stock_operation so on sod.operation=so.id " +
+                " left join warehouse w on so.warehouse=w.id " +
+                " left join firm f on so.supplier=f.id " +
+                " WHERE sd.spare_parts in @ids";
+                var result = await c.QueryAsync<StockDetail>(
+                    sql, new { ids= spareParts });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockDetail>();
+            });
+        }
+
+        #endregion
+
+        #region 删除前提判断
+        public async Task<bool> hasSpareParts(string[] spareParts)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT count(id) from stock WHERE spare_parts in @ids and stock_no=0";
+                var result = await c.QueryFirstOrDefaultAsync<int>(
+                    sql, new { ids = spareParts });
+                return result>0;
+            });
+        }
+
+        public async Task<bool> hasWarehouse(string[] warehouse)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT count(id) from stock WHERE warehouse in @ids and stock_no=0";
+                var result = await c.QueryFirstOrDefaultAsync<int>(
+                    sql, new { ids = warehouse });
+                return result > 0;
+            });
+        }
+        #endregion
     }
 }

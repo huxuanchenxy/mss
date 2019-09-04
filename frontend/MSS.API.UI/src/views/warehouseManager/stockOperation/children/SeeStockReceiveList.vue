@@ -277,13 +277,20 @@ export default {
       this.$router.push({name: 'AddStockReceive', query: { type: 'Add' }})
     },
     detail () {
-      this.$router.push({
-        name: 'DetailStockOperation',
-        params: {
-          id: this.editStockReceiveID,
-          sourceName: 'SeeStockReceiveList'
-        }
-      })
+      if (this.editStockReceiveID === '') {
+        this.$message({
+          message: '请选择需要查看的接收流水号',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailStockOperation',
+          params: {
+            id: this.editStockReceiveID,
+            sourceName: 'SeeStockReceiveList'
+          }
+        })
+      }
     },
     // 搜索功能
     searchRes () {

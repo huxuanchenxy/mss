@@ -295,11 +295,11 @@ export default {
       let spName = ''
       let isRepeat = this.detailList.some(val => {
         spName = val.sparePartsName
-        return val.spareParts === this.spareParts.text
+        return val.spareParts === this.spareParts.text && val.workingOrder === this.workingOrder.text
       })
       if (isRepeat) {
         this.$message({
-          message: '物资-' + spName + ' 不可重复添加',
+          message: '相同工单中的物资-' + spName + ' 不可重复添加',
           type: 'warning'
         })
         return

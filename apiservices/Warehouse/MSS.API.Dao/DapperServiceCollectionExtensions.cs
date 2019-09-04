@@ -33,6 +33,9 @@ namespace MSS.API.Dao
                 config.AddMap(new WarehouseAlarmMap());
                 config.AddMap(new StockOperationMap());
                 config.AddMap(new StockOperationDetailMap());
+                config.AddMap(new StockMap());
+                config.AddMap(new StockDetailMap());
+                config.AddMap(new StockSumMap());
             });
             return services;
         }
