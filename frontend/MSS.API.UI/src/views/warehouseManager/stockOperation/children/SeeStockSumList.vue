@@ -13,6 +13,19 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
+            <label for="name">仓库</label>
+            <div class="inp">
+              <el-select v-model="warehouse" clearable filterable placeholder="请选择仓库">
+                <el-option
+                  v-for="item in warehouseList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
             <label for="name">物资</label>
             <div class="inp">
               <el-select v-model="spareParts" clearable filterable placeholder="请选择物资">
@@ -31,7 +44,7 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="shrinkAllSubContent" ><x-button>{{ shrinkAll.text }}</x-button></li>
+        <li class="list" @click="shrinkAllSubContent" ><x-button :disabled="isWarehouse">{{ shrinkAll.text }}</x-button></li>
         <li class="list" @click="detail" ><x-button>存货明细</x-button></li>
       </ul>
     </div>
@@ -73,7 +86,7 @@
             <li class="list" v-for="(item, index) in StockSumList" :key="item.key">
               <div class="list-content">
                 <div class="btn-wrap">
-                  <i title="展开" @click="shrinkSubContent(index, item.id, item.stocks.length)" class="iconfont icon-arrow-top-f" :class="{ active: item.isShowSubCon }"></i>
+                  <i v-show="!isWarehouse" title="展开" @click="shrinkSubContent(index, item.id, item.stocks.length)" class="iconfont icon-arrow-top-f" :class="{ active: item.isShowSubCon }"></i>
                   <input type="radio" v-model="editStockSum" :value="item.id">
                 </div>
                 <div class="name">{{ item.sparePartsName }}</div>
@@ -144,8 +157,11 @@ export default {
   data () {
     return {
       title: ' | 库存查询',
+      isWarehouse: false,
       spareParts: '',
       sparePartsList: [],
+      warehouseList: [],
+      warehouse: '',
       StockSumList: [],
       editStockSum: [],
       total: 0,
@@ -179,6 +195,10 @@ export default {
     api.getSparePartsAll().then(res => {
       this.sparePartsList = res.data
     }).catch(err => console.log(err))
+    // 仓库加载
+    api.getWarehouseAll().then(res => {
+      this.warehouseList = res.data
+    }).catch(err => console.log(err))
   },
   watch: {
     random () {
@@ -197,10 +217,14 @@ export default {
           type: 'warning'
         })
       } else {
+        let tmp = this.StockSumList.find(val => {
+          return val.id === this.editStockSum
+        })
         this.$router.push({
           name: 'StockDetail',
           params: {
-            id: this.editStockSum
+            id: tmp.spareParts,
+            warehouse: tmp.warehouse === undefined ? 0 : tmp.warehouse
             // sourceName: 'SeeStockAdjustList'
           }
         })
@@ -233,6 +257,8 @@ export default {
     },
     // 搜索
     searchResult (page) {
+      if (this.warehouse === '') this.isWarehouse = false
+      else this.isWarehouse = true
       this.currentPage = page
       this.loading = true
       api.getStockSum({
@@ -240,7 +266,8 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchSpareParts: this.spareParts
+        searchSpareParts: this.spareParts,
+        SearchWarehouse: this.warehouse
       }).then(res => {
         this.loading = false
         res.data.rows.map(val => {
@@ -248,7 +275,6 @@ export default {
         })
         this.total = res.data.total
         this.StockSumList = res.data.rows
-        console.log(this.StockSumList)
       }).catch(err => console.log(err))
     },
     // 收起展开权限列表

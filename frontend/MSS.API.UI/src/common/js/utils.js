@@ -118,6 +118,15 @@ export const nullToEmpty = val => {
   return val === null ? '' : val
 }
 
+export const strToIntArr = str => {
+  if (str === null && str === '') return ''
+  let arr = str.split(',')
+  let ret = []
+  for (let i = 0; i < arr.length; i++) {
+    ret.push(parseInt(arr[i]))
+  }
+  return ret
+}
 // 手机号验证
 export const vPhone = str => /^1[345789]\d{9}$/.test(str)
 export const vTelephone = str => /^([0-9]|[-])+$/g.test(str)

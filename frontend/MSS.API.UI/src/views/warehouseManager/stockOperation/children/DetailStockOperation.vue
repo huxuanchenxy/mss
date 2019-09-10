@@ -148,16 +148,17 @@
         <li class="list name">物资名称</li>
         <li class="list name">规格型号</li>
         <li class="list name">单位</li>
-        <li class="list name">数量</li>
+        <li class="list name">{{columnName.countNo}}</li>
+        <li v-show="curOperationType !== operationType.receive" class="list name">供应商</li>
+        <li class="list name">保质期</li>
         <li class="list name">单价</li>
-        <li class="list name">金额</li>
+        <li class="list name">{{columnName.amount}}</li>
         <li class="list name">币种</li>
-        <li v-show="curOperationType === operationType.receive" class="list name">汇率</li>
-        <li v-show="curOperationType === operationType.receive" class="list name">本币总金额</li>
+        <li v-show="isShow.exchangeRate" class="list name">汇率</li>
+        <li v-show="isShow.exchangeRate" class="list name">本币总金额</li>
         <li class="list name">发票号</li>
         <li v-show="curOperationType !== operationType.receive" class="list name">工单号</li>
-        <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">采购单</li>
-        <li v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="list name">送修单</li>
+        <li v-show="isShow.someOrder" class="list name">{{columnName.someOrder}}</li>
         <li class="list name">备注</li>
       </ul>
       <div class="scroll">
@@ -169,16 +170,17 @@
                 <div class="name">{{ item.SparePartsName }}</div>
                 <div class="name">{{ item.SparePartsModel }}</div>
                 <div class="name">{{ item.SparePartsUnit }}</div>
-                <div class="name word-break">{{ item.CountNo }}</div>
-                <div class="name word-break">{{ item.UnitPrice }}</div>
-                <div class="name word-break">{{ item.Amount }}</div>
+                <div class="name">{{ item.CountNo }}</div>
+                <div v-show="curOperationType !== operationType.receive" class="name word-break">{{ item.SupplierName }}</div>
+                <div class="name word-break">{{ item.LifeDate === null ? '' : item.LifeDate.slice(0,10) }}</div>
+                <div class="name">{{ item.UnitPrice }}</div>
+                <div class="name word-break">{{ (item.CountNo * item.UnitPrice).toFixed(2) }}</div>
                 <div class="name word-break">{{ item.CurrencyName }}</div>
                 <div v-show="curOperationType !== operationType.receive" class="name word-break">{{ item.WorkingOrder }}</div>
-                <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.ExchangeRate }}</div>
-                <div v-show="curOperationType === operationType.receive" class="name word-break">{{ item.TotalAmount }}</div>
+                <div v-show="isShow.exchangeRate" class="name word-break">{{ item.ExchangeRate }}</div>
+                <div v-show="isShow.exchangeRate" class="name word-break">{{ item.TotalAmount }}</div>
                 <div class="name word-break">{{ item.Invoice }}</div>
-                <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Purchase }}</div>
-                <div v-show="curOperationType === operationType.adjust || curOperationType === operationType.move" class="name word-break">{{ item.Repair }}</div>
+                <div v-show="isShow.someOrder" class="name word-break">{{ item.SomeOrder }}</div>
                 <div class="name word-break">{{ item.Remark }}</div>
               </div>
             </li>
@@ -190,7 +192,7 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import { sparePartsOperationType } from '@/common/js/dictionary.js'
+import { sparePartsOperationType, sparePartsOperationDetailType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/wmsApi'
 export default {
@@ -227,6 +229,16 @@ export default {
         createdName: '',
         createdTime: '',
         detailList: []
+      },
+      isShow: {
+        exchangeRate: true,
+        someOrder: true,
+        repair: true
+      },
+      columnName: {
+        countNo: '数量',
+        amount: '金额',
+        someOrder: ''
       }
     }
   },
@@ -276,6 +288,32 @@ export default {
               break
             case this.operationType.move:
               this.title = '| 物资移库过账 | '
+              break
+          }
+          switch (data.reason) {
+            case sparePartsOperationDetailType.purchaseReceive:
+              this.isShow.someOrder = true
+              this.columnName.someOrder = '采购单'
+              this.isShow.exchangeRate = true
+              this.columnName.countNo = '接收数量'
+              this.columnName.amount = '接收金额'
+              break
+            case sparePartsOperationDetailType.otherReceive:
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = true
+              this.columnName.countNo = '接收数量'
+              this.columnName.amount = '接收金额'
+              break
+            case sparePartsOperationDetailType.purchaseReturn:
+              this.isShow.exchangeRate = false
+              this.columnName.countNo = '退货数量'
+              this.columnName.amount = '退货金额'
+              break
+            default:
+              this.isShow.exchangeRate = false
+              this.isShow.someOrder = false
+              this.columnName.countNo = '数量'
+              this.columnName.amount = '金额'
               break
           }
           this.title = this.title + this.stockOperation.operationID

@@ -27,8 +27,8 @@ namespace MSS.API.Dao.Implement
                 int ret;
                 string sql = " insert into stock_operation " +
                     " values (0,@OperationID,@Type,@Reason,@Warehouse, " +
-                    " @FromWarehouse,@Remark,@Picker,@Supplier,@Agreement, " +
-                    " @BudgetDept,@BudgetItems,@CreatedBy,@CreatedTime); ";
+                    " @FromWarehouse,@FromStockOperation,@Remark,@Picker,@Supplier,@Agreement, " +
+                    " @BudgetDept,@BudgetDeptPath,@BudgetItems,@CreatedBy,@CreatedTime); ";
                 sql += "SELECT LAST_INSERT_ID()";
                 try
                 {
@@ -40,8 +40,8 @@ namespace MSS.API.Dao.Implement
                         item.Operation = newid;
                         sql = " insert into stock_operation_detail " +
                             " values (0,@SpareParts,@OrderNo,@CountNo,@UnitPrice, " +
-                            " @Amount,@Currency,@Invoice,@LifeDate,@WorkingOrder,@Purchase,@Repair, " +
-                            " @Operation,@ExchangeRate,@TotalAmount,@Remark); ";
+                            " @Amount,@Currency,@Invoice,@LifeDate,@WorkingOrder,@Purchase,@Repair,@SomeOrder, " +
+                            " @Operation,@ExchangeRate,@TotalAmount,@Remark,@StockDetail); ";
                         sql += "SELECT LAST_INSERT_ID()";
                         ret = await c.QueryFirstOrDefaultAsync<int>(sql, item, trans);
                         parm.stockDetails[i].StockOperationDetail = ret;
@@ -110,14 +110,14 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,u3.user_name as sname, ")
+                sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,f.name as sname, ")
                 .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname,ot.name as pdname ")
                 .Append(" FROM stock_operation a ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.picker=u2.id ")
                 .Append(" left join org_user ou on a.picker=ou.user_id and ou.is_del=0 ")
                 .Append(" left join org_tree ot on ou.org_node_id=ot.id ")
-                .Append(" left join user u3 on a.supplier=u3.id ")
+                .Append(" left join firm f on a.supplier=f.id ")
                 .Append(" left join dictionary_tree dt on a.reason=dt.id ")
                 .Append(" left join warehouse w1 on a.warehouse=w1.id ")
                 .Append(" left join warehouse w2 on a.from_warehouse=w2.id ")
@@ -178,14 +178,14 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,u3.user_name as sname, ")
+                sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,f.name as sname, ")
                 .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname,ot.name as pdname ")
                 .Append(" FROM stock_operation a ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.picker=u2.id ")
                 .Append(" left join org_user ou on a.picker=ou.user_id and ou.is_del=0 ")
                 .Append(" left join org_tree ot on ou.org_node_id=ot.id ")
-                .Append(" left join user u3 on a.supplier=u3.id ")
+                .Append(" left join firm f on a.supplier=f.id ")
                 .Append(" left join dictionary_tree dt on a.reason=dt.id ")
                 .Append(" left join warehouse w1 on a.warehouse=w1.id ")
                 .Append(" left join warehouse w2 on a.from_warehouse=w2.id ")
@@ -206,8 +206,8 @@ namespace MSS.API.Dao.Implement
                 StockSumView ret = new StockSumView();
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,sp.name ")
-                .Append(" FROM stock_sum a ")
-                .Append(" left join spare_parts sp on a.spare_parts=sp.id where 1=1 ");
+                .Append(" FROM stock_sum a ");
+                sql.Append(" left join spare_parts sp on a.spare_parts=sp.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
                 if (parm.SearchSpareParts != null)
                 {
@@ -232,6 +232,44 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<object> GetStockPageByParm(StockSumQueryParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT a.*,sp.name as spname ")
+                .Append(" FROM stock a ");
+                sql.Append(" left join spare_parts sp on a.spare_parts=sp.id where 1=1 ");
+                StringBuilder whereSql = new StringBuilder();
+                if (parm.SearchSpareParts != null)
+                {
+                    whereSql.Append(" and a.spare_parts = " + parm.SearchSpareParts);
+                }
+                if (parm.SearchWarehouse != null)
+                {
+                    whereSql.Append(" and a.warehouse = " + parm.SearchWarehouse);
+                }
+                sql.Append(whereSql)
+                .Append(" order by a." + parm.sort + " " + parm.order)
+                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
+                var tmp = await c.QueryAsync<Stock>(sql.ToString());
+                List<Stock> rows;
+                int total;
+                if (tmp != null && tmp.Count() > 0)
+                {
+                    rows = tmp.ToList();
+                    total = await c.QueryFirstOrDefaultAsync<int>(
+                        "select count(*) from stock a where 1=1 " + whereSql.ToString());
+                    return new { rows, total };
+                }
+                else
+                {
+                    rows = new List<Stock>();
+                    total = 0;
+                }
+                return new { rows, total };
+            });
+        }
         #endregion
 
         #region 根据不同的条件查询
@@ -254,7 +292,9 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM stock WHERE spare_parts in @spareParts and warehouse=@warehouse";
+                string sql = "SELECT s.* FROM stock s " +
+                //" left join warehouse ss on s.warehouse=ss.id " +
+                "WHERE s.spare_parts in @spareParts and s.warehouse=@warehouse";
                 var result = await c.QueryAsync<Stock>(
                     sql, new { spareParts, warehouse });
                 if (result != null && result.Count() > 0)
@@ -280,13 +320,19 @@ namespace MSS.API.Dao.Implement
                 return new List<Stock>();
             });
         }
-
-        public async Task<List<StockOperationDetail>> ListByOperation(int operation)
+        /// <summary>
+        /// 采购接收/其他接收的操作明细
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public async Task<List<StockOperationDetail>> ListByOperationIn(int operation)
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT sod.*,sp.name,sp.model,sp.unit,dt.name as cname FROM stock_operation_detail sod" +
+                string sql = "SELECT sod.*,sp.name,sp.model,sp.unit,dt.name as cname,f.name as sname FROM stock_operation_detail sod" +
                 " LEFT JOIN spare_parts sp on sp.id = sod.spare_parts " +
+                " LEFT JOIN stock_operation so on so.id = sod.operation " +
+                " LEFT JOIN firm f on f.id = so.supplier " +
                 " LEFT JOIN dictionary_tree dt on dt.id = sod.currency WHERE sod.operation = @id";
                 var result = await c.QueryAsync<StockOperationDetail>(
                     sql, new { id = operation });
@@ -297,26 +343,124 @@ namespace MSS.API.Dao.Implement
                 return new List<StockOperationDetail>();
             });
         }
+        /// <summary>
+        /// 依托采购接收/其他接收数据的操作明细
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public async Task<List<StockOperationDetail>> ListByOperationOut(int operation)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT sod.spare_parts,sod.count_no,sod.order_no,sod.unit_price,sod.remark," +
+                " sodInit.invoice,sodInit.life_date," +
+                " sp.name,sp.model,sp.unit,dt.name as cname,f.name as sname " +
+                " FROM stock_operation_detail sod" +
+                " LEFT JOIN stock_detail sd on sd.id = sod.stock_detail " +
+                " LEFT JOIN stock_operation_detail sodInit on sodInit.id = sd.stock_operation_detail " +
+                " LEFT JOIN spare_parts sp on sp.id = sod.spare_parts " +
+                " LEFT JOIN stock_operation so on so.id = sod.operation " +
+                " LEFT JOIN firm f on f.id = so.supplier " +
+                " LEFT JOIN dictionary_tree dt on dt.id = sodInit.currency WHERE sod.operation = @id";
+                var result = await c.QueryAsync<StockOperationDetail>(
+                    sql, new { id = operation });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockOperationDetail>();
+            });
+        }
 
-        public async Task<List<StockDetail>> ListStockDetailBySPs(List<int> spareParts)
+        public async Task<List<StockDetail>> ListStockDetailBySPsAndWH(List<int> spareParts,int warehouse)
         {
             return await WithConnection(async c =>
             {
                 string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price," +
-                " w.name,f.name as sname,dt.name as cname FROM stock_detail sd" +
+                " w.name,f.name as sname,dt.name as cname,sod.remark FROM stock_detail sd" +
                 " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
                 " left join dictionary_tree dt on sod.currency=dt.id " +
                 " left join stock_operation so on sod.operation=so.id " +
                 " left join warehouse w on so.warehouse=w.id " +
                 " left join firm f on so.supplier=f.id " +
                 " WHERE sd.spare_parts in @ids";
+                object obj = new { ids = spareParts };
+                if (warehouse!=0)
+                {
+                    sql += " and so.warehouse=@warehouse";
+                    obj=new { ids = spareParts, warehouse };
+                }
                 var result = await c.QueryAsync<StockDetail>(
-                    sql, new { ids= spareParts });
+                    sql, obj);
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
                 }
                 return new List<StockDetail>();
+            });
+        }
+
+        public async Task<List<StockDetail>> ListStockDetailByIDs(List<int> ids)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM stock_detail " +
+                " WHERE id in @ids";
+                var result = await c.QueryAsync<StockDetail>(
+                    sql, new { ids});
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockDetail>();
+            });
+        }
+
+        /// <summary>
+        /// 目前仅用于采购退货
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public async Task<List<StockDetail>> ListStockDetailByOperation(int operation)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price,sod.exchange_rate," +
+                " dt.name as cname,sp.name as spname FROM stock_detail sd" +
+                " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
+                " left join spare_parts sp on sod.spare_parts=sp.id " +
+                " left join dictionary_tree dt on sod.currency=dt.id " +
+                " left join stock_operation so on sod.operation=so.id " +
+                " WHERE sod.operation=@id";
+                var result = await c.QueryAsync<StockDetail>(
+                    sql, new { id = operation });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockDetail>();
+            });
+        }
+
+        /// <summary>
+        /// 根据事务原因获取id-流水号的下拉列表，目前仅用于采购退货
+        /// </summary>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task<List<object>> ListByReason(int reason)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT id,operation_id ")
+                .Append(" FROM stock_operation where reason=@reason ");
+                var result = await c.QueryAsync<object>(
+                    sql.ToString(), new { reason });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<object>();
             });
         }
 
