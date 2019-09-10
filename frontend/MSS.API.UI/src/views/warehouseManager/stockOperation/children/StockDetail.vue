@@ -74,6 +74,8 @@
         <li class="list name">接收单价</li>
         <li class="list name">存货金额</li>
         <li class="list name">供应商</li>
+        <li class="list name">保质期</li>
+        <li class="list name">接收备注</li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -92,6 +94,8 @@
                 <div class="name word-break">{{ item.acceptUnitPrice.toFixed(2) }}</div>
                 <div class="name word-break">{{ (item.acceptUnitPrice * item.inStockNo).toFixed(2) }}</div>
                 <div class="name word-break">{{ item.supplierName }}</div>
+                <div class="name word-break">{{ item.lifeDate === null || item.lifeDate === '' ? '' : item.lifeDate.slice(0,10) }}</div>
+                <div class="name word-break">{{ item.remark }}</div>
               </div>
             </li>
           </ul>
@@ -124,12 +128,14 @@ export default {
         englishDes: '',
         remark: ''
       },
+      warehouse: '',
       stockDetailList: []
     }
   },
   created () {
     // this.sourceName = this.$route.params.sourceName
     this.spareParts.id = this.$route.params.id
+    this.warehouse = this.$route.params.warehouse
     this.getStockDetail()
     this.getSpareParts()
   },
@@ -156,7 +162,7 @@ export default {
       }).catch(err => console.log(err))
     },
     getStockDetail () {
-      api.getStockDetail(this.spareParts.id).then(res => {
+      api.getStockDetail(this.spareParts.id, this.warehouse).then(res => {
         if (res.code === 0) {
           this.stockDetailList = res.data
         } else this.loading = false

@@ -111,7 +111,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = (await c.QueryAsync<Firm>(
-                    "SELECT * FROM firm")).ToList();
+                    "SELECT * FROM firm where is_del=" + (int)IsDeleted.no)).ToList();
                 return result;
             });
         }

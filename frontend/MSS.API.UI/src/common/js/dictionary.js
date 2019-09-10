@@ -28,5 +28,7 @@ export const sparePartsOperationType = {
 }
 
 export const sparePartsOperationDetailType = {
-  purchaseReturn: 72
+  purchaseReturn: 72,
+  purchaseReceive: 73,
+  otherReceive: 84
 }

@@ -110,7 +110,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = (await c.QueryAsync<SpareParts>(
-                    "SELECT * FROM spare_parts")).ToList();
+                    "SELECT * FROM spare_parts where is_del=" + (int)IsDeleted.no)).ToList();
                 return result;
             });
         }

@@ -278,7 +278,7 @@
 </template>
 <script>
 // import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
-import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, strToIntArr } from '@/common/js/utils.js'
 import { dictionary, firmType, systemResource } from '@/common/js/dictionary.js'
 import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
@@ -582,7 +582,7 @@ export default {
         this.team = _res.team
         this.supplier = _res.supplier
         this.manufacturer = _res.manufacturer
-        this.teamPath.text = this.strToIntArr(_res.teamPath)
+        this.teamPath.text = strToIntArr(_res.teamPath)
         this.assetNo.text = nullToEmpty(_res.assetNo)
         this.model.text = nullToEmpty(_res.model)
         this.barCode.text = nullToEmpty(_res.barCode)
@@ -591,7 +591,7 @@ export default {
         this.ratedVoltage.text = _res.ratedVoltage === null ? '' : _res.ratedVoltage
         this.ratedCurrent.text = _res.ratedCurrent === null ? '' : _res.ratedCurrent
         this.ratedPower.text = _res.ratedPower === null ? '' : _res.ratedPower
-        this.area.text = this.strToIntArr(_res.locationPath)
+        this.area.text = strToIntArr(_res.locationPath)
         this.time.text = _res.online
         this.life.text = _res.life
         this.mediumRepair.text = _res.mediumRepair.toString()
@@ -599,14 +599,6 @@ export default {
         this.timeAgain.text = nullToEmpty(_res.onlineAgain)
         this.fileIDs = _res.fileIDs
       }).catch(err => console.log(err))
-    },
-    strToIntArr (str) {
-      let arr = str.split(',')
-      let ret = []
-      for (let i = 0; i < arr.length; i++) {
-        ret.push(parseInt(arr[i]))
-      }
-      return ret
     },
     // 验证
     validateInput (val) {
