@@ -22,12 +22,15 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly ISparePartsRepo<SpareParts> _sparePartsRepo;
+        private readonly IStockOperationRepo<StockOperation> _stockOperationRepo;
 
         private readonly int userID;
-        public SparePartsService(ISparePartsRepo<SpareParts> sparePartsRepo, IAuthHelper auth)
+        public SparePartsService(ISparePartsRepo<SpareParts> sparePartsRepo, IAuthHelper auth,
+            IStockOperationRepo<StockOperation> stockOperationRepo)
         {
             //_logger = logger;
             _sparePartsRepo = sparePartsRepo;
+            _stockOperationRepo = stockOperationRepo;
             userID = auth.GetUserId();
         }
 
@@ -85,8 +88,17 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
+                string[] tmp = ids.Split(',');
                 // 有关联的物资不允许删除
-                ret.data = await _sparePartsRepo.Delete(ids.Split(','),userID);
+                if (await _stockOperationRepo.hasSpareParts(tmp))
+                {
+                    ret.code = Code.DataIsExist;
+                    ret.msg = "仓库中已有此物资，不可删除";
+                }
+                else
+                {
+                    ret.data = await _sparePartsRepo.Delete(tmp, userID);
+                }
                 return ret;
             }
             catch (Exception ex)

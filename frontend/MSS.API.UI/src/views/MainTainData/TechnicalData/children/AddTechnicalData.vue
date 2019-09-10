@@ -114,7 +114,7 @@ export default {
   },
   data () {
     return {
-      title: ' | 设备/设备类型资料维护',
+      title: ' | 技术资料维护',
       defaultParams: {
         label: 'name',
         value: 'id',

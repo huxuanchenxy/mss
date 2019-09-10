@@ -7,6 +7,7 @@ using Dapper;
 using MSS.API.Operlog.Model.DTO;
 using static MSS.API.Operlog.Model.Const;
 using System.Linq;
+using System;
 
 namespace MSS.API.Operlog.Dao.Implement
 {
@@ -20,7 +21,8 @@ namespace MSS.API.Operlog.Dao.Implement
             {
                 MSSResult<UserOperationLogView> mRet = new MSSResult<UserOperationLogView>();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.* FROM user_operation_log a  ")
+                sql.Append("SELECT a.controller_name, a.action_name, a.method_name, b.acc_name, b.user_name, a.ip, a.mac_add, a.created_by, a.updated_time, a.updated_by, a.is_del,a.response_description,a.response_description,a.user_id,a.created_time" +
+                    " FROM user_operation_log a left join user b on a.user_id = b.id  ")
                 .Append(" where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
                 if (!string.IsNullOrWhiteSpace(parm.actionName))
@@ -33,7 +35,7 @@ namespace MSS.API.Operlog.Dao.Implement
                 }
                 if (!string.IsNullOrWhiteSpace(parm.userName))
                 {
-                    whereSql.Append(" and a.user_name like '%" + parm.userName + "%' ");
+                    whereSql.Append(" and b.user_name like '%" + parm.userName + "%' ");
                 }
                 if (!string.IsNullOrWhiteSpace(parm.startTime) && !string.IsNullOrWhiteSpace(parm.endTime))
                 {
@@ -52,13 +54,14 @@ namespace MSS.API.Operlog.Dao.Implement
 
         public async Task<int> Add(UserOperationLog obj)
         {
+            obj.updated_time = DateTime.Now;
             return await WithConnection(async c =>
             {
                 var result = await c.ExecuteAsync(" insert into user_operation_log " +
-                    "( `controller_name`, `action_name`, `method_name`, `acc_name`, `user_name`, `ip`, `mac_add`, `created_by`, `updated_time`, `updated_by`, `is_del`,request_description,response_description) " +
+                    "( `controller_name`, `action_name`, `method_name`, `acc_name`, `user_name`, `ip`, `mac_add`, `created_by`, `updated_time`, `updated_by`, `is_del`,request_description,response_description,user_id) " +
                     " values (@controller_name,@action_name,@method_name,@acc_name,@user_name, " +
                     " @ip,@mac_add, " +
-                    " @created_by,@updated_time,@updated_by,@is_del,@request_description,@response_description) ", obj);
+                    " @created_by,@updated_time,@updated_by,@is_del,@request_description,@response_description,@user_id) ", obj);
                 return result;
             });
         }

@@ -272,13 +272,20 @@ export default {
       this.$router.push({name: 'AddStockMove', query: { type: 'Add' }})
     },
     detail () {
-      this.$router.push({
-        name: 'DetailStockOperation',
-        params: {
-          id: this.editStockMoveID,
-          sourceName: 'SeeStockMoveList'
-        }
-      })
+      if (this.editStockMoveID === '') {
+        this.$message({
+          message: '请选择需要查看的移库流水号',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailStockOperation',
+          params: {
+            id: this.editStockMoveID,
+            sourceName: 'SeeStockMoveList'
+          }
+        })
+      }
     },
     // 搜索功能
     searchRes () {

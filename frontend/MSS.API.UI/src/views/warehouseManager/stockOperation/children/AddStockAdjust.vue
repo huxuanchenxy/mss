@@ -159,6 +159,7 @@
             <li class="list name">金额</li>
             <li class="list name">币种</li>
             <li class="list name">发票号</li>
+            <li class="list name">工单号</li>
             <li class="list name">采购单</li>
             <li class="list name">送修单</li>
             <li class="list name">备注</li>
@@ -178,6 +179,7 @@
                     <div class="name word-break">{{ item.amount }}</div>
                     <div class="name word-break">{{ item.currencyName }}</div>
                     <div class="name word-break">{{ item.invoice }}</div>
+                    <div class="name word-break">{{ item.workingOrder }}</div>
                     <div class="name word-break">{{ item.purchase }}</div>
                     <div class="name word-break">{{ item.repair }}</div>
                     <div class="name word-break">{{ item.remark }}</div>
@@ -224,6 +226,7 @@ export default {
       reason: {text: '', tips: ''},
       warehouseList: [],
       warehouse: {text: '', tips: ''},
+      workingOrder: {text: '', tips: ''},
       remark: {text: '', tips: ''},
       detailList: [],
       editID: [],
@@ -274,11 +277,11 @@ export default {
       let spName = ''
       let isRepeat = this.detailList.some(val => {
         spName = val.sparePartsName
-        return val.spareParts === this.spareParts.text
+        return val.spareParts === this.spareParts.text && val.workingOrder === this.workingOrder.text
       })
       if (isRepeat) {
         this.$message({
-          message: '物资-' + spName + ' 不可重复添加',
+          message: '相同工单中的物资-' + spName + ' 不可重复添加',
           type: 'warning'
         })
         return
@@ -292,6 +295,7 @@ export default {
         amount: tmp,
         currency: this.currency,
         currencyName: this.$refs.currency.selected.label,
+        workingOrder: this.workingOrder.text,
         purchase: this.purchase.text,
         repair: this.repair.text,
         invoice: this.invoice.text,

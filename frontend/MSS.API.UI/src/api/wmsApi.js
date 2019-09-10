@@ -1,6 +1,6 @@
 import axios from './interceptors'
 // let api = 'http://localhost:3851/api/v1'
-let api = 'http://10.89.36.204:5801/wmsapi'
+let api = 'http://10.89.36.154:5801/wmsapi'
 export default {
   getWarehouse: parm => { return axios.get(`${api}/Warehouse`, {params: parm}).then(res => res.data) },
   getWarehouseByID: id => { return axios.get(`${api}/Warehouse/${id}`).then(res => res.data) },
@@ -24,5 +24,8 @@ export default {
 
   getStockOperation: parm => { return axios.get(`${api}/StockOperation`, {params: parm}).then(res => res.data) },
   getStockOperationByID: id => { return axios.get(`${api}/StockOperation/${id}`).then(res => res.data) },
-  addStockOperation: parm => { return axios.post(`${api}/StockOperation`, parm).then(res => res.data) }
+  addStockOperation: parm => { return axios.post(`${api}/StockOperation`, parm).then(res => res.data) },
+
+  getStockSum: parm => { return axios.get(`${api}/StockOperation/ListStockSum`, {params: parm}).then(res => res.data) },
+  getStockDetail: id => { return axios.get(`${api}/StockOperation/ListStockDetail/${id}`).then(res => res.data) }
 }

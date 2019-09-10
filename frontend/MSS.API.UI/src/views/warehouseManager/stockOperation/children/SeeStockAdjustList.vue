@@ -248,13 +248,20 @@ export default {
       this.$router.push({name: 'AddStockAdjust', query: { type: 'Add' }})
     },
     detail () {
-      this.$router.push({
-        name: 'DetailStockOperation',
-        params: {
-          id: this.editStockAdjustID,
-          sourceName: 'SeeStockAdjustList'
-        }
-      })
+      if (this.editStockMoveID === '') {
+        this.$message({
+          message: '请选择需要查看的调整流水号',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailStockOperation',
+          params: {
+            id: this.editStockAdjustID,
+            sourceName: 'SeeStockAdjustList'
+          }
+        })
+      }
     },
     // 搜索功能
     searchRes () {

@@ -17,7 +17,7 @@
             <div class="inp-wrap">
               <span class="text">事务原因<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="reason.text" clearable filterable placeholder="请选择事务原因" @change="validateSelect(reason)">
+                <el-select v-model="reason.text" filterable placeholder="请选择事务原因" @change="reasonChange">
                 <el-option
                   v-for="item in reasonList"
                   :key="item.key"
@@ -29,6 +29,24 @@
             </div>
             <p class="validate-tips">{{ reason.tips }}</p>
           </li>
+          <li class="list" v-show="isShowPurchaseReturn">
+            <div class="inp-wrap">
+              <span class="text">采购接收流水号<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-select v-model="reason.text" clearable filterable placeholder="请选择采购接收流水号" @change="validateSelect(reason)">
+                <el-option
+                  v-for="item in reasonList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ reason.tips }}</p>
+          </li>
+          <li class="list" v-show="!isShowPurchaseReturn"/>
+          <li class="list"/>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">仓库<em class="validate-mark">*</em></span>
@@ -49,7 +67,7 @@
             <div class="inp-wrap">
               <span class="text">供应商</span>
               <div class="inp">
-                <el-select v-model="supplier.text" clearable filterable placeholder="请选择供应商" @change="validateSelect(supplier)">
+                <el-select v-model="supplier.text" clearable filterable placeholder="请选择供应商">
                 <el-option
                   v-for="item in supplierList"
                   :key="item.key"
@@ -96,6 +114,7 @@
             </div>
             <p class="validate-tips">{{ budgetItems.tips }}</p>
           </li>
+          <li class="list"/>
           <li class="list list-block">
             <div class="inp-wrap">
               <span class="text span-block">备注</span>
@@ -172,6 +191,20 @@
             </div>
             <p class="validate-tips">{{ invoice.tips }}</p>
           </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">保质截止日期</span>
+              <div class="inp">
+                <el-date-picker class="el-date-width"
+                  v-model="lifeDate"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="请选择保质截止日期">
+                </el-date-picker>
+              </div>
+            </div>
+            <p class="validate-tips"></p>
+          </li>
           <li class="list list-block">
             <div class="inp-wrap">
               <span class="text span-block">备注</span>
@@ -202,6 +235,7 @@
             <li class="list name">汇率</li>
             <li class="list name">本币总金额</li>
             <li class="list name">发票号</li>
+            <li class="list name">保质期</li>
             <li class="list name">备注</li>
           </ul>
           <div class="scroll">
@@ -221,6 +255,7 @@
                     <div class="name word-break">{{ item.exchangeRate }}</div>
                     <div class="name word-break">{{ item.totalAmount }}</div>
                     <div class="name word-break">{{ item.invoice }}</div>
+                    <div class="name word-break">{{ item.lifeDate }}</div>
                     <div class="name word-break">{{ item.remark }}</div>
                   </div>
                 </li>
@@ -241,7 +276,7 @@
 </template>
 <script>
 import { vInput, validateNumberCommon, vdouble4, vdouble2 } from '@/common/js/utils.js'
-import { sparePartsOperationType, firmType, dictionary } from '@/common/js/dictionary.js'
+import { sparePartsOperationType, firmType, dictionary, sparePartsOperationDetailType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import apiOrg from '@/api/orgApi'
 import api from '@/api/wmsApi'
@@ -259,6 +294,7 @@ export default {
         value: 'id',
         children: 'children'
       },
+      isShowPurchaseReturn: false,
       isAdd: false,
       loading: false,
       title: '| 物资接收过账',
@@ -286,6 +322,7 @@ export default {
       currency: {text: '', tips: ''},
       exchangeRate: {text: 1, tips: ''},
       invoice: {text: '', tips: ''},
+      lifeDate: '',
       remarkAdd: {text: '', tips: ''}
     }
   },
@@ -317,6 +354,13 @@ export default {
     }).catch(err => console.log(err))
   },
   methods: {
+    reasonChange () {
+      if (this.reason.text === sparePartsOperationDetailType.purchaseReturn) {
+        this.isShowPurchaseReturn = true
+      } else {
+        this.isShowPurchaseReturn = false
+      }
+    },
     insert () {
       if (!this.validateSelect(this.spareParts) || !this.validateNumber(this.countNo) || !this.validateDouble2(this.unitPrice) ||
         !this.validateDouble4(this.exchangeRate) || !this.validateInputNull(this.invoice) || !this.validateInputNull(this.remarkAdd)) {
@@ -329,11 +373,11 @@ export default {
       let spName = ''
       let isRepeat = this.detailList.some(val => {
         spName = val.sparePartsName
-        return val.spareParts === this.spareParts.text
+        return val.spareParts === this.spareParts.text && val.lifeDate === this.lifeDate
       })
       if (isRepeat) {
         this.$message({
-          message: '物资-' + spName + ' 不可重复添加',
+          message: '相同保质期物资-' + spName + ' 不可重复添加',
           type: 'warning'
         })
         return
@@ -350,6 +394,7 @@ export default {
         exchangeRate: this.exchangeRate.text,
         totalAmount: (this.exchangeRate.text * tmp).toFixed(2),
         invoice: this.invoice.text,
+        lifeDate: this.lifeDate,
         remark: this.remarkAdd.text
       }
       if (this.title === '| 物资接收过账 | 添加物资明细') {
@@ -501,7 +546,7 @@ export default {
       }
     },
     validateInputAll () {
-      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) || !this.validateSelect(this.supplier) ||
+      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) ||
         !this.validateInputNull(this.agreement) || !this.validateInputNull(this.budgetItems) || !this.validateInputNull(this.remark)) {
         return false
       }
@@ -884,5 +929,8 @@ $con-height: $content-height - 145 - 56;
 }
 .left{
   text-indent: 9.5%
+}
+.el-date-width{
+  width: 93%!important;
 }
 </style>

@@ -102,6 +102,14 @@ const routes = [
             path: 'addMove',
             name: 'AddStockMove',
             component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/stockOperation/children/AddStockMove.vue')
+          }, {
+            path: 'listStockSum',
+            name: 'SeeStockSumList',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/stockOperation/children/SeeStockSumList.vue')
+          }, {
+            path: 'stockDetail',
+            name: 'StockDetail',
+            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/stockOperation/children/StockDetail.vue')
           }
         ]
       }

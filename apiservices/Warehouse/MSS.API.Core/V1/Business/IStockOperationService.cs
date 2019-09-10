@@ -14,5 +14,9 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> Save(StockOperation stockOperation);
         Task<ApiResult> GetPageByParm(StockOperationQueryParm parm);
         Task<ApiResult> GetByID(int id);
+
+        Task<ApiResult> GetStockSumPageByParm(StockSumQueryParm parm);
+
+        Task<ApiResult> ListStockDetailBySPs(int spareParts);
     }
 }
