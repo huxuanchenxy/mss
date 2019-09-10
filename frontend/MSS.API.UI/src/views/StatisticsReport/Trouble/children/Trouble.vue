@@ -579,7 +579,7 @@ export default {
 
     search (param, callbacks) {
       this.loading = true
-      api.reportAlarm(param).then(res => {
+      api.reportTroubleByDate(param).then(res => {
         this.loading = false
         if (res.code === ApiRESULT.Success) {
           for (let callback of callbacks) {
@@ -626,9 +626,9 @@ export default {
           }
         }
       } else {
-        for (let i = 0; i < this.eqpTypeList.length; i++) {
-          legend.push(this.eqpTypeList[i].tName)
-        }
+        // for (let i = 0; i < this.eqpTypeList.length; i++) {
+        //   legend.push(this.eqpTypeList[i].tName)
+        // }
       }
       this.groups.eqp_type_id.legend = legend
     },
@@ -656,11 +656,10 @@ export default {
     },
     // 搜索
     searchResult () {
-      // console.log(this.subSystem)
-      // this.searchHideMoreHeight = '100%'
       this.shrinkText = '更多'
       this.searchHideMoreHeight = '100%'
       this.searchHideMore = false
+
       var sTime = ''
       var eTime = ''
       if (this.time.text) {
@@ -694,7 +693,8 @@ export default {
       this.search(param, [this.drawCountChart, this.drawAvgChart])
 
       if (param.EqpTypeIDs) {
-        api.reportSubChartEqpType(param).then(res => {
+        param.groupby = 'eqp_type_id'
+        api.reportTroubleByOther(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawEqpTypeChart(res.data)
           } else {
@@ -706,7 +706,8 @@ export default {
       }
 
       if (param.SupplierIDs) {
-        api.reportSubChartSupplier(param).then(res => {
+        param.groupby = 'supplier_id'
+        api.reportTroubleByOther(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSupplierChart(res.data)
           } else {
@@ -718,7 +719,8 @@ export default {
       }
 
       if (param.ManufacturerIDs) {
-        api.reportSubChartManufacturer(param).then(res => {
+        param.groupby = 'manufacturer_id'
+        api.reportTroubleByOther(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawManufacturerChart(res.data)
           } else {
@@ -730,7 +732,8 @@ export default {
       }
 
       if (param.SubSystemIDs) {
-        api.reportSubChartSubSystem(param).then(res => {
+        param.groupby = 'sub_system_id'
+        api.reportTroubleByOther(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSubSystemChart(res.data)
           } else {
@@ -742,7 +745,7 @@ export default {
       }
 
       if (param.LocationPath) {
-        api.reportSubChartLocation(param).then(res => {
+        api.reportTroubleByLocation(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
             this.drawLocationChart(res.data)
           } else {
@@ -753,7 +756,7 @@ export default {
         this.showLocationChart = false
       }
       if (param.OrgPath) {
-        api.reportSubChartOrg(param).then(res => {
+        api.reportTroubleByOrg(param).then(res => {
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
             this.drawOrgChart(res.data)
           } else {

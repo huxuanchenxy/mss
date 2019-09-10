@@ -28,6 +28,7 @@ namespace MSS.API.Dao
                 config.AddMap(new BaseEntityMap());
                 config.AddMap(new StatisticsDimensionMap());
                 config.AddMap(new StatisticsAlarmMap());
+                config.AddMap(new StatisticsTroubleMap());
             });
             return services;
         }

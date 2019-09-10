@@ -78,26 +78,7 @@ const optionCount = {
       }
     }
   },
-  dataZoom: {
-    show: true,
-    realtime: true,
-    type: 'inside',
-    // orient: 'vertical',   // 'horizontal'
-    // x: 0,
-    // y: 36,
-    // width: 400,
-    // height: 20,
-    // backgroundColor: 'rgba(221,160,221,0.5)',
-    // dataBackgroundColor: 'rgba(138,43,226,0.5)',
-    // fillerColor: 'rgba(38,143,26,0.6)',
-    // handleColor: 'rgba(128,43,16,0.8)',
-    // xAxisIndex:[],
-    // yAxisIndex:[],
-    xAxisIndex: [0],
-    start: 40,
-    end: 60
-  },
-  // calculable: true,
+  calculable: true,
   xAxis: [
     {
       type: 'category',
@@ -999,7 +980,7 @@ const optionOrgCount = {
       }
     }
   },
-  // calculable: true,
+  calculable: true,
   xAxis: [
     {
       type: 'category',
@@ -1126,8 +1107,7 @@ function prepareChartData (data, groupModel, cursor) {
         name: legendData[key],
         type: 'bar',
         stack: 'test',
-        // barWidth: 20,
-        barMaxWidth: 20,
+        barWidth: 20,
         cursor: cursor,
         data: []
       }
