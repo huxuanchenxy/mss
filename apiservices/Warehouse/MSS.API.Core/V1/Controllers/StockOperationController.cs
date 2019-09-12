@@ -23,6 +23,7 @@ namespace MSS.API.Core.V1.Controllers
 
         }
 
+        #region 库存操作
         [HttpPost]
         public ActionResult Save(StockOperation stockOperation)
         {
@@ -30,6 +31,22 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(ret.Result);
         }
 
+        [HttpGet("ListByReason/{reason}")]
+        public ActionResult ListByReason(int reason)
+        {
+            var resp = _stockOperationService.ListByReason(reason);
+            return Ok(resp.Result);
+        }
+
+        [HttpGet("ListByOperation/{operation}")]
+        public ActionResult ListByOperation(int operation)
+        {
+            var resp = _stockOperationService.ListByOperation(operation);
+            return Ok(resp.Result);
+        }
+        #endregion
+
+        #region 库存操作查询
         [HttpGet]
         public ActionResult GetPageByParm([FromQuery] StockOperationQueryParm parm)
         {
@@ -43,7 +60,9 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _stockOperationService.GetByID(id);
             return Ok(resp.Result);
         }
+        #endregion
 
+        #region 库存查询
         [HttpGet("ListStockSum")]
         public ActionResult GetStockSumPageByParm([FromQuery] StockSumQueryParm parm)
         {
@@ -51,11 +70,12 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
-        [HttpGet("ListStockDetail/{spareParts}")]
-        public ActionResult ListStockDetailBySPs(int spareParts)
+        [HttpGet("ListStockDetail/{spareParts}/{warehouse}")]
+        public ActionResult ListStockDetailBySPs(int spareParts,int warehouse)
         {
-            var resp = _stockOperationService.ListStockDetailBySPs(spareParts);
+            var resp = _stockOperationService.ListStockDetailBySPsAndWH(spareParts,warehouse);
             return Ok(resp.Result);
         }
+        #endregion
     }
 }

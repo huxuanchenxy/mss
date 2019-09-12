@@ -12,11 +12,14 @@ namespace MSS.API.Core.V1.Business
     public interface IStockOperationService
     {
         Task<ApiResult> Save(StockOperation stockOperation);
+        Task<ApiResult> ListByReason(int reason);
+        Task<ApiResult> ListByOperation(int operation);
+
         Task<ApiResult> GetPageByParm(StockOperationQueryParm parm);
         Task<ApiResult> GetByID(int id);
 
         Task<ApiResult> GetStockSumPageByParm(StockSumQueryParm parm);
 
-        Task<ApiResult> ListStockDetailBySPs(int spareParts);
+        Task<ApiResult> ListStockDetailBySPsAndWH(int spareParts, int warehouse);
     }
 }

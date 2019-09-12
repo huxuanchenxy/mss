@@ -22,6 +22,10 @@ namespace MSS.API.Model.Data
         public string Remark { get; set; }
         public int? FromWarehouse { get; set; }
         public string FromWarehouseName { get; set; }
+        /// <summary>
+        /// 采购退货时对应的采购接收id
+        /// </summary>
+        public int? FromStockOperation { get; set; }
         public string PickerName { get; set; }
         public int? Picker { get; set; }
         public string PickerDeptName { get; set; }
@@ -29,6 +33,7 @@ namespace MSS.API.Model.Data
         public int? Supplier { get; set; }
         public string Agreement { get; set; }
         public string BudgetDeptName { get; set; }
+        public string BudgetDeptPath { get; set; }
         public int? BudgetDept { get; set; }
         public string BudgetItems { get; set; }
         public string CreatedName { get; set; }
@@ -51,12 +56,14 @@ namespace MSS.API.Model.Data
             Map(o => o.WarehouseName).ToColumn("wname");
             Map(o => o.FromWarehouse).ToColumn("from_warehouse");
             Map(o => o.FromWarehouseName).ToColumn("fromWName");
+            Map(o => o.FromStockOperation).ToColumn("from_stock_operation");
             Map(o => o.Picker).ToColumn("picker");
             Map(o => o.PickerName).ToColumn("pname");
             Map(o => o.PickerDeptName).ToColumn("pdname");
             Map(o => o.Supplier).ToColumn("supplier");
             Map(o => o.SupplierName).ToColumn("sname");
             Map(o => o.BudgetDept).ToColumn("budget_dept");
+            Map(o => o.BudgetDeptPath).ToColumn("budget_dept_path");
             Map(o => o.BudgetDeptName).ToColumn("bname");
 
             Map(o => o.Remark).ToColumn("remark");
@@ -108,13 +115,27 @@ namespace MSS.API.Model.Data
         public string CurrencyName { get; set; }
         public string Invoice { get; set; }
         public DateTime? LifeDate { get; set; }
+        public string SupplierName { get; set; }
         public string WorkingOrder { get; set; }
         public string Purchase { get; set; }
         public string Repair { get; set; }
+        /// <summary>
+        /// reason - order
+        /// 采购接收 - 采购单
+        /// 送修/送修归还 - 送修单
+        /// 送检/送检归还 - 送检单
+        /// 上述两个字段，Purchase和Repair弃用但预留
+        /// </summary>
+        public string SomeOrder { get; set; }
+
         public int Operation { get; set; }
         public double ExchangeRate { get; set; }
         public double TotalAmount { get; set; }
         public string Remark { get; set; }
+        /// <summary>
+        /// 采购/其他接收时默认0，其余操作需要关联存货明细中的ID
+        /// </summary>
+        public int StockDetail { get; set; }
     }
 
     public class StockOperationDetailMap : EntityMap<StockOperationDetail>
@@ -134,13 +155,16 @@ namespace MSS.API.Model.Data
             Map(o => o.CurrencyName).ToColumn("cname");
             Map(o => o.Invoice).ToColumn("invoice");
             Map(o => o.LifeDate).ToColumn("life_date");
+            Map(o => o.SupplierName).ToColumn("sname");
             Map(o => o.WorkingOrder).ToColumn("working_order");
             Map(o => o.Purchase).ToColumn("purchase");
             Map(o => o.Repair).ToColumn("repair");
+            Map(o => o.SomeOrder).ToColumn("some_order");
             Map(o => o.Operation).ToColumn("operation");
             Map(o => o.ExchangeRate).ToColumn("exchange_rate");
             Map(o => o.TotalAmount).ToColumn("total_amount");
             Map(o => o.Remark).ToColumn("remark");
+            Map(o => o.StockDetail).ToColumn("stock_detail");
         }
     }
     #endregion
@@ -150,6 +174,7 @@ namespace MSS.API.Model.Data
     {
         public int ID { get; set; }
         public int SpareParts { get; set; }
+        public string SparePartsName { get; set; }
         public int StockNo { get; set; }
         public int TroubleNo { get; set; }
         public int InStockNo { get; set; }
@@ -166,6 +191,7 @@ namespace MSS.API.Model.Data
         public StockMap()
         {
             Map(o => o.SpareParts).ToColumn("spare_parts");
+            Map(o => o.SparePartsName).ToColumn("spname");
             Map(o => o.StockNo).ToColumn("stock_no");
             Map(o => o.TroubleNo).ToColumn("trouble_no");
             Map(o => o.InStockNo).ToColumn("in_stock_no");
@@ -183,6 +209,7 @@ namespace MSS.API.Model.Data
     {
         public int ID { get; set; }
         public int SpareParts { get; set; }
+        public string SparePartsName { get; set; }
         public int StockOperationDetail { get; set; }
         public int StockNo { get; set; }
         public int TroubleNo { get; set; }
@@ -220,6 +247,18 @@ namespace MSS.API.Model.Data
         /// 接收币种
         /// </summary>
         public string CurrencyName { get; set; }
+        /// <summary>
+        /// 接收汇率
+        /// </summary>
+        public double ExchangeRate { get; set; }
+        /// <summary>
+        /// StockOperationDetail的备注
+        /// </summary>
+        public string Remark { get; set; }
+        /// <summary>
+        /// 针对接收时修改的数量
+        /// </summary>
+        public int EditNo { get; set; }
     }
 
     public class StockDetailMap : EntityMap<StockDetail>
@@ -227,6 +266,7 @@ namespace MSS.API.Model.Data
         public StockDetailMap()
         {
             Map(o => o.SpareParts).ToColumn("spare_parts");
+            Map(o => o.SparePartsName).ToColumn("spname");
             Map(o => o.StockOperationDetail).ToColumn("stock_operation_detail");
             Map(o => o.StockNo).ToColumn("stock_no");
             Map(o => o.TroubleNo).ToColumn("trouble_no");
@@ -242,19 +282,9 @@ namespace MSS.API.Model.Data
             Map(o => o.LifeDate).ToColumn("life_date");
             Map(o => o.AcceptUnitPrice).ToColumn("unit_price");
             Map(o => o.CurrencyName).ToColumn("cname");
+            Map(o => o.ExchangeRate).ToColumn("exchange_rate");
+            Map(o => o.Remark).ToColumn("remark");
         }
-    }
-
-    public class StockDetailEdit
-    {
-        /// <summary>
-        /// StockOperationDetail表的主键ID
-        /// </summary>
-        public int StockOperationDetailID { get; set; }
-        /// <summary>
-        /// 修改数量
-        /// </summary>
-        public int EditNo { get; set; }
     }
     #endregion
 
@@ -292,6 +322,7 @@ namespace MSS.API.Model.Data
     public class StockSumQueryParm : BaseQueryParm
     {
         public int? SearchSpareParts { get; set; }
+        public int? SearchWarehouse { get; set; }
     }
 
     public class StockSumView

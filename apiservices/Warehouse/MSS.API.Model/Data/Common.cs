@@ -80,10 +80,6 @@ namespace MSS.API.Model.Data
             /// </summary>
             TroubleLend = 82,
             /// <summary>
-            /// 调整冲出
-            /// </summary>
-            AdjustOut = 83,
-            /// <summary>
             /// 其他接收
             /// </summary>
             OtherReceive = 84,
@@ -92,17 +88,13 @@ namespace MSS.API.Model.Data
             /// </summary>
             Inspection = 85,
             /// <summary>
-            /// 调整冲入
+            /// 正常件送检归还
             /// </summary>
-            AdjustIn = 86,
+            InspectionReturn = 86,
             /// <summary>
             /// 报废
             /// </summary>
             Scrap = 87,
-            /// <summary>
-            /// 赠送入库
-            /// </summary>
-            GiveIn = 91,
             /// <summary>
             /// 借用归还
             /// </summary>
@@ -137,7 +129,7 @@ namespace MSS.API.Model.Data
         public enum StockStatus
         {
             /// <summary>
-            /// 已不存在
+            /// 多个物资的状态
             /// </summary>
             None = 0,
             /// <summary>
@@ -163,7 +155,11 @@ namespace MSS.API.Model.Data
             /// <summary>
             /// 送检
             /// </summary>
-            Inspection = 104
+            Inspection = 104,
+            /// <summary>
+            /// 耗尽
+            /// </summary>
+            Exhaust = 105
         }
 
         public static string GetRedisKey(StockOperationType type)

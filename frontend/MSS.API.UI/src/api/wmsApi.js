@@ -24,8 +24,11 @@ export default {
 
   getStockOperation: parm => { return axios.get(`${api}/StockOperation`, {params: parm}).then(res => res.data) },
   getStockOperationByID: id => { return axios.get(`${api}/StockOperation/${id}`).then(res => res.data) },
+
+  getStockOperationByReason: id => { return axios.get(`${api}/StockOperation/ListByReason/${id}`).then(res => res.data) },
+  getStockOperationDetailByID: id => { return axios.get(`${api}/StockOperation/ListByOperation/${id}`).then(res => res.data) },
   addStockOperation: parm => { return axios.post(`${api}/StockOperation`, parm).then(res => res.data) },
 
   getStockSum: parm => { return axios.get(`${api}/StockOperation/ListStockSum`, {params: parm}).then(res => res.data) },
-  getStockDetail: id => { return axios.get(`${api}/StockOperation/ListStockDetail/${id}`).then(res => res.data) }
+  getStockDetail: (id, warehouse) => { return axios.get(`${api}/StockOperation/ListStockDetail/${id}/${warehouse}`).then(res => res.data) }
 }
