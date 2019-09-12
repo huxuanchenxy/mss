@@ -35,9 +35,6 @@ namespace MSS.API.Common.Utility
                         token = head.ToString().Replace("Bearer", "").Trim();
 
                         userid = int.Parse(_cache.GetString(token));
-
-
-
                     }
                 }
             }

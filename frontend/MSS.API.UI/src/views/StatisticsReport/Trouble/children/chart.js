@@ -20,6 +20,20 @@ function getTable (opt) {
   return table
 }
 const backicon = require('../images/return.svg')
+function mutiColTooltip (params) {
+  var res = params[0].name
+  var rows = []
+  var size = 5
+  for (var i = 0, l = params.length; i < l; i++) {
+    rows[i % size] = rows[i % size] ? rows[i % size] + ', ' : '<br/>'
+    rows[i % size] += params[i].marker + ' ' + params[i].seriesName + ' : ' + params[i].value
+    // res += '<br/>' + params[i].marker + ' ' + params[i].seriesName + ' : ' + params[i].value
+  }
+  rows.forEach(function (item) {
+    res += item
+  })
+  return res
+}
 const optionCount = {
   xAxisTypeName: '时间',
   title: {
@@ -42,7 +56,8 @@ const optionCount = {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
       type: 'none' // 默认为直线，可选为：'line' | 'shadow'
-    }
+    },
+    formatter: mutiColTooltip
   },
   legend: {
     data: [],
@@ -126,7 +141,8 @@ const optionAvg = {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
       type: 'none' // 默认为直线，可选为：'line' | 'shadow'
-    }
+    },
+    formatter: mutiColTooltip
   },
   legend: {
     data: [],
@@ -267,6 +283,155 @@ const optionEqpTypeAvg = {
   xAxisTypeName: '设备类型',
   title: {
     text: '平均恢复时间(秒)(以设备类型统计)',
+    subtext: '',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['平均恢复时间(秒)'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionTroubleTypeCount = {
+  xAxisTypeName: '故障类型',
+  title: {
+    text: '报警次数(以故障类型统计)',
+    subtext: '',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['报警次数'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'horizontal',
+    x: 'right',
+    y: 'top',
+    feature: {
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          // console.info(opt)
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionTroubleTypeAvg = {
+  xAxisTypeName: '故障类型',
+  title: {
+    text: '平均恢复时间(秒)(以故障类型统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -1081,6 +1246,36 @@ const optionOrgAvg = {
   ]
 }
 
+function getDataZoom (size) {
+  var datazoom = {
+    show: true,
+    realtime: true,
+    // type: 'inside',
+    // orient: 'vertical',   // 'horizontal'
+    // x: 0,
+    y: 36,
+    // width: 400,
+    height: 15,
+    // backgroundColor: 'rgba(221,160,221,0.5)',
+    // dataBackgroundColor: 'rgba(138,43,226,0.5)',
+    // fillerColor: 'rgba(38,143,26,0.6)',
+    // handleColor: 'rgba(128,43,16,0.8)',
+    handleSize: 18,
+    cursor: 'move',
+    // xAxisIndex:[],
+    // yAxisIndex:[],
+    xAxisIndex: [0],
+    start: 0,
+    end: 60,
+    textStyle: {
+      color: '#fff',
+      fontSize: 11
+    }
+  }
+  datazoom.end = (40 / size) * 100
+  return datazoom
+}
+
 // groupModel 为alarmData数据以什么字段聚合，modelName和modelID为数据中属性名（modelID为值，modelName为显示名）
 // 以设备类型为例，modelID=eqpTypeID modelName=eqpTypeName。
 function prepareChartData (data, groupModel, cursor) {
@@ -1107,7 +1302,7 @@ function prepareChartData (data, groupModel, cursor) {
         name: legendData[key],
         type: 'bar',
         stack: 'test',
-        barWidth: 20,
+        barMaxWidth: 20,
         cursor: cursor,
         data: []
       }
@@ -1179,6 +1374,13 @@ function prepareChartData (data, groupModel, cursor) {
         optionAvg.series.push(dataAvg)
       }
     }
+    // datazoom
+    var size = optionCount.legend.data.length * optionCount.xAxis[0].data.length
+    if (size > 40) {
+      optionCount.dataZoom = getDataZoom(size)
+    } else {
+      optionCount.dataZoom = null
+    }
   }
 }
 
@@ -1204,7 +1406,12 @@ function prepareSubChartData (data, groupby) {
     }
     for (let i = 0; i < data.length; ++i) {
       let obj = data[i]
-      xAxisData.push(obj.dimension[groupby])
+      if (groupby === 'troubleName') {
+        xAxisData.push(obj[groupby])
+      } else {
+        xAxisData.push(obj.dimension[groupby])
+      }
+
       objcount.data.push(obj.num)
       objavg.data.push((obj.avgtime / (1000)).toFixed(1))
     }
@@ -1222,6 +1429,8 @@ export default {
   optionAvg: optionAvg,
   optionEqpTypeAvg: optionEqpTypeAvg,
   optionEqpTypeCount: optionEqpTypeCount,
+  optionTroubleTypeAvg: optionTroubleTypeAvg,
+  optionTroubleTypeCount: optionTroubleTypeCount,
   optionSupplierAvg: optionSupplierAvg,
   optionSupplierCount: optionSupplierCount,
   optionManufacturerAvg: optionManufacturerAvg,

@@ -391,6 +391,11 @@ export default {
         }
       }
     },
+    magicTypeChanged (param, param1) {
+      if (param.currentType === 'tiled' && param.newOption.series.length > 8) {
+
+      }
+    },
     drawCountChart (param, data, store) {
       if (store) {
         this.resultCountHistory.push({param: param, data: data})
@@ -399,6 +404,7 @@ export default {
       this.dateChartCount = this.$echarts.init(this.$refs.countChart)
       this.dateChartCount.clear()
       this.dateChartCount.on('click', this.goCount)
+      this.dateChartCount.on('magicTypeChanged', this.magicTypeChanged)
       mychart.optionCount.toolbox.feature.myTool.onclick = this.backCount
       mychart.optionCount.title.subtext = this.subTitleCount.join('->')
       let groupModel = this.groups[this.groupby[this.groupidxForCount]]
@@ -779,7 +785,7 @@ export default {
   .middle-content-wrap{
     box-sizing: border-box;
     position: absolute;
-    z-index: 9;
+    z-index: 1;
     top: 0;
     left: 0;
     width: 100%;

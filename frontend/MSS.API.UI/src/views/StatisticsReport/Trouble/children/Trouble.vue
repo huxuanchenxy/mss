@@ -34,6 +34,17 @@
                 </el-option>
               </el-select>
             </div>
+            <div class="list" >
+              <span class="lable">故障类型</span>
+              <el-select v-model="troubleType" multiple collapse-tags  clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in troubleTypeList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
             <div class="list">
               <span class="lable">时间</span>
               <el-date-picker
@@ -130,6 +141,10 @@
             <el-col :span="12" id="countChartByEqpType" v-resize="onResize" ><div style="width:100%; height:300px;" ref="countChartByEqpType"  class="echart" ></div></el-col>
             <el-col :span="12" id="avgTimeChartByEqpType" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType"  class="echart" ></div></el-col>
           </el-row>
+          <el-row v-show="showTroubleTypeChart">
+            <el-col :span="12" id="countChartByTroubleType" v-resize="onResize" ><div style="width:100%; height:300px;" ref="countChartByTroubleType"  class="echart" ></div></el-col>
+            <el-col :span="12" id="avgTimeChartByTroubleType" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByTroubleType"  class="echart" ></div></el-col>
+          </el-row>
           <el-row v-show="showSupplierChart">
             <el-col :span="12" id="countChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartBySupplier"  class="echart" ></div></el-col>
             <el-col :span="12" id="avgTimeChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier"  class="echart" ></div></el-col>
@@ -178,9 +193,6 @@ export default {
   data () {
     return {
       title: '| 报警统计',
-      subSystem: [],
-      subSystemList: [],
-      eqpType: [],
       time: {
         text: '',
         tips: ''
@@ -234,8 +246,11 @@ export default {
       locationChartAvg: null,
       orgChartCount: null,
       orgChartAvg: null,
+      troubleTypeChartCount: null,
+      troubleTypeChartAvg: null,
 
       showEqpTypeChart: false,
+      showTroubleTypeChart: false,
       showSupplierChart: false,
       showManufacturerChart: false,
       showSubSystemChart: false,
@@ -246,7 +261,9 @@ export default {
         text: [],
         tips: ''
       },
-
+      subSystem: [],
+      subSystemList: [],
+      eqpType: [],
       eqpTypeList: [],
       area: [],
       areaList: [],
@@ -266,6 +283,9 @@ export default {
         value: 'id',
         children: 'children'
       },
+
+      troubleType: [],
+      troubleTypeList: [],
 
       searchHideMore: false,
       searchHideMoreHeight: '100%',
@@ -333,6 +353,12 @@ export default {
       }
       if (this.orgChartAvg && el.id === 'avgTimeChartByOrg') {
         this.orgChartAvg.resize()
+      }
+      if (this.troubleTypeChartCount && el.id === 'countChartByTroubleType') {
+        this.troubleTypeChartCount.resize()
+      }
+      if (this.troubleTypeChartAvg && el.id === 'avgTimeChartByTroubleType') {
+        this.troubleTypeChartAvg.resize()
       }
     },
 
@@ -460,7 +486,6 @@ export default {
       this.eqpTypeChartAvg = this.$echarts.init(this.$refs.avgTimeChartByEqpType)
       this.eqpTypeChartCount.clear()
       this.eqpTypeChartAvg.clear()
-      this.eqpTypeChartCount.resize()
       let chartData = mychart.prepareSubChartData(data, 'eqpTypeName')
       mychart.optionEqpTypeCount.xAxis[0].data = chartData.xAxisData
       mychart.optionEqpTypeCount.series = chartData.seariescount
@@ -469,6 +494,22 @@ export default {
       mychart.optionEqpTypeAvg.xAxis[0].data = chartData.xAxisData
       mychart.optionEqpTypeAvg.series = chartData.seariesavg
       this.eqpTypeChartAvg.setOption(mychart.optionEqpTypeAvg)
+    },
+
+    drawTroubleTypeChart (data) {
+      this.showTroubleTypeChart = true
+      this.troubleTypeChartCount = this.$echarts.init(this.$refs.countChartByTroubleType)
+      this.troubleTypeChartAvg = this.$echarts.init(this.$refs.avgTimeChartByTroubleType)
+      this.troubleTypeChartCount.clear()
+      this.troubleTypeChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data, 'troubleName')
+      mychart.optionTroubleTypeCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionTroubleTypeCount.series = chartData.seariescount
+      this.troubleTypeChartCount.setOption(mychart.optionTroubleTypeCount)
+
+      mychart.optionTroubleTypeAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionTroubleTypeAvg.series = chartData.seariesavg
+      this.troubleTypeChartAvg.setOption(mychart.optionTroubleTypeAvg)
     },
 
     drawSupplierChart (data) {
@@ -553,6 +594,11 @@ export default {
       apiAuth.getSubCode(dictionary.subSystem).then(res => {
         this.subSystemList = res.data
         this.searchResult()
+      }).catch(err => console.log(err))
+
+      // 故障类型
+      apiAuth.getSubCode(dictionary.troubleType).then(res => {
+        this.troubleTypeList = res.data
       }).catch(err => console.log(err))
 
       // 设备类型加载
@@ -673,6 +719,7 @@ export default {
         SupplierIDs: this.supplier.join(','),
         ManufacturerIDs: this.manufacturer.join(','),
         OrgPath: this.teamPath.text.join(','),
+        TroubleTypes: this.troubleType.join(','),
         startTime: sTime,
         endTime: eTime,
         dateType: this.dateType,
@@ -693,8 +740,9 @@ export default {
       this.search(param, [this.drawCountChart, this.drawAvgChart])
 
       if (param.EqpTypeIDs) {
-        param.groupby = 'eqp_type_id'
-        api.reportTroubleByOther(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'eqp_type_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawEqpTypeChart(res.data)
           } else {
@@ -705,9 +753,24 @@ export default {
         this.showEqpTypeChart = false
       }
 
+      if (param.TroubleTypes) {
+        let { ...paramnew } = param
+        paramnew.groupby = 'trouble_type'
+        api.reportTroubleByOther(paramnew).then(res => {
+          if (res.code === ApiRESULT.Success && res.data.length > 0) {
+            this.drawTroubleTypeChart(res.data)
+          } else {
+            this.showTroubleTypeChart = false
+          }
+        }).catch(err => console.log(err))
+      } else {
+        this.showTroubleTypeChart = false
+      }
+
       if (param.SupplierIDs) {
-        param.groupby = 'supplier_id'
-        api.reportTroubleByOther(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'supplier_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSupplierChart(res.data)
           } else {
@@ -719,8 +782,9 @@ export default {
       }
 
       if (param.ManufacturerIDs) {
-        param.groupby = 'manufacturer_id'
-        api.reportTroubleByOther(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'manufacturer_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawManufacturerChart(res.data)
           } else {
@@ -732,8 +796,9 @@ export default {
       }
 
       if (param.SubSystemIDs) {
-        param.groupby = 'sub_system_id'
-        api.reportTroubleByOther(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'sub_system_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSubSystemChart(res.data)
           } else {

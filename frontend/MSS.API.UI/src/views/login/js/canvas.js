@@ -112,13 +112,15 @@ function init (obj) {
 }
 
 function reset () {
-  width = Math.ceil(window.innerWidth / 2) * 2
-  height = Math.ceil(window.innerHeight / 2) * 2
-  tick = 0
+  if (canvas) {
+    width = Math.ceil(window.innerWidth / 2) * 2
+    height = Math.ceil(window.innerHeight / 2) * 2
+    tick = 0
 
-  lines = []
-  canvas.width = width
-  canvas.height = height
+    lines = []
+    canvas.width = width
+    canvas.height = height
+  }
 }
 
 function create () {

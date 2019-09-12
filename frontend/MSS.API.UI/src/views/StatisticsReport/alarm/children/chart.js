@@ -20,6 +20,20 @@ function getTable (opt) {
   return table
 }
 const backicon = require('../images/return.svg')
+function mutiColTooltip (params) {
+  var res = params[0].name
+  var rows = []
+  var size = 5
+  for (var i = 0, l = params.length; i < l; i++) {
+    rows[i % size] = rows[i % size] ? rows[i % size] + ', ' : '<br/>'
+    rows[i % size] += params[i].marker + ' ' + params[i].seriesName + ' : ' + params[i].value
+    // res += '<br/>' + params[i].marker + ' ' + params[i].seriesName + ' : ' + params[i].value
+  }
+  rows.forEach(function (item) {
+    res += item
+  })
+  return res
+}
 const optionCount = {
   xAxisTypeName: '时间',
   title: {
@@ -42,7 +56,8 @@ const optionCount = {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
       type: 'none' // 默认为直线，可选为：'line' | 'shadow'
-    }
+    },
+    formatter: mutiColTooltip
   },
   legend: {
     data: [],
@@ -78,25 +93,7 @@ const optionCount = {
       }
     }
   },
-  dataZoom: {
-    show: true,
-    realtime: true,
-    type: 'inside',
-    // orient: 'vertical',   // 'horizontal'
-    // x: 0,
-    // y: 36,
-    // width: 400,
-    // height: 20,
-    // backgroundColor: 'rgba(221,160,221,0.5)',
-    // dataBackgroundColor: 'rgba(138,43,226,0.5)',
-    // fillerColor: 'rgba(38,143,26,0.6)',
-    // handleColor: 'rgba(128,43,16,0.8)',
-    // xAxisIndex:[],
-    // yAxisIndex:[],
-    xAxisIndex: [0],
-    start: 40,
-    end: 60
-  },
+
   // calculable: true,
   xAxis: [
     {
@@ -145,7 +142,8 @@ const optionAvg = {
     trigger: 'axis',
     axisPointer: { // 坐标轴指示器，坐标轴触发有效
       type: 'none' // 默认为直线，可选为：'line' | 'shadow'
-    }
+    },
+    formatter: mutiColTooltip
   },
   legend: {
     data: [],
@@ -1100,6 +1098,36 @@ const optionOrgAvg = {
   ]
 }
 
+function getDataZoom (size) {
+  var datazoom = {
+    show: true,
+    realtime: true,
+    // type: 'inside',
+    // orient: 'vertical',   // 'horizontal'
+    // x: 0,
+    y: 36,
+    // width: 400,
+    height: 15,
+    // backgroundColor: 'rgba(221,160,221,0.5)',
+    // dataBackgroundColor: 'rgba(138,43,226,0.5)',
+    // fillerColor: 'rgba(38,143,26,0.6)',
+    // handleColor: 'rgba(128,43,16,0.8)',
+    handleSize: 18,
+    cursor: 'move',
+    // xAxisIndex:[],
+    // yAxisIndex:[],
+    xAxisIndex: [0],
+    start: 0,
+    end: 60,
+    textStyle: {
+      color: '#fff',
+      fontSize: 11
+    }
+  }
+  datazoom.end = (40 / size) * 100
+  return datazoom
+}
+
 // groupModel 为alarmData数据以什么字段聚合，modelName和modelID为数据中属性名（modelID为值，modelName为显示名）
 // 以设备类型为例，modelID=eqpTypeID modelName=eqpTypeName。
 function prepareChartData (data, groupModel, cursor) {
@@ -1126,6 +1154,9 @@ function prepareChartData (data, groupModel, cursor) {
         name: legendData[key],
         type: 'bar',
         stack: 'test',
+        // barMinHeight: 1,
+        // barCategoryGap: 10,
+        // barGap: 1,
         // barWidth: 20,
         barMaxWidth: 20,
         cursor: cursor,
@@ -1164,6 +1195,7 @@ function prepareChartData (data, groupModel, cursor) {
       optionCount.xAxis[0].data.push('无数据')
       optionAvg.xAxis[0].data.push('无数据')
     }
+
     // 补数据
     for (let i = 0; i < groupModel.legend.length; ++i) {
       let needadd = true
@@ -1191,13 +1223,19 @@ function prepareChartData (data, groupModel, cursor) {
           data: []
         }
         for (let i = 0; i < optionCount.xAxis[0].data.length; ++i) {
-          dataCount.data.push(0)
-          dataAvg.data.push(0)
+          dataCount.data.push('-')
+          dataAvg.data.push('-')
         }
-
         optionCount.series.push(dataCount)
         optionAvg.series.push(dataAvg)
       }
+    }
+    // datazoom
+    var size = optionCount.legend.data.length * optionCount.xAxis[0].data.length
+    if (size > 40) {
+      optionCount.dataZoom = getDataZoom(size)
+    } else {
+      optionCount.dataZoom = null
     }
   }
 }
