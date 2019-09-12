@@ -4,8 +4,8 @@ using System.Text;
 
 namespace MSS.API.Model.DTO
 {
-    public class StatisticsTroubleParam : StatisticsParam 
+    public class StatisticsTroubleParam : StatisticsParam
     {
-        public string ToubleTypes { get; set; }
+        public string TroubleTypes { get; set; }
     }
 }

@@ -217,9 +217,10 @@ namespace MSS.API.Dao.Implement
                 }
                 sql.Append("SELECT " + datecol + " as date, count(*) as num, avg(a.elapsed_time) avgtime");
 
-                sql.Append(", 'split', b.*");
+                sql.Append(",c.name as troublename, 'split', b.*");
                 sql.Append(" FROM statistics_trouble a");
                 sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id");
+                sql.Append(" JOIN dictionary_tree c ON a.trouble_type = c.id");
                 sql.Append(" WHERE 1=1");
                 if (param.StartTime != null)
                 {
@@ -277,12 +278,21 @@ namespace MSS.API.Dao.Implement
                     sql.Append(" AND FIND_IN_SET(" + id + ",b.team_path) > 0");
                 }
 
+                if (!string.IsNullOrWhiteSpace(param.TroubleTypes))
+                {
+                    sql.Append(" AND a.trouble_type IN (" + param.TroubleTypes + ")");
+                }
+
                 for (int i = 0; i < groupby.Count; ++i)
                 {
                     string by = "b." + groupby[i];
                     if (groupby[i].Equals("date"))
                     {
                         by = "date";
+                    }
+                    if (groupby[i].Equals("trouble_type"))
+                    {
+                        by = "a.trouble_type";
                     }
                     if (i == 0)
                     {
@@ -313,9 +323,10 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
 
-                sql.Append("SELECT a.*, 'split', b.*");
+                sql.Append("SELECT a.*, c.name as troublename, 'split', b.*");
                 sql.Append(" FROM statistics_trouble a");
                 sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id");
+                sql.Append(" JOIN dictionary_tree c ON a.trouble_type = c.id");
                 sql.Append(" WHERE 1=1");
                 if (param.StartTime != null)
                 {
@@ -368,6 +379,11 @@ namespace MSS.API.Dao.Implement
                     sql.Append(" AND FIND_IN_SET(" + id + ",b.team_path) > 0");
                 }
 
+                if (!string.IsNullOrWhiteSpace(param.TroubleTypes))
+                {
+                    sql.Append(" AND a.trouble_type IN (" + param.TroubleTypes + ")");
+                }
+
                 // var data = await c.QueryAsync<StatisticsAlarm>(sql.ToString());
                 var data = await c.QueryAsync<StatisticsTrouble, StatisticsDimension, StatisticsTrouble>(
                         sql.ToString(), (trouble, dimension) =>
@@ -377,6 +393,19 @@ namespace MSS.API.Dao.Implement
                         },
                         splitOn: "split");
                 return data.ToList();
+            });
+        }
+
+        public async Task<StatisticsTrouble> AddTrouble(StatisticsTrouble trouble)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "INSERT INTO statistics_trouble (eqp_id, occur_time, recover_time, elapsed_time, trouble_id, trouble_type)"
+                            + " Values (@EqpID, @OccurTime, @RecoverTime, @ElapsedTime, @TroubleID, @TroubleType);";
+                sql += "SELECT LAST_INSERT_ID()";
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, trouble);
+                trouble.ID = newid;
+                return trouble;
             });
         }
     }    

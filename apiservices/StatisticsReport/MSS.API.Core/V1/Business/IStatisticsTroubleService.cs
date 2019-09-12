@@ -16,5 +16,7 @@ namespace MSS.API.Core.V1.Business
             List<string> groupby, int dateType);
         Task<ApiResult> ListStatisticsTroubleGroupByLocation(StatisticsTroubleParam param, int dateType);
         Task<ApiResult> ListStatisticsTroubleGroupByOrg(StatisticsTroubleParam param, int dateType);
+
+        Task<ApiResult> AddTrouble(StatisticsTrouble trouble);
     }
 }

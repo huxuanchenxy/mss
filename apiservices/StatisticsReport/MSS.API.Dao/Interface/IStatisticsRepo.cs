@@ -21,5 +21,8 @@ namespace MSS.API.Dao.Interface
             List<string> groupby, int dateType);
         // 查询故障列表 不做分组统计
         Task<List<StatisticsTrouble>> ListStatisticsTroubleDetail(StatisticsTroubleParam param);
+
+        // 添加故障
+        Task<StatisticsTrouble> AddTrouble(StatisticsTrouble trouble);
     }
 }

@@ -17,6 +17,7 @@ namespace MSS.API.Model.Data
         public string date { get; set; }
         public string num { get; set; }
         public string avgtime { get; set; }
+        public string TroubleName { get; set; }
 
         public StatisticsDimension dimension { get; set; }
     }

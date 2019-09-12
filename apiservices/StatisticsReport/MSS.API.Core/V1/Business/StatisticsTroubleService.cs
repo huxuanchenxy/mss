@@ -229,5 +229,23 @@ namespace MSS.API.Core.V1.Business
             }
             return ret;
         }
+
+        public async Task<ApiResult> AddTrouble(StatisticsTrouble trouble)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                StatisticsTrouble topNode = await _statisticsRepo.AddTrouble(trouble);
+
+                ret.code = Code.Success;
+                ret.data = topNode;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
     }
 }

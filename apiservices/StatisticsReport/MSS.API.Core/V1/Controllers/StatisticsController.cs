@@ -215,5 +215,12 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _statisticsTroubleService.ListStatisticsTroubleGroupByOrg(param, dateType);
             return ret;
         }
+
+        [HttpPost("trouble")]
+        public async Task<ActionResult<ApiResult>> AddTrouble(StatisticsTrouble trouble)
+        {
+            var ret = await _statisticsTroubleService.AddTrouble(trouble);
+            return ret;
+        }
     }
 }
