@@ -1223,8 +1223,8 @@ function prepareChartData (data, groupModel, cursor) {
           data: []
         }
         for (let i = 0; i < optionCount.xAxis[0].data.length; ++i) {
-          dataCount.data.push('-')
-          dataAvg.data.push('-')
+          dataCount.data.push('0')
+          dataAvg.data.push('0')
         }
         optionCount.series.push(dataCount)
         optionAvg.series.push(dataAvg)

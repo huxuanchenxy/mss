@@ -116,39 +116,105 @@
       <el-container style="height:100%;">
         <el-main style="padding:0px">
           <el-row>
-            <el-col :span="12" id="countChart" v-resize="onResize">
+            <el-col :span="12" id="countChart" v-resize="onResize" v-loading="loading_count"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
               <!-- <div style="width:100%; height:300px;" ref="countChart" id="countChart" class="echart" v-resize="onResize"></div> -->
-              <div style="width:100%; height:300px;" ref="countChart"  class="echart" ></div>
+              <div style="width:100%; height:300px;" ref="countChart"  class="echart"></div>
               <div class="echartsubtitle">{{bottomDesForCount}}</div>
             </el-col>
-            <el-col :span="12" id="avgTimeChart" v-resize="onResize">
-              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart" ></div>
+            <el-col :span="12" id="avgTimeChart" v-resize="onResize" v-loading="loading_avg"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart"></div>
               <div class="echartsubtitle">{{bottomDesForAvg}}</div>
               </el-col>
           </el-row>
           <el-row v-show="showEqpTypeChart">
-            <el-col :span="12" id="countChartByEqpType" v-resize="onResize" ><div style="width:100%; height:300px;" ref="countChartByEqpType"  class="echart" ></div></el-col>
-            <el-col :span="12" id="avgTimeChartByEqpType" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByEqpType"  class="echart" ></div></el-col>
+            <el-col :span="12" id="countChartByEqpType" v-resize="onResize" v-loading="loading_countEqpType"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="countChartByEqpType"  class="echart" ></div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChartByEqpType" v-resize="onResize" v-loading="loading_avgEqpType"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChartByEqpType"  class="echart" ></div>
+            </el-col>
           </el-row>
           <el-row v-show="showSupplierChart">
-            <el-col :span="12" id="countChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartBySupplier"  class="echart" ></div></el-col>
-            <el-col :span="12" id="avgTimeChartBySupplier" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartBySupplier"  class="echart" ></div></el-col>
+            <el-col :span="12" id="countChartBySupplier" v-resize="onResize" v-loading="loading_countSupplier"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="countChartBySupplier"  class="echart" ></div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChartBySupplier" v-resize="onResize" v-loading="loading_avgSupplier"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChartBySupplier"  class="echart" ></div>
+            </el-col>
           </el-row>
           <el-row v-show="showManufacturerChart">
-            <el-col :span="12" id="countChartByManufacturer" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByManufacturer"  class="echart" ></div></el-col>
-            <el-col :span="12" id="avgTimeChartByManufacturer" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer"  class="echart" ></div></el-col>
+            <el-col :span="12" id="countChartByManufacturer" v-resize="onResize" v-loading="loading_countManufacturer"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="countChartByManufacturer"  class="echart" ></div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChartByManufacturer" v-resize="onResize" v-loading="loading_avgManufacturer"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChartByManufacturer"  class="echart" ></div>
+            </el-col>
           </el-row>
           <el-row v-show="showSubSystemChart">
-            <el-col :span="12" id="countChartBySubSystem" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartBySubSystem"  class="echart" ></div></el-col>
-            <el-col :span="12" id="avgTimeChartBySubSystem" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartBySubSystem"  class="echart" ></div></el-col>
+            <el-col :span="12" id="countChartBySubSystem" v-resize="onResize" v-loading="loading_countSubSystem"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="countChartBySubSystem"  class="echart" ></div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChartBySubSystem" v-resize="onResize" v-loading="loading_avgSubSystem"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChartBySubSystem"  class="echart" ></div>
+            </el-col>
           </el-row>
           <el-row v-show="showLocationChart">
-            <el-col :span="12" id="countChartByLocation" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByLocation" class="echart"></div></el-col>
-            <el-col :span="12" id="avgTimeChartByLocation" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByLocation"  class="echart" ></div></el-col>
+            <el-col :span="12" id="countChartByLocation" v-resize="onResize" v-loading="loading_countLocation"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="countChartByLocation" class="echart"></div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChartByLocation" v-resize="onResize" v-loading="loading_avgLocation"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChartByLocation"  class="echart" ></div>
+            </el-col>
           </el-row>
           <el-row v-show="showOrgChart">
-            <el-col :span="12" id="countChartByOrg" v-resize="onResize"><div style="width:100%; height:300px;" ref="countChartByOrg"  class="echart" ></div></el-col>
-            <el-col :span="12" id="avgTimeChartByOrg" v-resize="onResize"><div style="width:100%; height:300px;" ref="avgTimeChartByOrg"  class="echart" ></div></el-col>
+            <el-col :span="12" id="countChartByOrg" v-resize="onResize" v-loading="loading_countOrg"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="countChartByOrg"  class="echart" ></div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChartByOrg" v-resize="onResize" v-loading="loading_avgOrg"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChartByOrg"  class="echart" ></div>
+            </el-col>
           </el-row>
         </el-main>
       </el-container>
@@ -241,6 +307,21 @@ export default {
       showSubSystemChart: false,
       showLocationChart: false,
       showOrgChart: false,
+
+      loading_count: false,
+      loading_avg: false,
+      loading_countEqpType: false,
+      loading_avgEqpType: false,
+      loading_countSupplier: false,
+      loading_avgSupplier: false,
+      loading_countManufacturer: false,
+      loading_avgManufacturer: false,
+      loading_countSubSystem: false,
+      loading_avgSubSystem: false,
+      loading_countLocation: false,
+      loading_avgLocation: false,
+      loading_countOrg: false,
+      loading_avgOrg: false,
 
       teamPath: {
         text: [],
@@ -461,12 +542,10 @@ export default {
     },
 
     drawEqpTypeChart (data) {
-      this.showEqpTypeChart = true
       this.eqpTypeChartCount = this.$echarts.init(this.$refs.countChartByEqpType)
       this.eqpTypeChartAvg = this.$echarts.init(this.$refs.avgTimeChartByEqpType)
       this.eqpTypeChartCount.clear()
       this.eqpTypeChartAvg.clear()
-      this.eqpTypeChartCount.resize()
       let chartData = mychart.prepareSubChartData(data, 'eqpTypeName')
       mychart.optionEqpTypeCount.xAxis[0].data = chartData.xAxisData
       mychart.optionEqpTypeCount.series = chartData.seariescount
@@ -478,7 +557,6 @@ export default {
     },
 
     drawSupplierChart (data) {
-      this.showSupplierChart = true
       this.supplierChartCount = this.$echarts.init(this.$refs.countChartBySupplier)
       this.supplierChartAvg = this.$echarts.init(this.$refs.avgTimeChartBySupplier)
       this.supplierChartCount.clear()
@@ -494,7 +572,6 @@ export default {
     },
 
     drawManufacturerChart (data) {
-      this.showManufacturerChart = true
       this.manufacturerChartCount = this.$echarts.init(this.$refs.countChartByManufacturer)
       this.manufacturerChartAvg = this.$echarts.init(this.$refs.avgTimeChartByManufacturer)
       this.manufacturerChartCount.clear()
@@ -510,7 +587,6 @@ export default {
     },
 
     drawSubSystemChart (data) {
-      this.showSubSystemChart = true
       this.subSystemChartCount = this.$echarts.init(this.$refs.countChartBySubSystem)
       this.subSystemChartAvg = this.$echarts.init(this.$refs.avgTimeChartBySubSystem)
       this.subSystemChartCount.clear()
@@ -525,7 +601,6 @@ export default {
       this.subSystemChartAvg.setOption(mychart.optionSubSystemAvg)
     },
     drawLocationChart (data) {
-      this.showLocationChart = true
       this.locationChartCount = this.$echarts.init(this.$refs.countChartByLocation)
       this.locationChartAvg = this.$echarts.init(this.$refs.avgTimeChartByLocation)
       this.locationChartCount.clear()
@@ -540,7 +615,6 @@ export default {
       this.locationChartAvg.setOption(mychart.optionLocationAvg)
     },
     drawOrgChart (data) {
-      this.showOrgChart = true
       this.orgChartCount = this.$echarts.init(this.$refs.countChartByOrg)
       this.orgChartAvg = this.$echarts.init(this.$refs.avgTimeChartByOrg)
       this.orgChartCount.clear()
@@ -584,9 +658,25 @@ export default {
     },
 
     search (param, callbacks) {
-      this.loading = true
+      // this.loading = true
+      callbacks.forEach(item => {
+        if (item === this.drawCountChart) {
+          this.loading_count = true
+        }
+        if (item === this.drawAvgChart) {
+          this.loading_avg = true
+        }
+      })
       api.reportAlarm(param).then(res => {
-        this.loading = false
+        // this.loading = false
+        callbacks.forEach(item => {
+          if (item === this.drawCountChart) {
+            this.loading_count = false
+          }
+          if (item === this.drawAvgChart) {
+            this.loading_avg = false
+          }
+        })
         if (res.code === ApiRESULT.Success) {
           for (let callback of callbacks) {
             callback(param, res.data, true)
@@ -700,7 +790,12 @@ export default {
       this.search(param, [this.drawCountChart, this.drawAvgChart])
 
       if (param.EqpTypeIDs) {
+        this.showEqpTypeChart = true
+        this.loading_countEqpType = true
+        this.loading_avgEqpType = true
         api.reportSubChartEqpType(param).then(res => {
+          this.loading_countEqpType = false
+          this.loading_avgEqpType = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawEqpTypeChart(res.data)
           } else {
@@ -712,7 +807,12 @@ export default {
       }
 
       if (param.SupplierIDs) {
+        this.showSupplierChart = true
+        this.loading_countSupplier = true
+        this.loading_avgSupplier = true
         api.reportSubChartSupplier(param).then(res => {
+          this.loading_countSupplier = false
+          this.loading_avgSupplier = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSupplierChart(res.data)
           } else {
@@ -724,7 +824,12 @@ export default {
       }
 
       if (param.ManufacturerIDs) {
+        this.showManufacturerChart = true
+        this.loading_countManufacturer = true
+        this.loading_avgManufacturer = true
         api.reportSubChartManufacturer(param).then(res => {
+          this.loading_countManufacturer = false
+          this.loading_avgManufacturer = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawManufacturerChart(res.data)
           } else {
@@ -736,7 +841,12 @@ export default {
       }
 
       if (param.SubSystemIDs) {
+        this.showSubSystemChart = true
+        this.loading_countSubSystem = true
+        this.loading_avgSubSystem = true
         api.reportSubChartSubSystem(param).then(res => {
+          this.loading_countSubSystem = false
+          this.loading_avgSubSystem = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
             this.drawSubSystemChart(res.data)
           } else {
@@ -748,7 +858,12 @@ export default {
       }
 
       if (param.LocationPath) {
+        this.showLocationChart = true
+        this.loading_countLocation = true
+        this.loading_avgLocation = true
         api.reportSubChartLocation(param).then(res => {
+          this.loading_countLocation = false
+          this.loading_avgLocation = false
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
             this.drawLocationChart(res.data)
           } else {
@@ -759,7 +874,12 @@ export default {
         this.showLocationChart = false
       }
       if (param.OrgPath) {
+        this.showOrgChart = true
+        this.loading_countOrg = true
+        this.loading_avgOrg = true
         api.reportSubChartOrg(param).then(res => {
+          this.loading_countOrg = false
+          this.loading_avgOrg = false
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
             this.drawOrgChart(res.data)
           } else {
