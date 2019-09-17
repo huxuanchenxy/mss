@@ -268,7 +268,7 @@ export default {
   },
   data () {
     return {
-      title: '| 报警统计',
+      title: '| 故障统计',
       time: {
         text: '',
         tips: ''
