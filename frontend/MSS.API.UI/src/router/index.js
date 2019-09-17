@@ -53,6 +53,10 @@ routes = routes.concat(Statistics)
 // 网络监控
 import monitor from './monitor'
 routes = routes.concat(monitor)
+
+// 工作流
+import workflow from './workflow'
+routes = routes.concat(workflow)
 // // 基础数据
 // import dataBasic from './dataBasic'
 // routes = routes.concat(dataBasic)
