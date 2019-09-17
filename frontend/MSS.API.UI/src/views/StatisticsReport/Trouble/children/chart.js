@@ -37,7 +37,7 @@ function mutiColTooltip (params) {
 const optionCount = {
   xAxisTypeName: '时间',
   title: {
-    text: '报警次数',
+    text: '故障次数',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -64,6 +64,7 @@ const optionCount = {
     itemWidth: 10,
     itemHeight: 7,
     itemGap: 5,
+    padding: [5, 5, 0, 110],
     textStyle: {
       color: '#fff',
       fontSize: 11
@@ -71,9 +72,10 @@ const optionCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -149,6 +151,7 @@ const optionAvg = {
     itemWidth: 10,
     itemHeight: 7,
     itemGap: 5,
+    padding: [5, 5, 0, 110],
     textStyle: {
       color: '#fff',
       fontSize: 11
@@ -156,9 +159,10 @@ const optionAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -207,7 +211,7 @@ const optionAvg = {
 const optionEqpTypeCount = {
   xAxisTypeName: '设备类型',
   title: {
-    text: '报警次数(以设备类型统计)',
+    text: '故障次数(以设备类型统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -238,9 +242,10 @@ const optionEqpTypeCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -313,9 +318,10 @@ const optionEqpTypeAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -356,7 +362,7 @@ const optionEqpTypeAvg = {
 const optionTroubleTypeCount = {
   xAxisTypeName: '故障类型',
   title: {
-    text: '报警次数(以故障类型统计)',
+    text: '故障次数(以故障类型统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -387,9 +393,10 @@ const optionTroubleTypeCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -462,9 +469,10 @@ const optionTroubleTypeAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -505,7 +513,7 @@ const optionTroubleTypeAvg = {
 const optionSupplierCount = {
   xAxisTypeName: '供应商',
   title: {
-    text: '报警次数(以供应商统计)',
+    text: '故障次数(以供应商统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -536,9 +544,10 @@ const optionSupplierCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -610,9 +619,10 @@ const optionSupplierAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -653,7 +663,7 @@ const optionSupplierAvg = {
 const optionManufacturerCount = {
   xAxisTypeName: '制造商',
   title: {
-    text: '报警次数(以制造商统计)',
+    text: '故障次数(以制造商统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -684,9 +694,10 @@ const optionManufacturerCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -758,9 +769,10 @@ const optionManufacturerAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -801,7 +813,7 @@ const optionManufacturerAvg = {
 const optionSubSystemCount = {
   xAxisTypeName: '子系统',
   title: {
-    text: '报警次数(以子系统统计)',
+    text: '故障次数(以子系统统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -832,9 +844,10 @@ const optionSubSystemCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -906,9 +919,10 @@ const optionSubSystemAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -949,7 +963,7 @@ const optionSubSystemAvg = {
 const optionLocationCount = {
   xAxisTypeName: '位置',
   title: {
-    text: '报警次数(以位置信息统计)',
+    text: '故障次数(以位置信息统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -981,9 +995,10 @@ const optionLocationCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -1056,9 +1071,10 @@ const optionLocationAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -1099,7 +1115,7 @@ const optionLocationAvg = {
 const optionOrgCount = {
   xAxisTypeName: '部门',
   title: {
-    text: '报警次数(以部门信息统计)',
+    text: '故障次数(以部门信息统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -1131,9 +1147,10 @@ const optionOrgCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -1206,9 +1223,10 @@ const optionOrgAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -1253,7 +1271,7 @@ function getDataZoom (size) {
     // type: 'inside',
     // orient: 'vertical',   // 'horizontal'
     // x: 0,
-    y: 36,
+    // y: 36,
     // width: 400,
     height: 15,
     // backgroundColor: 'rgba(221,160,221,0.5)',

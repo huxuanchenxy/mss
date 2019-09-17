@@ -64,6 +64,7 @@ const optionCount = {
     itemWidth: 10,
     itemHeight: 7,
     itemGap: 5,
+    padding: [5, 5, 0, 110],
     textStyle: {
       color: '#fff',
       fontSize: 11
@@ -71,9 +72,10 @@ const optionCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -150,6 +152,7 @@ const optionAvg = {
     itemWidth: 10,
     itemHeight: 7,
     itemGap: 5,
+    padding: [5, 5, 0, 110],
     textStyle: {
       color: '#fff',
       fontSize: 11
@@ -157,9 +160,10 @@ const optionAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -239,9 +243,10 @@ const optionEqpTypeCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -314,9 +319,10 @@ const optionEqpTypeAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -388,9 +394,10 @@ const optionSupplierCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -462,9 +469,10 @@ const optionSupplierAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -536,9 +544,10 @@ const optionManufacturerCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -610,9 +619,10 @@ const optionManufacturerAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -684,9 +694,10 @@ const optionSubSystemCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -758,9 +769,10 @@ const optionSubSystemAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -833,9 +845,10 @@ const optionLocationCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -908,9 +921,10 @@ const optionLocationAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -983,9 +997,10 @@ const optionOrgCount = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -1058,9 +1073,10 @@ const optionOrgAvg = {
   },
   toolbox: {
     show: true,
-    orient: 'horizontal',
+    orient: 'vertical',
     x: 'right',
-    y: 'top',
+    y: '50',
+    padding: [0, 30, 0, 0],
     feature: {
       dataView: {
         show: true,
@@ -1105,7 +1121,7 @@ function getDataZoom (size) {
     // type: 'inside',
     // orient: 'vertical',   // 'horizontal'
     // x: 0,
-    y: 36,
+    // y: 36,
     // width: 400,
     height: 15,
     // backgroundColor: 'rgba(221,160,221,0.5)',

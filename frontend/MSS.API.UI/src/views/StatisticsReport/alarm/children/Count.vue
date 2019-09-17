@@ -1165,7 +1165,7 @@ div.echart h4 {
 }
 .echartsubtitle {
     position: relative;
-    top: -35px;
+    top: 0px;
     padding-left: 9%;
     width: 80%;
     text-align: center;
