@@ -25,7 +25,7 @@ export default {
   },
   data () {
     return {
-      title: ' | 服务器监控',
+      title: ' | 流程设计',
       src: 'http://10.89.36.160:8881/#',
       time: '',
       serviceName: '',
