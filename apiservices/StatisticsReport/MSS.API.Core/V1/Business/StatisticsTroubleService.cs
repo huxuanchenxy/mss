@@ -16,25 +16,26 @@ using MSS.Common.Consul;
 using MSS.API.Common.Utility;
 namespace MSS.API.Core.V1.Business
 {
-    public class StatisticsService : IStatisticsService
+    public class StatisticsTroubleService : IStatisticsTroubleService
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IStatisticsRepo _statisticsRepo;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
 
-        public StatisticsService(IStatisticsRepo statisticsRepo, IServiceDiscoveryProvider consulServiceProvider)
+        public StatisticsTroubleService(IStatisticsRepo statisticsRepo, IServiceDiscoveryProvider consulServiceProvider)
         {
             _statisticsRepo = statisticsRepo;
             _consulServiceProvider = consulServiceProvider;
         }
 
-        public async Task<ApiResult> ListStatisticsAlarm(StatisticsParam param,
+        public async Task<ApiResult> ListStatisticsTroubleGroupByDate(StatisticsTroubleParam param,
             List<string> groupby, int dateType)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
+                groupby.Insert(0, "date");
+                List<StatisticsTrouble> data = await _statisticsRepo.ListStatisticsTrouble(param,
                     groupby, dateType);
                 ret.code = Code.Success;
                 ret.data = data;
@@ -48,13 +49,14 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<ApiResult> ListStatisticsAlarmGroupByEqpType(StatisticsParam param, int dateType)
+        public async Task<ApiResult> ListStatisticsTroubleGroupByOther(StatisticsTroubleParam param,
+            List<string> groupby, int dateType)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
-                    new List<string> { "eqp_type_id" }, dateType, false);
+                List<StatisticsTrouble> data = await _statisticsRepo.ListStatisticsTrouble(param,
+                    groupby, dateType);
                 
                 ret.code = Code.Success;
                 ret.data = data;
@@ -68,67 +70,7 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<ApiResult> ListStatisticsAlarmGroupBySupplier(StatisticsParam param, int dateType)
-        {
-            ApiResult ret = new ApiResult();
-            try
-            {
-                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
-                    new List<string> { "supplier_id" }, dateType, false);
-
-                ret.code = Code.Success;
-                ret.data = data;
-            }
-            catch (Exception ex)
-            {
-                ret.code = Code.Failure;
-                ret.msg = ex.Message;
-            }
-
-            return ret;
-        }
-
-        public async Task<ApiResult> ListStatisticsAlarmGroupByManufacturer(StatisticsParam param, int dateType)
-        {
-            ApiResult ret = new ApiResult();
-            try
-            {
-                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
-                    new List<string> { "manufacturer_id" }, dateType, false);
-
-                ret.code = Code.Success;
-                ret.data = data;
-            }
-            catch (Exception ex)
-            {
-                ret.code = Code.Failure;
-                ret.msg = ex.Message;
-            }
-
-            return ret;
-        }
-
-        public async Task<ApiResult> ListStatisticsAlarmGroupBySubSystem(StatisticsParam param, int dateType)
-        {
-            ApiResult ret = new ApiResult();
-            try
-            {
-                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
-                    new List<string> { "sub_system_id" }, dateType, false);
-
-                ret.code = Code.Success;
-                ret.data = data;
-            }
-            catch (Exception ex)
-            {
-                ret.code = Code.Failure;
-                ret.msg = ex.Message;
-            }
-
-            return ret;
-        }
-
-        public async Task<ApiResult> ListStatisticsAlarmGroupByLocation(StatisticsParam param, int dateType)
+        public async Task<ApiResult> ListStatisticsTroubleGroupByLocation(StatisticsTroubleParam param, int dateType)
         {
             ApiResult ret = new ApiResult();
             try
@@ -150,13 +92,13 @@ namespace MSS.API.Core.V1.Business
                     groupby = "location_level3";
                     groupbyName = "locationLevel3Name";
                 }
-                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmByDate(param,
-                    new List<string> { groupby }, dateType, false);
+                List<StatisticsTrouble> data = await _statisticsRepo.ListStatisticsTrouble(param,
+                    new List<string> { groupby }, dateType);
 
                 // 统计当前位置 子级各站数据时，如子级id为0，标识此设备属于当前位置。
                 if (groupby.Equals("location_level3"))
                 {
-                    foreach (StatisticsAlarm alarm in data)
+                    foreach (StatisticsTrouble alarm in data)
                     {
                         if (alarm.dimension.LocationLevel3 == 0)
                         {
@@ -167,7 +109,7 @@ namespace MSS.API.Core.V1.Business
                 if (groupby.Equals("location_level2"))
                 {
                     // data = data.Where(c => c.dimension.LocationLevel2 != 0).ToList();
-                    foreach (StatisticsAlarm alarm in data)
+                    foreach (StatisticsTrouble alarm in data)
                     {
                         if (alarm.dimension.LocationLevel2 == 0)
                         {
@@ -191,13 +133,13 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<ApiResult> ListStatisticsAlarmGroupByOrg(StatisticsParam param, int dateType)
+        public async Task<ApiResult> ListStatisticsTroubleGroupByOrg(StatisticsTroubleParam param, int dateType)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                List<StatisticsAlarm> data = await _statisticsRepo.ListStatisticsAlarmDetail(param);
-                List<StatisticsAlarm> groupResult = new List<StatisticsAlarm>();
+                List<StatisticsTrouble> data = await _statisticsRepo.ListStatisticsTroubleDetail(param);
+                List<StatisticsTrouble> groupResult = new List<StatisticsTrouble>();
 
                 var services = await _consulServiceProvider.GetServiceAsync("OrgService");
                 string[] path = param.OrgPath.Split(',');
@@ -209,7 +151,7 @@ namespace MSS.API.Core.V1.Business
                     List<OrgNodeView> org = JsonConvert.DeserializeObject<List<OrgNodeView>>(
                         result.data.ToString());
                     // 循环设备，定位设备属于哪个分组
-                    foreach (StatisticsAlarm eqp in data)
+                    foreach (StatisticsTrouble eqp in data)
                     {
                         OrgNodeView parent = _getParentNode(eqp.dimension.TeamID, org[0].children);
                         eqp.dimension.TeamID = parent.id;
@@ -217,17 +159,15 @@ namespace MSS.API.Core.V1.Business
                     }
 
                     
-                    IEnumerable<IGrouping<int, StatisticsAlarm>> groups = data.GroupBy(c => c.dimension.TeamID);
-                    foreach (IGrouping<int, StatisticsAlarm> group in groups)
+                    IEnumerable<IGrouping<int, StatisticsTrouble>> groups = data.GroupBy(c => c.dimension.TeamID);
+                    foreach (IGrouping<int, StatisticsTrouble> group in groups)
                     {
-                        StatisticsAlarm first = group.First();
+                        StatisticsTrouble first = group.First();
                         first.num = group.Count().ToString();
                         first.avgtime = (group.Sum(item => item.ElapsedTime)/group.Count()).ToString();
                         groupResult.Add(first);
                     }
                 }
-
-                
 
                 ret.code = Code.Success;
                 ret.data = new
@@ -286,6 +226,24 @@ namespace MSS.API.Core.V1.Business
                         break;
                     }
                 }
+            }
+            return ret;
+        }
+
+        public async Task<ApiResult> AddTrouble(StatisticsTrouble trouble)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                StatisticsTrouble topNode = await _statisticsRepo.AddTrouble(trouble);
+
+                ret.code = Code.Success;
+                ret.data = topNode;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
             }
             return ret;
         }

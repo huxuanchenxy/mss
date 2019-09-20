@@ -19,6 +19,7 @@ namespace MSS.API.Core.Infrastructure
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             services.AddTransient<IStatisticsService, StatisticsService>();
+            services.AddTransient<IStatisticsTroubleService, StatisticsTroubleService>();
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();

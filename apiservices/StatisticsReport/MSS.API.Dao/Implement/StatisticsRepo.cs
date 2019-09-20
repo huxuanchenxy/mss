@@ -83,12 +83,15 @@ namespace MSS.API.Dao.Implement
                 }
                 if (!string.IsNullOrWhiteSpace(param.OrgPath))
                 {
+                    // string[] local = param.OrgPath.Split(',');
+                    // for (int i = 0; i < local.Length; ++i)
+                    // {
+                    //     sql.Append(" AND FIND_IN_SET(" + local[i] + ",b.team_path)="
+                    //     + (i + 1));
+                    // }
                     string[] local = param.OrgPath.Split(',');
-                    for (int i = 0; i < local.Length; ++i)
-                    {
-                        sql.Append(" AND FIND_IN_SET(" + local[i] + ",b.team_path)="
-                        + (i + 1));
-                    }
+                    string id = local[local.Length - 1];
+                    sql.Append(" AND FIND_IN_SET(" + id + ",b.team_path) > 0");
                 }
                 if (defaultByDate)
                 {
@@ -126,7 +129,7 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<List<StatisticsAlarm>> ListStatisticsAlarm(StatisticsParam param)
+        public async Task<List<StatisticsAlarm>> ListStatisticsAlarmDetail(StatisticsParam param)
         {
             return await WithConnection(async c =>
             {
@@ -183,11 +186,8 @@ namespace MSS.API.Dao.Implement
                 if (!string.IsNullOrWhiteSpace(param.OrgPath))
                 {
                     string[] local = param.OrgPath.Split(',');
-                    for (int i = 0; i < local.Length; ++i)
-                    {
-                        sql.Append(" AND FIND_IN_SET(" + local[i] + ",b.team_path)="
-                        + (i + 1));
-                    }
+                    string id = local[local.Length - 1];
+                    sql.Append(" AND FIND_IN_SET(" + id + ",b.team_path) > 0");
                 }
 
                 // var data = await c.QueryAsync<StatisticsAlarm>(sql.ToString());
@@ -199,6 +199,213 @@ namespace MSS.API.Dao.Implement
                         },
                         splitOn: "split");
                 return data.ToList();
+            });
+        }
+
+        // 故障统计
+
+        public async Task<List<StatisticsTrouble>> ListStatisticsTrouble(StatisticsTroubleParam param,
+            List<string> groupby, int dateType)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                string datecol = "DATE_FORMAT(a.occur_time,'%Y-%m-%d')";
+                if (dateType == 1)
+                {
+                    datecol = "DATE_FORMAT(a.occur_time,'%Y-%m')";
+                }
+                sql.Append("SELECT " + datecol + " as date, count(*) as num, avg(a.elapsed_time) avgtime");
+
+                sql.Append(",c.name as troublename, 'split', b.*");
+                sql.Append(" FROM statistics_trouble a");
+                sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id");
+                sql.Append(" JOIN dictionary_tree c ON a.trouble_type = c.id");
+                sql.Append(" WHERE 1=1");
+                if (param.StartTime != null)
+                {
+                    sql.Append(" AND a.occur_time >= '" + param.StartTime + "'");
+                }
+                if (param.EndTime != null)
+                {
+                    sql.Append(" AND a.occur_time <= '" + param.EndTime + "'");
+                }
+                if (!string.IsNullOrWhiteSpace(param.EqpTypeIDs))
+                {
+                    sql.Append(" AND b.eqp_type_id IN (" + param.EqpTypeIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel1s))
+                {
+                    sql.Append(" AND b.location_level1 IN (" + param.LocationLevel1s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel2s))
+                {
+                    sql.Append(" AND b.location_level2 IN (" + param.LocationLevel2s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel3s))
+                {
+                    sql.Append(" AND b.location_level3 IN (" + param.LocationLevel3s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.ManufacturerIDs))
+                {
+                    sql.Append(" AND b.manufacturer_id IN (" + param.ManufacturerIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.SupplierIDs))
+                {
+                    sql.Append(" AND b.supplier_id IN (" + param.SupplierIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.SubSystemIDs))
+                {
+                    sql.Append(" AND b.sub_system_id IN (" + param.SubSystemIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.TeamIDs))
+                {
+                    sql.Append(" AND b.team_id IN (" + param.TeamIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.TopOrgIDs))
+                {
+                    sql.Append(" AND b.top_org_id IN (" + param.TopOrgIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.OrgPath))
+                {
+                    string[] local = param.OrgPath.Split(',');
+                    string id = local[local.Length -1 ];
+                    // for (int i = 0; i < local.Length; ++i)
+                    // {
+                    //     sql.Append(" AND FIND_IN_SET(" + local[i] + ",b.team_path)="
+                    //     + (i + 1));
+                    // }
+                    sql.Append(" AND FIND_IN_SET(" + id + ",b.team_path) > 0");
+                }
+
+                if (!string.IsNullOrWhiteSpace(param.TroubleTypes))
+                {
+                    sql.Append(" AND a.trouble_type IN (" + param.TroubleTypes + ")");
+                }
+
+                for (int i = 0; i < groupby.Count; ++i)
+                {
+                    string by = "b." + groupby[i];
+                    if (groupby[i].Equals("date"))
+                    {
+                        by = "date";
+                    }
+                    if (groupby[i].Equals("trouble_type"))
+                    {
+                        by = "a.trouble_type";
+                    }
+                    if (i == 0)
+                    {
+                        sql.Append(" GROUP BY " + by);
+                        
+                    }
+                    else
+                    {
+                        sql.Append(", " + by);
+                    }
+                }
+
+
+                var data = await c.QueryAsync<StatisticsTrouble, StatisticsDimension, StatisticsTrouble>(
+                        sql.ToString(), (trouble, dimension) =>
+                        {
+                            trouble.dimension = dimension;
+                            return trouble;
+                        },
+                        splitOn: "split");
+                return data.ToList();
+            });
+        }
+
+        public async Task<List<StatisticsTrouble>> ListStatisticsTroubleDetail(StatisticsTroubleParam param)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+
+                sql.Append("SELECT a.*, c.name as troublename, 'split', b.*");
+                sql.Append(" FROM statistics_trouble a");
+                sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id");
+                sql.Append(" JOIN dictionary_tree c ON a.trouble_type = c.id");
+                sql.Append(" WHERE 1=1");
+                if (param.StartTime != null)
+                {
+                    sql.Append(" AND a.occur_time >= '" + param.StartTime + "'");
+                }
+                if (param.EndTime != null)
+                {
+                    sql.Append(" AND a.occur_time <= '" + param.EndTime + "'");
+                }
+                if (!string.IsNullOrWhiteSpace(param.EqpTypeIDs))
+                {
+                    sql.Append(" AND b.eqp_type_id IN (" + param.EqpTypeIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel1s))
+                {
+                    sql.Append(" AND b.location_level1 IN (" + param.LocationLevel1s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel2s))
+                {
+                    sql.Append(" AND b.location_level2 IN (" + param.LocationLevel2s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.LocationLevel3s))
+                {
+                    sql.Append(" AND b.location_level3 IN (" + param.LocationLevel3s + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.ManufacturerIDs))
+                {
+                    sql.Append(" AND b.manufacturer_id IN (" + param.ManufacturerIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.SupplierIDs))
+                {
+                    sql.Append(" AND b.supplier_id IN (" + param.SupplierIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.SubSystemIDs))
+                {
+                    sql.Append(" AND b.sub_system_id IN (" + param.SubSystemIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.TeamIDs))
+                {
+                    sql.Append(" AND b.team_id IN (" + param.TeamIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.TopOrgIDs))
+                {
+                    sql.Append(" AND b.top_org_id IN (" + param.TopOrgIDs + ")");
+                }
+                if (!string.IsNullOrWhiteSpace(param.OrgPath))
+                {
+                    string[] local = param.OrgPath.Split(',');
+                    string id = local[local.Length - 1];
+                    sql.Append(" AND FIND_IN_SET(" + id + ",b.team_path) > 0");
+                }
+
+                if (!string.IsNullOrWhiteSpace(param.TroubleTypes))
+                {
+                    sql.Append(" AND a.trouble_type IN (" + param.TroubleTypes + ")");
+                }
+
+                // var data = await c.QueryAsync<StatisticsAlarm>(sql.ToString());
+                var data = await c.QueryAsync<StatisticsTrouble, StatisticsDimension, StatisticsTrouble>(
+                        sql.ToString(), (trouble, dimension) =>
+                        {
+                            trouble.dimension = dimension;
+                            return trouble;
+                        },
+                        splitOn: "split");
+                return data.ToList();
+            });
+        }
+
+        public async Task<StatisticsTrouble> AddTrouble(StatisticsTrouble trouble)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "INSERT INTO statistics_trouble (eqp_id, occur_time, recover_time, elapsed_time, trouble_id, trouble_type)"
+                            + " Values (@EqpID, @OccurTime, @RecoverTime, @ElapsedTime, @TroubleID, @TroubleType);";
+                sql += "SELECT LAST_INSERT_ID()";
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, trouble);
+                trouble.ID = newid;
+                return trouble;
             });
         }
     }    

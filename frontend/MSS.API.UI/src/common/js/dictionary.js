@@ -3,7 +3,8 @@ export const dictionary = {
   subSystem: 17,
   firmType: 22,
   sparePartsType: 59,
-  currency: 94
+  currency: 94,
+  troubleType: 51
 }
 
 export const firmType = {

@@ -21,7 +21,7 @@ namespace MSS.API.Operlog.Dao.Implement
             {
                 MSSResult<UserOperationLogView> mRet = new MSSResult<UserOperationLogView>();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.controller_name, a.action_name, a.method_name, b.acc_name, b.user_name, a.ip, a.mac_add, a.created_by, a.updated_time, a.updated_by, a.is_del,a.response_description,a.response_description,a.user_id,a.created_time" +
+                sql.Append("SELECT a.id,a.controller_name, a.action_name, a.method_name, b.acc_name, b.user_name, a.ip, a.mac_add, a.created_by, a.updated_time, a.updated_by, a.is_del,a.response_description,a.response_description,a.user_id,a.created_time" +
                     " FROM user_operation_log a left join user b on a.user_id = b.id  ")
                 .Append(" where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();

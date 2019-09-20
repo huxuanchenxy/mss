@@ -23,6 +23,19 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/alarm/children/Count.vue')
           }
         ]
+      }, {
+        path: 'troubleReport',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/trouble/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'trouble'
+          }, {
+            path: 'trouble',
+            name: 'Trouble',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/trouble/children/Trouble.vue')
+          }
+        ]
       }
     ]
   }

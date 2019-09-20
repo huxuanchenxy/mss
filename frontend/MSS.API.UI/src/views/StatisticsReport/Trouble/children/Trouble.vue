@@ -34,6 +34,17 @@
                 </el-option>
               </el-select>
             </div>
+            <div class="list" >
+              <span class="lable">故障类型</span>
+              <el-select v-model="troubleType" multiple collapse-tags  clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in troubleTypeList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
             <div class="list">
               <span class="lable">时间</span>
               <el-date-picker
@@ -121,14 +132,14 @@
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
               <!-- <div style="width:100%; height:300px;" ref="countChart" id="countChart" class="echart" v-resize="onResize"></div> -->
-              <div style="width:100%; height:300px;" ref="countChart"  class="echart"></div>
+              <div style="width:100%; height:300px;" ref="countChart"  class="echart" ></div>
               <div class="echartsubtitle">{{bottomDesForCount}}</div>
             </el-col>
             <el-col :span="12" id="avgTimeChart" v-resize="onResize" v-loading="loading_avg"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart"></div>
+              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart" ></div>
               <div class="echartsubtitle">{{bottomDesForAvg}}</div>
               </el-col>
           </el-row>
@@ -144,6 +155,20 @@
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
               <div style="width:100%; height:300px;" ref="avgTimeChartByEqpType"  class="echart" ></div>
+            </el-col>
+          </el-row>
+          <el-row v-show="showTroubleTypeChart">
+            <el-col :span="12" id="countChartByTroubleType" v-resize="onResize" v-loading="loading_countTroubleType"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="countChartByTroubleType"  class="echart" ></div>
+            </el-col>
+            <el-col :span="12" id="avgTimeChartByTroubleType" v-resize="onResize" v-loading="loading_avgTroubleType"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChartByTroubleType"  class="echart" ></div>
             </el-col>
           </el-row>
           <el-row v-show="showSupplierChart">
@@ -243,10 +268,7 @@ export default {
   },
   data () {
     return {
-      title: '| 报警统计',
-      subSystem: [],
-      subSystemList: [],
-      eqpType: [],
+      title: '| 故障统计',
       time: {
         text: '',
         tips: ''
@@ -300,8 +322,11 @@ export default {
       locationChartAvg: null,
       orgChartCount: null,
       orgChartAvg: null,
+      troubleTypeChartCount: null,
+      troubleTypeChartAvg: null,
 
       showEqpTypeChart: false,
+      showTroubleTypeChart: false,
       showSupplierChart: false,
       showManufacturerChart: false,
       showSubSystemChart: false,
@@ -312,6 +337,8 @@ export default {
       loading_avg: false,
       loading_countEqpType: false,
       loading_avgEqpType: false,
+      loading_countTroubleType: false,
+      loading_avgTroubleType: false,
       loading_countSupplier: false,
       loading_avgSupplier: false,
       loading_countManufacturer: false,
@@ -327,7 +354,9 @@ export default {
         text: [],
         tips: ''
       },
-
+      subSystem: [],
+      subSystemList: [],
+      eqpType: [],
       eqpTypeList: [],
       area: [],
       areaList: [],
@@ -347,6 +376,9 @@ export default {
         value: 'id',
         children: 'children'
       },
+
+      troubleType: [],
+      troubleTypeList: [],
 
       searchHideMore: false,
       searchHideMoreHeight: '100%',
@@ -415,6 +447,12 @@ export default {
       if (this.orgChartAvg && el.id === 'avgTimeChartByOrg') {
         this.orgChartAvg.resize()
       }
+      if (this.troubleTypeChartCount && el.id === 'countChartByTroubleType') {
+        this.troubleTypeChartCount.resize()
+      }
+      if (this.troubleTypeChartAvg && el.id === 'avgTimeChartByTroubleType') {
+        this.troubleTypeChartAvg.resize()
+      }
     },
 
     // 展开收起查询条件
@@ -472,11 +510,6 @@ export default {
         }
       }
     },
-    magicTypeChanged (param, param1) {
-      if (param.currentType === 'tiled' && param.newOption.series.length > 8) {
-
-      }
-    },
     drawCountChart (param, data, store) {
       if (store) {
         this.resultCountHistory.push({param: param, data: data})
@@ -485,7 +518,6 @@ export default {
       this.dateChartCount = this.$echarts.init(this.$refs.countChart)
       this.dateChartCount.clear()
       this.dateChartCount.on('click', this.goCount)
-      this.dateChartCount.on('magicTypeChanged', this.magicTypeChanged)
       mychart.optionCount.toolbox.feature.myTool.onclick = this.backCount
       mychart.optionCount.title.subtext = this.subTitleCount.join('->')
       let groupModel = this.groups[this.groupby[this.groupidxForCount]]
@@ -554,6 +586,21 @@ export default {
       mychart.optionEqpTypeAvg.xAxis[0].data = chartData.xAxisData
       mychart.optionEqpTypeAvg.series = chartData.seariesavg
       this.eqpTypeChartAvg.setOption(mychart.optionEqpTypeAvg)
+    },
+
+    drawTroubleTypeChart (data) {
+      this.troubleTypeChartCount = this.$echarts.init(this.$refs.countChartByTroubleType)
+      this.troubleTypeChartAvg = this.$echarts.init(this.$refs.avgTimeChartByTroubleType)
+      this.troubleTypeChartCount.clear()
+      this.troubleTypeChartAvg.clear()
+      let chartData = mychart.prepareSubChartData(data, 'troubleName')
+      mychart.optionTroubleTypeCount.xAxis[0].data = chartData.xAxisData
+      mychart.optionTroubleTypeCount.series = chartData.seariescount
+      this.troubleTypeChartCount.setOption(mychart.optionTroubleTypeCount)
+
+      mychart.optionTroubleTypeAvg.xAxis[0].data = chartData.xAxisData
+      mychart.optionTroubleTypeAvg.series = chartData.seariesavg
+      this.troubleTypeChartAvg.setOption(mychart.optionTroubleTypeAvg)
     },
 
     drawSupplierChart (data) {
@@ -635,6 +682,11 @@ export default {
         this.searchResult()
       }).catch(err => console.log(err))
 
+      // 故障类型
+      apiAuth.getSubCode(dictionary.troubleType).then(res => {
+        this.troubleTypeList = res.data
+      }).catch(err => console.log(err))
+
       // 设备类型加载
       apiEqp.getEqpTypeAll().then(res => {
         this.eqpTypeList = res.data
@@ -658,7 +710,6 @@ export default {
     },
 
     search (param, callbacks) {
-      // this.loading = true
       callbacks.forEach(item => {
         if (item === this.drawCountChart) {
           this.loading_count = true
@@ -667,8 +718,7 @@ export default {
           this.loading_avg = true
         }
       })
-      api.reportAlarm(param).then(res => {
-        // this.loading = false
+      api.reportTroubleByDate(param).then(res => {
         callbacks.forEach(item => {
           if (item === this.drawCountChart) {
             this.loading_count = false
@@ -722,9 +772,9 @@ export default {
           }
         }
       } else {
-        for (let i = 0; i < this.eqpTypeList.length; i++) {
-          legend.push(this.eqpTypeList[i].tName)
-        }
+        // for (let i = 0; i < this.eqpTypeList.length; i++) {
+        //   legend.push(this.eqpTypeList[i].tName)
+        // }
       }
       this.groups.eqp_type_id.legend = legend
     },
@@ -752,11 +802,10 @@ export default {
     },
     // 搜索
     searchResult () {
-      // console.log(this.subSystem)
-      // this.searchHideMoreHeight = '100%'
       this.shrinkText = '更多'
       this.searchHideMoreHeight = '100%'
       this.searchHideMore = false
+
       var sTime = ''
       var eTime = ''
       if (this.time.text) {
@@ -770,6 +819,7 @@ export default {
         SupplierIDs: this.supplier.join(','),
         ManufacturerIDs: this.manufacturer.join(','),
         OrgPath: this.teamPath.text.join(','),
+        TroubleTypes: this.troubleType.join(','),
         startTime: sTime,
         endTime: eTime,
         dateType: this.dateType,
@@ -793,7 +843,9 @@ export default {
         this.showEqpTypeChart = true
         this.loading_countEqpType = true
         this.loading_avgEqpType = true
-        api.reportSubChartEqpType(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'eqp_type_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           this.loading_countEqpType = false
           this.loading_avgEqpType = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
@@ -806,11 +858,32 @@ export default {
         this.showEqpTypeChart = false
       }
 
+      if (param.TroubleTypes) {
+        this.showTroubleTypeChart = true
+        this.loading_countTroubleType = true
+        this.loading_avgTrouble = true
+        let { ...paramnew } = param
+        paramnew.groupby = 'trouble_type'
+        api.reportTroubleByOther(paramnew).then(res => {
+          this.loading_countTroubleType = false
+          this.loading_avgTrouble = false
+          if (res.code === ApiRESULT.Success && res.data.length > 0) {
+            this.drawTroubleTypeChart(res.data)
+          } else {
+            this.showTroubleTypeChart = false
+          }
+        }).catch(err => console.log(err))
+      } else {
+        this.showTroubleTypeChart = false
+      }
+
       if (param.SupplierIDs) {
         this.showSupplierChart = true
         this.loading_countSupplier = true
         this.loading_avgSupplier = true
-        api.reportSubChartSupplier(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'supplier_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           this.loading_countSupplier = false
           this.loading_avgSupplier = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
@@ -827,7 +900,9 @@ export default {
         this.showManufacturerChart = true
         this.loading_countManufacturer = true
         this.loading_avgManufacturer = true
-        api.reportSubChartManufacturer(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'manufacturer_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           this.loading_countManufacturer = false
           this.loading_avgManufacturer = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
@@ -844,7 +919,9 @@ export default {
         this.showSubSystemChart = true
         this.loading_countSubSystem = true
         this.loading_avgSubSystem = true
-        api.reportSubChartSubSystem(param).then(res => {
+        let { ...paramnew } = param
+        paramnew.groupby = 'sub_system_id'
+        api.reportTroubleByOther(paramnew).then(res => {
           this.loading_countSubSystem = false
           this.loading_avgSubSystem = false
           if (res.code === ApiRESULT.Success && res.data.length > 0) {
@@ -861,7 +938,7 @@ export default {
         this.showLocationChart = true
         this.loading_countLocation = true
         this.loading_avgLocation = true
-        api.reportSubChartLocation(param).then(res => {
+        api.reportTroubleByLocation(param).then(res => {
           this.loading_countLocation = false
           this.loading_avgLocation = false
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
@@ -877,7 +954,7 @@ export default {
         this.showOrgChart = true
         this.loading_countOrg = true
         this.loading_avgOrg = true
-        api.reportSubChartOrg(param).then(res => {
+        api.reportTroubleByOrg(param).then(res => {
           this.loading_countOrg = false
           this.loading_avgOrg = false
           if (res.code === ApiRESULT.Success && res.data.data.length > 0) {
@@ -905,7 +982,7 @@ export default {
   .middle-content-wrap{
     box-sizing: border-box;
     position: absolute;
-    z-index: 1;
+    z-index: 9;
     top: 0;
     left: 0;
     width: 100%;

@@ -37,7 +37,7 @@ function mutiColTooltip (params) {
 const optionCount = {
   xAxisTypeName: '时间',
   title: {
-    text: '报警次数',
+    text: '故障次数',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -95,8 +95,7 @@ const optionCount = {
       }
     }
   },
-
-  // calculable: true,
+  calculable: true,
   xAxis: [
     {
       type: 'category',
@@ -212,7 +211,7 @@ const optionAvg = {
 const optionEqpTypeCount = {
   xAxisTypeName: '设备类型',
   title: {
-    text: '报警次数(以设备类型统计)',
+    text: '故障次数(以设备类型统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -360,10 +359,161 @@ const optionEqpTypeAvg = {
   ]
 }
 
+const optionTroubleTypeCount = {
+  xAxisTypeName: '故障类型',
+  title: {
+    text: '故障次数(以故障类型统计)',
+    subtext: '',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['报警次数'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'vertical',
+    x: 'right',
+    y: '50',
+    padding: [0, 30, 0, 0],
+    feature: {
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          // console.info(opt)
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
+const optionTroubleTypeAvg = {
+  xAxisTypeName: '故障类型',
+  title: {
+    text: '平均恢复时间(秒)(以故障类型统计)',
+    subtext: '',
+    // x: '45%',
+    // y: '87%',
+    // textAlign: 'center',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+      type: 'none' // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var res = params[0].name
+      res += ':' + params[0].value
+
+      return res
+    }
+  },
+  legend: {
+    show: false,
+    data: ['平均恢复时间(秒)'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  toolbox: {
+    show: true,
+    orient: 'vertical',
+    x: 'right',
+    y: '50',
+    padding: [0, 30, 0, 0],
+    feature: {
+      dataView: {
+        show: true,
+        readOnly: false,
+        optionToContent: function (opt) {
+          var rettable = getTable(opt)
+          return rettable
+        }
+      }
+    }
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: '#fff'
+        }
+      }
+    }
+  ],
+  series: [
+  ]
+}
+
 const optionSupplierCount = {
   xAxisTypeName: '供应商',
   title: {
-    text: '报警次数(以供应商统计)',
+    text: '故障次数(以供应商统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -513,7 +663,7 @@ const optionSupplierAvg = {
 const optionManufacturerCount = {
   xAxisTypeName: '制造商',
   title: {
-    text: '报警次数(以制造商统计)',
+    text: '故障次数(以制造商统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -663,7 +813,7 @@ const optionManufacturerAvg = {
 const optionSubSystemCount = {
   xAxisTypeName: '子系统',
   title: {
-    text: '报警次数(以子系统统计)',
+    text: '故障次数(以子系统统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -813,7 +963,7 @@ const optionSubSystemAvg = {
 const optionLocationCount = {
   xAxisTypeName: '位置',
   title: {
-    text: '报警次数(以位置信息统计)',
+    text: '故障次数(以位置信息统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -965,7 +1115,7 @@ const optionLocationAvg = {
 const optionOrgCount = {
   xAxisTypeName: '部门',
   title: {
-    text: '报警次数(以部门信息统计)',
+    text: '故障次数(以部门信息统计)',
     subtext: '',
     // x: '45%',
     // y: '87%',
@@ -1012,7 +1162,7 @@ const optionOrgCount = {
       }
     }
   },
-  // calculable: true,
+  calculable: true,
   xAxis: [
     {
       type: 'category',
@@ -1170,10 +1320,6 @@ function prepareChartData (data, groupModel, cursor) {
         name: legendData[key],
         type: 'bar',
         stack: 'test',
-        // barMinHeight: 1,
-        // barCategoryGap: 10,
-        // barGap: 1,
-        // barWidth: 20,
         barMaxWidth: 20,
         cursor: cursor,
         data: []
@@ -1211,7 +1357,6 @@ function prepareChartData (data, groupModel, cursor) {
       optionCount.xAxis[0].data.push('无数据')
       optionAvg.xAxis[0].data.push('无数据')
     }
-
     // 补数据
     for (let i = 0; i < groupModel.legend.length; ++i) {
       let needadd = true
@@ -1239,9 +1384,10 @@ function prepareChartData (data, groupModel, cursor) {
           data: []
         }
         for (let i = 0; i < optionCount.xAxis[0].data.length; ++i) {
-          dataCount.data.push('0')
-          dataAvg.data.push('0')
+          dataCount.data.push(0)
+          dataAvg.data.push(0)
         }
+
         optionCount.series.push(dataCount)
         optionAvg.series.push(dataAvg)
       }
@@ -1278,7 +1424,12 @@ function prepareSubChartData (data, groupby) {
     }
     for (let i = 0; i < data.length; ++i) {
       let obj = data[i]
-      xAxisData.push(obj.dimension[groupby])
+      if (groupby === 'troubleName') {
+        xAxisData.push(obj[groupby])
+      } else {
+        xAxisData.push(obj.dimension[groupby])
+      }
+
       objcount.data.push(obj.num)
       objavg.data.push((obj.avgtime / (1000)).toFixed(1))
     }
@@ -1296,6 +1447,8 @@ export default {
   optionAvg: optionAvg,
   optionEqpTypeAvg: optionEqpTypeAvg,
   optionEqpTypeCount: optionEqpTypeCount,
+  optionTroubleTypeAvg: optionTroubleTypeAvg,
+  optionTroubleTypeCount: optionTroubleTypeCount,
   optionSupplierAvg: optionSupplierAvg,
   optionSupplierCount: optionSupplierCount,
   optionManufacturerAvg: optionManufacturerAvg,
