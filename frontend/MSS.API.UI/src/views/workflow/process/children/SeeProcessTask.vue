@@ -353,5 +353,7 @@ $con-height: $content-height - 145 - 56;
   height: 7.45455% !important;
 }.content-wrap {
     height: 83.45455% !important;
+}.inp {
+  width: 200px !important;
 }
 </style>

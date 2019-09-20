@@ -32,7 +32,7 @@
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
-          任务ID
+          流程ID
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
        </li>
         <li class="list name c-pointer" @click="changeOrder('appName')">
@@ -43,9 +43,9 @@
           业务ID
           <i :class="[{ 'el-icon-d-caret': headOrder.appInstanceID === 0 }, { 'el-icon-caret-top': headOrder.appInstanceID === 1 }, { 'el-icon-caret-bottom': headOrder.appInstanceID === 2 }]"></i>
        </li>
-        <li class="list name c-pointer" @click="changeOrder('activityName')" >
-          步骤名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.activityName === 0 }, { 'el-icon-caret-top': headOrder.activityName === 1 }, { 'el-icon-caret-bottom': headOrder.activityName === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('processState')" >
+          当前状态
+          <i :class="[{ 'el-icon-d-caret': headOrder.processState === 0 }, { 'el-icon-caret-top': headOrder.processState === 1 }, { 'el-icon-caret-bottom': headOrder.processState === 2 }]"></i>
        </li>
         <li class="list name c-pointer" @click="changeOrder('createdDateTime')">创建日期
           <i :class="[{ 'el-icon-d-caret': headOrder.createdDateTime === 0 }, { 'el-icon-caret-top': headOrder.createdDateTime === 1 }, { 'el-icon-caret-bottom': headOrder.createdDateTime === 2 }]"></i>
@@ -67,7 +67,7 @@
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.appInstanceID }}</router-link>
                 </div>-->
                 <div class="number" style="display:none;">{{ item.appInstanceID }}</div>
-                <div class="name">{{ item.activityName }}</div>
+                <div class="name">{{ item.processState }}</div>
                 <!-- <div class="name">{{ item.mac_add }}</div> -->
                 <div class="name">{{ item.createdDateTime }}</div>
                 <div class="number" style="display:none;">{{ item.processGUID }}</div>
@@ -128,7 +128,7 @@ export default {
       },
       headOrder: {
         id: 0,
-        activityName: 0,
+        processState: 0,
         appName: 0,
         appInstanceID: 0,
         createdDateTime: 0
@@ -144,7 +144,7 @@ export default {
   },
   methods: {
     init () {
-      // this.bCheckAll = false  :disabled='item.activityName'
+      // this.bCheckAll = false  :disabled='item.processState'
       // this.checkAll()
       this.currentPage = 1
       this.searchResult(1)
@@ -153,7 +153,7 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.activityName = 0
+        this.headOrder.processState = 0
         this.headOrder.appInstanceID = 0
         this.headOrder.appName = 0
         this.headOrder.createdDateTime = 0
@@ -169,7 +169,7 @@ export default {
       this.currentSort.sort = sort
       // this.bCheckAll = false
       // this.checkAll()
-      this.searchResult(this.currentPage)
+      this.searchResult(1)
     },
     // 搜索
     searchResult (page) {
@@ -186,6 +186,23 @@ export default {
         this.loading = false
         res.data.rows.map(item => {
           item.createdDateTime = transformDate(item.createdDateTime)
+          if (item.processState === 0) {
+            item.processState = 'NotStart'
+          } else if (item.processState === 1) {
+            item.processState = 'Ready'
+          } else if (item.processState === 2) {
+            item.processState = 'Running'
+          } else if (item.processState === 4) {
+            item.processState = 'Completed'
+          } else if (item.processState === 5) {
+            item.processState = 'Suspended'
+          } else if (item.processState === 6) {
+            item.processState = 'Canceled'
+          } else if (item.processState === 7) {
+            item.processState = 'Discarded'
+          } else if (item.processState === 8) {
+            item.processState = 'Terminated'
+          }
         })
         this.DataList = res.data.rows
         this.total = res.data.total
@@ -351,5 +368,7 @@ $con-height: $content-height - 145 - 56;
   height: 7.45455% !important;
 }.content-wrap {
     height: 83.45455% !important;
+}.inp {
+  width: 200px !important;
 }
 </style>
