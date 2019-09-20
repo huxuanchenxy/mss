@@ -9,6 +9,7 @@ using MSS.API.Core.V1.Business;
 using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
 using MSS.API.Common;
+using Newtonsoft.Json;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -42,6 +43,42 @@ namespace MSS.API.Core.V1.Controllers
         public ActionResult ListByOperation(int operation)
         {
             var resp = _stockOperationService.ListByOperation(operation);
+            return Ok(resp.Result);
+        }
+
+        [HttpGet("ListByOperationForEdit/{operation}")]
+        public ActionResult ListByOperationForEdit(int operation)
+        {
+            var resp = _stockOperationService.GetByID(operation);
+            ApiResult ret = resp.Result;
+            StockOperation so = (StockOperation)ret.data;
+            ret.data = new
+            {
+                so.WarehouseName,
+                so.Warehouse,
+                detailList = JsonConvert.DeserializeObject<List<StockOperationDetail>>(so.DetailList)
+            };
+            return Ok(ret);
+        }
+
+        [HttpGet("GetStockDetailByID/{id}")]
+        public ActionResult GetStockDetailByID(int id)
+        {
+            var resp = _stockOperationService.GetStockDetailByID(id);
+            return Ok(resp.Result);
+        }
+
+        [HttpGet("GetSparePartsByWH/{id}")]
+        public ActionResult ListByWH(int id)
+        {
+            var resp = _stockOperationService.ListByWH(id);
+            return Ok(resp.Result);
+        }
+
+        [HttpGet("GetStockDetailAll")]
+        public ActionResult ListStockDetail()
+        {
+            var resp = _stockOperationService.ListStockDetail();
             return Ok(resp.Result);
         }
         #endregion

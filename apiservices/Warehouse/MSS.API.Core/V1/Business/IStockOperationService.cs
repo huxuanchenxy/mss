@@ -21,5 +21,9 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetStockSumPageByParm(StockSumQueryParm parm);
 
         Task<ApiResult> ListStockDetailBySPsAndWH(int spareParts, int warehouse);
+        Task<ApiResult> GetStockDetailByID(int id);
+
+        Task<ApiResult> ListByWH(int warehouse);
+        Task<ApiResult> ListStockDetail();
     }
 }

@@ -95,10 +95,10 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM firm";
+                string sql = "SELECT * FROM firm where is_del=" + (int)IsDeleted.no;
                 if (type!=null)
                 {
-                    sql += " where type="+type;
+                    sql += " and type="+type;
                 }
                 var result = (await c.QueryAsync<Firm>(
                     sql)).ToList();

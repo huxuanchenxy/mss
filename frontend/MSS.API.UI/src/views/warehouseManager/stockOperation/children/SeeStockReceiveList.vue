@@ -39,16 +39,9 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="name">供应商</label>
+            <label for="name">合同号</label>
             <div class="inp">
-              <el-select v-model="supplier" clearable filterable placeholder="请选择供应商">
-                <el-option
-                  v-for="item in supplierList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-input placeholder="请输入合同号" v-model="agreement"></el-input>
             </div>
           </div>
           <div class="input-group">
@@ -93,11 +86,11 @@
           仓库
           <i :class="[{ 'el-icon-d-caret': headOrder.warehouse === 0 }, { 'el-icon-caret-top': headOrder.warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.warehouse === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('supplier')">
-          供应商
-          <i :class="[{ 'el-icon-d-caret': headOrder.supplier === 0 }, { 'el-icon-caret-top': headOrder.supplier === 1 }, { 'el-icon-caret-bottom': headOrder.supplier === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('picker')">
+          责任人
+          <i :class="[{ 'el-icon-d-caret': headOrder.picker === 0 }, { 'el-icon-caret-top': headOrder.picker === 1 }, { 'el-icon-caret-bottom': headOrder.picker === 2 }]"></i>
         </li>
-        <li class="list name">合同</li>
+        <li class="list name">合同号</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
           过账时间
           <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
@@ -118,7 +111,7 @@
                 <div class="name">{{ item.operationID }}</div>
                 <div class="name">{{ item.reasonName }}</div>
                 <div class="name word-break">{{ item.warehouseName }}</div>
-                <div class="name word-break">{{ item.supplierName }}</div>
+                <div class="name word-break">{{ item.pickerName }}</div>
                 <div class="name word-break">{{ item.agreement }}</div>
                 <div class="last-update-time color-white word-break">{{ item.createdTime }}</div>
                 <div class="last-update-time word-break">{{ item.createdName }}</div>
@@ -145,11 +138,11 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import { btn } from '@/element/btn.js'
-import { sparePartsOperationType, firmType } from '@/common/js/dictionary.js'
+import { sparePartsOperationType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/wmsApi'
 import apiAuth from '@/api/authApi'
-import apiEqp from '@/api/eqpApi'
+// import apiEqp from '@/api/eqpApi'
 export default {
   name: 'SeeStockReceiveList',
   components: {
@@ -163,12 +156,13 @@ export default {
         update: false
       },
       title: ' | 物资接收',
+      agreement: '',
       reason: '',
       reasonList: [],
       warehouse: '',
       warehouseList: [],
-      supplier: '',
-      supplierList: [],
+      // supplier: '',
+      // supplierList: [],
       editStockReceiveID: '',
       stockReceiveList: [],
       total: 0,
@@ -176,13 +170,13 @@ export default {
       loading: false,
       currentSort: {
         sort: 'operation_id',
-        order: 'asc'
+        order: 'desc'
       },
       headOrder: {
-        operation_id: 1,
+        operation_id: 2,
         reason: 0,
         warehouse: 0,
-        supplier: 0,
+        picker: 0,
         created_time: 0,
         created_by: 0
       },
@@ -198,7 +192,7 @@ export default {
       })
     }
     // 事务原因列表
-    apiAuth.getSubCode(sparePartsOperationType.receive).then(res => {
+    apiAuth.getSubCodeOrder(sparePartsOperationType.receive).then(res => {
       this.reasonList = res.data
     }).catch(err => console.log(err))
     // 仓库加载
@@ -206,9 +200,9 @@ export default {
       this.warehouseList = res.data
     }).catch(err => console.log(err))
     // 供应商加载
-    apiEqp.getFirmByType(firmType.supplier).then(res => {
-      this.supplierList = res.data
-    }).catch(err => console.log(err))
+    // apiEqp.getFirmByType(firmType.supplier).then(res => {
+    //   this.supplierList = res.data
+    // }).catch(err => console.log(err))
     this.init()
   },
   activated () {
@@ -225,7 +219,7 @@ export default {
         this.headOrder.operation_id = 0
         this.headOrder.reason = 0
         this.headOrder.warehouse = 0
-        this.headOrder.supplier = 0
+        this.headOrder.picker = 0
         this.headOrder.created_time = 0
         this.headOrder.created_by = 0
         this.currentSort.order = 'asc'
@@ -257,7 +251,7 @@ export default {
         SearchType: sparePartsOperationType.receive,
         SearchReason: this.reason,
         SearchWarehouse: this.warehouse,
-        SearchSupplier: this.supplier,
+        SearchAgreement: this.agreement,
         SearchStart: st,
         SearchEnd: et
       }).then(res => {

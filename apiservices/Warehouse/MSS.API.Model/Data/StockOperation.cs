@@ -24,13 +24,16 @@ namespace MSS.API.Model.Data
         public string FromWarehouseName { get; set; }
         /// <summary>
         /// 采购退货时对应的采购接收id
+        /// 借用/送修/送检归坏 对应的 借用/送修/送检id
         /// </summary>
         public int? FromStockOperation { get; set; }
+        /// <summary>
+        /// 流水号
+        /// </summary>
+        public string FromStockOperationName { get; set; }
         public string PickerName { get; set; }
         public int? Picker { get; set; }
         public string PickerDeptName { get; set; }
-        public string SupplierName { get; set; }
-        public int? Supplier { get; set; }
         public string Agreement { get; set; }
         public string BudgetDeptName { get; set; }
         public string BudgetDeptPath { get; set; }
@@ -40,7 +43,8 @@ namespace MSS.API.Model.Data
         public int CreatedBy { get; set; }
         public DateTime CreatedTime { get; set; }
         public string DetailList { get; set; }
-        public string DetailEditList { get; set; }
+        public string SomeOrder { get; set; }
+        public int? WorkingOrder { get; set; }
     }
 
     public class StockOperationMap : EntityMap<StockOperation>
@@ -57,11 +61,10 @@ namespace MSS.API.Model.Data
             Map(o => o.FromWarehouse).ToColumn("from_warehouse");
             Map(o => o.FromWarehouseName).ToColumn("fromWName");
             Map(o => o.FromStockOperation).ToColumn("from_stock_operation");
+            Map(o => o.FromStockOperationName).ToColumn("fsoName");
             Map(o => o.Picker).ToColumn("picker");
             Map(o => o.PickerName).ToColumn("pname");
             Map(o => o.PickerDeptName).ToColumn("pdname");
-            Map(o => o.Supplier).ToColumn("supplier");
-            Map(o => o.SupplierName).ToColumn("sname");
             Map(o => o.BudgetDept).ToColumn("budget_dept");
             Map(o => o.BudgetDeptPath).ToColumn("budget_dept_path");
             Map(o => o.BudgetDeptName).ToColumn("bname");
@@ -82,7 +85,7 @@ namespace MSS.API.Model.Data
         public int? SearchReason { get; set; }
         public int? SearchFromWarehouse { get; set; }
         public int? SearchWarehouse { get; set; }
-        public int? SearchSupplier { get; set; }
+        public int? SearchAgreement { get; set; }
         public int? SearchPicker { get; set; }
         public DateTime? SearchStart { get; set; }
         public DateTime? SearchEnd { get; set; }
@@ -92,6 +95,7 @@ namespace MSS.API.Model.Data
     {
         public StockOperation stockOperation { get; set; }
         public List<StockOperationDetail> stockOperationDetails { get; set; }
+        public List<StockOperationDetail> stockOperationDetailsUpdate { get; set; }
         public List<Stock> stocks { get; set; }
         public List<StockDetail> stockDetails { get; set; }
         public bool isAddStockDetails { get; set; }
@@ -103,6 +107,7 @@ namespace MSS.API.Model.Data
     public class StockOperationDetail
     {
         public int ID { get; set; }
+        public string Entity { get; set; }
         public int SpareParts { get; set; }
         public string SparePartsName { get; set; }
         public string SparePartsModel { get; set; }
@@ -115,8 +120,9 @@ namespace MSS.API.Model.Data
         public string CurrencyName { get; set; }
         public string Invoice { get; set; }
         public DateTime? LifeDate { get; set; }
+        public int Supplier { get; set; }
         public string SupplierName { get; set; }
-        public string WorkingOrder { get; set; }
+        public int? WorkingOrder { get; set; }
         public string Purchase { get; set; }
         public string Repair { get; set; }
         /// <summary>
@@ -136,12 +142,26 @@ namespace MSS.API.Model.Data
         /// 采购/其他接收时默认0，其余操作需要关联存货明细中的ID
         /// </summary>
         public int StockDetail { get; set; }
+        /// <summary>
+        /// 借用/送修/送检归还时对应的入库记录ID
+        /// </summary>
+        public int FromStockOperationDetail { get; set; }
+        /// <summary>
+        /// 借用/送修/送检归还数量
+        /// </summary>
+        public int ReturnNo { get; set; }
+        /// <summary>
+        /// 操作状态，目前主要描述借用/送修/送检未归还情况为1，其余0
+        /// </summary>
+        public int Status { get; set; }
+        public int EditNo { get; set; }
     }
 
     public class StockOperationDetailMap : EntityMap<StockOperationDetail>
     {
         public StockOperationDetailMap()
         {
+            Map(o => o.Entity).ToColumn("entity");
             Map(o => o.SpareParts).ToColumn("spare_parts");
             Map(o => o.SparePartsName).ToColumn("name");
             Map(o => o.SparePartsModel).ToColumn("model");
@@ -155,6 +175,7 @@ namespace MSS.API.Model.Data
             Map(o => o.CurrencyName).ToColumn("cname");
             Map(o => o.Invoice).ToColumn("invoice");
             Map(o => o.LifeDate).ToColumn("life_date");
+            Map(o => o.Supplier).ToColumn("supplier");
             Map(o => o.SupplierName).ToColumn("sname");
             Map(o => o.WorkingOrder).ToColumn("working_order");
             Map(o => o.Purchase).ToColumn("purchase");
@@ -165,6 +186,9 @@ namespace MSS.API.Model.Data
             Map(o => o.TotalAmount).ToColumn("total_amount");
             Map(o => o.Remark).ToColumn("remark");
             Map(o => o.StockDetail).ToColumn("stock_detail");
+            Map(o => o.FromStockOperationDetail).ToColumn("stock_operation_detail");
+            Map(o => o.ReturnNo).ToColumn("return_no");
+            Map(o => o.Status).ToColumn("status");
         }
     }
     #endregion
@@ -180,6 +204,8 @@ namespace MSS.API.Model.Data
         public int InStockNo { get; set; }
         public int InspectionNo { get; set; }
         public int RepairNo { get; set; }
+        public int LentNo { get; set; }
+        public int ScrapNo { get; set; }
         public double Amount { get; set; }
         public int Warehouse { get; set; }
         public string WarehouseName { get; set; }
@@ -197,6 +223,8 @@ namespace MSS.API.Model.Data
             Map(o => o.InStockNo).ToColumn("in_stock_no");
             Map(o => o.InspectionNo).ToColumn("inspection_no");
             Map(o => o.RepairNo).ToColumn("repair_no");
+            Map(o => o.LentNo).ToColumn("lent_no");
+            Map(o => o.ScrapNo).ToColumn("scrap_no");
             Map(o => o.Amount).ToColumn("amount");
             Map(o => o.Warehouse).ToColumn("warehouse");
             Map(o => o.WarehouseName).ToColumn("name");
@@ -208,15 +236,21 @@ namespace MSS.API.Model.Data
     public class StockDetail
     {
         public int ID { get; set; }
+        public string Entity { get; set; }
         public int SpareParts { get; set; }
         public string SparePartsName { get; set; }
+        public string Model { get; set; }
         public int StockOperationDetail { get; set; }
+        public int FromStockOperationDetail { get; set; }
         public int StockNo { get; set; }
         public int TroubleNo { get; set; }
         public int InStockNo { get; set; }
         public int InspectionNo { get; set; }
         public int RepairNo { get; set; }
+        public int LentNo { get; set; }
+        public int ScrapNo { get; set; }
         public int Status { get; set; }
+        public string StatusName { get; set; }
         public int Warehouse { get; set; }
         public string WarehouseName { get; set; }
         /// <summary>
@@ -234,7 +268,7 @@ namespace MSS.API.Model.Data
         /// <summary>
         /// 保质期
         /// </summary>
-        public DateTime LifeDate { get; set; }
+        public DateTime? LifeDate { get; set; }
         /// <summary>
         /// 接收单价
         /// </summary>
@@ -255,8 +289,11 @@ namespace MSS.API.Model.Data
         /// StockOperationDetail的备注
         /// </summary>
         public string Remark { get; set; }
+        public string SomeOrder { get; set; }
+        //public string WorkingOrderName { get; set; }
+        public int WorkingOrder { get; set; }
         /// <summary>
-        /// 针对接收时修改的数量
+        /// 使前端显示默认为0
         /// </summary>
         public int EditNo { get; set; }
     }
@@ -267,13 +304,18 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.SpareParts).ToColumn("spare_parts");
             Map(o => o.SparePartsName).ToColumn("spname");
-            Map(o => o.StockOperationDetail).ToColumn("stock_operation_detail");
+            Map(o => o.Model).ToColumn("model");
+            Map(o => o.StockOperationDetail).ToColumn("stock_operation_detail"); 
+            Map(o => o.FromStockOperationDetail).ToColumn("fsod"); 
             Map(o => o.StockNo).ToColumn("stock_no");
             Map(o => o.TroubleNo).ToColumn("trouble_no");
             Map(o => o.InStockNo).ToColumn("in_stock_no");
             Map(o => o.InspectionNo).ToColumn("inspection_no");
             Map(o => o.RepairNo).ToColumn("repair_no");
+            Map(o => o.LentNo).ToColumn("lent_no");
+            Map(o => o.ScrapNo).ToColumn("scrap_no");
             Map(o => o.Status).ToColumn("status");
+            Map(o => o.StatusName).ToColumn("statusName");
             Map(o => o.Warehouse).ToColumn("warehouse");
             Map(o => o.WarehouseName).ToColumn("name");
             Map(o => o.SupplierName).ToColumn("sname");
@@ -284,6 +326,8 @@ namespace MSS.API.Model.Data
             Map(o => o.CurrencyName).ToColumn("cname");
             Map(o => o.ExchangeRate).ToColumn("exchange_rate");
             Map(o => o.Remark).ToColumn("remark");
+            Map(o => o.SomeOrder).ToColumn("some_order");
+            Map(o => o.WorkingOrder).ToColumn("working_order");
         }
     }
     #endregion
@@ -299,6 +343,8 @@ namespace MSS.API.Model.Data
         public int InStockNo { get; set; }
         public int InspectionNo { get; set; }
         public int RepairNo { get; set; }
+        public int LentNo { get; set; }
+        public int ScrapNo { get; set; }
         public double Amount { get; set; }
         public bool isAdd { get; set; }
         public List<Stock> stocks { get; set; }
@@ -315,6 +361,8 @@ namespace MSS.API.Model.Data
             Map(o => o.InStockNo).ToColumn("in_stock_no");
             Map(o => o.InspectionNo).ToColumn("inspection_no");
             Map(o => o.RepairNo).ToColumn("repair_no");
+            Map(o => o.LentNo).ToColumn("lent_no");
+            Map(o => o.ScrapNo).ToColumn("scrap_no");
             Map(o => o.Amount).ToColumn("amount");
         }
     }

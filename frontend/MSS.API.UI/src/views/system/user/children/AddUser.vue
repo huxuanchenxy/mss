@@ -242,7 +242,7 @@ export default {
     },
     // 验证
     validateInput (val) {
-      validateInputCommon(val)
+      return validateInputCommon(val)
     },
     validateInputPhone (val) {
       if (val.text !== '' && !vPhone(val.text)) {

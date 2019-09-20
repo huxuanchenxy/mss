@@ -1,6 +1,6 @@
 import axios from './interceptors'
-// let api = 'http://localhost:3851/api/v1'
-let api = 'http://10.89.36.154:5801/wmsapi'
+let api = 'http://localhost:3851/api/v1'
+// let api = 'http://10.89.36.154:5801/wmsapi'
 export default {
   getWarehouse: parm => { return axios.get(`${api}/Warehouse`, {params: parm}).then(res => res.data) },
   getWarehouseByID: id => { return axios.get(`${api}/Warehouse/${id}`).then(res => res.data) },
@@ -27,8 +27,12 @@ export default {
 
   getStockOperationByReason: id => { return axios.get(`${api}/StockOperation/ListByReason/${id}`).then(res => res.data) },
   getStockOperationDetailByID: id => { return axios.get(`${api}/StockOperation/ListByOperation/${id}`).then(res => res.data) },
+  getStockOperationDetailByIDForEdit: id => { return axios.get(`${api}/StockOperation/ListByOperationForEdit/${id}`).then(res => res.data) },
+  getStockDetailByID: id => { return axios.get(`${api}/StockOperation/GetStockDetailByID/${id}`).then(res => res.data) },
+  getSparePartsByWH: id => { return axios.get(`${api}/StockOperation/GetSparePartsByWH/${id}`).then(res => res.data) },
   addStockOperation: parm => { return axios.post(`${api}/StockOperation`, parm).then(res => res.data) },
 
   getStockSum: parm => { return axios.get(`${api}/StockOperation/ListStockSum`, {params: parm}).then(res => res.data) },
-  getStockDetail: (id, warehouse) => { return axios.get(`${api}/StockOperation/ListStockDetail/${id}/${warehouse}`).then(res => res.data) }
+  getStockDetail: (id, warehouse) => { return axios.get(`${api}/StockOperation/ListStockDetail/${id}/${warehouse}`).then(res => res.data) },
+  getStockDetailAll: () => { return axios.get(`${api}/StockOperation/GetStockDetailAll`).then(res => res.data) }
 }

@@ -35,6 +35,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
+        [HttpGet("SubCodeByOrder/{code}")]
+        public ActionResult GetSubByCodeOrder(int code)
+        {
+            var resp = _DictionaryService.GetSubByCodeOrder(code);
+            return Ok(resp.Result);
+        }
+
         [HttpGet("BusinessType/{code}")]
         public ActionResult GetByParent(int code)
         {

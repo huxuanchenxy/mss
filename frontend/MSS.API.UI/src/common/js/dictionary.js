@@ -30,5 +30,19 @@ export const sparePartsOperationType = {
 export const sparePartsOperationDetailType = {
   purchaseReturn: 72,
   purchaseReceive: 73,
-  otherReceive: 84
+  otherReceive: 84,
+  distribution: 74,
+  materialReturn: 75,
+  moveTo: 76,
+  inventoryProfit: 77,
+  inventoryLoss: 78,
+  troubleReturn: 79,
+  troubleRepair: 80,
+  materialLend: 81,
+  inspection: 85,
+  inspectionReturn: 86,
+  troubleScrap: 87,
+  inStockScrap: 88,
+  lendReturn: 92,
+  repairReceive: 93
 }

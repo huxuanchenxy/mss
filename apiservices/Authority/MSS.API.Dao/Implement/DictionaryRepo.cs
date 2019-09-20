@@ -25,6 +25,15 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<DictionaryTree>> GetSubByCodeOrder(int pid)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = (await c.QueryAsync<DictionaryTree>("select * from dictionary_tree where parent_id=@pid order by order_no", new { pid = pid })).ToList();
+                return result;
+            });
+        }
+
         public async Task<List<DictionaryRelation>> GetByParent(int pid)
         {
             return await WithConnection(async c =>

@@ -8,6 +8,21 @@ namespace MSS.API.Model.Data
     public static class Common
     {
         /// <summary>
+        /// 库存操作状态
+        /// </summary>
+        public enum StockOperationStatus
+        {
+            /// <summary>
+            /// 其他
+            /// </summary>
+            Other = 0,
+            /// <summary>
+            /// 未归还
+            /// </summary>
+            NoReturn = 1,
+        }
+
+        /// <summary>
         /// 库存操作类型
         /// </summary>
         public enum StockOperationType
@@ -76,10 +91,6 @@ namespace MSS.API.Model.Data
             /// </summary>
             MaterialLend = 81,
             /// <summary>
-            /// 故障件内部借用出库
-            /// </summary>
-            TroubleLend = 82,
-            /// <summary>
             /// 其他接收
             /// </summary>
             OtherReceive = 84,
@@ -92,9 +103,13 @@ namespace MSS.API.Model.Data
             /// </summary>
             InspectionReturn = 86,
             /// <summary>
-            /// 报废
+            /// 故障件报废
             /// </summary>
-            Scrap = 87,
+            TroubleScrap = 87,
+            /// <summary>
+            /// 存货报废
+            /// </summary>
+            InStockScrap = 88,
             /// <summary>
             /// 借用归还
             /// </summary>
@@ -159,7 +174,11 @@ namespace MSS.API.Model.Data
             /// <summary>
             /// 耗尽
             /// </summary>
-            Exhaust = 105
+            Exhaust = 105,
+            /// <summary>
+            /// 已退货
+            /// </summary>
+            Returned = 106
         }
 
         public static string GetRedisKey(StockOperationType type)

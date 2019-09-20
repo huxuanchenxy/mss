@@ -29,6 +29,22 @@
             </div>
             <p class="validate-tips">{{ reason.tips }}</p>
           </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">责任人<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-select v-model="picker.text" clearable filterable placeholder="请选择责任人"  @change="validateSelect(picker)">
+                  <el-option
+                    v-for="item in pickerList"
+                    :key="item.key"
+                    :label="item.user_name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ picker.tips }}</p>
+          </li>
           <li class="list" v-show="isShowPurchaseReturn">
             <div class="inp-wrap">
               <span class="text">采购接收流水号<em class="validate-mark">*</em></span>
@@ -45,7 +61,6 @@
             </div>
           </li>
           <li class="list" v-show="!isShowPurchaseReturn"/>
-          <li class="list"/>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">仓库<em class="validate-mark">*</em></span>
@@ -64,29 +79,14 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">供应商</span>
+              <span class="text">合同号</span>
               <div class="inp">
-                <el-select :disabled="isShowPurchaseReturn" v-model="supplier.text" clearable filterable placeholder="请选择供应商">
-                <el-option
-                  v-for="item in supplierList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-              </div>
-            </div>
-            <p class="validate-tips">{{ supplier.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">合同</span>
-              <div class="inp">
-                <el-input placeholder="请输入合同" :disabled="isShowPurchaseReturn" v-model="agreement.text" @keyup.native="validateInputNull(agreement)"></el-input>
+                <el-input placeholder="请输入合同号" :disabled="isShowPurchaseReturn" v-model="agreement.text" @keyup.native="validateInputNull(agreement)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ agreement.tips }}</p>
           </li>
+          <li class="list"/>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">预算部门</span>
@@ -118,7 +118,7 @@
           <li class="list list-block">
             <div class="inp-wrap">
               <span class="text span-block">备注</span>
-              <el-input type="textarea" :rows="3" class="whole-line" placeholder="请输入备注" :disabled="isShowPurchaseReturn" v-model="remark.text" @keyup.native="validateInputNull(remark)"></el-input>
+              <el-input type="textarea" :rows="1" class="whole-line" placeholder="请输入备注" :disabled="isShowPurchaseReturn" v-model="remark.text" @keyup.native="validateInputNull(remark)"></el-input>
             </div>
             <p class="validate-tips">{{ remark.tips }}</p>
           </li>
@@ -139,6 +139,15 @@
               </div>
             </div>
             <p class="validate-tips">{{ spareParts.tips }}</p>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">物资ID<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-input placeholder="请输入物资ID" v-model="entity.text" @keyup.native="validateInput(entity)"></el-input>
+              </div>
+            </div>
+            <p class="validate-tips">{{ entity.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
@@ -193,32 +202,38 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
+              <span class="text">供应商</span>
+              <div class="inp">
+                <el-select v-model="supplier.text" clearable filterable placeholder="请选择供应商" ref="supplier">
+                <el-option
+                  v-for="item in supplierList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ supplier.tips }}</p>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
               <span class="text">保质期</span>
               <div class="inp">
                 <el-date-picker class="el-date-width"
                   v-model="lifeDate"
                   type="date"
                   value-format="yyyy-MM-dd"
-                  placeholder="请选择保质截止日期">
+                  placeholder="请选择保质期">
                 </el-date-picker>
               </div>
             </div>
             <p class="validate-tips"></p>
           </li>
-          <li class="list" v-show="isShowPurchase">
-            <div class="inp-wrap">
-              <span class="text">采购单</span>
-              <div class="inp">
-                <el-input placeholder="请输入采购单" v-model="purchase.text" @keyup.native="validateInputNull(purchase)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ purchase.tips }}</p>
-          </li>
-          <li class="list"/>
           <li class="list list-block">
             <div class="inp-wrap">
               <span class="text span-block">备注</span>
-              <el-input type="textarea" :rows="3" class="whole-line" placeholder="请输入备注" v-model="remarkAdd.text" @keyup.native="validateInputNull(remarkAdd)"></el-input>
+              <el-input type="textarea" :rows="1" class="whole-line" placeholder="请输入备注" v-model="remarkAdd.text" @keyup.native="validateInputNull(remarkAdd)"></el-input>
             </div>
             <p class="validate-tips">{{ remarkAdd.tips }}</p>
           </li>
@@ -237,6 +252,7 @@
           <ul class="content-header">
             <li class="list"><input :disabled="isAdd" type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
             <li class="list number">序号</li>
+            <li class="list name">物资ID</li>
             <li class="list name">物资名称</li>
             <li class="list name">数量</li>
             <li class="list name">单价</li>
@@ -245,8 +261,8 @@
             <li class="list name">汇率</li>
             <li class="list name">本币总金额</li>
             <li class="list name">发票号</li>
+            <li class="list name">供应商</li>
             <li class="list name">保质期</li>
-            <li class="list name">采购单</li>
             <li class="list name">备注</li>
           </ul>
           <div class="scroll">
@@ -258,6 +274,7 @@
                       <input :disabled="isAdd" type="checkbox" v-model="editID" :value="item.orderNo" @change="checkChange">
                     </div>
                     <div class="number">{{ item.orderNo}}</div>
+                    <div class="name">{{ item.entity }}</div>
                     <div class="name">{{ item.sparePartsName }}</div>
                     <div class="name word-break">{{ item.countNo }}</div>
                     <div class="name word-break">{{ item.unitPrice }}</div>
@@ -266,8 +283,8 @@
                     <div class="name word-break">{{ item.exchangeRate }}</div>
                     <div class="name word-break">{{ item.totalAmount }}</div>
                     <div class="name word-break">{{ item.invoice }}</div>
+                    <div class="name word-break">{{ item.supplierName }}</div>
                     <div class="name word-break">{{ item.lifeDate }}</div>
-                    <div class="name word-break">{{ item.someOrder }}</div>
                     <div class="name word-break">{{ item.remark }}</div>
                   </div>
                 </li>
@@ -278,37 +295,35 @@
         <!-- 采购退货内容 -->
         <div class="content-wrap" v-show="isShowPurchaseReturn">
           <ul class="content-header">
+            <li class="list name">物资ID</li>
             <li class="list name">接收物资</li>
+            <li class="list name">供应商</li>
             <li class="list name">接收数量</li>
-            <li class="list name">库存数量</li>
-            <li class="list name">故障件数量</li>
             <li class="list name">存货数量</li>
-            <li class="list name">退货数量</li>
-            <li class="list name">送检数量</li>
-            <li class="list name">送修数量</li>
             <li class="list name">接收币种</li>
+            <li class="list name">接收时汇率</li>
             <li class="list name">接收单价</li>
             <li class="list name">存货金额</li>
+            <li class="list name">退货数量</li>
             <li class="list name">退货备注</li>
           </ul>
           <div class="scroll">
             <el-scrollbar>
               <ul class="list-wrap">
-                <li class="list" v-for="item in detailList" :key="item.key">
+                <li class="list" v-for="(item, index) in detailList" :key="item.key">
                   <div class="list-content">
+                    <div class="name">{{ item.entity}}</div>
                     <div class="name">{{ item.sparePartsName}}</div>
+                    <div class="name">{{ item.supplierName}}</div>
                     <div class="name">{{ item.acceptNo }}</div>
-                    <div class="name">{{ item.stockNo }}</div>
-                    <div class="name">{{ item.troubleNo }}</div>
                     <div class="name">{{ item.inStockNo }}</div>
-                    <div class="name">
-                      <el-input class="center" v-model="item.editNo" @keyup.native="validateEditNo(item.inStockNo, item.editNo, item.id)"></el-input>
-                    </div>
-                    <div class="name">{{ item.inspectionNo }}</div>
-                    <div class="name">{{ item.repairNo }}</div>
                     <div class="name">{{ item.currencyName }}</div>
+                    <div class="name">{{ item.exchangeRate }}</div>
                     <div class="name">{{ item.acceptUnitPrice.toFixed(2) }}</div>
                     <div class="name">{{ (item.acceptUnitPrice * item.inStockNo).toFixed(2) }}</div>
+                    <div class="name">
+                      <el-input class="center" v-model="item.editNo" @keyup.native="validateEditNo(item.inStockNo, item.editNo, index)"></el-input>
+                    </div>
                     <div class="name word-break">
                       <el-input class="center" v-model="item.remark"></el-input>
                     </div>
@@ -330,7 +345,7 @@
   </div>
 </template>
 <script>
-import { vInput, validateNumberCommon, vdouble4, vdouble2, vNumber, strToIntArr } from '@/common/js/utils.js'
+import { vInput, validateNumberCommon, vdouble4, vdouble2, vNumber, strToIntArr, validateInputCommon } from '@/common/js/utils.js'
 import { sparePartsOperationType, firmType, dictionary, sparePartsOperationDetailType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import apiOrg from '@/api/orgApi'
@@ -360,10 +375,10 @@ export default {
       bCheckAll: false,
       reasonList: [],
       reason: {text: '', tips: ''},
+      pickerList: [],
+      picker: {text: '', tips: ''},
       warehouseList: [],
       warehouse: {text: '', tips: ''},
-      supplierList: [],
-      supplier: {text: '', tips: ''},
       agreement: {text: '', tips: ''},
       deptList: [],
       deptPath: {text: [], tips: ''},
@@ -376,13 +391,15 @@ export default {
       currencyList: [],
       spareParts: {text: '', tips: ''},
       sparePartsList: '',
+      entity: {text: '', tips: ''},
       countNo: {text: '', tips: ''},
       unitPrice: {text: '', tips: ''},
       currency: {text: '', tips: ''},
       exchangeRate: {text: 1, tips: ''},
       invoice: {text: '', tips: ''},
       lifeDate: '',
-      purchase: {text: '', tips: ''},
+      supplierList: [],
+      supplier: {text: '', tips: ''},
       remarkAdd: {text: '', tips: ''}
     }
   },
@@ -392,7 +409,7 @@ export default {
       this.deptList = res.data
     }).catch(err => console.log(err))
     // 事务原因列表
-    apiAuth.getSubCode(sparePartsOperationType.receive).then(res => {
+    apiAuth.getSubCodeOrder(sparePartsOperationType.receive).then(res => {
       this.reasonList = res.data
     }).catch(err => console.log(err))
     // 币种
@@ -411,6 +428,10 @@ export default {
     // 供应商加载
     apiEqp.getFirmByType(firmType.supplier).then(res => {
       this.supplierList = res.data
+    }).catch(err => console.log(err))
+    // 责任人加载
+    apiAuth.getUserAll().then(res => {
+      this.pickerList = res.data
     }).catch(err => console.log(err))
   },
   methods: {
@@ -442,7 +463,6 @@ export default {
         if (res.code === 0) {
           let data = res.data
           this.warehouse.text = data.warehouse
-          this.supplier.text = data.supplier
           this.agreement.text = data.agreement
           this.deptPath.text = strToIntArr(data.budgetDeptPath)
           this.budgetItems.text = data.budgetItems
@@ -462,29 +482,21 @@ export default {
         this.detailList = res.data
       }).catch(err => console.log(err))
     },
-    validateEditNo (old, now, id) {
+    validateEditNo (old, now, index) {
       if (vNumber(now)) {
         if (now > old) {
           this.$message({
             message: '退货数量不可大于存货数量',
             type: 'warning'
           })
-          this.clearZero(id)
+          this.detailList[index].editNo = 0
         }
       } else {
         this.$message({
           message: '请输入数字',
           type: 'warning'
         })
-        this.clearZero(id)
-      }
-    },
-    clearZero (id) {
-      for (var i = 0; i < this.detailList.length; i++) {
-        if (this.detailList[i].id === id) {
-          this.detailList[i].editNo = 0
-          return
-        }
+        this.detailList[index].editNo = 0
       }
     },
     insert () {
@@ -496,7 +508,6 @@ export default {
         })
         return
       }
-      let spName = ''
       let arr = this.detailList.concat([])
       if (this.title === '| 物资接收过账 | 修改物资明细') {
         let index = arr.findIndex(val => {
@@ -504,19 +515,21 @@ export default {
         })
         arr.splice(index, 1)
       }
+      let spID = ''
       let isRepeat = arr.some(val => {
-        spName = val.sparePartsName
-        return val.spareParts === this.spareParts.text && val.lifeDate === this.lifeDate
+        spID = val.entity
+        return val.entity === this.entity.text
       })
       if (isRepeat) {
         this.$message({
-          message: '相同保质期物资-' + spName + ' 不可重复添加',
+          message: '物资ID：' + spID + ' 已存在，不可重复添加',
           type: 'warning'
         })
         return
       }
       let tmp = (this.countNo.text * this.unitPrice.text * 1).toFixed(2)
       let detail = {
+        entity: this.entity.text,
         spareParts: this.spareParts.text,
         sparePartsName: this.$refs.spareParts.selected.label,
         countNo: this.countNo.text,
@@ -528,7 +541,8 @@ export default {
         totalAmount: (this.exchangeRate.text * tmp).toFixed(2),
         invoice: this.invoice.text,
         lifeDate: this.lifeDate,
-        someOrder: this.purchase.text,
+        supplier: this.supplier.text,
+        supplierName: this.$refs.supplier.selected.label,
         remark: this.remarkAdd.text,
         // 以下两个字段在这里无用，只是为了不让采购退货中的toFixed(2)函数报错
         acceptUnitPrice: 1,
@@ -584,7 +598,7 @@ export default {
         this.currency = editObj.currency
         this.exchangeRate.text = editObj.exchangeRate
         this.invoice.text = editObj.invoice
-        this.remarkAdd.text = editObj.remarkAdd
+        this.remarkAdd.text = editObj.remark
       }
     },
     checkChange () {
@@ -664,6 +678,9 @@ export default {
       }
       return validateNumberCommon(val)
     },
+    validateInput (val) {
+      return validateInputCommon(val)
+    },
     validateInputNull (val) {
       if (!vInput(val.text)) {
         val.tips = '此项含有非法字符'
@@ -709,9 +726,9 @@ export default {
       let stockReceive = {
         Type: sparePartsOperationType.receive,
         Reason: this.reason.text,
+        Picker: this.picker.text,
         Warehouse: this.warehouse.text,
         Remark: this.remark.text,
-        Supplier: this.supplier.text,
         Agreement: this.agreement.text,
         BudgetDept: this.deptPath.text[this.deptPath.text.length - 1],
         BudgetDeptPath: this.deptPath.text.join(','),
@@ -723,17 +740,21 @@ export default {
         let tmp = []
         let i = 0
         this.detailList.map(val => {
-          i += 1
-          let obj = {
-            orderNo: i,
-            stockDetail: val.id,
-            spareParts: val.spareParts,
-            countNo: val.editNo,
-            unitPrice: val.acceptUnitPrice,
-            amount: (val.acceptUnitPrice * val.editNo * val.exchangeRate).toFixed(2),
-            remark: val.remark
+          if ((val.editNo + '') !== '0') {
+            i += 1
+            let obj = {
+              orderNo: i,
+              entity: val.entity,
+              stockDetail: val.id,
+              spareParts: val.spareParts,
+              countNo: val.editNo,
+              unitPrice: val.acceptUnitPrice,
+              amount: (val.acceptUnitPrice * val.editNo * val.exchangeRate).toFixed(2),
+              remark: val.remark,
+              fromStockOperationDetail: val.fromStockOperationDetail
+            }
+            tmp.push(obj)
           }
-          tmp.push(obj)
         })
         stockReceive.DetailList = JSON.stringify(tmp)
       }
@@ -742,12 +763,12 @@ export default {
           if (res.code === 0) {
             this.$router.push({name: 'SeeStockReceiveList'})
             this.$message({
-              message: '操作成功',
+              message: '执行成功',
               type: 'success'
             })
           } else {
             this.$message({
-              message: res.msg === '' ? '操作失败' : res.msg,
+              message: res.msg === '' ? '执行失败' : res.msg,
               type: 'error'
             })
           }

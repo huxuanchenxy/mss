@@ -25,8 +25,8 @@
       </li>
       <li class="list">
         <div class="inp-wrap">
-          <span class="text">供应商</span>
-          <div class="inp">{{stockOperation.supplierName}}</div>
+          <span class="text">责任人</span>
+          <div class="inp">{{stockOperation.pickerName}}</div>
         </div>
       </li>
       <li class="list">
@@ -45,6 +45,12 @@
         <div class="inp-wrap">
           <span class="text">预算项目</span>
           <div class="inp">{{stockOperation.budgetItems}}</div>
+        </div>
+      </li>
+      <li v-show="isShow.operation" class="list">
+        <div class="inp-wrap">
+          <span class="text">{{columnName.operation}}</span>
+          <div class="inp">{{stockOperation.fromStockOperationName}}</div>
         </div>
       </li>
       <li class="list list-block">
@@ -68,20 +74,49 @@
           <div class="inp">{{stockOperation.warehouseName}}</div>
         </div>
       </li>
-      <li class="list"></li>
       <li class="list">
         <div class="inp-wrap">
-          <span class="text">领料人</span>
+          <span class="text">过账时间</span>
+          <div class="inp">{{stockOperation.createdTime}}</div>
+        </div>
+      </li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">责任人</span>
           <div class="inp">{{stockOperation.pickerName}}</div>
         </div>
       </li>
       <li class="list">
         <div class="inp-wrap">
-          <span class="text">领料人部门</span>
+          <span class="text">责任人部门</span>
           <div class="inp">{{stockOperation.pickerDeptName}}</div>
         </div>
       </li>
-      <li class="list"></li>
+      <li class="list">
+        <div class="inp-wrap">
+          <span class="text">经办人</span>
+          <div class="inp">{{stockOperation.createdName}}</div>
+        </div>
+      </li>
+      <li v-show="isShow.operation" class="list">
+        <div class="inp-wrap">
+          <span class="text">{{columnName.operation}}</span>
+          <div class="inp">{{stockOperation.fromStockOperationName}}</div>
+        </div>
+      </li>
+      <li v-show="isShow.workingOrder" class="list">
+        <div class="inp-wrap">
+          <span class="text">工单</span>
+          <div class="inp">{{stockOperation.workingOrder}}</div>
+        </div>
+      </li>
+      <li v-show="isShow.someOrder" class="list">
+        <div class="inp-wrap">
+          <span class="text">{{columnName.someOrder}}</span>
+          <div class="inp">{{stockOperation.someOrder}}</div>
+        </div>
+      </li>
+      <li v-show="isShow.operation" class="list"/>
       <li class="list list-block">
         <div class="inp-wrap">
           <span class="text span-block">备注</span>
@@ -144,12 +179,13 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list number">序号</li>
+        <li class="list name">物资ID</li>
         <li class="list name">物资名称</li>
         <li class="list name">规格型号</li>
         <li class="list name">单位</li>
         <li class="list name">{{columnName.countNo}}</li>
-        <li v-show="curOperationType !== operationType.receive" class="list name">供应商</li>
+        <li v-show="isShow.returnNo" class="list name">{{columnName.returnNo}}</li>
+        <li class="list name">供应商</li>
         <li class="list name">保质期</li>
         <li class="list name">单价</li>
         <li class="list name">{{columnName.amount}}</li>
@@ -157,8 +193,6 @@
         <li v-show="isShow.exchangeRate" class="list name">汇率</li>
         <li v-show="isShow.exchangeRate" class="list name">本币总金额</li>
         <li class="list name">发票号</li>
-        <li v-show="curOperationType !== operationType.receive" class="list name">工单号</li>
-        <li v-show="isShow.someOrder" class="list name">{{columnName.someOrder}}</li>
         <li class="list name">备注</li>
       </ul>
       <div class="scroll">
@@ -166,21 +200,20 @@
           <ul class="list-wrap">
             <li class="list" v-for="item in stockOperation.detailList" :key="item.key">
               <div class="list-content">
-                <div class="number">{{ item.OrderNo}}</div>
+                <div class="name">{{ item.Entity}}</div>
                 <div class="name">{{ item.SparePartsName }}</div>
                 <div class="name">{{ item.SparePartsModel }}</div>
                 <div class="name">{{ item.SparePartsUnit }}</div>
                 <div class="name">{{ item.CountNo }}</div>
-                <div v-show="curOperationType !== operationType.receive" class="name word-break">{{ item.SupplierName }}</div>
+                <div v-show="isShow.returnNo" class="name">{{ item.ReturnNo }}</div>
+                <div class="name word-break">{{ item.SupplierName }}</div>
                 <div class="name word-break">{{ item.LifeDate === null ? '' : item.LifeDate.slice(0,10) }}</div>
                 <div class="name">{{ item.UnitPrice }}</div>
                 <div class="name word-break">{{ (item.CountNo * item.UnitPrice).toFixed(2) }}</div>
                 <div class="name word-break">{{ item.CurrencyName }}</div>
-                <div v-show="curOperationType !== operationType.receive" class="name word-break">{{ item.WorkingOrder }}</div>
                 <div v-show="isShow.exchangeRate" class="name word-break">{{ item.ExchangeRate }}</div>
                 <div v-show="isShow.exchangeRate" class="name word-break">{{ item.TotalAmount }}</div>
                 <div class="name word-break">{{ item.Invoice }}</div>
-                <div v-show="isShow.someOrder" class="name word-break">{{ item.SomeOrder }}</div>
                 <div class="name word-break">{{ item.Remark }}</div>
               </div>
             </li>
@@ -226,19 +259,26 @@ export default {
         agreement: '',
         budgetDeptName: '',
         budgetItems: '',
+        fromStockOperationName: '',
         createdName: '',
         createdTime: '',
+        workingOrder: '',
+        someOrder: '',
         detailList: []
       },
       isShow: {
         exchangeRate: true,
+        operation: true,
         someOrder: true,
-        repair: true
+        workingOrder: true,
+        returnNo: false
       },
       columnName: {
         countNo: '数量',
         amount: '金额',
-        someOrder: ''
+        someOrder: '',
+        operation: '',
+        returnNo: ''
       }
     }
   },
@@ -266,13 +306,16 @@ export default {
           this.stockOperation.fromWarehouseName = data.fromWarehouseName
           this.stockOperation.pickerName = data.pickerName
           this.stockOperation.pickerDeptName = data.pickerDeptName
-          this.stockOperation.supplierName = data.supplierName
+          // this.stockOperation.supplierName = data.supplierName
           this.stockOperation.agreement = data.agreement
           this.stockOperation.budgetDeptName = data.budgetDeptName
           this.stockOperation.budgetItems = data.budgetItems
+          this.stockOperation.fromStockOperationName = data.fromStockOperationName
           this.stockOperation.createdName = data.createdName
           this.stockOperation.createdTime = transformDate(data.createdTime)
           this.stockOperation.remark = data.remark
+          this.stockOperation.workingOrder = data.workingOrder
+          this.stockOperation.someOrder = data.someOrder
           this.stockOperation.detailList = JSON.parse(data.detailList)
 
           this.curOperationType = this.stockOperation.type
@@ -292,28 +335,119 @@ export default {
           }
           switch (data.reason) {
             case sparePartsOperationDetailType.purchaseReceive:
-              this.isShow.someOrder = true
-              this.columnName.someOrder = '采购单'
-              this.isShow.exchangeRate = true
-              this.columnName.countNo = '接收数量'
-              this.columnName.amount = '接收金额'
-              break
             case sparePartsOperationDetailType.otherReceive:
+              this.isShow.returnNo = false
+              this.isShow.operation = false
               this.isShow.someOrder = false
+              this.isShow.workingOrder = false
               this.isShow.exchangeRate = true
               this.columnName.countNo = '接收数量'
-              this.columnName.amount = '接收金额'
+              // this.columnName.amount = '接收金额'
               break
             case sparePartsOperationDetailType.purchaseReturn:
-              this.isShow.exchangeRate = false
-              this.columnName.countNo = '退货数量'
-              this.columnName.amount = '退货金额'
-              break
-            default:
-              this.isShow.exchangeRate = false
+              this.isShow.returnNo = false
+              this.isShow.operation = true
+              this.columnName.operation = '采购接收流水号'
               this.isShow.someOrder = false
-              this.columnName.countNo = '数量'
-              this.columnName.amount = '金额'
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '退货数量'
+              // this.columnName.amount = '退货金额'
+              break
+            case sparePartsOperationDetailType.distribution:
+              this.isShow.returnNo = true
+              this.columnName.returnNo = '已退回数量'
+              this.isShow.operation = false
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = true
+              this.columnName.countNo = '领用数量'
+              // this.columnName.amount = '领用金额'
+              break
+            case sparePartsOperationDetailType.materialReturn:
+            case sparePartsOperationDetailType.troubleReturn:
+              this.isShow.returnNo = false
+              this.isShow.operation = true
+              this.columnName.operation = '物资领用流水号'
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = true
+              this.columnName.countNo = '退回数量'
+              // this.columnName.amount = '退回金额'
+              break
+            case sparePartsOperationDetailType.troubleRepair:
+              this.isShow.returnNo = true
+              this.columnName.returnNo = '已归还数量'
+              this.isShow.operation = false
+              this.isShow.someOrder = true
+              this.columnName.someOrder = '送修单'
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '送修数量'
+              // this.columnName.amount = '送修金额'
+              break
+            case sparePartsOperationDetailType.materialLend:
+              this.isShow.returnNo = true
+              this.columnName.returnNo = '已归还数量'
+              this.isShow.operation = false
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '借用数量'
+              // this.columnName.amount = '借用金额'
+              break
+            case sparePartsOperationDetailType.lendReturn:
+              this.isShow.returnNo = false
+              this.isShow.operation = true
+              this.columnName.operation = '物资借用流水号'
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '归还数量'
+              // this.columnName.amount = '归还金额'
+              break
+            case sparePartsOperationDetailType.inStockScrap:
+            case sparePartsOperationDetailType.troubleScrap:
+              this.isShow.returnNo = false
+              this.isShow.operation = false
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '报废数量'
+              // this.columnName.amount = '报废金额'
+              break
+            case sparePartsOperationDetailType.repairReceive:
+              this.isShow.returnNo = false
+              this.isShow.operation = true
+              this.columnName.operation = '故障件送修流水号'
+              this.isShow.someOrder = true
+              this.columnName.someOrder = '送修单'
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '归还数量'
+              // this.columnName.amount = '归还金额'
+              break
+            case sparePartsOperationDetailType.inspection:
+              this.isShow.returnNo = true
+              this.columnName.returnNo = '已归还数量'
+              this.isShow.operation = false
+              this.isShow.someOrder = true
+              this.columnName.someOrder = '送检单'
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '送检数量'
+              // this.columnName.amount = '送检金额'
+              break
+            case sparePartsOperationDetailType.inspectionReturn:
+              this.isShow.returnNo = false
+              this.isShow.operation = true
+              this.columnName.operation = '正常件送检流水号'
+              this.isShow.someOrder = true
+              this.columnName.someOrder = '送检单'
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '归还数量'
+              // this.columnName.amount = '归还金额'
               break
           }
           this.title = this.title + this.stockOperation.operationID

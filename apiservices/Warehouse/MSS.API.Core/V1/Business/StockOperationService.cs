@@ -52,6 +52,7 @@ namespace MSS.API.Core.V1.Business
                 stockOperation.OperationID = GetOperationID(tmp, t);
                 parm.stockOperation = stockOperation;
                 int intTmp=0;
+                StockOperationSaveParm sosp = new StockOperationSaveParm();
                 //构造存货明细表、库存明细表、库存总表
                 switch (t)
                 {
@@ -63,15 +64,102 @@ namespace MSS.API.Core.V1.Business
                                 intTmp = await _stockOperationRepo.Save(await GetParmInit(parm));
                                 break;
                             case StockOptDetailType.PurchaseReturn:
-                                StockOperationSaveParm sosp = await GetParm(
-                                    StockChange.Subtract, StockChange.NoChange, StockChange.Subtract,
-                                    StockChange.NoChange, StockChange.NoChange, StockStatus.Normal, parm);
+                                sosp = await GetParm(
+                                    StockChange.Subtract, StockChange.NoChange, StockChange.Subtract, StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.NoChange, StockStatus.Returned, parm);
                                 if (validateSaveData.code != Code.Success) return validateSaveData;
                                 intTmp = await _stockOperationRepo.Save(sosp);
                                 break;
                         }
                         break;
                     case StockOperationType.Delivery:
+                        switch ((StockOptDetailType)stockOperation.Reason)
+                        {
+                            case StockOptDetailType.Distribution:
+                                sosp = await GetParm(
+                                    StockChange.Subtract, StockChange.NoChange, StockChange.Subtract, StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.NoChange, StockStatus.Normal, parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.MaterialReturn:
+                                sosp = await GetParm(
+                                    StockChange.Plus, StockChange.NoChange, StockChange.Plus,StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.NoChange, StockStatus.Normal, 
+                                    parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.TroubleReturn:
+                                sosp = await GetParm(
+                                    StockChange.Plus, StockChange.Plus, StockChange.NoChange,StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.NoChange, StockStatus.Trouble, 
+                                    parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.TroubleRepair:
+                                sosp = await GetParm(
+                                    StockChange.NoChange, StockChange.Subtract, StockChange.NoChange,StockChange.NoChange,
+                                    StockChange.Plus, StockChange.NoChange, StockChange.NoChange, StockStatus.Repair, parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.MaterialLend:
+                                sosp = await GetParm(
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.Subtract,StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.Plus, StockChange.NoChange, StockStatus.Lend, parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.TroubleScrap:
+                                parm.stockOperation.Picker = userID;
+                                sosp = await GetParm(
+                                    StockChange.Subtract, StockChange.Subtract, StockChange.NoChange,StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.Plus, StockStatus.Scrap, parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.InStockScrap:
+                                parm.stockOperation.Picker = userID;
+                                sosp = await GetParm(
+                                    StockChange.Subtract, StockChange.NoChange, StockChange.Subtract, StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.Plus, StockStatus.Scrap, parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.lendReturn:
+                                sosp = await GetParm(
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.Plus,StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.Subtract, StockChange.NoChange, StockStatus.Normal, 
+                                    parm, StockOperationStatus.NoReturn);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.RepairReceive:
+                                sosp = await GetParm(
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.Plus,StockChange.NoChange,
+                                    StockChange.Subtract, StockChange.NoChange, StockChange.NoChange, StockStatus.Normal, 
+                                    parm, StockOperationStatus.NoReturn);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.Inspection:
+                                sosp = await GetParm(
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.Subtract,StockChange.Plus,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.NoChange, StockStatus.Inspection, parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.InspectionReturn:
+                                sosp = await GetParm(
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.Plus,StockChange.Subtract,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.NoChange, StockStatus.Normal, 
+                                    parm, StockOperationStatus.NoReturn);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                        }
                         break;
                     case StockOperationType.Adjust:
                         break;
@@ -95,14 +183,18 @@ namespace MSS.API.Core.V1.Business
         }
 
         private async Task<StockOperationSaveParm> GetParm(StockChange stock, StockChange trouble, StockChange inStock,StockChange inspection,
-            StockChange repair, StockStatus status,StockOperationSaveParm parm)
+            StockChange repair, StockChange lent, StockChange scrap, StockStatus status,StockOperationSaveParm parm, 
+            StockOperationStatus soStatus= StockOperationStatus.Other)
         {
             StockOperationSaveParm ret = new StockOperationSaveParm();
             StockOperation so = parm.stockOperation;
             ret.stockOperation = so;
-            List<StockOperationDetail> sods = JsonConvert.DeserializeObject<List<StockOperationDetail>>(so.DetailList);
-            ret.stockOperationDetails = sods;
-
+            List<StockOperationDetail> sods = JsonConvert.DeserializeObject<List<StockOperationDetail>>(so.DetailList).OrderBy(a => a.StockDetail).ToList();
+            ret.stockOperationDetails = sods.OrderBy(a=>a.OrderNo).ToList();
+            // 获取原始出库数量以及已归(退)还数量
+            List<StockOperationDetail> initSods = (await _stockOperationRepo.ListSODByIDs(
+                sods.Select(a => a.FromStockOperationDetail).ToList())).OrderBy(a=>a.StockDetail).ToList();
+            // 获取存货明细
             List<StockDetail> initSds = (await _stockOperationRepo.ListStockDetailByIDs(
                 sods.Select(a => a.StockDetail).ToList()
                 )).OrderBy(a=>a.ID).ToList();
@@ -112,7 +204,30 @@ namespace MSS.API.Core.V1.Business
             ret.stockSums = new List<StockSum>();
             List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sods.Select(a => a.SpareParts).Distinct().ToList(), so.Warehouse);
             List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(sods.Select(a => a.SpareParts).Distinct().ToList());
-
+            // 归(退)还时，更新已归(退)还数量
+            // 归还时，还需更新状态（未归还/其他）
+            if (so.FromStockOperation!=null)
+            {
+                ret.stockOperationDetailsUpdate = new List<StockOperationDetail>();
+                for (int i = 0; i < initSods.Count; i++)
+                {
+                    StockOperationDetail sod = new StockOperationDetail();
+                    sod.ReturnNo = initSods[i].ReturnNo + sods[i].CountNo;
+                    sod.Status = (int)soStatus;
+                    sod.ID = sods[i].FromStockOperationDetail;
+                    if (soStatus == StockOperationStatus.NoReturn && sod.ReturnNo == initSods[i].CountNo)
+                    {
+                        sod.Status = (int)StockOperationStatus.Other;
+                    }
+                    else if (sod.ReturnNo > initSods[i].CountNo)
+                    {
+                        GetApiResult("归(退)还数量大于原始出库数量，请刷新重试");
+                        return ret;
+                    }
+                    ret.stockOperationDetailsUpdate.Add(sod);
+                }
+            }
+            // 存货明细数据更新
             for (int i = 0; i < initSds.Count; i++)
             {
                 StockDetail sd = new StockDetail();
@@ -127,16 +242,24 @@ namespace MSS.API.Core.V1.Business
                 if (sd.InspectionNo < 0) {GetApiResult("送检数量小于零，请刷新重试"); return ret; }
                 sd.RepairNo = GetNo(repair, initSds[i].RepairNo, sods[i].CountNo);
                 if (sd.RepairNo < 0) {GetApiResult("送修数量小于零，请刷新重试"); return ret; }
-                if (sd.InStockNo == 0) sd.Status = (int)StockStatus.Exhaust;
-                else if (sd.InStockNo > 1) sd.Status = (int)StockStatus.None;
+                sd.LentNo = GetNo(lent, initSds[i].LentNo, sods[i].CountNo);
+                if (sd.LentNo < 0) { GetApiResult("外借数量小于零，请刷新重试"); return ret; }
+                sd.ScrapNo = GetNo(scrap, initSds[i].ScrapNo, sods[i].CountNo);
+                if (sd.ScrapNo < 0) { GetApiResult("报废数量小于零，请刷新重试"); return ret; }
+                //if (sd.InStockNo == 0) sd.Status = (int)StockStatus.Exhaust;
+                //else if (sd.InStockNo > 1) sd.Status = (int)StockStatus.None;
+                //else sd.Status = (int)status;
+                if (sd.StockNo > 1 && status != StockStatus.Normal) sd.Status = (int)StockStatus.None;
+                else if (sd.StockNo == 0 && status != StockStatus.Scrap && status != StockStatus.Returned) sd.Status = (int)StockStatus.Exhaust;
                 else sd.Status = (int)status;
                 ret.stockDetails.Add(sd);
             }
             foreach (var item in sods.Select(a => a.SpareParts).Distinct())
             {
+                // 仓库明细数据更新
                 var sod = sods.Where(a => a.SpareParts == item);
                 int countNo = sod.Sum(a => a.CountNo);
-                //应该需要换算字段，否则全部算是人民币
+                //直接在前端换算成人民币
                 double amount = sod.Sum(a => a.Amount);
                 Stock s = stocksTmp.Where(a => a.SpareParts == item).FirstOrDefault();
                 s.isAdd = false;
@@ -145,9 +268,11 @@ namespace MSS.API.Core.V1.Business
                 s.InStockNo = GetNo(inStock, s.InStockNo, countNo);
                 s.InspectionNo = GetNo(inspection, s.InspectionNo, countNo);
                 s.RepairNo = GetNo(repair, s.RepairNo, countNo);
-                s.Amount += amount;
+                s.LentNo = GetNo(lent, s.LentNo, countNo);
+                s.ScrapNo = GetNo(scrap, s.ScrapNo, countNo);
+                s.Amount = GetAmount(stock, s.Amount, amount);
                 ret.stocks.Add(s);
-
+                // 库存总表数据更新
                 StockSum ss = stockSumsTmp.Where(a => a.SpareParts == item).FirstOrDefault();
                 ss.isAdd = false;
                 ss.StockNo = GetNo(stock, ss.StockNo, countNo);
@@ -155,7 +280,9 @@ namespace MSS.API.Core.V1.Business
                 ss.InStockNo = GetNo(inStock, ss.InStockNo, countNo);
                 ss.InspectionNo = GetNo(inspection, ss.InspectionNo, countNo);
                 ss.RepairNo = GetNo(repair, ss.RepairNo, countNo);
-                ss.Amount += amount;
+                ss.LentNo = GetNo(lent, ss.LentNo, countNo);
+                ss.ScrapNo = GetNo(scrap, ss.ScrapNo, countNo);
+                ss.Amount = GetAmount(stock, ss.Amount, amount);
                 ret.stockSums.Add(ss);
             }
             return ret;
@@ -171,6 +298,18 @@ namespace MSS.API.Core.V1.Business
                 default: return initNo;
             }
         }
+
+        private double GetAmount(StockChange sc, double initNo, double editNo)
+        {
+            switch (sc)
+            {
+                case StockChange.NoChange: return initNo;
+                case StockChange.Plus: return initNo + editNo;
+                case StockChange.Subtract: return initNo - editNo;
+                default: return initNo;
+            }
+        }
+
         /// <summary>
         /// 库存操作保存专用
         /// </summary>
@@ -187,6 +326,12 @@ namespace MSS.API.Core.V1.Business
             StockOperation so = parm.stockOperation;
             ret.stockOperation = so;
             List<StockOperationDetail> sods = JsonConvert.DeserializeObject<List<StockOperationDetail>>(so.DetailList);
+            if (await _stockOperationRepo.HasEntity(sods.Select(a => a.Entity).ToList()))
+            {
+                validateSaveData.code = Code.DataIsExist;
+                validateSaveData.msg = "物资ID中与库存中已有的重复";
+                return ret;
+            }
             ret.stockOperationDetails = sods;
 
             ret.isAddStockDetails = true;
@@ -200,6 +345,7 @@ namespace MSS.API.Core.V1.Business
             foreach (var item in sods)
             {
                 StockDetail sd = new StockDetail();
+                sd.Entity = item.Entity;
                 sd.InspectionNo = 0;
                 sd.InStockNo = item.CountNo;
                 sd.RepairNo = 0;
@@ -208,6 +354,8 @@ namespace MSS.API.Core.V1.Business
                 sd.StockNo = item.CountNo;
                 //sd.StockOperationDetail = item.ID;此ID需要在DAL层事务中赋值
                 sd.TroubleNo = 0;
+                sd.LentNo = 0;
+                sd.ScrapNo = 0;
                 sd.Warehouse = so.Warehouse;
                 ret.stockDetails.Add(sd);
             }
@@ -228,6 +376,8 @@ namespace MSS.API.Core.V1.Business
                     s.Amount = totalAmount;
                     s.StockNo = countNo;
                     s.TroubleNo = 0;
+                    s.LentNo = 0;
+                    s.ScrapNo = 0;
                     s.Warehouse = so.Warehouse;
                     ret.stocks.Add(s);
                 }
@@ -252,6 +402,8 @@ namespace MSS.API.Core.V1.Business
                     ss.Amount = totalAmount;
                     ss.StockNo = countNo;
                     ss.TroubleNo = 0;
+                    ss.LentNo = 0;
+                    ss.ScrapNo = 0;
                     ret.stockSums.Add(ss);
                 }
                 else
@@ -301,6 +453,47 @@ namespace MSS.API.Core.V1.Business
         }
         #endregion
 
+        /// <summary>
+        /// 根据仓库找物资（级联筛选）
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public async Task<ApiResult> ListByWH(int warehouse)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _stockOperationRepo.ListByWH(warehouse);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// 直接从存货中所有物资ID
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ApiResult> ListStockDetail()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _stockOperationRepo.ListStockDetail();
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
         #endregion
 
         #region 库存操作查询
@@ -331,13 +524,38 @@ namespace MSS.API.Core.V1.Business
             {
                 StockOperation s = await _stockOperationRepo.GetByID(id);
                 StockOptDetailType reason = (StockOptDetailType)s.Reason;
-                if (reason== StockOptDetailType.PurchaseReceive || reason==StockOptDetailType.OtherReceive)
+                int fromID = 0;
+                switch (reason)
                 {
-                    s.DetailList = JsonConvert.SerializeObject(await _stockOperationRepo.ListByOperationIn(id));
+                    case StockOptDetailType.PurchaseReceive:
+                    case StockOptDetailType.OtherReceive:
+                    //case StockOptDetailType.TroubleScrap:
+                    //case StockOptDetailType.InStockScrap:
+                        s.DetailList = JsonConvert.SerializeObject(await _stockOperationRepo.ListByOperationIn(id));
+                        break;
+                    //case StockOptDetailType.Distribution:
+                    //case StockOptDetailType.Inspection:
+                    //case StockOptDetailType.MaterialLend:
+                    //case StockOptDetailType.TroubleRepair:
+                    //    s.DetailList = JsonConvert.SerializeObject(await _stockOperationRepo.ListByOperationOut(id));
+                    //    break;
+                    default:
+                        List<StockOperationDetail> tmp = await _stockOperationRepo.ListByOperationOut(id);
+                        StockOperationDetail sod = tmp.FirstOrDefault();
+                        fromID = sod.FromStockOperationDetail;
+                        s.SomeOrder = sod.SomeOrder;
+                        s.WorkingOrder = sod.WorkingOrder;
+                        s.DetailList = JsonConvert.SerializeObject(tmp);
+                        break;
                 }
-                else
+                if (reason == StockOptDetailType.TroubleReturn || reason==StockOptDetailType.lendReturn ||
+                    reason==StockOptDetailType.MaterialReturn || reason==StockOptDetailType.RepairReceive ||
+                    reason==StockOptDetailType.InspectionReturn)
                 {
-                    s.DetailList = JsonConvert.SerializeObject(await _stockOperationRepo.ListByOperationOut(id));
+                    List<StockOperationDetail> tmp = await _stockOperationRepo.ListSODByIDs(new List<int> { fromID });
+                    StockOperationDetail sod = tmp.FirstOrDefault();
+                    s.SomeOrder = sod.SomeOrder;
+                    s.WorkingOrder = sod.WorkingOrder;
                 }
                 ret.data = s;
                 return ret;
@@ -389,7 +607,7 @@ namespace MSS.API.Core.V1.Business
 
         #endregion
 
-        #region 库存明细
+        #region 存货明细
         public async Task<ApiResult> ListStockDetailBySPsAndWH(int spareParts,int warehouse)
         {
             ApiResult ret = new ApiResult();
@@ -405,6 +623,24 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
+
+
+        public async Task<ApiResult> GetStockDetailByID(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _stockOperationRepo.GetStockDetailByID(id);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
         #endregion
     }
 }
