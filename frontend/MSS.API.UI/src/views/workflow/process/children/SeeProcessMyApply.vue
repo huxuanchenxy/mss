@@ -97,13 +97,13 @@ import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
 export default {
-  name: 'SeeProcessConsul',
+  name: 'SeeProcessMyApply',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 我的待办任务',
+      title: ' | 我的申请',
       time: '',
       id: '',
       startTime: '',
@@ -136,7 +136,7 @@ export default {
     }
   },
   created () {
-    this.$emit('title', '| 我的待办任务')
+    this.$emit('title', '| 我的申请')
     this.init()
   },
   activated () {
@@ -156,8 +156,6 @@ export default {
         this.headOrder.activityName = 0
         this.headOrder.appInstanceID = 0
         this.headOrder.appName = 0
-        this.headOrder.appName = 0
-        this.headOrder.servicePID = 0
         this.headOrder.createdDateTime = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
@@ -184,7 +182,7 @@ export default {
         page: page,
         AppName: this.appName
       }
-      api.getPage(parm).then(res => {
+      api.getMyApplyPage(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
           item.createdDateTime = transformDate(item.createdDateTime)
@@ -195,7 +193,7 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 我的待办任务')
+      this.$emit('title', '| 我的申请')
       this.loading = true
       this.init()
       this.searchResult(1)
@@ -278,7 +276,7 @@ $con-height: $content-height - 145 - 56;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 13px 16px;
+      padding: 13px 6px;
       div{
         word-break: break-all;
       }

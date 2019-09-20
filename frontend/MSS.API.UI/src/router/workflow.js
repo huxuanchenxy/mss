@@ -42,6 +42,22 @@ const routes = [
               component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeProcessTask.vue')
             }
           ]
+        }, 
+        {
+          path: 'MyApply',
+          component: () => import( '@/views/workflow/process/index.vue'),
+          children: [
+            {
+              path: '/',
+              name: 'MyApply',
+              redirect: 'list'
+            }, 
+            {
+              path: 'list',
+              name: 'SeeProcessMyApply',
+              component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeProcessMyApply.vue')
+            }
+          ]
         }
     ]
   }
