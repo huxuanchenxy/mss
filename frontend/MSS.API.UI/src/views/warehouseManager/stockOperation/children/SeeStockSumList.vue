@@ -75,6 +75,14 @@
           送修数量
           <i :class="[{ 'el-icon-d-caret': headOrder.repair_no === 0 }, { 'el-icon-caret-top': headOrder.repair_no === 1 }, { 'el-icon-caret-bottom': headOrder.repair_no === 2 }]"></i>
         </li>
+        <li class="list name c-pointer" @click="changeOrder('lent_no')">
+          借用数量
+          <i :class="[{ 'el-icon-d-caret': headOrder.lent_no === 0 }, { 'el-icon-caret-top': headOrder.lent_no === 1 }, { 'el-icon-caret-bottom': headOrder.lent_no === 2 }]"></i>
+        </li>
+        <li class="list name c-pointer" @click="changeOrder('scrap_no')">
+          报废数量
+          <i :class="[{ 'el-icon-d-caret': headOrder.scrap_no === 0 }, { 'el-icon-caret-top': headOrder.scrap_no === 1 }, { 'el-icon-caret-bottom': headOrder.scrap_no === 2 }]"></i>
+        </li>
         <li class="list name c-pointer" @click="changeOrder('amount')">
           总金额
           <i :class="[{ 'el-icon-d-caret': headOrder.amount === 0 }, { 'el-icon-caret-top': headOrder.amount === 1 }, { 'el-icon-caret-bottom': headOrder.amount === 2 }]"></i>
@@ -95,6 +103,8 @@
                 <div class="name">{{ item.inStockNo }}</div>
                 <div class="name">{{ item.inspectionNo }}</div>
                 <div class="name">{{ item.repairNo }}</div>
+                <div class="name">{{ item.lentNo }}</div>
+                <div class="name">{{ item.scrapNo }}</div>
                 <div class="name">{{ item.amount }}</div>
               </div>
               <ul class="sub-content" :class="{ active: item.isShowSubCon }">
@@ -112,6 +122,8 @@
                     <div class="name">存货数量</div>
                     <div class="name">送检数量</div>
                     <div class="name">送修数量</div>
+                    <div class="name">借用数量</div>
+                    <div class="name">报废数量</div>
                     <div class="name">总金额</div>
                   </div>
                 </li>
@@ -123,6 +135,8 @@
                     <div class="name">{{ sub.inStockNo }}</div>
                     <div class="name">{{ sub.inspectionNo }}</div>
                     <div class="name">{{ sub.repairNo }}</div>
+                    <div class="name">{{ sub.lentNo }}</div>
+                    <div class="name">{{ sub.scrapNo }}</div>
                     <div class="name">{{ sub.amount }}</div>
                   </div>
                 </li>
@@ -177,6 +191,7 @@ export default {
         in_stock_no: 0,
         inspection_no: 0,
         repair_no: 0,
+        lent_no: 0,
         amount: 0
       },
       currentOpen: -1,
@@ -211,7 +226,7 @@ export default {
       this.searchResult(1)
     },
     detail () {
-      if (this.editStockSum === '') {
+      if (this.editStockSum.length === 0) {
         this.$message({
           message: '请选择需要查看的物资',
           type: 'warning'
@@ -239,6 +254,7 @@ export default {
         this.headOrder.in_stock_no = 0
         this.headOrder.inspection_no = 0
         this.headOrder.repair_no = 0
+        this.headOrder.lent_no = 0
         this.headOrder.amount = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1

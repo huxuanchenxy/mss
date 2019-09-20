@@ -40,6 +40,22 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
+        public async Task<ApiResult> GetSubByCodeOrder(int pid)
+        {
+            ApiResult mRet = new ApiResult();
+            try
+            {
+                mRet.data = await _DictionaryRepo.GetSubByCodeOrder(pid);
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = Code.Failure;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
         public async Task<ApiResult> GetByParent(int pid)
         {
             ApiResult mRet = new ApiResult();

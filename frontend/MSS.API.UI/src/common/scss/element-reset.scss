@@ -204,6 +204,10 @@
 .el-select{
   .el-input__inner{
     color: $color-content-text;
+    height: 30px!important;
+  }
+  .el-input__inner[disabled]{
+    height: 30px!important;
   }
 
   .el-tag{

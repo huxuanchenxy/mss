@@ -178,7 +178,7 @@ export default {
     },
 
     validateInput (val) {
-      validateInputCommon(val)
+      return validateInputCommon(val)
     },
 
     validateNumber () {

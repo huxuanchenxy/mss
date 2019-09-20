@@ -39,9 +39,9 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="name">领料人</label>
+            <label for="name">责任人</label>
             <div class="inp">
-              <el-select v-model="picker" clearable filterable placeholder="请选择领料人">
+              <el-select v-model="picker" clearable filterable placeholder="请选择责任人">
                 <el-option
                   v-for="item in pickerList"
                   :key="item.key"
@@ -94,10 +94,10 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.warehouse === 0 }, { 'el-icon-caret-top': headOrder.warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.warehouse === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('picker')">
-          领料人
+          责任人
           <i :class="[{ 'el-icon-d-caret': headOrder.picker === 0 }, { 'el-icon-caret-top': headOrder.picker === 1 }, { 'el-icon-caret-bottom': headOrder.picker === 2 }]"></i>
         </li>
-        <li class="list name">领料部门</li>
+        <li class="list name">责任人部门</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
           过账时间
           <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
@@ -175,10 +175,10 @@ export default {
       loading: false,
       currentSort: {
         sort: 'operation_id',
-        order: 'asc'
+        order: 'desc'
       },
       headOrder: {
-        operation_id: 1,
+        operation_id: 2,
         reason: 0,
         warehouse: 0,
         picker: 0,
@@ -197,14 +197,14 @@ export default {
       })
     }
     // 事务原因列表
-    apiAuth.getSubCode(sparePartsOperationType.delivery).then(res => {
+    apiAuth.getSubCodeOrder(sparePartsOperationType.delivery).then(res => {
       this.reasonList = res.data
     }).catch(err => console.log(err))
     // 仓库加载
     api.getWarehouseAll().then(res => {
       this.warehouseList = res.data
     }).catch(err => console.log(err))
-    // 领料人加载
+    // 责任人加载
     apiAuth.getUserAll().then(res => {
       this.pickerList = res.data
     }).catch(err => console.log(err))

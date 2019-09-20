@@ -62,6 +62,7 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
+        <li class="list number">资源编号</li>
         <li class="list name">接收日期</li>
         <li class="list name">仓库</li>
         <li class="list name">接收数量</li>
@@ -70,18 +71,21 @@
         <li class="list name">存货数量</li>
         <li class="list name">送检数量</li>
         <li class="list name">送修数量</li>
+        <li class="list name">借用数量</li>
+        <li class="list name">报废数量</li>
         <li class="list name">接收币种</li>
         <li class="list name">接收单价</li>
         <li class="list name">存货金额</li>
         <li class="list name">供应商</li>
         <li class="list name">保质期</li>
-        <li class="list name">接收备注</li>
+        <li class="list name">状态</li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
             <li class="list" v-for="item in stockDetailList" :key="item.key">
               <div class="list-content">
+                <div class="number">{{ item.id}}</div>
                 <div class="name">{{ item.acceptDate.slice(0,10)}}</div>
                 <div class="name">{{ item.warehouseName }}</div>
                 <div class="name">{{ item.acceptNo }}</div>
@@ -90,12 +94,14 @@
                 <div class="name">{{ item.inStockNo }}</div>
                 <div class="name">{{ item.inspectionNo }}</div>
                 <div class="name">{{ item.repairNo }}</div>
+                <div class="name">{{ item.lentNo }}</div>
+                <div class="name">{{ item.scrapNo }}</div>
                 <div class="name word-break">{{ item.currencyName }}</div>
                 <div class="name word-break">{{ item.acceptUnitPrice.toFixed(2) }}</div>
                 <div class="name word-break">{{ (item.acceptUnitPrice * item.inStockNo).toFixed(2) }}</div>
                 <div class="name word-break">{{ item.supplierName }}</div>
                 <div class="name word-break">{{ item.lifeDate === null || item.lifeDate === '' ? '' : item.lifeDate.slice(0,10) }}</div>
-                <div class="name word-break">{{ item.remark }}</div>
+                <div class="name word-break">{{ item.statusName === null ? '无' : item.statusName }}</div>
               </div>
             </li>
           </ul>

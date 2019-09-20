@@ -218,7 +218,7 @@ export default {
     // },
     // 验证
     validateInput (val) {
-      validateInputCommon(val)
+      return validateInputCommon(val)
     }
   },
   mounted () {
