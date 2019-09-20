@@ -1,6 +1,6 @@
 import axios from './interceptors'
-let api = 'http://localhost:3851/api/v1'
-// let api = 'http://10.89.36.154:5801/wmsapi'
+// let api = 'http://localhost:3851/api/v1'
+let api = 'http://10.89.36.154:5801/wmsapi'
 export default {
   getWarehouse: parm => { return axios.get(`${api}/Warehouse`, {params: parm}).then(res => res.data) },
   getWarehouseByID: id => { return axios.get(`${api}/Warehouse/${id}`).then(res => res.data) },
