@@ -11,8 +11,10 @@ namespace System.API.Model
 		{}
 		#region Model
 		private int _id;
+		private int _metroLineID;
+		private string _metroLineName;
 		private string _areaname;
-        private int? _configType;
+        private int _configType;
         private int? _sort;
 		private int? _is_used;
 		private int? _is_deleted;
@@ -29,6 +31,25 @@ namespace System.API.Model
 			set{ _id=value;}
 			get{return _id;}
 		}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int MetroLineID
+        {
+            set { _metroLineID = value; }
+            get { return _metroLineID; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string MetroLineName
+        {
+            set { _metroLineName = value; }
+            get { return _metroLineName; }
+        }
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -39,10 +60,15 @@ namespace System.API.Model
 		}
 
 
-        public int? ConfigType
+        public int ConfigType
         {
             set { _configType = value; }
             get { return _configType; }
+        }
+
+        public string ConfigTypeName
+        {
+            get; set;
         }
 
         /// <summary>

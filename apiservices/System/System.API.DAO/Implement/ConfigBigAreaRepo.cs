@@ -22,8 +22,8 @@ namespace System.API.DAO.Implement
         #endregion  MethodEx
         public int Add(TB_Config_BigArea model)
         {
-            var ret = DbContext.Execute("insert into TB_Config_BigArea (AreaName,ConfigType,sort,Is_Used,Is_Deleted,Created_Time,Created_By,Updated_Time,Updated_By,Remark)" +
-                 " values(@AreaName,@ConfigType,@sort,@Is_Used,@Is_Deleted,@Created_Time,@Created_By,@Updated_Time,@Updated_By,@Remark)", model);
+            var ret = DbContext.Execute("insert into TB_Config_BigArea (MetroLineID,AreaName,ConfigType,sort,Is_Used,Is_Deleted,Created_Time,Created_By,Updated_Time,Updated_By,Remark)" +
+                 " values(@MetroLineID,@AreaName,@ConfigType,@sort,@Is_Used,@Is_Deleted,@Created_Time,@Created_By,@Updated_Time,@Updated_By,@Remark)", model);
             return ret;
         }
 
@@ -86,14 +86,28 @@ namespace System.API.DAO.Implement
         public List<TB_Config_BigArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append("SELECT * FROM TB_Config_BigArea where " + strWhere);
+            sql.Append("SELECT a.*, b.line_name as MetroLineName FROM TB_Config_BigArea a JOIN  metro_line b ON a.MetroLineID=b.id");
+            sql.Append(" where " + strWhere);
             if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(orderby))
             {
-                sql.Append(" order by " + sort + " " + orderby);
+                sql.Append(" order by a." + sort + " " + orderby);
             }
             sql.Append(" limit " + (page - 1) * size + "," + size);
             List<TB_Config_BigArea> list = new List<TB_Config_BigArea>();
              var BigArealist = DbContext.Query<TB_Config_BigArea>(sql.ToString());
+            list.AddRange(BigArealist);
+            return list;
+        }
+
+        public List<TB_Config_BigArea> ListAll()
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT a.*, b.line_name as MetroLineName, c.name as configtypename FROM TB_Config_BigArea a");
+            sql.Append(" JOIN  metro_line b ON a.MetroLineID=b.id");
+            sql.Append(" JOIN dictionary_tree c ON c.id = a.configtype");
+            sql.Append(" where is_Deleted != 1");
+            List<TB_Config_BigArea> list = new List<TB_Config_BigArea>();
+            var BigArealist = DbContext.Query<TB_Config_BigArea>(sql.ToString());
             list.AddRange(BigArealist);
             return list;
         }
@@ -118,7 +132,7 @@ namespace System.API.DAO.Implement
 
         public bool Update(TB_Config_BigArea model)
         {
-            var ret = DbContext.Execute("update TB_Config_BigArea set  AreaName=@AreaName,ConfigType=@ConfigType,Updated_Time=@Updated_Time,Updated_By=@Updated_By,Remark=@Remark where id=@id", model);
+            var ret = DbContext.Execute("update TB_Config_BigArea set MetroLineID=@MetroLineID, AreaName=@AreaName,ConfigType=@ConfigType,Updated_Time=@Updated_Time,Updated_By=@Updated_By,Remark=@Remark where id=@id", model);
             if (ret > 0)
             {
                 return true;

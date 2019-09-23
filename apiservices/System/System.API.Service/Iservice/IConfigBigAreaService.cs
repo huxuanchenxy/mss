@@ -48,6 +48,12 @@ namespace System.API.Service
         List<TB_Config_BigArea> GetList(int Top, string strWhere, string filedOrder);
         int GetRecordCount(string strWhere);
         List<TB_Config_BigArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size);
+
+        /// <summary>
+        /// 获得所有数据
+        /// </summary>
+        List<TB_Config_BigArea> ListAll();
+
         /// <summary>
         /// 根据分页获得数据列表
         /// </summary>
