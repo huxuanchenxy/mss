@@ -255,7 +255,24 @@ const routes = [
               component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeMonitorServer.vue')
             }
           ]
-        }
+      }, {
+        path: 'metroline',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/metroline/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'MetroLineList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/metroline/children/List.vue')
+          }, {
+            path: 'add/:id?',
+            name: 'MetroLineAdd',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/metroline/children/Add.vue')
+          }
+        ]
+      }
     ]
   }
 ]
