@@ -422,7 +422,7 @@ height: 50px;
       padding-left: 4.86111%;
       li{
         // background: #fff;
-        margin: 0 5px;
+        margin: 0 -5px;
       }
     }
   }
