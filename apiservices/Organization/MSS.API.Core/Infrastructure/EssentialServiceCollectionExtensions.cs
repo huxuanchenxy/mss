@@ -25,6 +25,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IAuthHelper, AuthHelper>();
             services.AddTransient<IServiceDiscoveryProvider, ConsulServiceProvider>();
             services.AddTransient<IWarnningService, WarnningService>();
+            services.AddTransient<IMetroLineService, MetroLineService>();
             return services;
         }
     }

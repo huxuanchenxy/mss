@@ -12,8 +12,19 @@ using System.API.Service;
 using System.API.Model;
 using System.API.Core.Function;
 
+using MSS.Common.Consul;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using MSS.API.Common;
+using MSS.API.Common.Utility;
+
 namespace System.API.Core.Controllers
 {
+    class DicTree {
+        public int id { get; set; }
+        public string name { get; set; }
+    }
+
     /// <summary>
     /// 工作流模块
     /// </summary>
@@ -22,15 +33,16 @@ namespace System.API.Core.Controllers
     public class SystemController : ControllerBase
     {
         //注入进来
-         private readonly IService _SystemService; 
+         private readonly IService _SystemService;
+        private readonly IServiceDiscoveryProvider _consulServiceProvider;
         /// <summary>
         /// 构造函数注入
         /// </summary>
         /// <param name="SystemService"></param>
-        public SystemController(IService SystemService)
+        public SystemController(IService SystemService, IServiceDiscoveryProvider consulServiceProvider)
         {
             _SystemService = SystemService;
-
+            _consulServiceProvider = consulServiceProvider;
         }
 
 
@@ -63,7 +75,7 @@ namespace System.API.Core.Controllers
                     result.ret = -1;
                 }
                 ts.Complete();
-            } 
+            }
             return result;
         }
 
@@ -409,7 +421,7 @@ namespace System.API.Core.Controllers
             DicAreaList.Add(new ChangQuDTO() { AreaName = "正线轨行区", Id = 2});
             DicAreaList.Add(new ChangQuDTO() { AreaName = "保护区", Id = 3});
             DicAreaList.Add(new ChangQuDTO() { AreaName = "车场生产区", Id = 4 }); 
-           result.data = DicAreaList;
+            result.data = DicAreaList;
             return result;
         }
 
@@ -555,34 +567,76 @@ namespace System.API.Core.Controllers
         public ResponseContext SelectConfigAreaData()
         {
             ResponseContext result = new ResponseContext();
-            ConfigAreaDataDTO model = new ConfigAreaDataDTO();
 
-            List<DicAreaDTO> DicAreaList = new List<DicAreaDTO>();
-            DicAreaList.Add(new DicAreaDTO() { AreaName = "车站", Id = 1, sort = 1 });
-            DicAreaList.Add(new DicAreaDTO() { AreaName = "正线轨行区", Id = 2, sort = 2 });
-            DicAreaList.Add(new DicAreaDTO() { AreaName = "保护区", Id = 3, sort = 2 });
-            DicAreaList.Add(new DicAreaDTO() { AreaName = "车场生产区", Id = 4, sort = 4 });
-            model.DicAreaList = DicAreaList;
-            foreach (var v in model.DicAreaList)
-            {   
-               
-                List<TB_Config_BigArea> Biglist = _SystemService._IConfigBigAreaService.GetListByConfigType(v.Id.ToString());
-                if (Biglist != null && Biglist.Count > 0)
+            List<object> data = new List<object>();
+            // // 获取地铁大区
+            // var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
+            // string code = "8";
+            // ApiResult dicResult = HttpClientHelper.GetResponse<ApiResult>(_services + "/api/v1/Dictionary/SubCode/" + code);
+            // List<DicTree> list = JsonConvert.DeserializeObject<List<DicTree>>(dicResult.data.ToString());
+
+
+            // List<DicAreaDTO> DicAreaList = new List<DicAreaDTO>();
+            // foreach(DicTree item in list)
+            // {
+            //     DicAreaList.Add(new DicAreaDTO() { AreaName = item.name, Id = item.id });
+            // }
+
+            // 获取车站等大区
+            List<TB_Config_BigArea> Biglist = _SystemService._IConfigBigAreaService.ListAll();
+            // 获取位置
+            List<TB_Config_MidArea> Midlist = _SystemService._IConfigMidAreaService.GetList("is_Deleted != 1");
+            // 线路分组
+            IEnumerable<IGrouping<int, TB_Config_BigArea>> lineGroups = Biglist.GroupBy(c => c.MetroLineID);
+            foreach (IGrouping<int, TB_Config_BigArea> group_line in lineGroups)
+            {
+                var line = new {
+                    Id = group_line.Key,
+                    AreaName = group_line.First().MetroLineName,
+                    children = new List<object>()
+                };
+                // 类型分组
+                IEnumerable<IGrouping<int, TB_Config_BigArea>> typeGroups = group_line.GroupBy(c => c.ConfigType);
+                foreach (IGrouping<int, TB_Config_BigArea> group_type in typeGroups)
                 {
-                    v.children = new List<BigAreaDTO>();
-                    Helper.ModelToDTO<TB_Config_BigArea, BigAreaDTO>(Biglist, v.children);
-                    foreach (var m in v.children)
+                    dynamic type = new
                     {
-                        List<TB_Config_MidArea> Midlist = _SystemService._IConfigMidAreaService.GetListByPid(m.Id);
-                        if (Midlist != null && Midlist.Count > 0)
+                        Id = group_type.Key,
+                        AreaName = group_type.First().ConfigTypeName,
+                        children = new List<object>()
+                    };
+                    foreach (TB_Config_BigArea area in group_type.ToList())
+                    {
+                        dynamic areaObj = new {
+                            Id = area.Id,
+                            AreaName = area.AreaName
+                        };
+                        // 车站内位置
+                        List<TB_Config_MidArea> midAreas = Midlist.Where(c => c.PID == area.Id).ToList();
+                        if (midAreas.Count > 0)
                         {
-                            m.children = new List<MidAreaDTO>();
-                            Helper.ModelToDTO<TB_Config_MidArea, MidAreaDTO>(Midlist, m.children);
+                            areaObj = new
+                            {
+                                Id = area.Id,
+                                AreaName = area.AreaName,
+                                children = new List<object>()
+                            }; 
+                            foreach (TB_Config_MidArea midArea in midAreas)
+                            {
+                                areaObj.children.Add(new
+                                {
+                                    Id = midArea.Id,
+                                    AreaName = midArea.AreaName
+                                });
+                            }
                         }
+                        type.children.Add(areaObj);
                     }
+                    line.children.Add(type);
                 }
+                data.Add(line);
             }
-           result.data = model;
+            result.data = new {DicAreaList = data};
             return result;
         }
     }

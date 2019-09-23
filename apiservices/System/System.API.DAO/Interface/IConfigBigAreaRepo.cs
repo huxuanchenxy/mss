@@ -49,6 +49,11 @@ namespace System.API.DAO.Interface
         int GetRecordCount(string strWhere);
         List<TB_Config_BigArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size);
 
+        /// <summary>
+        /// 获得所有数据
+        /// </summary>
+        List<TB_Config_BigArea> ListAll();
+
         #endregion  成员方法
         #region  MethodEx
 

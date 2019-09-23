@@ -24,6 +24,26 @@ namespace System.API.DTO
         /// <summary>
         /// 
         /// </summary>
+        public int MetroLineID
+        {
+            get;
+            set;
+        }
+
+        [DataMember]
+        /// <summary>
+        /// 
+        /// </summary>
+        public string MetroLineName
+        {
+            get;
+            set;
+        }
+
+        [DataMember]
+        /// <summary>
+        /// 
+        /// </summary>
         public string AreaName
 		{
             get;

@@ -142,7 +142,7 @@ const routes = [
         children: [
           {
             path: '/',
-           // name: 'SmallArea',
+            // name: 'SmallArea',
             redirect: 'list'
           },
           {
@@ -156,14 +156,14 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/SmallArea/AddSmallArea.vue')
           }
         ]
-      },{
+      }, {
         path: 'operlog',
-        component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/index.vue'), 
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/index.vue'),
         children: [
           {
             path: '/',
             redirect: 'list'
-          }, 
+          },
           {
             path: 'list',
             name: 'SeeOperlogList',
@@ -173,16 +173,15 @@ const routes = [
             name: 'AddOperlog',
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/AddOperlog.vue')
           }
-      ]
-    }
-      ,
+        ]
+      },
       {
         path: 'Area1',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/index.vue'),
         children: [
           {
             path: '/',
-           // name: 'MidArea',
+            // name: 'MidArea',
             redirect: 'list'
           },
           {
@@ -196,29 +195,46 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/Area/MidArea/AddMidArea.vue')
           }
         ]
+      },
+      {
+        path: 'MaintainConfig',
+        component: () => import('@/views/system/operlog/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'MaintainConfig',
+            redirect: 'list'
+          },
+          {
+            path: 'list',
+            name: 'SeeMaintainConfig',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeMaintainConfig.vue')
+          },
+          {
+            path: 'addMaintainConfig/:mark?/:id?',
+            name: 'addMaintainConfig',
+            component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
+          }
+        ]
+      },
+      {
+        path: 'metroline',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/metroline/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'MetroLineList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/metroline/children/List.vue')
+          }, {
+            path: 'add/:id?',
+            name: 'MetroLineAdd',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/metroline/children/Add.vue')
+          }
+        ]
       }
-      ,
-        {
-          path: 'MaintainConfig',
-          component: () => import( '@/views/system/operlog/index.vue'),
-          children: [
-            {
-              path: '/',
-              name: 'MaintainConfig',
-              redirect: 'list'
-            }, 
-            {
-              path: 'list',
-              name: 'SeeMaintainConfig',
-              component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeMaintainConfig.vue')
-            }, 
-            {
-              path: 'addMaintainConfig/:mark?/:id?',
-              name: 'addMaintainConfig',
-              component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
-            }
-          ]
-        }
     ]
   }
 ]

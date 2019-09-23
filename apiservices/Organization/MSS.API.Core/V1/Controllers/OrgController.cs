@@ -72,7 +72,7 @@ namespace MSS.API.Core.V1.Controllers
 
         // 更新
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResult>> UpdateOrgNode(int id, OrgTree node, [FromHeader]string token)
+        public async Task<ActionResult<ApiResult>> UpdateOrgNode(int id, OrgTree node)
         {
             node.UpdatedBy = _userId;
             node.UpdatedTime = DateTime.Now;
