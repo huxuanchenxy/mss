@@ -241,6 +241,9 @@ export default {
     //   this.bCheckAll ? this.DataList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
     //   this.emitEditID()
     // },
+    emitEditID () {
+      this.$emit('IDS', this.IDS)
+    },
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.bCheckAll = false

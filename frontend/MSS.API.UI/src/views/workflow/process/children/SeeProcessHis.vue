@@ -68,7 +68,7 @@
                 <div class="name">{{ item.activityName }}</div>
                 <div class="name">{{ item.activityState }}</div>
                 <div class="name">{{ item.lastUpdatedByUserName }}</div>
-                <div class="name">{{ item.createdDateTime }}</div>
+                <div class="name">{{ item.lastUpdatedDateTime }}</div>
                 <div class="number" style="display:none;">{{ item.processGUID }}</div>
               </div>
             </li>
@@ -186,7 +186,7 @@ export default {
       api.getProcessHisPage(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.createdDateTime = transformDate(item.createdDateTime)
+          item.lastUpdatedDateTime = item.lastUpdatedDateTime === null ? '' : transformDate(item.lastUpdatedDateTime)
           if (item.activityState === 1) {
             item.activityState = 'Ready'
           } else if (item.activityState === 2) {
@@ -216,9 +216,9 @@ export default {
       this.init()
       this.searchResult(1)
     },
-    emitEditID () {
-      this.$emit('IDS', this.IDS)
-    },
+    // emitEditID () {
+    //   this.$emit('IDS', this.IDS)
+    // },
     // 全选
     // checkAll () {
     //   this.bCheckAll ? this.DataList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
