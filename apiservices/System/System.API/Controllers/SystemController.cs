@@ -413,14 +413,27 @@ namespace System.API.Core.Controllers
         /// <returns></returns>
         [HttpGet("SelectDicAreaData/{Areacode}")]
        // [Route("SelectDicArea")]
-        public ResponseContext SelectDicAreaData(string Areacode)
+        public async Task<ActionResult<ResponseContext>> SelectDicAreaData(string Areacode)
         {
             ResponseContext result = new ResponseContext();  
-            List<ChangQuDTO> DicAreaList = new List<ChangQuDTO>();
-            DicAreaList.Add(new ChangQuDTO() { AreaName = "车站", Id = 1});
-            DicAreaList.Add(new ChangQuDTO() { AreaName = "正线轨行区", Id = 2});
-            DicAreaList.Add(new ChangQuDTO() { AreaName = "保护区", Id = 3});
-            DicAreaList.Add(new ChangQuDTO() { AreaName = "车场生产区", Id = 4 }); 
+            // List<ChangQuDTO> DicAreaList = new List<ChangQuDTO>();
+            // DicAreaList.Add(new ChangQuDTO() { AreaName = "车站", Id = 1});
+            // DicAreaList.Add(new ChangQuDTO() { AreaName = "正线轨行区", Id = 2});
+            // DicAreaList.Add(new ChangQuDTO() { AreaName = "保护区", Id = 3});
+            // DicAreaList.Add(new ChangQuDTO() { AreaName = "车场生产区", Id = 4 }); 
+            
+            // 获取地铁大区
+            var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
+            string code = "8";
+            ApiResult dicResult = HttpClientHelper.GetResponse<ApiResult>(_services + "/api/v1/Dictionary/SubCode/" + code);
+            List<DicTree> list = JsonConvert.DeserializeObject<List<DicTree>>(dicResult.data.ToString());
+
+
+            List<DicAreaDTO> DicAreaList = new List<DicAreaDTO>();
+            foreach(DicTree item in list)
+            {
+                DicAreaList.Add(new DicAreaDTO() { AreaName = item.name, Id = item.id });
+            }
             result.data = DicAreaList;
             return result;
         }

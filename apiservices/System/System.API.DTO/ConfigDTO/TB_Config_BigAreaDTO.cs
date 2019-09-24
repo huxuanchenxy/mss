@@ -51,7 +51,7 @@ namespace System.API.DTO
         }
 
         [DataMember]
-        public int? ConfigType
+        public int ConfigType
         {
             get;
             set;
