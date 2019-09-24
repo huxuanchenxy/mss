@@ -145,7 +145,7 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'MetroLineID',
+        sort: 'id',
         order: 'asc'
       },
       dialogVisible: {
@@ -155,8 +155,8 @@ export default {
         btn: true
       },
       headOrder: {
-        id: 0,
-        MetroLineID: 1,
+        id: 1,
+        MetroLineID: 0,
         AreaName: 0,
         AreaType: 0,
         Sort: 0,
