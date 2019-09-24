@@ -86,7 +86,8 @@ namespace System.API.DAO.Implement
         public List<TB_Config_BigArea> GetListByPage(string strWhere, string sort, string orderby, int page, int size)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append("SELECT a.*, b.line_name as MetroLineName FROM TB_Config_BigArea a JOIN  metro_line b ON a.MetroLineID=b.id");
+            sql.Append("SELECT a.*, b.line_name as MetroLineName, c.name as configtypename FROM TB_Config_BigArea a JOIN  metro_line b ON a.MetroLineID=b.id");
+            sql.Append(" JOIN dictionary_tree c ON c.id = a.configtype");
             sql.Append(" where " + strWhere);
             if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(orderby))
             {

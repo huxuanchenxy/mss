@@ -164,29 +164,7 @@ namespace System.API.Core.Controllers
             int totalNum = _SystemService._IConfigBigAreaService.GetList(where).Count;
             List<TB_Config_BigAreaDTO> results = new List<TB_Config_BigAreaDTO>();
             Helper.ModelToDTO<TB_Config_BigArea, TB_Config_BigAreaDTO>(list, results);
-            foreach(var v in results)
-            {
-                if(v.ConfigType==1)
-                {
-                    v.ConfigTypeName = "车站";
-                    continue;
-                }
-                if (v.ConfigType == 2)
-                {
-                    v.ConfigTypeName = "正线轨行区";
-                    continue;
-                }
-                if (v.ConfigType == 3)
-                {
-                    v.ConfigTypeName = "保护区";
-                    continue;
-                }
-                if (v.ConfigType ==4)
-                {
-                    v.ConfigTypeName = "车场生产区";
-                    continue;
-                }
-            }
+            
             result.data = results;
             result.total = totalNum;
             return result; 
