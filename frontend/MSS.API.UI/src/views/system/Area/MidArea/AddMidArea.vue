@@ -26,7 +26,7 @@
           <div class="inp-wrap">
             <span class="text">线路<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-select v-model="LineID" clearable placeholder="请选择" @change="validateSelect()">
+              <el-select v-model="LineID" placeholder="请选择" @change="validateSelect()">
                  <el-option
                  v-for="item in MetroLineList"
                  :key="item.key"
@@ -120,7 +120,7 @@ export default {
       if (this.isShow === 'edit') {
         this.getMidArea()
       } else {
-        this.LineID = res.data[0]
+        this.LineID = res.data[0].id
       }
     }).catch(err => {
       console.log(err)
