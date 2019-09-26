@@ -53,6 +53,11 @@ namespace System.API.Service
             return _BigAreaRepo.GetListByPage(strWhere,  sort,  orderby,  page,  size);
         }
 
+        public List<TB_Config_BigArea> ListAll()
+        {
+            return _BigAreaRepo.ListAll();
+        }
+
         public int GetMaxId()
         {
             return _BigAreaRepo.GetMaxId();

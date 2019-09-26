@@ -23,6 +23,7 @@ namespace MSS.API.Dao
             services.AddTransient<IOrgRepo<OrgTree>, OrgRepo>();
             services.AddTransient<IWarnningSettingRepo<EarlyWarnningSetting>, WarnningSettingRepo>();
             services.AddTransient<IWarnningRepo<EarlyWarnning>, WarnningRepo>();
+            services.AddTransient<IMetroLineRepo<MetroLine>, MetroLineRepo>();
 
             // 配置列名映射
             FluentMapper.Initialize(config =>
@@ -41,6 +42,7 @@ namespace MSS.API.Dao
                 config.AddMap(new EarlyWarnningMap());
                 config.AddMap(new NotificationMap());
                 config.AddMap(new PidTableMap());
+                config.AddMap(new MetroLineMap());
             });
             return services;
         }

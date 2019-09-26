@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    <PackageReference Include="MSS.Common.Consul" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\System.API.DTO\System.API.DTO.csproj" />
     <ProjectReference Include="..\System.API.Service\System.API.Service.csproj" />
+    <ProjectReference Include="..\..\..\commons\MSS.API.Common\MSS.API.Common.csproj" />
   </ItemGroup>
 
 </Project>

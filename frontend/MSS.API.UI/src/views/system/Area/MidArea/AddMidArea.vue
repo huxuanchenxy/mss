@@ -24,19 +24,24 @@
         </li>
         <li class="list" >
           <div class="inp-wrap">
-            <span class="text">站区名<em class="validate-mark">*</em></span>
+            <span class="text">线路<em class="validate-mark">*</em></span>
             <div class="inp">
-              <el-input placeholder="请输入站区名名称" v-model="areaName.text" @keyup.native="validateInput(areaName)"></el-input>
+              <el-select v-model="LineID" placeholder="请选择" @change="validateSelect()">
+                 <el-option
+                 v-for="item in MetroLineList"
+                 :key="item.key"
+                 :value="item.id"
+                 :label="item.lineName">
+                 </el-option>
+              </el-select>
             </div>
           </div>
-          <p class="validate-tips">{{ areaName.tips }}</p>
         </li>
         <li class="list" >
           <div class="inp-wrap">
             <span class="text">类型<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-select v-model="AreaType.text" clearable placeholder="请选择" @change="validateSelect()">
-                <option disabled value="" selected>请选择</option>
                  <el-option
                  v-for="item in AreaTypeList"
                  :key="item.key"
@@ -47,6 +52,15 @@
             </div>
           </div>
           <p class="validate-tips">{{ AreaType.tips }}</p>
+        </li>
+        <li class="list" >
+          <div class="inp-wrap">
+            <span class="text">站区名<em class="validate-mark">*</em></span>
+            <div class="inp">
+              <el-input placeholder="请输入站区名名称" v-model="areaName.text" @keyup.native="validateInput(areaName)"></el-input>
+            </div>
+          </div>
+          <p class="validate-tips">{{ areaName.tips }}</p>
         </li>
       </ul>
     </div>
@@ -61,6 +75,7 @@
 <script>
 import { validateInputCommon, vInput } from '@/common/js/utils.js'
 import api from '@/api/AreaApi'
+import lineApi from '@/api/metroLineApi'
 import XButton from '@/components/button'
 export default {
   name: 'AddMidArea',
@@ -82,7 +97,9 @@ export default {
         text: '',
         tips: ''
       },
-      AreaTypeList: [] // 场区类型: 车站\正线轨行区\保护区\车场生产区
+      AreaTypeList: [], // 场区类型: 车站\正线轨行区\保护区\车场生产区
+      MetroLineList: [],
+      LineID: ''
     }
   },
   created () {
@@ -92,10 +109,19 @@ export default {
     } else if (this.isShow === 'edit') {
       this.loading = true
       this.title = '| 修改站区'
-      this.getMidArea()
     }
     api.SelectDicAreaData('1').then(res => {
       this.AreaTypeList = res.data
+    }).catch(err => {
+      console.log(err)
+    })
+    lineApi.getAll('1').then(res => {
+      this.MetroLineList = res.data
+      if (this.isShow === 'edit') {
+        this.getMidArea()
+      } else {
+        this.LineID = res.data[0].id
+      }
     }).catch(err => {
       console.log(err)
     })
@@ -111,6 +137,7 @@ export default {
         return
       }
       let tbConfigBigArea = {
+        MetroLineID: this.LineID,
         areaName: this.areaName.text,
         configType: this.AreaType.text,
         sort: '1',
@@ -170,6 +197,7 @@ export default {
         this.loading = false
         let _res = res.data
         this.AreaID = _res.id
+        this.LineID = _res.metroLineID
         this.areaName.text = _res.areaName
         this.AreaType.text = _res.configType
       }).catch(err => console.log(err))

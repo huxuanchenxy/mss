@@ -15,6 +15,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 
+using MSS.Common.Consul;
+using MSS.API.Common;
+
 namespace System.API
 {
     public class Startup
@@ -44,6 +47,7 @@ namespace System.API
 
             services.AddDapper(Configuration);
             services.AddEssentialService();
+            services.AddConsulService(Configuration);
 
             //services.AddAuthentication("Bearer")//添加授权模式
             //.AddIdentityServerAuthentication(Options =>
@@ -86,7 +90,8 @@ namespace System.API
 
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime,
+            IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
@@ -107,6 +112,7 @@ namespace System.API
             });
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
+            app.RegisterConsul(lifetime, consulService);
             app.UseMvc();
         }
     }

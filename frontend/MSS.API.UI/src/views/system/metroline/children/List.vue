@@ -5,8 +5,7 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }}
-         {{ title }}
+        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
     <div class="box">
@@ -14,22 +13,12 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">站区名</label>
+            <label for="name">线路名</label>
             <div class="inp">
-              <el-input v-model.trim="AreaName" placeholder="请输入站区名称"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="">类型</label>
-            <div class="inp">
-              <el-select v-model="AreaType" clearable placeholder="请选择" @change="validateSelect()">
-                 <el-option
-                 v-for="item in AreaTypeList"
-                 :key="item.key"
-                 :value="item.id"
-                 :label="item.areaName">
-                 </el-option>
-              </el-select>
+              <el-input
+                placeholder="输入线路模糊查询"
+                v-model="LineName" clearable>
+              </el-input>
             </div>
           </div>
         </div>
@@ -38,53 +27,48 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list">
-          <x-button>
-            <router-link :to="{ name: 'AddMidArea', params: { mark: 'add' } }">添加</router-link>
-          </x-button>
-        </li>
-        <li class="list" @click="remove"><x-button>删除</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
+        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
-   <div class="content-wrap">
+    <div class="content-wrap">
       <ul class="content-header">
-        <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('MetroLineID')">
-          线路
-          <i :class="[{ 'el-icon-d-caret': headOrder.MetroLineID === 0 }, { 'el-icon-caret-top': headOrder.MetroLineID === 1 }, { 'el-icon-caret-bottom': headOrder.MetroLineID === 2 }]"></i>
+        <li class="list"><el-checkbox v-model="bCheckAll" @change="checkAll"></el-checkbox></li>
+        <!-- <li class="list number c-pointer" @click="changeOrder('id')">
+          序号
+          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
+        </li> -->
+        <li class="list name c-pointer" @click="changeOrder('line_name')">
+          线路名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.line_name === 0 }, { 'el-icon-caret-top': headOrder.line_name === 1 }, { 'el-icon-caret-bottom': headOrder.line_name === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('AreaName')">
-          站区名
-          <i :class="[{ 'el-icon-d-caret': headOrder.AreaName === 0 }, { 'el-icon-caret-top': headOrder.AreaName === 1 }, { 'el-icon-caret-bottom': headOrder.AreaName === 2 }]"></i>
+        <li class="list name">
+          描述
         </li>
-        <li class="list number c-pointer" @click="changeOrder('ConfigType')">
-          类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.ConfigType === 0 }, { 'el-icon-caret-top': headOrder.ConfigType === 1 }, { 'el-icon-caret-bottom': headOrder.ConfigType === 2 }]"></i>
-        </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_Time')">
-          最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_Time === 0 }, { 'el-icon-caret-top': headOrder.updated_Time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_Time === 2 }]"></i>
-        </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_By')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_By === 0 }, { 'el-icon-caret-top': headOrder.updated_By === 1 }, { 'el-icon-caret-bottom': headOrder.updated_By === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
+        </li>
+        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
+          最后更新时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item) in ConfigBigAreaList" :key="item.key">
+            <li class="list" v-for="(item) in dataList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editAreaIDList" :value="item.id" @change="emitEditID">
+                  <el-checkbox v-model="checkedID" :label="item.id"></el-checkbox>
                 </div>
-                 <div class="number">{{item.metroLineName}}</div>
-                 <div class="name">{{ item.areaName }}</div>
-                <div class="number">{{ item.configTypeName }}</div>
-                <div class="last-update-time color-white">{{ item.updated_Time }}</div>
-                <div class="last-maintainer">{{ '管理员' }}</div>
+                <!-- <div class="number">{{ item.id }}</div> -->
+                <div class="name">{{ item.lineName }}</div>
+                <div class="name">{{ item.description }}</div>
+                <div class="last-maintainer">{{ item.userName }}</div>
+                <div class="last-update-time color-white">{{ item.updatedTime }}</div>
               </div>
             </li>
           </ul>
@@ -122,24 +106,25 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/AreaApi'
+import api from '@/api/metroLineApi'
+import { btn } from '@/element/btn.js'
 export default {
-  name: 'MidAreaList',
+  name: 'SeeUserList',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 站区配置',
-      AreaName: '',
-      AreaType: '',
-      AreaTypeList: [],
-      ConfigBigAreaList: [],
-      editAreaIDList: [],
-      UserInfo: {
-        uid: '',
-        UserName: '管理员'
+      btn: {
+        save: false,
+        delete: false,
+        update: false
       },
+      title: ' | 线路设置',
+      LineName: '',
+      dataList: [],
+      checkedID: [],
+
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -156,41 +141,32 @@ export default {
       },
       headOrder: {
         id: 1,
-        MetroLineID: 0,
-        AreaName: 0,
-        AreaType: 0,
-        Sort: 0,
+        line_name: 0,
         updated_time: 0,
         updated_by: 0
       }
     }
   },
   created () {
-    this.$emit('title', '| 站区配置')
     this.init()
-
-    // 站区配置类型列表
-    api.SelectDicAreaData('1').then(res => {
-      this.AreaTypeList = res.data
-    }).catch(err => console.log(err))
+    this.initBtn()
   },
   activated () {
-    this.searchResult(this.currentPage)
+    this.search()
   },
   methods: {
     init () {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = 1
-      this.searchResult(1)
+      this.search()
     },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.AreaName = 0
-        this.headOrder.AreaType = 0
-        this.headOrder.Sort = 0
+        this.headOrder.equipment_type_id = 0
+        this.headOrder.param_name = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -205,80 +181,82 @@ export default {
       this.currentSort.sort = sort
       this.bCheckAll = false
       this.checkAll()
-      this.searchResult(this.currentPage)
+      this.search()
     },
-    // 搜索
-    searchResult (page) {
-      this.currentPage = page
+    search () {
       this.loading = true
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
-        page: page,
-        searchName: this.AreaName,
-        searchType: this.AreaType
+        page: this.currentPage,
+        LineName: this.LineName
       }
-      api.GetNameByUid('1').then(res => {
-        this.UserInfo.UserName = res
-      }).catch(err => console.log(err))
-      api.GetBigAreaQueryPageByParm(parm).then(res => {
+      api.getByPage(parm).then(res => {
         this.loading = false
-        res.data.map(item => {
-          item.updated_Time = transformDate(item.updated_Time)
+        res.data.rows.map(item => {
+          item.updatedTime = transformDate(item.updatedTime)
         })
-        this.ConfigBigAreaList = res.data
-        this.total = res.total
+        this.dataList = res.data.rows
+        this.total = res.data.total
       }).catch(err => console.log(err))
     },
-
-    // 修改站区
+    // 新增
+    add () {
+      this.$router.push({
+        name: 'MetroLineAdd',
+        params: {
+          mark: 'add'
+        }
+      })
+    },
+    // 修改
     edit () {
-      if (!this.editAreaIDList.length) {
+      if (!this.checkedID.length) {
         this.$message({
-          message: '请选择需要修改的站区',
+          message: '请选择一行',
           type: 'warning'
         })
-      } else if (this.editAreaIDList.length > 1) {
+      } else if (this.checkedID.length > 1) {
         this.$message({
-          message: '修改的站区不能超过1个',
+          message: '选择不能超过一行',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddMidArea',
+          name: 'MetroLineAdd',
           params: {
-            id: this.editAreaIDList[0],
+            id: this.checkedID[0],
             mark: 'edit'
           }
         })
       }
     },
 
-    // 删除站区
+    // 删除用户
     remove () {
-      if (!this.editAreaIDList.length) {
+      if (!this.checkedID.length) {
         this.$message({
-          message: '请选择需要删除的站区',
+          message: '请选择需要删除的行',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条站区信息?'
+        this.dialogVisible.text = '确定删除该行信息?'
       }
     },
     // 弹框确认是否删除
     dialogEnter () {
-      api.DelConfigBigAreaId(this.editAreaIDList.join(',')).then(res => {
-        if (res.ret === 0) {
-          this.editAreaIDList = []
+      api.delete(this.checkedID.join(',')).then(res => {
+        if (res.code === 0) {
+          this.checkedID = []
           this.$message({
             message: '删除成功',
             type: 'success'
           })
           this.currentPage = 1
-          this.searchResult(1)
+          this.search()
         } else {
           this.$message({
             message: res.msg,
@@ -291,21 +269,12 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 站区别')
-      this.loading = true
       this.init()
-      this.searchResult(1)
+      this.search()
     },
-
-    // 获取修改站区id
-    emitEditID () {
-      this.$emit('editAreaIDList', this.editAreaIDList)
-    },
-
     // 全选
     checkAll () {
-      this.bCheckAll ? this.ConfigBigAreaList.map(val => this.editAreaIDList.push(val.id)) : this.editAreaIDList = []
-      this.emitEditID()
+      this.bCheckAll ? this.dataList.map(val => this.checkedID.push(val.id)) : this.checkedID = []
     },
 
     // 序号、指定页翻页
@@ -313,7 +282,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
+      this.search()
     },
 
     // 上一页
@@ -321,7 +290,7 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
+      this.search()
     },
 
     // 下一页
@@ -329,7 +298,22 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
+      this.search()
+    },
+    initBtn () {
+      let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+      if (!user.is_super) {
+        let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+        this.btn.save = !actions.some((item, index) => {
+          return item.actionID === btn.warnsetting.save
+        })
+        this.btn.delete = !actions.some((item, index) => {
+          return item.actionID === btn.warnsetting.delete
+        })
+        this.btn.update = !actions.some((item, index) => {
+          return item.actionID === btn.warnsetting.update
+        })
+      }
     }
   }
 }
@@ -416,12 +400,15 @@ $con-height: $content-height - 145 - 56;
   }
 
   .number,
-  .name,
   .btn-wrap{
-    width: 10%;
+    width: 5%;
+  }
+  /deep/ .el-checkbox__label{
+    display: none;
   }
 
   .name{
+    width: 25%;
     a{
       color: #42abfd;
     }
