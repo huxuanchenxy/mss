@@ -158,13 +158,13 @@
       <li class="list">
         <div class="inp-wrap">
           <span class="text">移出仓库</span>
-          <div class="inp">{{stockOperation.fromWarehouseName}}</div>
+          <div class="inp">{{stockOperation.warehouseName}}</div>
         </div>
       </li>
       <li class="list">
         <div class="inp-wrap">
           <span class="text">移入仓库</span>
-          <div class="inp">{{stockOperation.warehouseName}}</div>
+          <div class="inp">{{stockOperation.toWarehouseName}}</div>
         </div>
       </li>
       <li class="list"></li>
@@ -252,7 +252,7 @@ export default {
         reasonName: '',
         warehouseName: '',
         remark: '',
-        fromWarehouseName: '',
+        toWarehouseName: '',
         pickerName: '',
         pickerDeptName: '',
         supplierName: '',
@@ -303,7 +303,7 @@ export default {
           this.stockOperation.type = data.type
           this.stockOperation.reasonName = data.reasonName
           this.stockOperation.warehouseName = data.warehouseName
-          this.stockOperation.fromWarehouseName = data.fromWarehouseName
+          this.stockOperation.toWarehouseName = data.toWarehouseName
           this.stockOperation.pickerName = data.pickerName
           this.stockOperation.pickerDeptName = data.pickerDeptName
           // this.stockOperation.supplierName = data.supplierName
@@ -448,6 +448,31 @@ export default {
               this.isShow.workingOrder = false
               this.columnName.countNo = '归还数量'
               // this.columnName.amount = '归还金额'
+              break
+            case sparePartsOperationDetailType.inventoryLoss:
+              this.isShow.returnNo = false
+              this.isShow.operation = false
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '盘亏数量'
+              break
+            case sparePartsOperationDetailType.inventoryProfit:
+              this.isShow.returnNo = false
+              this.isShow.operation = false
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '盘盈数量'
+              break
+            case sparePartsOperationDetailType.moveTo:
+            case sparePartsOperationDetailType.troubleMoveTo:
+              this.isShow.returnNo = false
+              this.isShow.operation = false
+              this.isShow.someOrder = false
+              this.isShow.exchangeRate = false
+              this.isShow.workingOrder = false
+              this.columnName.countNo = '转移数量'
               break
           }
           this.title = this.title + this.stockOperation.operationID

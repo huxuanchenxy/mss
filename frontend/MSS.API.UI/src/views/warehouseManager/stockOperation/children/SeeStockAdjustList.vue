@@ -60,7 +60,7 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button :disabled="btn.save">调整过账</x-button></li>
+        <li class="list" @click="add"><x-button :disabled="btn.save">盘盈盘亏</x-button></li>
         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
     </div>

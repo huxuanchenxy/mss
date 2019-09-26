@@ -20,8 +20,8 @@ namespace MSS.API.Model.Data
         public int Warehouse { get; set; }
         public string WarehouseName { get; set; }
         public string Remark { get; set; }
-        public int? FromWarehouse { get; set; }
-        public string FromWarehouseName { get; set; }
+        public int? ToWarehouse { get; set; }
+        public string ToWarehouseName { get; set; }
         /// <summary>
         /// 采购退货时对应的采购接收id
         /// 借用/送修/送检归坏 对应的 借用/送修/送检id
@@ -58,8 +58,8 @@ namespace MSS.API.Model.Data
             Map(o => o.ReasonName).ToColumn("name");
             Map(o => o.Warehouse).ToColumn("warehouse");
             Map(o => o.WarehouseName).ToColumn("wname");
-            Map(o => o.FromWarehouse).ToColumn("from_warehouse");
-            Map(o => o.FromWarehouseName).ToColumn("fromWName");
+            Map(o => o.ToWarehouse).ToColumn("to_warehouse");
+            Map(o => o.ToWarehouseName).ToColumn("toWName");
             Map(o => o.FromStockOperation).ToColumn("from_stock_operation");
             Map(o => o.FromStockOperationName).ToColumn("fsoName");
             Map(o => o.Picker).ToColumn("picker");
@@ -83,7 +83,7 @@ namespace MSS.API.Model.Data
     {
         public int? SearchType { get; set; }
         public int? SearchReason { get; set; }
-        public int? SearchFromWarehouse { get; set; }
+        public int? SearchToWarehouse { get; set; }
         public int? SearchWarehouse { get; set; }
         public int? SearchAgreement { get; set; }
         public int? SearchPicker { get; set; }
@@ -100,6 +100,10 @@ namespace MSS.API.Model.Data
         public List<StockDetail> stockDetails { get; set; }
         public bool isAddStockDetails { get; set; }
         public List<StockSum> stockSums { get; set; }
+        /// <summary>
+        /// 移库专用
+        /// </summary>
+        public List<StockDetail> stockDetailsAdd { get; set; }
     }
     #endregion
 
@@ -112,6 +116,7 @@ namespace MSS.API.Model.Data
         public string SparePartsName { get; set; }
         public string SparePartsModel { get; set; }
         public string SparePartsUnit { get; set; }
+        public int Warehouse { get; set; }
         public int OrderNo { get; set; }
         public int CountNo { get; set; }
         public double UnitPrice { get; set; }
@@ -155,6 +160,10 @@ namespace MSS.API.Model.Data
         /// </summary>
         public int Status { get; set; }
         public int EditNo { get; set; }
+        /// <summary>
+        /// 移库专用，批次转移时需要新物资ID
+        /// </summary>
+        public string NewEntity { get; set; }
     }
 
     public class StockOperationDetailMap : EntityMap<StockOperationDetail>
@@ -210,6 +219,7 @@ namespace MSS.API.Model.Data
         public int Warehouse { get; set; }
         public string WarehouseName { get; set; }
         public bool isAdd { get; set; }
+        public int EditNo { get; set; }
     }
 
     public class StockMap : EntityMap<Stock>
@@ -228,6 +238,7 @@ namespace MSS.API.Model.Data
             Map(o => o.Amount).ToColumn("amount");
             Map(o => o.Warehouse).ToColumn("warehouse");
             Map(o => o.WarehouseName).ToColumn("name");
+            Map(o => o.EditNo).ToColumn("editNo");
         }
     }
     #endregion
@@ -296,6 +307,10 @@ namespace MSS.API.Model.Data
         /// 使前端显示默认为0
         /// </summary>
         public int EditNo { get; set; }
+        /// <summary>
+        /// 移库专用，批次时比如录入新物资ID
+        /// </summary>
+        public string NewEntity { get; set; }
     }
 
     public class StockDetailMap : EntityMap<StockDetail>

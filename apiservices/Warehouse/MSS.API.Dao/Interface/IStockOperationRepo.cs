@@ -28,6 +28,7 @@ namespace MSS.API.Dao.Interface
         Task<List<StockDetail>> ListStockDetailBySPsAndWH(List<int> spareParts, int warehouse);
         Task<StockDetail> GetStockDetailByID(int id);
         Task<List<StockDetail>> ListStockDetailByIDs(List<int> ids);
+        Task<List<StockDetail>> GetStockDetailByEntitys(List<string> entitys, int warehouse = 0);
         Task<List<StockDetail>> ListStockDetail();
 
         Task<List<StockDetail>> ListStockDetailByOperation(int operation);

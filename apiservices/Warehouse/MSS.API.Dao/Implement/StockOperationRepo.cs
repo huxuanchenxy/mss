@@ -28,7 +28,7 @@ namespace MSS.API.Dao.Implement
                 int ret;
                 string sql = " insert into stock_operation " +
                     " values (0,@OperationID,@Type,@Reason,@Warehouse, " +
-                    " @FromStockOperation,@FromWarehouse,@Remark,@Picker,@Agreement, " +
+                    " @FromStockOperation,@ToWarehouse,@Remark,@Picker,@Agreement, " +
                     " @BudgetDept,@BudgetDeptPath,@BudgetItems,@CreatedBy,@CreatedTime); ";
                 sql += "SELECT LAST_INSERT_ID()";
                 try
@@ -69,6 +69,14 @@ namespace MSS.API.Dao.Implement
                             " warehouse=@Warehouse,status=@Status where id = @id ";
                     }
                     ret = await c.ExecuteAsync(sql, parm.stockDetails, trans);
+                    //移库专用
+                    if (parm.stockDetailsAdd != null && parm.stockDetailsAdd.Count > 0)
+                    {
+                        sql = " insert into stock_detail " +
+                            " values (0,@Entity,@SpareParts,@StockOperationDetail,@StockNo,@TroubleNo,@InStockNo, " +
+                            " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Status) ";
+                    }
+                    ret = await c.ExecuteAsync(sql, parm.stockDetailsAdd, trans);
 
                     foreach (var item in parm.stocks)
                     {
@@ -122,7 +130,7 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname, ")
-                .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname,ot.name as pdname ")
+                .Append(" dt.name,w1.name as wname,w2.name as toWName,o.name as bname,ot.name as pdname ")
                 .Append(" FROM stock_operation a ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.picker=u2.id ")
@@ -131,7 +139,7 @@ namespace MSS.API.Dao.Implement
                 //.Append(" left join firm f on a.supplier=f.id ")
                 .Append(" left join dictionary_tree dt on a.reason=dt.id ")
                 .Append(" left join warehouse w1 on a.warehouse=w1.id ")
-                .Append(" left join warehouse w2 on a.from_warehouse=w2.id ")
+                .Append(" left join warehouse w2 on a.to_warehouse=w2.id ")
                 .Append(" left join org_tree o on a.budget_dept=o.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
                 if (parm.SearchType != null)
@@ -142,9 +150,9 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and a.reason = " + parm.SearchReason);
                 }
-                if (parm.SearchFromWarehouse != null)
+                if (parm.SearchToWarehouse != null)
                 {
-                    whereSql.Append(" and a.from_warehouse = " + parm.SearchFromWarehouse);
+                    whereSql.Append(" and a.to_warehouse = " + parm.SearchToWarehouse);
                 }
                 if (parm.SearchWarehouse != null)
                 {
@@ -190,7 +198,7 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,so.operation_id as fsoName, ")
-                .Append(" dt.name,w1.name as wname,w2.name as fromWName,o.name as bname,ot.name as pdname ")
+                .Append(" dt.name,w1.name as wname,w2.name as toWName,o.name as bname,ot.name as pdname ")
                 .Append(" FROM stock_operation a ")
                 .Append(" left join stock_operation so on a.from_stock_opetration=so.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
@@ -199,7 +207,7 @@ namespace MSS.API.Dao.Implement
                 .Append(" left join org_tree ot on ou.org_node_id=ot.id ")
                 .Append(" left join dictionary_tree dt on a.reason=dt.id ")
                 .Append(" left join warehouse w1 on a.warehouse=w1.id ")
-                .Append(" left join warehouse w2 on a.from_warehouse=w2.id ")
+                .Append(" left join warehouse w2 on a.to_warehouse=w2.id ")
                 .Append(" left join org_tree o on a.budget_dept=o.id where a.id=@id ");
                 var result = await c.QueryFirstOrDefaultAsync<StockOperation>(
                     sql.ToString(), new { id = id });
@@ -258,7 +266,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,sp.name as spname ")
+                sql.Append("SELECT a.*,sp.name as spname,a.stock_no as editNo ")
                 .Append(" FROM stock a ");
                 sql.Append(" left join spare_parts sp on a.spare_parts=sp.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
@@ -516,6 +524,37 @@ namespace MSS.API.Dao.Implement
                     sql, new { id});
             });
         }
+
+        public async Task<List<StockDetail>> GetStockDetailByEntitys(List<string> entitys,int warehouse=0)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price," +
+                " sp.name as spname,w.name,f.name as sname,dt.name as cname,sod.remark,so.warehouse, " +
+                " sp.model,sod.some_order,sod.working_order,sod.exchange_rate FROM stock_detail sd" +
+                " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
+                " left join dictionary_tree dt on sod.currency=dt.id " +
+                " left join stock_operation so on sod.operation=so.id " +
+                " left join warehouse w on so.warehouse=w.id " +
+                " left join firm f on sod.supplier=f.id " +
+                " left join spare_parts sp on sd.spare_parts=sp.id " +
+                " WHERE sd.entity in @entitys ";
+                object obj = new { entitys };
+                if (warehouse != 0)
+                {
+                    sql += " and so.warehouse=@warehouse";
+                    obj = new { entitys, warehouse };
+                }
+                var result = await c.QueryAsync<StockDetail>(
+                    sql, obj);
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockDetail>();
+            });
+        }
+
         /// <summary>
         /// 库存数量和操作数量直接有关，通过操作明细字段StockDetail关联查询
         /// 采购/其他接收、采购退货

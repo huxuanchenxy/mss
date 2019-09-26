@@ -12,12 +12,12 @@
     <div class="scroll">
       <el-scrollbar>
         <!-- 列表 -->
-        <ul v-show="!isAdd" class="con-padding-horizontal input-group">
+        <ul class="con-padding-horizontal input-group">
           <li class="list">
             <div class="inp-wrap">
               <span class="text">事务原因<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="reason.text" clearable filterable placeholder="请选择事务原因" @change="validateSelect(reason)">
+                <el-select v-model="reason.text" clearable filterable placeholder="请选择事务原因" @change="reasonChange">
                 <el-option
                   v-for="item in reasonList"
                   :key="item.key"
@@ -29,11 +29,27 @@
             </div>
             <p class="validate-tips">{{ reason.tips }}</p>
           </li>
+          <li class="list list-block">
+            <div class="inp-wrap">
+              <span class="text span-block">备注</span>
+              <el-input type="textarea" :rows="1" class="whole-line" placeholder="请输入备注" v-model="remark.text" @keyup.native="validateInputNull(remark)"></el-input>
+            </div>
+            <p class="validate-tips">{{ remark.tips }}</p>
+          </li>
+          <li v-show="!isLoss" class="list">
+            <div class="inp-wrap">
+              <span class="text">物资ID<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-input v-model="entity.text" placeholder="请输入物资ID"></el-input>
+              </div>
+            </div>
+            <p class="validate-tips">{{ entity.tips }}</p>
+          </li>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">仓库<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="warehouse.text" clearable filterable placeholder="请选择仓库" @change="validateSelect(warehouse)">
+                <el-select v-model="warehouse.text" clearable filterable placeholder="请选择仓库" @change="warehouseChange">
                 <el-option
                   v-for="item in warehouseList"
                   :key="item.key"
@@ -45,164 +61,140 @@
             </div>
             <p class="validate-tips">{{ warehouse.tips }}</p>
           </li>
-          <li class="list"/>
-          <li class="list list-block">
+          <li v-show="!isLoss" class="list">
             <div class="inp-wrap">
-              <span class="text span-block">备注</span>
-              <el-input type="textarea" :rows="3" class="whole-line" placeholder="请输入备注" v-model="remark.text" @keyup.native="validateInputNull(remark)"></el-input>
-            </div>
-            <p class="validate-tips">{{ remark.tips }}</p>
-          </li>
-        </ul>
-        <ul v-show="isAdd" class="con-padding-horizontal input-group">
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">物资<em class="validate-mark">*</em></span>
+              <span class="text">盘盈数量<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select ref="spareParts" v-model="spareParts.text" clearable filterable placeholder="请选择物资" @change="validateSelect(spareParts)">
-                <el-option
-                  v-for="item in sparePartsList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                <el-input v-model="profitNo.text" placeholder="请输入盘盈数量" @keyup.native="validateNumber(profitNo)"></el-input>
               </div>
             </div>
-            <p class="validate-tips">{{ spareParts.tips }}</p>
+            <p class="validate-tips">{{ profitNo.tips }}</p>
           </li>
-          <li class="list">
+          <li v-show="isLoss" class="list">
             <div class="inp-wrap">
-              <span class="text">数量<em class="validate-mark">*</em></span>
+              <span class="text">物资</span>
               <div class="inp">
-                <el-input placeholder="请输入调整数量" v-model="countNo.text" @keyup.native="validateNumber(countNo)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ countNo.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">单价<em class="validate-mark">*</em></span>
-              <div class="inp">
-                <el-input placeholder="请输入单价" v-model="unitPrice.text" @keyup.native="validateDouble2(unitPrice)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ unitPrice.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">币种<em class="validate-mark">*</em></span>
-              <div class="inp">
-                <el-select ref="currency" v-model="currency" placeholder="请选择币种">
+                <el-select ref="spareParts" v-model="spareParts.text" clearable filterable placeholder="请先选择仓库">
                   <el-option
-                    v-for="item in currencyList"
+                    v-for="item in sparePartsList"
                     :key="item.key"
-                    :label="item.name"
-                    :value="item.id">
+                    :label="item.spname"
+                    :value="item.spare_parts">
                   </el-option>
                 </el-select>
               </div>
             </div>
+            <p class="validate-tips">{{ spareParts.tips }}</p>
           </li>
-          <li class="list">
+          <li v-show="isLoss" class="list">
             <div class="inp-wrap">
-              <span class="text">发票号</span>
+              <span class="text"></span>
               <div class="inp">
-                <el-input placeholder="请输入发票号" v-model="invoice.text" @keyup.native="validateInputNull(invoice)"></el-input>
+                <x-button class="active" @click.native="searchResult(1)">获取库存清单</x-button>
               </div>
             </div>
-            <p class="validate-tips">{{ invoice.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">采购单</span>
-              <div class="inp">
-                <el-input placeholder="请输入采购单" v-model="purchase.text" @keyup.native="validateInputNull(purchase)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ purchase.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">送修单</span>
-              <div class="inp">
-                <el-input placeholder="请输入送修单" v-model="repair.text" @keyup.native="validateInputNull(repair)"></el-input>
-              </div>
-            </div>
-            <p class="validate-tips">{{ repair.tips }}</p>
-          </li>
-          <li class="list list-block">
-            <div class="inp-wrap">
-              <span class="text span-block">备注</span>
-              <el-input type="textarea" :rows="3" class="whole-line" placeholder="请输入备注" v-model="remarkAdd.text" @keyup.native="validateInputNull(remarkAdd)"></el-input>
-            </div>
-            <p class="validate-tips">{{ remarkAdd.tips }}</p>
           </li>
         </ul>
-        <ul v-show="!isAdd" class="con-padding-horizontal btn-group">
-          <li class="list" @click="add"><x-button>添加物资</x-button></li>
-          <li class="list" @click="remove"><x-button>删除物资</x-button></li>
-          <li class="list" @click="edit"><x-button>修改物资</x-button></li>
-        </ul>
-        <div v-show="isAdd" class="btn-commit-group">
-          <x-button class="close" @click.native="cancel">返回</x-button>
-          <x-button class="active" @click.native="insert">确认</x-button>
-        </div>
-        <!-- 内容 -->
-        <div class="content-wrap">
-          <ul class="content-header">
-            <li class="list"><input :disabled="isAdd" type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-            <li class="list number">序号</li>
-            <li class="list name">物资名称</li>
-            <li class="list name">数量</li>
-            <li class="list name">单价</li>
-            <li class="list name">金额</li>
-            <li class="list name">币种</li>
-            <li class="list name">发票号</li>
-            <li class="list name">工单号</li>
-            <li class="list name">采购单</li>
-            <li class="list name">送修单</li>
-            <li class="list name">备注</li>
-          </ul>
-          <div class="scroll">
-            <el-scrollbar>
-              <ul class="list-wrap">
-                <li class="list" v-for="item in detailList" :key="item.key">
-                  <div class="list-content">
-                    <div class="checkbox">
-                      <input :disabled="isAdd" type="checkbox" v-model="editID" :value="item.orderNo" @change="checkChange">
-                    </div>
-                    <div class="number">{{ item.orderNo}}</div>
-                    <div class="name">{{ item.sparePartsName }}</div>
-                    <div class="name word-break">{{ item.countNo }}</div>
-                    <div class="name word-break">{{ item.unitPrice }}</div>
-                    <div class="name word-break">{{ item.amount }}</div>
-                    <div class="name word-break">{{ item.currencyName }}</div>
-                    <div class="name word-break">{{ item.invoice }}</div>
-                    <div class="name word-break">{{ item.workingOrder }}</div>
-                    <div class="name word-break">{{ item.purchase }}</div>
-                    <div class="name word-break">{{ item.repair }}</div>
-                    <div class="name word-break">{{ item.remark }}</div>
-                  </div>
-                </li>
-              </ul>
-            </el-scrollbar>
-          </div>
-        </div>
-        <!-- 按钮 -->
-        <div v-show="!isAdd" class="btn-commit-group">
+        <div v-show="!isLoss" class="btn-commit-group">
           <x-button class="close">
             <router-link :to="{name: 'SeeStockAdjustList'}">取消</router-link>
           </x-button>
-          <x-button class="active" @click.native="save">调整</x-button>
+          <x-button class="active" @click.native="saveProfit">执行</x-button>
+        </div>
+        <div v-show="isLoss">
+          <el-tabs class="tab-height" v-model="activeName">
+            <el-tab-pane class="pane-height pane-notification" label="库存清单" name="stock">
+              <!-- 内容 -->
+              <div class="content-wrap">
+                <ul class="content-header">
+                  <li class="list name">物资名称</li>
+                  <!--<li class="list name">规格型号</li>
+                  <li class="list name">保质期</li>
+                  <li class="list name">供应商</li>-->
+                  <li class="list name">库存数量</li>
+                  <li class="list name">操作</li>
+                </ul>
+                <div class="scroll">
+                  <el-scrollbar>
+                    <ul class="list-wrap">
+                      <li class="list" v-for="item in detailList" :key="item.key">
+                        <div class="list-content">
+                          <div class="name">{{ item.sparePartsName }}</div>
+                          <!--<div class="name">{{ item.model }}</div>
+                          <div class="name">{{ item.lifeDate === null ? '' : item.lifeDate.slice(0,10) }}</div>
+                          <div class="name">{{ item.supplierName }}</div>-->
+                          <div class="name">{{ item.stockNo }}</div>
+                          <div class="name">
+                            <x-button class="active" @click.native="inStockDetail(item)">亏损确认</x-button>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    <!-- 分页 -->
+                    <el-pagination
+                      :current-page.sync="currentPage"
+                      @current-change="handleCurrentChange"
+                      @prev-click="prevPage"
+                      @next-click="nextPage"
+                      layout="slot, jumper, prev, pager, next"
+                      prev-text="上一页"
+                      next-text="下一页"
+                      :total="total">
+                      <span>总共 {{ total }} 条记录</span>
+                    </el-pagination>
+                  </el-scrollbar>
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane class="pane-height pane-notification" label="存货明细" name="send">
+              <!-- 内容 -->
+              <div class="content-wrap">
+                <ul class="content-header">
+                  <li class="list name">物资ID</li>
+                  <li class="list name">物资名称</li>
+                  <li class="list name">物资状态</li>
+                  <li class="list name">库存数量</li>
+                  <li class="list name">盈亏数量</li>
+                  <li class="list url">备注</li>
+                </ul>
+                <div class="scroll">
+                  <el-scrollbar>
+                    <ul class="list-wrap">
+                      <li class="list" v-for="(item, index)  in distributionList" :key="item.key">
+                        <div class="list-content">
+                          <div class="name">{{ item.entity }}</div>
+                          <div class="name">{{ item.sparePartsName }}</div>
+                          <div class="name">{{ item.statusName === '' ? '无' : item.statusName}}</div>
+                          <div class="name">{{ item.inStockNo }}</div>
+                          <div class="name word-break">
+                            <el-input class="center" v-model="item.editNo" @keyup.native="validateEditNo(item.inStockNo, item.editNo, index)"></el-input>
+                          </div>
+                          <div class="url word-break">
+                            <el-input class="center" v-model="item.remark"></el-input>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </el-scrollbar>
+                </div>
+              </div>
+              <!-- 按钮 -->
+              <div class="btn-commit-group">
+                <x-button class="close">
+                  <router-link :to="{name: 'SeeStockAdjustList'}">取消</router-link>
+                </x-button>
+                <x-button class="active" @click.native="save">执行</x-button>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </div>
       </el-scrollbar>
     </div>
   </div>
 </template>
 <script>
-import { vInput, validateNumberCommon, vdouble2 } from '@/common/js/utils.js'
-import { sparePartsOperationType, dictionary } from '@/common/js/dictionary.js'
+import { vInput, vNumber, validateInputCommon } from '@/common/js/utils.js'
+import { sparePartsOperationType, sparePartsOperationDetailType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/wmsApi'
 import apiAuth from '@/api/authApi'
@@ -213,179 +205,93 @@ export default {
   },
   data () {
     return {
-      defaultParams: {
-        label: 'label',
-        value: 'id',
-        children: 'children'
-      },
-      isAdd: false,
+      activeName: 'stock',
       loading: false,
-      title: '| 物资调整过账',
+      title: '| 物资盘盈盘亏',
       bCheckAll: false,
       reasonList: [],
       reason: {text: '', tips: ''},
       warehouseList: [],
       warehouse: {text: '', tips: ''},
-      workingOrder: {text: '', tips: ''},
-      remark: {text: '', tips: ''},
-      detailList: [],
-      editID: [],
-
-      // 新增数据
-      currencyList: [],
       spareParts: {text: '', tips: ''},
       sparePartsList: '',
-      countNo: {text: '', tips: ''},
-      unitPrice: {text: '', tips: ''},
-      currency: {text: '', tips: ''},
-      invoice: {text: '', tips: ''},
-      purchase: {text: '', tips: ''},
-      repair: {text: '', tips: ''},
-      remarkAdd: {text: '', tips: ''}
+      remark: {text: '', tips: ''},
+      profitNo: {text: '', tips: ''},
+      entity: {text: '', tips: ''},
+      currentPage: 1,
+      total: 0,
+      detailList: [],
+      distributionList: [],
+      isLoss: true
     }
   },
   created () {
     // 事务原因列表
-    apiAuth.getSubCode(sparePartsOperationType.adjust).then(res => {
+    apiAuth.getSubCodeOrder(sparePartsOperationType.adjust).then(res => {
       this.reasonList = res.data
-    }).catch(err => console.log(err))
-    // 币种
-    apiAuth.getSubCode(dictionary.currency).then(res => {
-      this.currencyList = res.data
-      this.currency = this.currencyList[0].id
     }).catch(err => console.log(err))
     // 仓库加载
     api.getWarehouseAll().then(res => {
       this.warehouseList = res.data
     }).catch(err => console.log(err))
-    // 物资加载
-    api.getSparePartsAll().then(res => {
-      this.sparePartsList = res.data
-    }).catch(err => console.log(err))
+    // // 物资加载
+    // api.getSparePartsAll().then(res => {
+    //   this.sparePartsList = res.data
+    // }).catch(err => console.log(err))
   },
   methods: {
-    insert () {
-      if (!this.validateSelect(this.spareParts) || !this.validateNumber(this.countNo) || !this.validateDouble2(this.unitPrice) ||
-        !this.validateInputNull(this.invoice) || !this.validateInputNull(this.remarkAdd) ||
-        !this.validateInputNull(this.purchase) || !this.validateInputNull(this.repair)) {
-        this.$message({
-          message: '验证失败，请查看提示信息',
-          type: 'error'
-        })
-        return
-      }
-      let spName = ''
-      let isRepeat = this.detailList.some(val => {
-        spName = val.sparePartsName
-        return val.spareParts === this.spareParts.text && val.workingOrder === this.workingOrder.text
-      })
-      if (isRepeat) {
-        this.$message({
-          message: '相同工单中的物资-' + spName + ' 不可重复添加',
-          type: 'warning'
-        })
-        return
-      }
-      let tmp = (this.countNo.text * this.unitPrice.text).toFixed(2)
-      let detail = {
-        spareParts: this.spareParts.text,
-        sparePartsName: this.$refs.spareParts.selected.label,
-        countNo: this.countNo.text,
-        unitPrice: this.unitPrice.text,
-        amount: tmp,
-        currency: this.currency,
-        currencyName: this.$refs.currency.selected.label,
-        workingOrder: this.workingOrder.text,
-        purchase: this.purchase.text,
-        repair: this.repair.text,
-        invoice: this.invoice.text,
-        remark: this.remarkAdd.text
-      }
-      if (this.title === '| 物资调整过账 | 添加物资明细') {
-        detail.orderNo = this.detailList.length + 1
-        this.detailList.push(detail)
-      } else {
-        detail.orderNo = this.editID[0]
-        this.detailList.splice(this.editID[0] - 1, 1, detail)
-        this.isAdd = false
-        this.title = '| 物资调整过账'
+    reasonChange () {
+      this.isLoss = this.reason.text === sparePartsOperationDetailType.inventoryLoss
+    },
+    inStockDetail (item) {
+      api.getStockDetail(item.spareParts, this.warehouse.text).then(res => {
+        if (res.code === 0) {
+          this.distributionList = res.data
+          this.distributionList.map(val => {
+            val.remark = ''
+          })
+          this.activeName = 'send'
+        } else this.loading = false
+      }).catch(err => console.log(err))
+    },
+    warehouseChange () {
+      if (this.reason.text === sparePartsOperationDetailType.inventoryProfit) {
+        this.spareParts.text = ''
+        if (!this.validateSelect(this.warehouse)) return
+        // 根据仓库找物资
+        api.getSparePartsByWH(this.warehouse.text).then(res => {
+          this.sparePartsList = res.data
+        }).catch(err => console.log(err))
       }
     },
-    cancel () {
-      this.isAdd = false
-      this.title = '| 物资调整过账'
-    },
-    add () {
-      this.isAdd = true
-      this.title = '| 物资调整过账 | 添加物资明细'
-    },
-    remove () {
-      this.editID.reverse().map(val => {
-        this.detailList.splice(val - 1, 1)
-      })
-      this.detailList.map((val, index) => {
-        val.orderNo = index + 1
-      })
-      this.editID = []
-    },
-    edit () {
-      if (!this.editID.length) {
-        this.$message({
-          message: '请选择修改的物资',
-          type: 'warning'
-        })
-      } else if (this.editID.length > 1) {
-        this.$message({
-          message: '修改的物资不能超过1个',
-          type: 'warning'
-        })
-      } else {
-        this.isAdd = true
-        this.title = '| 物资调整过账 | 修改物资明细'
-        let editObj = this.detailList.find(val => {
-          return val.orderNo === this.editID[0]
-        })
-        this.spareParts.text = editObj.spareParts
-        this.countNo.text = editObj.countNo
-        this.unitPrice.text = editObj.unitPrice
-        this.currency = editObj.currency
-        this.invoice.text = editObj.invoice
-        this.purchase.text = editObj.purchase
-        this.repair.text = editObj.repair
-        this.remarkAdd.text = editObj.remarkAdd
-      }
-    },
-    checkChange () {
-      if (this.editID.length === 0) {
-        this.bCheckAll = false
-      }
-    },
-    // 全选
-    checkAll () {
-      this.bCheckAll ? this.detailList.map(val => this.editID.push(val.orderNo)) : this.editID = []
-      // this.emitEditID()
-    },
-    // 验证2位小数
-    validateDouble2 (val) {
-      val.tips = ''
-      if (val.text.trim() !== '') {
-        if (!vdouble2(val.text)) {
-          val.tips = '此项必须为最多两位小数的浮点数'
-          return false
-        } else {
-          return true
+    validateEditNo (old, now, index) {
+      if (vNumber(now)) {
+        if (now > old && this.reason.text === sparePartsOperationDetailType.inventoryLoss) {
+          this.$message({
+            message: '盘亏数量不可大于库存数量',
+            type: 'warning'
+          })
+          this.distributionList[index].countNo = 1
         }
       } else {
-        val.tips = '此项必填'
-        return false
+        this.$message({
+          message: '请输入数字',
+          type: 'warning'
+        })
+        this.distributionList[index].countNo = 1
       }
     },
+    validateInput (val) {
+      return validateInputCommon(val)
+    },
     validateNumber (val) {
-      if (val.text.trim() === '') {
-        val.tips = '此项必填'
+      if (vNumber(val.text)) {
+        val.tips = ''
+        return true
+      } else {
+        val.tips = '此项必填数字'
         return false
       }
-      return validateNumberCommon(val)
     },
     validateInputNull (val) {
       if (!vInput(val.text)) {
@@ -405,50 +311,110 @@ export default {
         return true
       }
     },
-    validateInputAll () {
-      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) || !this.validateInputNull(this.remark)) {
-        return false
-      }
-      return true
-    },
     save () {
-      if (this.detailList.length === 0) {
+      if (this.distributionList.length === 0) {
         this.$message({
-          message: '请添加物资明细',
+          message: '请从库存清单中选择盘点物资',
           type: 'warning'
         })
         return
       }
-      if (!this.validateInputAll()) {
-        this.$message({
-          message: '验证失败，请查看提示信息',
-          type: 'error'
-        })
-        return
+      let arr = []
+      this.distributionList.map((val, index) => {
+        if (val.editNo + '' !== '0') {
+          val.unitPrice = val.acceptUnitPrice
+          val.amount = val.editNo * val.unitPrice * val.exchangeRate
+          val.orderNo = index + 1
+          val.stockDetail = val.id
+          val.countNo = val.editNo
+          arr.push(val)
+        }
+      })
+      let stockAdjust = {
+        Type: sparePartsOperationType.adjust,
+        Reason: this.reason.text,
+        Warehouse: this.warehouse.text,
+        Remark: this.remark.text,
+        DetailList: JSON.stringify(arr)
+      }
+      api.addStockOperation(stockAdjust).then(res => {
+        if (res.code === 0) {
+          this.$router.push({name: 'SeeStockAdjustList'})
+          this.$message({
+            message: '执行成功',
+            type: 'success'
+          })
+        } else {
+          this.$message({
+            message: res.msg === '' ? '执行失败' : res.msg,
+            type: 'error'
+          })
+        }
+      }).catch(err => console.log(err))
+    },
+    saveProfit () {
+      if (!this.validateInput(this.entity) || !this.validateSelect(this.warehouse) || !this.validateNumber(this.profitNo)) return
+      let arr = {
+        entity: this.entity.text,
+        countNo: this.profitNo.text,
+        warehouse: this.warehouse.text
       }
       let stockAdjust = {
         Type: sparePartsOperationType.adjust,
         Reason: this.reason.text,
         Warehouse: this.warehouse.text,
         Remark: this.remark.text,
-        DetailList: JSON.stringify(this.detailList)
+        DetailList: JSON.stringify(arr)
       }
-      if (this.$route.query.type === 'Add') {
-        api.addStockOperation(stockAdjust).then(res => {
-          if (res.code === 0) {
-            this.$router.push({name: 'SeeStockAdjustList'})
-            this.$message({
-              message: '添加成功',
-              type: 'success'
-            })
-          } else {
-            this.$message({
-              message: res.msg === '' ? '添加失败' : res.msg,
-              type: 'error'
-            })
-          }
-        }).catch(err => console.log(err))
-      }
+      api.addStockOperation(stockAdjust).then(res => {
+        if (res.code === 0) {
+          this.$router.push({name: 'SeeStockAdjustList'})
+          this.$message({
+            message: '执行成功',
+            type: 'success'
+          })
+        } else {
+          this.$message({
+            message: res.msg === '' ? '执行失败' : res.msg,
+            type: 'error'
+          })
+        }
+      }).catch(err => console.log(err))
+    },
+    // 搜索
+    searchResult (page) {
+      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse)) return
+      this.activeName = 'stock'
+      this.currentPage = page
+      this.loading = true
+      api.getStockSum({
+        order: 'asc',
+        rows: 10,
+        page: page,
+        searchSpareParts: this.spareParts.text,
+        SearchWarehouse: this.warehouse.text
+      }).then(res => {
+        this.loading = false
+        this.total = res.data.total
+        this.detailList = res.data.rows
+      }).catch(err => console.log(err))
+    },
+    // 序号、指定页翻页
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.searchResult(val)
+    },
+
+    // 上一页
+    prevPage (val) {
+      this.currentPage = val
+      this.searchResult(val)
+    },
+
+    // 下一页
+    nextPage (val) {
+      this.currentPage = val
+      this.searchResult(val)
     }
   }
 }
@@ -784,5 +750,21 @@ $con-height: $content-height - 145 - 56;
 }
 .left{
   text-indent: 9.5%
+}
+.tab-height{
+  height: percent($con-height, $con-height);
+}
+/deep/ .el-tabs__header{
+  margin-left: 10px!important;
+  height: percent(50, $con-height)
+}
+/deep/ .el-tabs__content{
+  overflow: hidden;
+  height: percent($con-height - 50, $con-height)
+}
+/deep/
+.center .el-input__inner{
+  text-align: center;
+  width: 90%;
 }
 </style>

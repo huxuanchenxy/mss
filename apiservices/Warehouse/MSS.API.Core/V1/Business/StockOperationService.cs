@@ -61,7 +61,9 @@ namespace MSS.API.Core.V1.Business
                         {
                             case StockOptDetailType.PurchaseReceive:
                             case StockOptDetailType.OtherReceive:
-                                intTmp = await _stockOperationRepo.Save(await GetParmInit(parm));
+                                sosp = await GetParmInit(parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
                                 break;
                             case StockOptDetailType.PurchaseReturn:
                                 sosp = await GetParm(
@@ -162,8 +164,27 @@ namespace MSS.API.Core.V1.Business
                         }
                         break;
                     case StockOperationType.Adjust:
+                        switch ((StockOptDetailType)stockOperation.Reason)
+                        {
+                            case StockOptDetailType.InventoryLoss:
+                                sosp = await GetParm(
+                                    StockChange.Subtract, StockChange.NoChange, StockChange.Subtract, StockChange.NoChange,
+                                    StockChange.NoChange, StockChange.NoChange, StockChange.NoChange, StockStatus.Loss,
+                                    parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                            case StockOptDetailType.InventoryProfit:
+                                sosp = await GetParmProfit(parm);
+                                if (validateSaveData.code != Code.Success) return validateSaveData;
+                                intTmp = await _stockOperationRepo.Save(sosp);
+                                break;
+                        }
                         break;
                     case StockOperationType.Move:
+                        sosp = await GetParmMove(parm);
+                        if (validateSaveData.code != Code.Success) return validateSaveData;
+                        intTmp = await _stockOperationRepo.Save(sosp);
                         break;
                 }
 
@@ -320,6 +341,147 @@ namespace MSS.API.Core.V1.Business
             validateSaveData.msg = msg;
         }
 
+        //移库
+        //sum总表不变
+        //存货批次移库时，类似领料(更新)->再入库(插入)的操作，需要新的物资ID
+        //存货单件时，只要更新仓库即可
+        //仓库库存表stock中，类似领料再入库的操作，只和sparePartsID和warehouseID有关
+        private async Task<StockOperationSaveParm> GetParmMove(StockOperationSaveParm parm)
+        {
+            StockOperationSaveParm ret = new StockOperationSaveParm();
+            StockOperation so = parm.stockOperation;
+            ret.stockOperation = so;
+            List<StockOperationDetail> sods = JsonConvert.DeserializeObject<List<StockOperationDetail>>(so.DetailList).OrderBy(a => a.StockDetail).ToList();
+            ret.stockOperationDetails = sods.OrderBy(a => a.OrderNo).ToList();
+            // 获取移出库存货明细
+            List<StockDetail> initSds = (await _stockOperationRepo.ListStockDetailByIDs(
+                sods.Select(a => a.StockDetail).ToList()
+                )).OrderBy(a => a.ID).ToList();
+            //移库专用，移入，存货明细
+            ret.stockDetailsAdd = new List<StockDetail>();
+            ret.isAddStockDetails = false;
+            ret.stockDetails = new List<StockDetail>();
+            ret.stocks = new List<Stock>();
+            ret.stockSums = new List<StockSum>();
+            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sods.Select(a => a.SpareParts).Distinct().ToList(), so.Warehouse);
+            List<Stock> stocksTmpTo = await _stockOperationRepo.ListBySPsAndWH(sods.Select(a => a.SpareParts).Distinct().ToList(), (int)so.ToWarehouse);
+
+            if (await _stockOperationRepo.HasEntity(sods.Where(a=>!string.IsNullOrWhiteSpace(a.NewEntity)).Select(a => a.NewEntity).ToList()))
+            {
+                validateSaveData.code = Code.DataIsExist;
+                validateSaveData.msg = "物资ID中与库存中已有的重复";
+                return ret;
+            }
+
+            // 存货明细数据整理
+            foreach (StockOperationDetail sod in sods)
+            {
+                //单件
+                if (string.IsNullOrWhiteSpace(sod.NewEntity))
+                {
+                    StockDetail sd = initSds.Where(a => a.ID == sod.StockDetail).FirstOrDefault();
+                    sd.Warehouse = (int)so.ToWarehouse;
+                    ret.stockDetails.Add(sd);
+                }
+                //批次
+                else
+                {
+                    //移出
+                    StockDetail sd = initSds.Where(a => a.ID == sod.StockDetail).FirstOrDefault();
+                    if (so.Reason == (int)StockOptDetailType.MoveTo)
+                    {
+                        sd.InStockNo = GetNo(StockChange.Subtract, sd.InStockNo, sod.CountNo);
+                        if (sd.InStockNo < 0) { GetApiResult("存货不足，请刷新重试"); return ret; }
+                    }
+                    else if (so.Reason == (int)StockOptDetailType.TroubleMoveTo)
+                    {
+                        sd.TroubleNo = GetNo(StockChange.Subtract, sd.TroubleNo, sod.CountNo);
+                        if (sd.TroubleNo < 0) { GetApiResult("故障件数量小于零，请刷新重试"); return ret; }
+                    }
+                    sd.StockNo = GetNo(StockChange.Subtract, sd.StockNo, sod.CountNo);
+                    if (sd.StockNo < 0) { GetApiResult("库存不足，请刷新重试"); return ret; }
+                    ret.stockDetails.Add(sd);
+                    //移入
+                    StockDetail sdNew = new StockDetail();
+                    sdNew.Entity = sod.NewEntity;
+                    sdNew.InspectionNo = 0;
+                    sdNew.InStockNo = sod.CountNo;
+                    sdNew.RepairNo = 0;
+                    sdNew.SpareParts = sd.SpareParts;
+                    sdNew.Status = (int)StockStatus.None;
+                    sdNew.StockNo = sod.CountNo;
+                    sdNew.TroubleNo = 0;
+                    sdNew.LentNo = 0;
+                    sdNew.ScrapNo = 0;
+                    sdNew.Warehouse = (int)so.ToWarehouse;
+                    sdNew.StockOperationDetail = sd.StockOperationDetail;
+                    ret.stockDetailsAdd.Add(sdNew);
+                }
+            }
+
+            foreach (var item in sods.Select(a => a.SpareParts).Distinct())
+            {
+                // 仓库明细数据更新
+                var sod = sods.Where(a => a.SpareParts == item);
+                int countNo = sod.Sum(a => a.CountNo);
+                //直接在前端换算成人民币
+                double amount = sod.Sum(a => a.Amount);
+                // 移出
+                Stock s = stocksTmp.Where(a => a.SpareParts == item).FirstOrDefault();
+                s.isAdd = false;
+                if (so.Reason == (int)StockOptDetailType.MoveTo)
+                {
+                    s.StockNo = GetNo(StockChange.Subtract, s.StockNo, countNo);
+                }
+                else
+                {
+                    s.TroubleNo = GetNo(StockChange.Subtract, s.TroubleNo, countNo);
+                }
+                s.InStockNo = GetNo(StockChange.Subtract, s.InStockNo, countNo);
+                s.Amount= GetAmount(StockChange.Subtract, s.Amount, amount);
+                ret.stocks.Add(s);
+                // 存在移入(更新)
+                var tmpTo = stocksTmpTo.Where(a => a.SpareParts == item);
+                if (tmpTo.Count() > 0)
+                {
+                    Stock sTo = tmpTo.FirstOrDefault();
+                    sTo.isAdd = false;
+                    if (so.Reason == (int)StockOptDetailType.MoveTo)
+                    {
+                        sTo.InStockNo = GetNo(StockChange.Plus, sTo.InStockNo, countNo);
+                    }
+                    else
+                    {
+                        sTo.TroubleNo = GetNo(StockChange.Plus, sTo.TroubleNo, countNo);
+                    }
+                    sTo.StockNo = GetNo(StockChange.Plus, sTo.StockNo, countNo);
+                    sTo.Amount = GetAmount(StockChange.Plus, sTo.Amount, amount);
+                    ret.stocks.Add(sTo);
+                }
+                // 不存在移入(插入)
+                else
+                {
+                    Stock sTo = new Stock();
+                    sTo.isAdd = true;
+                    if (so.Reason == (int)StockOptDetailType.MoveTo)
+                    {
+                        sTo.InStockNo = countNo;
+                    }
+                    else
+                    {
+                        sTo.TroubleNo = countNo;
+                    }
+                    sTo.StockNo = countNo;
+                    sTo.SpareParts = item;
+                    sTo.Amount = amount;
+                    sTo.Warehouse = (int)so.ToWarehouse;
+                    ret.stocks.Add(sTo);
+                }
+            }
+            return ret;
+        }
+
+
         private async Task<StockOperationSaveParm> GetParmInit(StockOperationSaveParm parm)
         {
             StockOperationSaveParm ret = new StockOperationSaveParm();
@@ -416,6 +578,57 @@ namespace MSS.API.Core.V1.Business
                     ret.stockSums.Add(ss);
                 }
             }
+            return ret;
+        }
+        /// <summary>
+        /// 先只考虑单笔盘盈记录
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        private async Task<StockOperationSaveParm> GetParmProfit(StockOperationSaveParm parm)
+        {
+            StockOperationSaveParm ret = new StockOperationSaveParm();
+            StockOperation so = parm.stockOperation;
+            ret.stockOperation = so;
+            StockOperationDetail sod = JsonConvert.DeserializeObject<StockOperationDetail>(so.DetailList);
+            List<StockDetail> tmp = await _stockOperationRepo.GetStockDetailByEntitys(new List<string>() {sod.Entity });
+            if (tmp.Count==0)
+            {
+                validateSaveData.code = Code.DataIsnotExist;
+                validateSaveData.msg = "仓库没有接收过此物资";
+                return ret;
+            }
+            StockDetail sd = tmp.FirstOrDefault();
+            sod.StockDetail = sd.ID;
+            sod.SpareParts = sd.SpareParts;
+            ret.stockOperationDetails = new List<StockOperationDetail>() {sod };
+
+            ret.isAddStockDetails = false;
+            ret.stockDetails = new List<StockDetail>();
+            ret.stocks = new List<Stock>();
+            ret.stockSums = new List<StockSum>();
+
+            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(new List<int>() {sd.SpareParts }, so.Warehouse);
+
+            List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(new List<int>() { sd.SpareParts });
+            sd.InStockNo = sd.InStockNo + sod.CountNo;
+            sd.StockNo = sd.StockNo + sod.CountNo;
+            sd.Status = sd.StockNo > 1 ? (int)StockStatus.None : (int)StockStatus.Profit;
+            sd.Warehouse = sod.Warehouse;
+            ret.stockDetails.Add(sd);
+
+            double totalAmount = sod.CountNo * sd.AcceptUnitPrice * sd.ExchangeRate;
+            stocksTmp[0].isAdd = false;
+            stocksTmp[0].StockNo = stocksTmp[0].StockNo + sod.CountNo;
+            stocksTmp[0].InStockNo = stocksTmp[0].InStockNo + sod.CountNo;
+            stocksTmp[0].Amount = stocksTmp[0].Amount + totalAmount;
+            ret.stocks.Add(stocksTmp[0]);
+
+            stockSumsTmp[0].isAdd = false;
+            stockSumsTmp[0].StockNo = stockSumsTmp[0].StockNo + sod.CountNo;
+            stockSumsTmp[0].InStockNo = stockSumsTmp[0].InStockNo + sod.CountNo;
+            stockSumsTmp[0].Amount = stockSumsTmp[0].Amount + totalAmount;
+            ret.stockSums.Add(stockSumsTmp[0]);
             return ret;
         }
 

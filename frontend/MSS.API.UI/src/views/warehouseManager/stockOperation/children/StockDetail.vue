@@ -62,7 +62,7 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list number">资源编号</li>
+        <li class="list name">物资ID</li>
         <li class="list name">接收日期</li>
         <li class="list name">仓库</li>
         <li class="list name">接收数量</li>
@@ -85,7 +85,7 @@
           <ul class="list-wrap">
             <li class="list" v-for="item in stockDetailList" :key="item.key">
               <div class="list-content">
-                <div class="number">{{ item.id}}</div>
+                <div class="name">{{ item.entity}}</div>
                 <div class="name">{{ item.acceptDate.slice(0,10)}}</div>
                 <div class="name">{{ item.warehouseName }}</div>
                 <div class="name">{{ item.acceptNo }}</div>
