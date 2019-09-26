@@ -91,6 +91,10 @@ namespace MSS.API.Model.Data
             /// </summary>
             MaterialLend = 81,
             /// <summary>
+            /// 故障件移库
+            /// </summary>
+            TroubleMoveTo = 82,
+            /// <summary>
             /// 其他接收
             /// </summary>
             OtherReceive = 84,
@@ -178,7 +182,15 @@ namespace MSS.API.Model.Data
             /// <summary>
             /// 已退货
             /// </summary>
-            Returned = 106
+            Returned = 106,
+            /// <summary>
+            /// 盘亏
+            /// </summary>
+            Loss = 107,
+            /// <summary>
+            /// 盘盈
+            /// </summary>
+            Profit = 108
         }
 
         public static string GetRedisKey(StockOperationType type)

@@ -89,13 +89,13 @@
           事务原因
           <i :class="[{ 'el-icon-d-caret': headOrder.reason === 0 }, { 'el-icon-caret-top': headOrder.reason === 1 }, { 'el-icon-caret-bottom': headOrder.reason === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('from_warehouse')">
-          移出仓库
-          <i :class="[{ 'el-icon-d-caret': headOrder.from_warehouse === 0 }, { 'el-icon-caret-top': headOrder.from_warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.from_warehouse === 2 }]"></i>
-        </li>
         <li class="list name c-pointer" @click="changeOrder('warehouse')">
           移入仓库
           <i :class="[{ 'el-icon-d-caret': headOrder.warehouse === 0 }, { 'el-icon-caret-top': headOrder.warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.warehouse === 2 }]"></i>
+        </li>
+        <li class="list name c-pointer" @click="changeOrder('to_warehouse')">
+          移出仓库
+          <i :class="[{ 'el-icon-d-caret': headOrder.to_warehouse === 0 }, { 'el-icon-caret-top': headOrder.to_warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.to_warehouse === 2 }]"></i>
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
           过账时间
@@ -116,8 +116,8 @@
                 </div>
                 <div class="name">{{ item.operationID }}</div>
                 <div class="name">{{ item.reasonName }}</div>
-                <div class="name word-break">{{ item.fromWarehouseName }}</div>
                 <div class="name word-break">{{ item.warehouseName }}</div>
+                <div class="name word-break">{{ item.toWarehouseName }}</div>
                 <div class="last-update-time color-white word-break">{{ item.createdTime }}</div>
                 <div class="last-update-time word-break">{{ item.createdName }}</div>
               </div>
@@ -180,7 +180,7 @@ export default {
       headOrder: {
         operation_id: 1,
         reason: 0,
-        from_warehouse: 0,
+        to_warehouse: 0,
         warehouse: 0,
         created_time: 0,
         created_by: 0
@@ -219,7 +219,7 @@ export default {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.operation_id = 0
         this.headOrder.reason = 0
-        this.headOrder.from_warehouse = 0
+        this.headOrder.to_warehouse = 0
         this.headOrder.warehouse = 0
         this.headOrder.created_time = 0
         this.headOrder.created_by = 0

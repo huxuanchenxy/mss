@@ -40,6 +40,7 @@ export const sparePartsOperationDetailType = {
   troubleReturn: 79,
   troubleRepair: 80,
   materialLend: 81,
+  torubleMoveTo: 82,
   inspection: 85,
   inspectionReturn: 86,
   troubleScrap: 87,

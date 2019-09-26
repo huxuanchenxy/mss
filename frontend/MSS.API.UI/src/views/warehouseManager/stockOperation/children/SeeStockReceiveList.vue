@@ -444,7 +444,7 @@ $con-height: $content-height - 145 - 56;
 /deep/
 .el-range-separator{
   color: #fff!important;
-  padding-bottom: 10px;
+  padding-bottom: 10px!important;
 }
 /deep/
 .el-range__icon{
