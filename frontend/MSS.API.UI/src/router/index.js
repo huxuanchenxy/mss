@@ -7,8 +7,8 @@ let routes = [
   {
     path: '/',
     name: 'Index',
-    // component: () => import(/* webpackChunkName: "index" */ '@/views/Index.vue')
-    redirect: 'monitorCenter/eqpmonitor/list'
+    component: () => import(/* webpackChunkName: "index" */ '@/views/Index.vue')
+    // redirect: 'monitorCenter/eqpmonitor/list'
   }, {
     path: '/login',
     name: 'Login',
