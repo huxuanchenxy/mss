@@ -17,7 +17,7 @@
             <div class="inp-wrap">
               <span class="text">事务原因<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="reason.text" clearable filterable placeholder="请选择事务原因" @change="reasonChange">
+                <el-select v-model="reason.text" filterable placeholder="请选择事务原因" @change="reasonChange">
                 <el-option
                   v-for="item in reasonList"
                   :key="item.key"
@@ -232,7 +232,7 @@
                   <li class="list name">{{editNoCompareName}}</li>
                   <li class="list name">{{editNoName}}</li>
                   <li class="list url">备注</li>
-                  <li class="list name">操作</li>
+                  <li class="list last-maintainer">操作</li>
                 </ul>
                 <div class="scroll">
                   <el-scrollbar>
@@ -250,7 +250,7 @@
                           <div v-show="item.isEdit" class="url word-break">
                             <el-input class="center" v-model="item.remark"></el-input>
                           </div>
-                          <div class="name word-break">
+                          <div class="last-maintainer word-break">
                             <x-button v-show="!item.isEdit" class="active" @click.native="edit(index)">编辑</x-button>
                             <x-button v-show="item.isEdit" class="active" @click.native="saveTmp(index)">保存</x-button>
                             <x-button class="active" @click.native="del(index)">删除</x-button>
@@ -359,7 +359,7 @@ export default {
   },
   methods: {
     reasonChange () {
-      if (!this.validateSelect(this.reason)) return
+      this.reason.tips = ''
       if (this.reason.text === sparePartsOperationDetailType.inStockScrap || this.reason.text === sparePartsOperationDetailType.troubleScrap) {
         this.isShow.scrap = true
         // 物资ID加载
@@ -416,7 +416,7 @@ export default {
           this.isShow.workingOrder = 3
           this.isShow.stockDetail = true
           this.editNoName = '归还数量'
-          this.editNoCompareName = '借用未归还数量'
+          this.editNoCompareName = '未归还数量'
           this.tabLabel.stock = '流水明细'
           this.tabLabel.send = '归还清单'
           break
@@ -446,7 +446,7 @@ export default {
           this.someOrderName = '送修单'
           this.isShow.stockDetail = true
           this.editNoName = '归还数量'
-          this.editNoCompareName = '送修未归还数量'
+          this.editNoCompareName = '未归还数量'
           this.tabLabel.stock = '流水明细'
           this.tabLabel.send = '归还清单'
           break
@@ -468,7 +468,7 @@ export default {
           this.someOrderName = '送检单'
           this.isShow.stockDetail = true
           this.editNoName = '归还数量'
-          this.editNoCompareName = '送检未归还数量'
+          this.editNoCompareName = '未归还数量'
           this.tabLabel.stock = '流水明细'
           this.tabLabel.send = '归还清单'
           break
@@ -478,6 +478,9 @@ export default {
       this.warehouseTmp = ''
       this.isDisabledWarehouse = false
       this.activeName = 'stock'
+      this.stockOperation = ''
+      this.warehouse.text = ''
+      this.spareParts.text = ''
     },
     getStockOperationSelect (reason) {
       // 流水号下拉

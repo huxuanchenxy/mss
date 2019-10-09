@@ -24,6 +24,7 @@ namespace MSS.API.Dao
             services.AddTransient<ISparePartsRepo<SpareParts>, SparePartsRepo>();
             services.AddTransient<IWarehouseAlarmRepo<WarehouseAlarm>, WarehouseAlarmRepo>();
             services.AddTransient<IStockOperationRepo<StockOperation>, StockOperationRepo>();
+            services.AddTransient<IWarehouseAlarmHistoryRepo<WarehouseAlarmHistory>, WarehouseAlarmHistoryRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -36,6 +37,7 @@ namespace MSS.API.Dao
                 config.AddMap(new StockMap());
                 config.AddMap(new StockDetailMap());
                 config.AddMap(new StockSumMap());
+                config.AddMap(new WarehouseAlarmHistoryMap());
             });
             return services;
         }

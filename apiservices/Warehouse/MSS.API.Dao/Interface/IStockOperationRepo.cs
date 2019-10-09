@@ -17,9 +17,11 @@ namespace MSS.API.Dao.Interface
         Task<object> GetStockPageByParm(StockSumQueryParm parm);
 
         Task<List<StockSum>> ListBySPs(List<int> spareParts);
+        Task<int> UpdateStockSumAlarm(List<int> spareParts, int isAlarm);
         Task<List<Stock>> ListBySPsAndWH(List<int> spareParts, int warehouse);
         Task<List<Stock>> ListStockBySPs(List<int> spareParts);
         Task<List<object>> ListByWH(int warehouse);
+        Task<int> UpdateStockAlarm(List<int> spareParts, int isAlarm);
         Task<List<StockOperationDetail>> ListByOperationIn(int operation);
         Task<List<StockOperationDetail>> ListByOperationOutIn(int operation);
         Task<List<StockOperationDetail>> ListByOperationOut(int operation);
@@ -29,6 +31,7 @@ namespace MSS.API.Dao.Interface
         Task<StockDetail> GetStockDetailByID(int id);
         Task<List<StockDetail>> ListStockDetailByIDs(List<int> ids);
         Task<List<StockDetail>> GetStockDetailByEntitys(List<string> entitys, int warehouse = 0);
+        Task<List<StockDetail>> GetStockDetailByEntityIDs(List<int> ids, int warehouse = 0);
         Task<List<StockDetail>> ListStockDetail();
 
         Task<List<StockDetail>> ListStockDetailByOperation(int operation);

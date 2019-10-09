@@ -21,11 +21,11 @@ const routes = [
           }, {
             path: 'list',
             name: 'SeeWarehouseList',
-            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/warehouse/children/SeeWarehouseList.vue')
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/warehouse/children/SeeWarehouseList.vue')
           }, {
             path: 'add',
             name: 'AddWarehouse',
-            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/warehouse/children/AddWarehouse.vue')
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/warehouse/children/AddWarehouse.vue')
           }
         ]
       }, {
@@ -39,23 +39,23 @@ const routes = [
           }, {
             path: 'list',
             name: 'SeeSparePartsList',
-            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/SeeSparePartsList.vue')
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/spareParts/children/SeeSparePartsList.vue')
           }, {
             path: 'add',
             name: 'AddSpareParts',
-            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/AddSpareParts.vue')
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/spareParts/children/AddSpareParts.vue')
           }, {
             path: 'detail',
             name: 'DetailSpareParts',
-            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/DetailSpareParts.vue')
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/spareParts/children/DetailSpareParts.vue')
           }, {
             path: 'setAlarm',
             name: 'SetWarehouseAlarm',
-            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/SetWarehouseAlarm.vue')
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/spareParts/children/SetWarehouseAlarm.vue')
           }, {
             path: 'addAlarm',
             name: 'AddWarehouseAlarm',
-            component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/spareParts/children/AddWarehouseAlarm.vue')
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/spareParts/children/AddWarehouseAlarm.vue')
           }
         ]
       }, {
@@ -110,6 +110,20 @@ const routes = [
             path: 'stockDetail',
             name: 'StockDetail',
             component: () => import(/* webpackChunkName: "equipment" */ '@/views/warehouseManager/stockOperation/children/StockDetail.vue')
+          }
+        ]
+      }, {
+        path: 'warehouseAlarmHistory',
+        component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/warehouse/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'warehouseAlarmHistory',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'List',
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/warehouseAlarmHistory/children/List.vue')
           }
         ]
       }

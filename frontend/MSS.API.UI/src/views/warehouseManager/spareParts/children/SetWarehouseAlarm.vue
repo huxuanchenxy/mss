@@ -163,7 +163,6 @@ export default {
         return item.actionID === btn.warehouseAlarm.update
       })
     }
-    this.title = ' | ' + this.$route.params.name + '（' + this.$route.params.unit + '）'
     // 仓库加载
     api.getWarehouseAll().then(res => {
       this.warehouseList = res.data
@@ -171,6 +170,10 @@ export default {
     this.init()
   },
   activated () {
+    if (this.$route.params.id !== undefined) {
+      this.title = ' | ' + this.$route.params.name + '（' + this.$route.params.unit + '）'
+      this.sparePartsID = this.$route.params.id
+    }
     this.searchResult(this.currentPage)
   },
   methods: {
@@ -289,7 +292,7 @@ export default {
           this.searchResult(1)
         } else {
           this.$message({
-            message: '删除失败',
+            message: res.msg === '' ? '删除失败' : res.msg,
             type: 'error'
           })
         }

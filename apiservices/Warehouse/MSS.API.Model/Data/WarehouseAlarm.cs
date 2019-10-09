@@ -14,6 +14,11 @@ namespace MSS.API.Model.Data
         public int SafeStorage { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
+        public WarehouseAlarmHistory WAlarmHistory { get; set; }
+        public int IsAlarm { get; set; }
+        public bool IsStockUpdate { get; set; }
+        public bool IsStockSumUpdate { get; set; }
+        public int IsStockSumAlarm { get; set; }
     }
 
     public class WarehouseAlarmMap : EntityMap<WarehouseAlarm>

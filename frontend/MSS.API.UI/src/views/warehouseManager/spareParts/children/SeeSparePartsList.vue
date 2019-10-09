@@ -384,7 +384,7 @@ export default {
           this.searchResult(1)
         } else {
           this.$message({
-            message: '删除失败',
+            message: res.msg === '' ? '删除失败' : res.msg,
             type: 'error'
           })
         }

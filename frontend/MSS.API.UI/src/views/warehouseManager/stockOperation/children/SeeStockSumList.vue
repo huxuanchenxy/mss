@@ -38,6 +38,13 @@
               </el-select>
             </div>
           </div>
+          <div class="input-group">
+            <label for="name"></label>
+            <div class="inp">
+              <el-checkbox v-model="isAlarm"></el-checkbox>
+              <label for="name">有仓库预警</label>
+            </div>
+          </div>
         </div>
         <div class="search-btn" @click="search">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
@@ -87,6 +94,7 @@
           总金额
           <i :class="[{ 'el-icon-d-caret': headOrder.amount === 0 }, { 'el-icon-caret-top': headOrder.amount === 1 }, { 'el-icon-caret-bottom': headOrder.amount === 2 }]"></i>
         </li>
+        <li class="list name">是否预警</li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -106,6 +114,8 @@
                 <div class="name">{{ item.lentNo }}</div>
                 <div class="name">{{ item.scrapNo }}</div>
                 <div class="name">{{ item.amount }}</div>
+                <div v-show="!item.isAlarm" class="name">无</div>
+                <div v-show="item.isAlarm" class="name alarm">有</div>
               </div>
               <ul class="sub-content" :class="{ active: item.isShowSubCon }">
                 <!--<li class="sub-con-list" v-for="sub in item.action_trees" :key="sub.key">
@@ -125,6 +135,7 @@
                     <div class="name">借用数量</div>
                     <div class="name">报废数量</div>
                     <div class="name">总金额</div>
+                    <div class="name">是否预警</div>
                   </div>
                 </li>
                 <li class="sub-con-list" v-for="sub in item.stocks" :key="sub.key">
@@ -138,6 +149,8 @@
                     <div class="name">{{ sub.lentNo }}</div>
                     <div class="name">{{ sub.scrapNo }}</div>
                     <div class="name">{{ sub.amount }}</div>
+                    <div v-show="!sub.isAlarm" class="name">无</div>
+                    <div v-show="sub.isAlarm" class="name alarm">有</div>
                   </div>
                 </li>
               </ul>
@@ -171,6 +184,7 @@ export default {
   data () {
     return {
       title: ' | 库存查询',
+      isAlarm: false,
       isWarehouse: false,
       spareParts: '',
       sparePartsList: [],
@@ -283,7 +297,8 @@ export default {
         rows: 10,
         page: page,
         searchSpareParts: this.spareParts,
-        SearchWarehouse: this.warehouse
+        searchWarehouse: this.warehouse,
+        searchIsAlarm: this.isAlarm
       }).then(res => {
         this.loading = false
         res.data.rows.map(val => {
@@ -545,6 +560,9 @@ $height: $content-height - 18;
   .last-update-time{
     width: 200px;
     color: $color-content-text;
+  }
+  .alarm{
+    color: red;
   }
 }
 </style>

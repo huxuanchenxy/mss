@@ -24,15 +24,20 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IStockOperationRepo<StockOperation> _stockOperationRepo;
+        private readonly IWarehouseAlarmRepo<WarehouseAlarm> _warehouseAlarmRepo;
+        private readonly IWarehouseAlarmHistoryRepo<WarehouseAlarmHistory> _warehouseAlarmHistoryRepo;
         private readonly IDistributedCache _cache;
 
         private readonly int userID;
         private ApiResult validateSaveData=new ApiResult();
-        public StockOperationService(IStockOperationRepo<StockOperation> stockOperationRepo, 
-            IAuthHelper auth, IDistributedCache cache)
+        public StockOperationService(IStockOperationRepo<StockOperation> stockOperationRepo,
+            IWarehouseAlarmHistoryRepo<WarehouseAlarmHistory> warehouseAlarmHistoryRepo,
+            IWarehouseAlarmRepo<WarehouseAlarm> warehouseAlarmRepo, IAuthHelper auth, IDistributedCache cache)
         {
             //_logger = logger;
             _stockOperationRepo = stockOperationRepo;
+            _warehouseAlarmRepo = warehouseAlarmRepo;
+            _warehouseAlarmHistoryRepo = warehouseAlarmHistoryRepo;
             _cache = cache;
             userID = auth.GetUserId();
         }
@@ -223,8 +228,12 @@ namespace MSS.API.Core.V1.Business
             ret.stockDetails = new List<StockDetail>();
             ret.stocks = new List<Stock>();
             ret.stockSums = new List<StockSum>();
-            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sods.Select(a => a.SpareParts).Distinct().ToList(), so.Warehouse);
-            List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(sods.Select(a => a.SpareParts).Distinct().ToList());
+            ret.wAlarmHistory = new List<WarehouseAlarmHistory>();
+            List<int> sps = sods.Select(a => a.SpareParts).Distinct().ToList();
+            List<WarehouseAlarm> was = await _warehouseAlarmRepo.GetBySPsAndWH(sps, so.Warehouse);
+            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sps, so.Warehouse);
+            List<Stock> stocksTmpAll = await _stockOperationRepo.ListStockBySPs(sps);
+            List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(sps.ToList());
             // 归(退)还时，更新已归(退)还数量
             // 归还时，还需更新状态（未归还/其他）
             if (so.FromStockOperation!=null)
@@ -273,8 +282,10 @@ namespace MSS.API.Core.V1.Business
                 if (sd.StockNo > 1 && status != StockStatus.Normal) sd.Status = (int)StockStatus.None;
                 else if (sd.StockNo == 0 && status != StockStatus.Scrap && status != StockStatus.Returned) sd.Status = (int)StockStatus.Exhaust;
                 else sd.Status = (int)status;
+                sd.Warehouse = so.Warehouse;
                 ret.stockDetails.Add(sd);
             }
+
             foreach (var item in sods.Select(a => a.SpareParts).Distinct())
             {
                 // 仓库明细数据更新
@@ -283,7 +294,7 @@ namespace MSS.API.Core.V1.Business
                 //直接在前端换算成人民币
                 double amount = sod.Sum(a => a.Amount);
                 Stock s = stocksTmp.Where(a => a.SpareParts == item).FirstOrDefault();
-                s.isAdd = false;
+                s.IsAdd = false;
                 s.StockNo = GetNo(stock, s.StockNo, countNo);
                 s.TroubleNo = GetNo(trouble, s.TroubleNo, countNo);
                 s.InStockNo = GetNo(inStock, s.InStockNo, countNo);
@@ -292,10 +303,21 @@ namespace MSS.API.Core.V1.Business
                 s.LentNo = GetNo(lent, s.LentNo, countNo);
                 s.ScrapNo = GetNo(scrap, s.ScrapNo, countNo);
                 s.Amount = GetAmount(stock, s.Amount, amount);
+                s.IsAlarm = 0;
+                var safe = was.Where(a => a.SpareParts == item);
+                if (safe.Count() > 0)
+                {
+                    int safeValue = safe.FirstOrDefault().SafeStorage;
+                    if (s.StockNo < safeValue)
+                    {
+                        s.IsAlarm = 1;
+                        ret.wAlarmHistory.Add(GetWAlarmHistory(so.Warehouse, item, s.StockNo, safeValue));
+                    }
+                }
                 ret.stocks.Add(s);
                 // 库存总表数据更新
                 StockSum ss = stockSumsTmp.Where(a => a.SpareParts == item).FirstOrDefault();
-                ss.isAdd = false;
+                ss.IsAdd = false;
                 ss.StockNo = GetNo(stock, ss.StockNo, countNo);
                 ss.TroubleNo = GetNo(trouble, ss.TroubleNo, countNo);
                 ss.InStockNo = GetNo(inStock, ss.InStockNo, countNo);
@@ -304,6 +326,7 @@ namespace MSS.API.Core.V1.Business
                 ss.LentNo = GetNo(lent, ss.LentNo, countNo);
                 ss.ScrapNo = GetNo(scrap, ss.ScrapNo, countNo);
                 ss.Amount = GetAmount(stock, ss.Amount, amount);
+                ss.IsAlarm = s.IsAlarm == 1 || stocksTmpAll.Where(a => a.SpareParts == item && a.IsAlarm == 1).Count() > 0 ? 1 : 0;
                 ret.stockSums.Add(ss);
             }
             return ret;
@@ -363,8 +386,14 @@ namespace MSS.API.Core.V1.Business
             ret.stockDetails = new List<StockDetail>();
             ret.stocks = new List<Stock>();
             ret.stockSums = new List<StockSum>();
-            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sods.Select(a => a.SpareParts).Distinct().ToList(), so.Warehouse);
-            List<Stock> stocksTmpTo = await _stockOperationRepo.ListBySPsAndWH(sods.Select(a => a.SpareParts).Distinct().ToList(), (int)so.ToWarehouse);
+            ret.wAlarmHistory = new List<WarehouseAlarmHistory>();
+            List<int> sps = sods.Select(a => a.SpareParts).Distinct().ToList();
+            List<WarehouseAlarm> was = await _warehouseAlarmRepo.GetBySPsAndWH(sps, so.Warehouse);
+            List<WarehouseAlarm> wasTo = await _warehouseAlarmRepo.GetBySPsAndWH(sps, (int)so.ToWarehouse);
+            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sps.ToList(), so.Warehouse);
+            List<Stock> stocksTmpTo = await _stockOperationRepo.ListBySPsAndWH(sps.ToList(), (int)so.ToWarehouse);
+            List<Stock> stocksTmpAll = await _stockOperationRepo.ListStockBySPs(sps);
+            List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(sps.ToList());
 
             if (await _stockOperationRepo.HasEntity(sods.Where(a=>!string.IsNullOrWhiteSpace(a.NewEntity)).Select(a => a.NewEntity).ToList()))
             {
@@ -428,7 +457,7 @@ namespace MSS.API.Core.V1.Business
                 double amount = sod.Sum(a => a.Amount);
                 // 移出
                 Stock s = stocksTmp.Where(a => a.SpareParts == item).FirstOrDefault();
-                s.isAdd = false;
+                s.IsAdd = false;
                 if (so.Reason == (int)StockOptDetailType.MoveTo)
                 {
                     s.StockNo = GetNo(StockChange.Subtract, s.StockNo, countNo);
@@ -437,15 +466,27 @@ namespace MSS.API.Core.V1.Business
                 {
                     s.TroubleNo = GetNo(StockChange.Subtract, s.TroubleNo, countNo);
                 }
-                s.InStockNo = GetNo(StockChange.Subtract, s.InStockNo, countNo);
+                s.StockNo = GetNo(StockChange.Subtract, s.StockNo, countNo);
                 s.Amount= GetAmount(StockChange.Subtract, s.Amount, amount);
+                s.IsAlarm = 0;
+                var safe = was.Where(a => a.SpareParts == item);
+                if (safe.Count() > 0)
+                {
+                    int safeValue = safe.FirstOrDefault().SafeStorage;
+                    if (s.StockNo < safeValue)
+                    {
+                        s.IsAlarm = 1;
+                        ret.wAlarmHistory.Add(GetWAlarmHistory(so.Warehouse, item, s.StockNo, safeValue));
+                    }
+                }
                 ret.stocks.Add(s);
                 // 存在移入(更新)
+                Stock sTo = new Stock();
                 var tmpTo = stocksTmpTo.Where(a => a.SpareParts == item);
                 if (tmpTo.Count() > 0)
                 {
-                    Stock sTo = tmpTo.FirstOrDefault();
-                    sTo.isAdd = false;
+                    sTo = tmpTo.FirstOrDefault();
+                    sTo.IsAdd = false;
                     if (so.Reason == (int)StockOptDetailType.MoveTo)
                     {
                         sTo.InStockNo = GetNo(StockChange.Plus, sTo.InStockNo, countNo);
@@ -456,13 +497,24 @@ namespace MSS.API.Core.V1.Business
                     }
                     sTo.StockNo = GetNo(StockChange.Plus, sTo.StockNo, countNo);
                     sTo.Amount = GetAmount(StockChange.Plus, sTo.Amount, amount);
+                    sTo.Warehouse = (int)so.ToWarehouse;
+                    sTo.IsAlarm = 0;
+                    var safeTo = wasTo.Where(a => a.SpareParts == item);
+                    if (safeTo.Count() > 0)
+                    {
+                        int safeValue = safeTo.FirstOrDefault().SafeStorage;
+                        if (sTo.StockNo < safeValue)
+                        {
+                            sTo.IsAlarm = 1;
+                            ret.wAlarmHistory.Add(GetWAlarmHistory((int)so.ToWarehouse, item, sTo.StockNo, safeValue));
+                        }
+                    }
                     ret.stocks.Add(sTo);
                 }
                 // 不存在移入(插入)
                 else
                 {
-                    Stock sTo = new Stock();
-                    sTo.isAdd = true;
+                    sTo.IsAdd = true;
                     if (so.Reason == (int)StockOptDetailType.MoveTo)
                     {
                         sTo.InStockNo = countNo;
@@ -475,7 +527,37 @@ namespace MSS.API.Core.V1.Business
                     sTo.SpareParts = item;
                     sTo.Amount = amount;
                     sTo.Warehouse = (int)so.ToWarehouse;
+                    sTo.IsAlarm = 0;
+                    var safeTo = wasTo.Where(a => a.SpareParts == item);
+                    if (safeTo.Count() > 0)
+                    {
+                        int safeValue = safeTo.FirstOrDefault().SafeStorage;
+                        if (sTo.StockNo < safeValue)
+                        {
+                            sTo.IsAlarm = 1;
+                            ret.wAlarmHistory.Add(GetWAlarmHistory((int)so.ToWarehouse, item, sTo.StockNo, safeValue));
+                        }
+                    }
                     ret.stocks.Add(sTo);
+                }
+                // 更新预警状态
+                StockSum stockSum = stockSumsTmp.Where(a => a.SpareParts == item).FirstOrDefault();
+                if (s.IsAlarm==1 || sTo.IsAlarm== 1
+                    || stocksTmpAll.Where(a => a.SpareParts == item && a.IsAlarm == 1).Count() > 0)
+                {
+                    if (stockSum.IsAlarm == 0)
+                    {
+                        stockSum.IsAlarm = 1;
+                        ret.stockSums.Add(stockSum);
+                    }
+                }
+                else
+                {
+                    if (stockSum.IsAlarm == 1)
+                    {
+                        stockSum.IsAlarm = 0;
+                        ret.stockSums.Add(stockSum);
+                    }
                 }
             }
             return ret;
@@ -500,10 +582,14 @@ namespace MSS.API.Core.V1.Business
             ret.stockDetails = new List<StockDetail>();
             ret.stocks = new List<Stock>();
             ret.stockSums = new List<StockSum>();
+            ret.wAlarmHistory = new List<WarehouseAlarmHistory>();
 
-            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sods.Select(a => a.SpareParts).Distinct().ToList(), so.Warehouse);
+            List<int> sps = sods.Select(a => a.SpareParts).Distinct().ToList();
+            List<WarehouseAlarm> was = await _warehouseAlarmRepo.GetBySPsAndWH(sps, so.Warehouse);
+            List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(sps, so.Warehouse);
+            List<Stock> stocksTmpAll = await _stockOperationRepo.ListStockBySPs(sps);
+            List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(sps.ToList());
 
-            List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(sods.Select(a => a.SpareParts).Distinct().ToList());
             foreach (var item in sods)
             {
                 StockDetail sd = new StockDetail();
@@ -527,10 +613,10 @@ namespace MSS.API.Core.V1.Business
                 var sod = sods.Where(a => a.SpareParts == item);
                 int countNo = sod.Sum(a => a.CountNo);
                 double totalAmount = sod.Sum(a => a.TotalAmount);
+                Stock s = new Stock();
                 if (stocksTmp == null || stocksTmp.Where(a=>a.SpareParts==item).Count() == 0)
                 {
-                    Stock s = new Stock();
-                    s.isAdd = true;
+                    s.IsAdd = true;
                     s.InspectionNo = 0;
                     s.InStockNo = countNo;
                     s.RepairNo = 0;
@@ -541,22 +627,32 @@ namespace MSS.API.Core.V1.Business
                     s.LentNo = 0;
                     s.ScrapNo = 0;
                     s.Warehouse = so.Warehouse;
-                    ret.stocks.Add(s);
                 }
                 else
                 {
-                    Stock s = stocksTmp.Where(a=>a.SpareParts==item).FirstOrDefault();
-                    s.isAdd = false;
+                    s = stocksTmp.Where(a=>a.SpareParts==item).FirstOrDefault();
+                    s.IsAdd = false;
                     s.InStockNo += countNo;
                     s.Amount += totalAmount;
                     s.StockNo += countNo;
-                    ret.stocks.Add(s);
                 }
+                s.IsAlarm = 0;
+                var safe = was.Where(a => a.SpareParts == item);
+                if (safe.Count()>0)
+                {
+                    int safeValue = safe.FirstOrDefault().SafeStorage;
+                    if (s.StockNo < safeValue)
+                    {
+                        s.IsAlarm = 1;
+                        ret.wAlarmHistory.Add(GetWAlarmHistory(so.Warehouse, item, s.StockNo, safeValue));
+                    }
+                }
+                ret.stocks.Add(s);
 
+                StockSum ss = new StockSum();
                 if (stockSumsTmp == null || stockSumsTmp.Where(a => a.SpareParts == item).Count() == 0)
                 {
-                    StockSum ss = new StockSum();
-                    ss.isAdd = true;
+                    ss.IsAdd = true;
                     ss.InspectionNo = 0;
                     ss.InStockNo = countNo;
                     ss.RepairNo = 0;
@@ -566,17 +662,17 @@ namespace MSS.API.Core.V1.Business
                     ss.TroubleNo = 0;
                     ss.LentNo = 0;
                     ss.ScrapNo = 0;
-                    ret.stockSums.Add(ss);
                 }
                 else
                 {
-                    StockSum ss = stockSumsTmp.Where(a => a.SpareParts == item).FirstOrDefault();
-                    ss.isAdd = false;
+                    ss = stockSumsTmp.Where(a => a.SpareParts == item).FirstOrDefault();
+                    ss.IsAdd = false;
                     ss.InStockNo += countNo;
                     ss.Amount += totalAmount;
                     ss.StockNo += countNo;
-                    ret.stockSums.Add(ss);
                 }
+                ss.IsAlarm = s.IsAlarm == 1 || stocksTmpAll.Where(a =>a.SpareParts==item && a.IsAlarm == 1).Count() > 0 ? 1 : 0;
+                ret.stockSums.Add(ss);
             }
             return ret;
         }
@@ -590,12 +686,13 @@ namespace MSS.API.Core.V1.Business
             StockOperationSaveParm ret = new StockOperationSaveParm();
             StockOperation so = parm.stockOperation;
             ret.stockOperation = so;
+            //在这里sod.id特指entity在stock_detail中对应的id
             StockOperationDetail sod = JsonConvert.DeserializeObject<StockOperationDetail>(so.DetailList);
-            List<StockDetail> tmp = await _stockOperationRepo.GetStockDetailByEntitys(new List<string>() {sod.Entity });
+            List<StockDetail> tmp = await _stockOperationRepo.GetStockDetailByEntityIDs(new List<int>() {sod.ID },so.Warehouse);
             if (tmp.Count==0)
             {
                 validateSaveData.code = Code.DataIsnotExist;
-                validateSaveData.msg = "仓库没有接收过此物资";
+                validateSaveData.msg = "此仓库没有接收过此物资";
                 return ret;
             }
             StockDetail sd = tmp.FirstOrDefault();
@@ -607,31 +704,55 @@ namespace MSS.API.Core.V1.Business
             ret.stockDetails = new List<StockDetail>();
             ret.stocks = new List<Stock>();
             ret.stockSums = new List<StockSum>();
+            ret.wAlarmHistory = new List<WarehouseAlarmHistory>();
 
+            List<WarehouseAlarm> was = await _warehouseAlarmRepo.GetBySPsAndWH(new List<int>() { sd.SpareParts }, so.Warehouse);
             List<Stock> stocksTmp = await _stockOperationRepo.ListBySPsAndWH(new List<int>() {sd.SpareParts }, so.Warehouse);
+            List<Stock> stocksTmpAll = await _stockOperationRepo.ListStockBySPs(new List<int>() { sd.SpareParts });
 
             List<StockSum> stockSumsTmp = await _stockOperationRepo.ListBySPs(new List<int>() { sd.SpareParts });
-            sd.InStockNo = sd.InStockNo + sod.CountNo;
-            sd.StockNo = sd.StockNo + sod.CountNo;
+            sd.InStockNo += sod.CountNo;
+            sd.StockNo += sod.CountNo;
             sd.Status = sd.StockNo > 1 ? (int)StockStatus.None : (int)StockStatus.Profit;
             sd.Warehouse = sod.Warehouse;
             ret.stockDetails.Add(sd);
 
             double totalAmount = sod.CountNo * sd.AcceptUnitPrice * sd.ExchangeRate;
-            stocksTmp[0].isAdd = false;
+            stocksTmp[0].IsAdd = false;
             stocksTmp[0].StockNo = stocksTmp[0].StockNo + sod.CountNo;
             stocksTmp[0].InStockNo = stocksTmp[0].InStockNo + sod.CountNo;
             stocksTmp[0].Amount = stocksTmp[0].Amount + totalAmount;
+            stocksTmp[0].IsAlarm = 0;
+            if (was.Count > 0)
+            {
+                int safeValue = was[0].SafeStorage;
+                if (stocksTmp[0].StockNo < safeValue)
+                {
+                    stocksTmp[0].IsAlarm = 1;
+                    ret.wAlarmHistory.Add(GetWAlarmHistory(so.Warehouse, stocksTmp[0].SpareParts, stocksTmp[0].StockNo, safeValue));
+                }
+            }
             ret.stocks.Add(stocksTmp[0]);
 
-            stockSumsTmp[0].isAdd = false;
+            stockSumsTmp[0].IsAdd = false;
             stockSumsTmp[0].StockNo = stockSumsTmp[0].StockNo + sod.CountNo;
             stockSumsTmp[0].InStockNo = stockSumsTmp[0].InStockNo + sod.CountNo;
             stockSumsTmp[0].Amount = stockSumsTmp[0].Amount + totalAmount;
+            stockSumsTmp[0].IsAlarm= stocksTmp[0].IsAlarm == 1 || stocksTmpAll.Where(a => a.IsAlarm == 1).Count() > 0?1:0;
             ret.stockSums.Add(stockSumsTmp[0]);
             return ret;
         }
 
+        private WarehouseAlarmHistory GetWAlarmHistory(int warehouse,int spareParts,int stockNo,int safeStorage)
+        {
+            WarehouseAlarmHistory ret = new WarehouseAlarmHistory();
+            ret.StockNo = stockNo;
+            ret.SafeStorage = safeStorage;
+            ret.SpareParts = spareParts;
+            ret.Warehouse = warehouse;
+            ret.CreatedTime = DateTime.Now;
+            return ret;
+        }
         #region 采购退货用到的采购接收流水号下拉、下拉选中后对应的记录显示
         public async Task<ApiResult> ListByReason(int reason)
         {
