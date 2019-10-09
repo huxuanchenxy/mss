@@ -4,6 +4,7 @@
       <h2>
         <img class="icon" src="../common/images/icon-home.svg" alt=""> 首页
       </h2>
+      <a href="#/monitorCenter/eqpmonitor/list">进入系统</a>
     </div>
     <div class="con-padding-horizontal content">
       <div class="right">
@@ -309,5 +310,8 @@ export default {
 
 .el-col-12{
   width:100%
+}
+a{
+ cursor: pointer;
 }
 </style>
