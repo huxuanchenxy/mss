@@ -17,7 +17,7 @@
             <div class="inp-wrap">
               <span class="text">事务原因<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="reason.text" clearable filterable placeholder="请选择事务原因" @change="reasonChange">
+                <el-select v-model="reason.text" filterable placeholder="请选择事务原因" @change="reasonChange">
                 <el-option
                   v-for="item in reasonList"
                   :key="item.key"
@@ -275,7 +275,7 @@ export default {
   },
   methods: {
     reasonChange () {
-      if (!this.validateSelect(this.reason)) return
+      this.reason.tips = ''
       if (this.reason.text === sparePartsOperationDetailType.moveTo) {
         this.editNoCompareName = '存货数量'
       } else {
@@ -347,6 +347,7 @@ export default {
             entity: this.detailList[i].entity,
             spareParts: this.detailList[i].spareParts,
             sparePartsName: this.detailList[i].sparePartsName,
+            stockNo: this.detailList[i].stockNo,
             inStockNo: this.detailList[i].inStockNo,
             countNo: this.detailList[i].editNo,
             newEntity: this.detailList[i].newEntity === null ? '' : this.detailList[i].newEntity,

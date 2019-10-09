@@ -22,15 +22,18 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly ISparePartsRepo<SpareParts> _sparePartsRepo;
+        private readonly IWarehouseAlarmRepo<WarehouseAlarm> _warehouseAlarmRepo;
         private readonly IStockOperationRepo<StockOperation> _stockOperationRepo;
 
         private readonly int userID;
         public SparePartsService(ISparePartsRepo<SpareParts> sparePartsRepo, IAuthHelper auth,
+            IWarehouseAlarmRepo<WarehouseAlarm> warehouseAlarmRepo,
             IStockOperationRepo<StockOperation> stockOperationRepo)
         {
             //_logger = logger;
             _sparePartsRepo = sparePartsRepo;
             _stockOperationRepo = stockOperationRepo;
+            _warehouseAlarmRepo = warehouseAlarmRepo;
             userID = auth.GetUserId();
         }
 
@@ -97,7 +100,12 @@ namespace MSS.API.Core.V1.Business
                 }
                 else
                 {
-                    ret.data = await _sparePartsRepo.Delete(tmp, userID);
+                    using (TransactionScope scope = new TransactionScope())
+                    {
+                        ret.data = await _sparePartsRepo.Delete(tmp, userID);
+                        await _warehouseAlarmRepo.DeleteBySPs(tmp);
+                        scope.Complete();
+                    }
                 }
                 return ret;
             }

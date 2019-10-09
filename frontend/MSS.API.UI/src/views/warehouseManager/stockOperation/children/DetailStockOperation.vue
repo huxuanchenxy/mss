@@ -376,8 +376,7 @@ export default {
               // this.columnName.amount = '退回金额'
               break
             case sparePartsOperationDetailType.troubleRepair:
-              this.isShow.returnNo = true
-              this.columnName.returnNo = '已归还数量'
+              this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = true
               this.columnName.someOrder = '送修单'
@@ -428,8 +427,7 @@ export default {
               // this.columnName.amount = '归还金额'
               break
             case sparePartsOperationDetailType.inspection:
-              this.isShow.returnNo = true
-              this.columnName.returnNo = '已归还数量'
+              this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = true
               this.columnName.someOrder = '送检单'

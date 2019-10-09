@@ -1,7 +1,7 @@
 <template>
   <div class="wrap height-full">
     <div class="content">
-      <keep-alive include="SeeStockReceiveList,SeeStockDeliveryList,SeeStockAdjustList,SeeStockMoveList">
+      <keep-alive include="SeeWarehouseList">
         <router-view @title="getTitle"/>
       </keep-alive>
     </div>
@@ -10,7 +10,7 @@
 <script>
 import XButton from '@/components/button'
 export default {
-  name: 'stockOperation',
+  name: 'warehouse',
   components: {
     XButton
   },
@@ -28,7 +28,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .wrap{
-  /deep/
   .header{
     display: flex;
     justify-content: space-between;
@@ -39,14 +38,15 @@ export default {
 
   // 子组件下边的按钮加搜索
   /deep/ .box{
-    height: percent(145, $content-height);
+    height: percent(125, $content-height);
 
     // 搜索组
     .search-wrap{
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: percent(80, 145);
+      // height: percent(80, 145);
+      height: 100%!important;
       background: rgba(128, 128, 128, 0.1);
       color: $color-white;
 
@@ -63,28 +63,6 @@ export default {
       .inp{
         width: PXtoEm(160);
         margin-left: PXtoEm(14);
-      }
-
-      .btn{
-        border: 0;
-        background: $color-main-btn;
-      }
-    }
-
-    .btn-group{
-      display: flex;
-      align-items: center;
-      height: percent(65, 145);
-
-      .list{
-        margin-right: PXtoEm(10);
-      }
-
-      .btn{
-        &:hover{
-          border-color: $color-main-btn;
-          background: $color-main-btn;
-        }
       }
     }
   }
@@ -134,23 +112,5 @@ export default {
       font-size: 20px;
     }
   }
-}
-
-/deep/
-.el-range-separator{
-  color: #fff!important;
-  padding-bottom: 10px!important;
-}
-/deep/
-.el-range-input{
-  color: #fff!important;
-}
-/deep/
-.el-range__icon{
-  padding-bottom: 10px!important;
-}
-/deep/
-.el-range__close-icon{
-  padding-bottom: 10px!important;
 }
 </style>

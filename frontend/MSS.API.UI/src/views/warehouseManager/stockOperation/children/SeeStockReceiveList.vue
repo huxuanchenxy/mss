@@ -48,7 +48,6 @@
             <label for="name">过账日期</label>
             <div class="inp">
               <el-date-picker
-                class="middle"
                 v-model="searchDate"
                 type="daterange"
                 prefix-icon="el-icon-date"
@@ -239,9 +238,9 @@ export default {
       this.currentPage = page
       this.loading = true
       let st, et
-      if (this.searchDate.length !== 0) {
-        st = this.searchDate[0] + '00:00:00'
-        et = this.searchDate[1] + '23:59:59'
+      if (this.searchDate != null && this.searchDate.length !== 0) {
+        st = this.searchDate[0] + ' 00:00:00'
+        et = this.searchDate[1] + ' 23:59:59'
       }
       api.getStockOperation({
         order: this.currentSort.order,
@@ -439,15 +438,5 @@ $con-height: $content-height - 145 - 56;
       color: #D8D8D8;
     }
   }
-}
-
-/deep/
-.el-range-separator{
-  color: #fff!important;
-  padding-bottom: 10px!important;
-}
-/deep/
-.el-range__icon{
-  padding-bottom: 10px;
 }
 </style>

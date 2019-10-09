@@ -8,23 +8,10 @@
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
-    <div class="box">
+    <div class="box1">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
-          <div class="input-group">
-            <label for="name">事务原因</label>
-            <div class="inp">
-              <el-select v-model="reason" clearable filterable placeholder="请选择事务原因">
-                <el-option
-                  v-for="item in reasonList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
           <div class="input-group">
             <label for="name">仓库</label>
             <div class="inp">
@@ -39,10 +26,22 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="name">过账日期</label>
+            <label for="name">物资</label>
+            <div class="inp">
+              <el-select v-model="spareParts" clearable filterable placeholder="请先选择物资">
+                <el-option
+                  v-for="item in sparePartsList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="name">预警日期</label>
             <div class="inp">
               <el-date-picker
-                class="middle"
                 v-model="searchDate"
                 type="daterange"
                 prefix-icon="el-icon-date"
@@ -59,49 +58,35 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
-      <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button :disabled="btn.save">盘盈盘亏</x-button></li>
-        <li class="list" @click="detail"><x-button>查看明细</x-button></li>
-      </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list number"></li>
-        <li class="list name c-pointer" @click="changeOrder('operation_id')">
-          调整流水号
-          <i :class="[{ 'el-icon-d-caret': headOrder.operation_id === 0 }, { 'el-icon-caret-top': headOrder.operation_id === 1 }, { 'el-icon-caret-bottom': headOrder.operation_id === 2 }]"></i>
-        </li>
-        <li class="list name c-pointer" @click="changeOrder('reason')">
-          事务原因
-          <i :class="[{ 'el-icon-d-caret': headOrder.reason === 0 }, { 'el-icon-caret-top': headOrder.reason === 1 }, { 'el-icon-caret-bottom': headOrder.reason === 2 }]"></i>
-        </li>
         <li class="list name c-pointer" @click="changeOrder('warehouse')">
           仓库
           <i :class="[{ 'el-icon-d-caret': headOrder.warehouse === 0 }, { 'el-icon-caret-top': headOrder.warehouse === 1 }, { 'el-icon-caret-bottom': headOrder.warehouse === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
-          过账时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('spare_parts')">
+          物资
+          <i :class="[{ 'el-icon-d-caret': headOrder.spare_parts === 0 }, { 'el-icon-caret-top': headOrder.spare_parts === 1 }, { 'el-icon-caret-bottom': headOrder.spare_parts === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('created_by')">
-          经办人
-          <i :class="[{ 'el-icon-d-caret': headOrder.created_by === 0 }, { 'el-icon-caret-top': headOrder.created_by === 1 }, { 'el-icon-caret-bottom': headOrder.created_by === 2 }]"></i>
+        <li class="list name">库存数量</li>
+        <li class="list name">预警阈值</li>
+        <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
+          创建时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="item in stockAdjustList" :key="item.key">
+            <li class="list" v-for="item in warehouseAlarmHistoryList" :key="item.key">
               <div class="list-content">
-                <div class="number">
-                  <input type="radio" v-model="editStockAdjustID" :value="item.id">
-                </div>
-                <div class="name">{{ item.operationID }}</div>
-                <div class="name">{{ item.reasonName }}</div>
-                <div class="name word-break">{{ item.warehouseName }}</div>
+                <div class="name">{{ item.warehouseName }}</div>
+                <div class="name word-break">{{ item.sparePartsName }}</div>
+                <div class="name word-break">{{ item.stockNo }}</div>
+                <div class="name word-break">{{ item.safeStorage }}</div>
                 <div class="last-update-time color-white word-break">{{ item.createdTime }}</div>
-                <div class="last-update-time word-break">{{ item.createdName }}</div>
               </div>
             </li>
           </ul>
@@ -124,82 +109,58 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import { btn } from '@/element/btn.js'
-import { sparePartsOperationType } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/wmsApi'
-import apiAuth from '@/api/authApi'
 export default {
-  name: 'SeeStockAdjustList',
+  name: 'List',
   components: {
     XButton
   },
   data () {
     return {
-      btn: {
-        save: false,
-        delete: false,
-        update: false
-      },
-      title: ' | 物资调整',
-      reason: '',
-      reasonList: [],
+      title: ' | 预警历史',
       warehouse: '',
       warehouseList: [],
-      supplier: '',
-      supplierList: [],
-      editStockAdjustID: '',
-      stockAdjustList: [],
+      spareParts: '',
+      sparePartsList: [],
+      warehouseAlarmHistoryList: [],
       total: 0,
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'operation_id',
+        sort: 'ID',
         order: 'asc'
       },
       headOrder: {
-        operation_id: 1,
-        reason: 0,
         warehouse: 0,
-        created_time: 0,
-        created_by: 0
+        spare_parts: 0,
+        created_time: 0
       },
       searchDate: []
     }
   },
   created () {
-    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
-    if (!user.is_super) {
-      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
-      this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.stockAdjust.save
-      })
-    }
-    // 事务原因列表
-    apiAuth.getSubCode(sparePartsOperationType.adjust).then(res => {
-      this.reasonList = res.data
-    }).catch(err => console.log(err))
     // 仓库加载
     api.getWarehouseAll().then(res => {
       this.warehouseList = res.data
     }).catch(err => console.log(err))
+    // 物资加载
+    api.getSparePartsAll().then(res => {
+      this.sparePartsList = res.data
+    }).catch(err => console.log(err))
     this.init()
-  },
-  activated () {
-    this.searchResult(this.currentPage)
   },
   methods: {
     init () {
       this.currentPage = 1
+      this.searchResult(1)
     },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.operation_id = 0
-        this.headOrder.reason = 0
         this.headOrder.warehouse = 0
+        this.headOrder.spare_parts = 0
         this.headOrder.created_time = 0
-        this.headOrder.created_by = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -221,53 +182,34 @@ export default {
         st = this.searchDate[0] + ' 00:00:00'
         et = this.searchDate[1] + ' 23:59:59'
       }
-      api.getStockOperation({
+      api.getWarehouseAlarmHistory({
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchType: sparePartsOperationType.adjust,
-        SearchReason: this.reason,
-        SearchWarehouse: this.warehouse,
+        SearchType: this.warehouse,
+        SearchSpareParts: this.spareParts,
         SearchStart: st,
         SearchEnd: et
       }).then(res => {
         this.loading = false
         if (res.data.total === 0) {
-          this.stockAdjustList = []
+          this.warehouseAlarmHistoryList = []
         } else {
           res.data.rows.map(item => {
             item.createdTime = transformDate(item.createdTime)
           })
-          this.stockAdjustList = res.data.rows
+          this.warehouseAlarmHistoryList = res.data.rows
         }
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
-    add () {
-      this.$router.push({name: 'AddStockAdjust', query: { type: 'Add' }})
-    },
-    detail () {
-      if (this.editStockMoveID === '') {
-        this.$message({
-          message: '请选择需要查看的调整流水号',
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'DetailStockOperation',
-          params: {
-            id: this.editStockAdjustID,
-            sourceName: 'SeeStockAdjustList'
-          }
-        })
-      }
-    },
     // 搜索功能
     searchRes () {
+      this.$emit('title', '| 预警历史')
       this.loading = true
       this.init()
-      this.searchResult(1)
+      // this.searchResult(1)
     },
     // 序号、指定页翻页
     handleCurrentChange (val) {
@@ -367,7 +309,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .number{
-    width: 1%;
+    width: 6%;
   }
 
   .name,
@@ -397,24 +339,56 @@ $con-height: $content-height - 145 - 56;
   }
 }
 
-// 图片
-.pdf-btn{
-  display: flex;
-  justify-content: center;
-  .box{
-    position: relative;
-    width: 60px;
-    height: 30px;
-    text-align: center;
-    line-height: 30px;
-    cursor: pointer;
+/deep/ .box1{
+  height: percent(45, $content-height);
 
-    &:before{
-      content: "\e6cc";
-      font-size: 28px;
-      font-family: "iconfont";
-      color: #D8D8D8;
+  // 搜索组
+  .search-wrap{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    // height: percent(80, 145);
+    height: 100%!important;
+    background: rgba(128, 128, 128, 0.1);
+    color: $color-white;
+
+    .wrap{
+      display: flex;
+    }
+
+    .input-group{
+      display: inherit;
+      align-items: center;
+      margin-right: PXtoEm(24);
+    }
+
+    .inp{
+      width: PXtoEm(160);
+      margin-left: PXtoEm(14);
+    }
+
+    .btn{
+      border: 0;
+      background: $color-main-btn;
     }
   }
+}
+
+/deep/
+.el-range-separator{
+  color: #fff!important;
+  padding-bottom: 10px!important;
+}
+/deep/
+.el-range-input{
+  color: #fff!important;
+}
+/deep/
+.el-range__icon{
+  padding-bottom: 10px!important;
+}
+/deep/
+.el-range__close-icon{
+  padding-bottom: 10px!important;
 }
 </style>

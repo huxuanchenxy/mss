@@ -85,7 +85,7 @@ namespace MSS.API.Model.Data
         public int? SearchReason { get; set; }
         public int? SearchToWarehouse { get; set; }
         public int? SearchWarehouse { get; set; }
-        public int? SearchAgreement { get; set; }
+        public string SearchAgreement { get; set; }
         public int? SearchPicker { get; set; }
         public DateTime? SearchStart { get; set; }
         public DateTime? SearchEnd { get; set; }
@@ -104,6 +104,10 @@ namespace MSS.API.Model.Data
         /// 移库专用
         /// </summary>
         public List<StockDetail> stockDetailsAdd { get; set; }
+        /// <summary>
+        /// 仓库预警历史
+        /// </summary>
+        public List<WarehouseAlarmHistory> wAlarmHistory { get; set; }
     }
     #endregion
 
@@ -125,7 +129,7 @@ namespace MSS.API.Model.Data
         public string CurrencyName { get; set; }
         public string Invoice { get; set; }
         public DateTime? LifeDate { get; set; }
-        public int Supplier { get; set; }
+        public int? Supplier { get; set; }
         public string SupplierName { get; set; }
         public int? WorkingOrder { get; set; }
         public string Purchase { get; set; }
@@ -218,7 +222,8 @@ namespace MSS.API.Model.Data
         public double Amount { get; set; }
         public int Warehouse { get; set; }
         public string WarehouseName { get; set; }
-        public bool isAdd { get; set; }
+        public bool IsAdd { get; set; }
+        public int IsAlarm { get; set; }
         public int EditNo { get; set; }
     }
 
@@ -239,6 +244,7 @@ namespace MSS.API.Model.Data
             Map(o => o.Warehouse).ToColumn("warehouse");
             Map(o => o.WarehouseName).ToColumn("name");
             Map(o => o.EditNo).ToColumn("editNo");
+            Map(o => o.IsAlarm).ToColumn("is_alarm");
         }
     }
     #endregion
@@ -361,8 +367,9 @@ namespace MSS.API.Model.Data
         public int LentNo { get; set; }
         public int ScrapNo { get; set; }
         public double Amount { get; set; }
-        public bool isAdd { get; set; }
+        public bool IsAdd { get; set; }
         public List<Stock> stocks { get; set; }
+        public int IsAlarm { get; set; }
     }
 
     public class StockSumMap : EntityMap<StockSum>
@@ -379,6 +386,7 @@ namespace MSS.API.Model.Data
             Map(o => o.LentNo).ToColumn("lent_no");
             Map(o => o.ScrapNo).ToColumn("scrap_no");
             Map(o => o.Amount).ToColumn("amount");
+            Map(o => o.IsAlarm).ToColumn("is_alarm");
         }
     }
 
@@ -386,6 +394,7 @@ namespace MSS.API.Model.Data
     {
         public int? SearchSpareParts { get; set; }
         public int? SearchWarehouse { get; set; }
+        public bool SearchIsAlarm { get; set; }
     }
 
     public class StockSumView

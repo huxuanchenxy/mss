@@ -17,7 +17,7 @@
             <div class="inp-wrap">
               <span class="text">事务原因<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="reason.text" clearable filterable placeholder="请选择事务原因" @change="reasonChange">
+                <el-select v-model="reason.text" filterable placeholder="请选择事务原因" @change="reasonChange">
                 <el-option
                   v-for="item in reasonList"
                   :key="item.key"
@@ -40,7 +40,14 @@
             <div class="inp-wrap">
               <span class="text">物资ID<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input v-model="entity.text" placeholder="请输入物资ID"></el-input>
+                <el-select filterable placeholder="请输入物资ID" v-model="entity.text" ref="stockDetailID">
+                  <el-option
+                    v-for="item in entityList"
+                    :key="item.key"
+                    :label="item.entity"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <p class="validate-tips">{{ entity.tips }}</p>
@@ -112,6 +119,7 @@
                   <li class="list name">保质期</li>
                   <li class="list name">供应商</li>-->
                   <li class="list name">库存数量</li>
+                  <li class="list name">存货数量</li>
                   <li class="list name">操作</li>
                 </ul>
                 <div class="scroll">
@@ -124,6 +132,7 @@
                           <div class="name">{{ item.lifeDate === null ? '' : item.lifeDate.slice(0,10) }}</div>
                           <div class="name">{{ item.supplierName }}</div>-->
                           <div class="name">{{ item.stockNo }}</div>
+                          <div class="name">{{ item.inStockNo }}</div>
                           <div class="name">
                             <x-button class="active" @click.native="inStockDetail(item)">亏损确认</x-button>
                           </div>
@@ -153,7 +162,7 @@
                   <li class="list name">物资ID</li>
                   <li class="list name">物资名称</li>
                   <li class="list name">物资状态</li>
-                  <li class="list name">库存数量</li>
+                  <li class="list name">存货数量</li>
                   <li class="list name">盈亏数量</li>
                   <li class="list url">备注</li>
                 </ul>
@@ -218,6 +227,7 @@ export default {
       remark: {text: '', tips: ''},
       profitNo: {text: '', tips: ''},
       entity: {text: '', tips: ''},
+      entityList: [],
       currentPage: 1,
       total: 0,
       detailList: [],
@@ -233,6 +243,10 @@ export default {
     // 仓库加载
     api.getWarehouseAll().then(res => {
       this.warehouseList = res.data
+    }).catch(err => console.log(err))
+    // 物资ID加载
+    api.getStockDetailAll().then(res => {
+      this.entityList = res.data
     }).catch(err => console.log(err))
     // // 物资加载
     // api.getSparePartsAll().then(res => {
@@ -255,7 +269,16 @@ export default {
       }).catch(err => console.log(err))
     },
     warehouseChange () {
-      if (this.reason.text === sparePartsOperationDetailType.inventoryProfit) {
+      this.reason.tips = ''
+      if (this.reason.text === '') {
+        this.$message({
+          message: '请选择事务原因',
+          type: 'warning'
+        })
+        this.warehouse.text = ''
+        return
+      }
+      if (this.reason.text === sparePartsOperationDetailType.inventoryLoss) {
         this.spareParts.text = ''
         if (!this.validateSelect(this.warehouse)) return
         // 根据仓库找物资
@@ -353,9 +376,10 @@ export default {
       }).catch(err => console.log(err))
     },
     saveProfit () {
-      if (!this.validateInput(this.entity) || !this.validateSelect(this.warehouse) || !this.validateNumber(this.profitNo)) return
+      if (!this.validateSelect(this.entity) || !this.validateSelect(this.warehouse) || !this.validateNumber(this.profitNo)) return
       let arr = {
-        entity: this.entity.text,
+        id: this.entity.text,
+        entity: this.$refs.stockDetailID.selected.label,
         countNo: this.profitNo.text,
         warehouse: this.warehouse.text
       }

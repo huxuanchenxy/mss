@@ -12,7 +12,8 @@ namespace MSS.API.Dao.Interface
         Task<int> Update(WarehouseAlarm warehouseAlarm);
         Task<int> Delete(string[] ids);
         Task<object> GetPageByParm(WarehouseAlarmQueryParm parm);
-        Task<WarehouseAlarm> GetBySpareParts(int spareParts);
+        Task<List<WarehouseAlarm>> GetBySPsAndWH(List<int> spartParts, int warehouse);
         Task<WarehouseAlarm> GetByID(int id);
+        Task<int> DeleteBySPs(string[] ids);
     }
 }

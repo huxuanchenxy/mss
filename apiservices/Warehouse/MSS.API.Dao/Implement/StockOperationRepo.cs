@@ -75,41 +75,48 @@ namespace MSS.API.Dao.Implement
                         sql = " insert into stock_detail " +
                             " values (0,@Entity,@SpareParts,@StockOperationDetail,@StockNo,@TroubleNo,@InStockNo, " +
                             " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Status) ";
+                        ret = await c.ExecuteAsync(sql, parm.stockDetailsAdd, trans);
                     }
-                    ret = await c.ExecuteAsync(sql, parm.stockDetailsAdd, trans);
 
                     foreach (var item in parm.stocks)
                     {
-                        if (item.isAdd)
+                        if (item.IsAdd)
                         {
                             sql = " insert into stock " +
                                 " values (0,@SpareParts,@StockNo,@TroubleNo,@InStockNo, " +
-                                " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Amount) ";
+                                " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Amount,@IsAlarm) ";
                         }
                         else
                         {
                             sql = " update stock set stock_no=@StockNo,inspection_no=@InspectionNo,repair_no=@RepairNo," +
                                 " trouble_no=@TroubleNo,in_stock_no=@InStockNo,lent_no=@LentNo,scrap_no=@ScrapNo, " +
-                                " warehouse=@Warehouse,amount=@Amount where id = @id ";
+                                " warehouse=@Warehouse,amount=@Amount,is_alarm=@IsAlarm where id = @id ";
                         }
                         ret = await c.ExecuteAsync(sql, item, trans);
                     }
 
                     foreach (var item in parm.stockSums)
                     {
-                        if (item.isAdd)
+                        if (item.IsAdd)
                         {
                             sql = " insert into stock_sum " +
                                 " values (0,@SpareParts,@StockNo,@TroubleNo,@InStockNo, " +
-                                " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Amount) ";
+                                " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Amount,@IsAlarm) ";
                         }
                         else
                         {
                             sql = " update stock_sum set stock_no=@StockNo,inspection_no=@InspectionNo,repair_no=@RepairNo," +
-                                " trouble_no=@TroubleNo,in_stock_no=@InStockNo,lent_no=@LentNo,scrap_no=@ScrapNo,amount=@Amount " +
-                                " where id = @id ";
+                                " trouble_no=@TroubleNo,in_stock_no=@InStockNo,lent_no=@LentNo,scrap_no=@ScrapNo,amount=@Amount, " +
+                                " is_alarm=@IsAlarm where id = @id ";
                         }
                         ret = await c.ExecuteAsync(sql, item, trans);
+                    }
+                    if (parm.wAlarmHistory.Count>0)
+                    {
+                        sql = " insert into warehouse_alarm_history " +
+                        " values (0,@Warehouse,@SpareParts,@StockNo,@SafeStorage, " +
+                        " @CreatedTime); ";
+                        ret = await c.ExecuteAsync(sql, parm.wAlarmHistory, trans);
                     }
                     trans.Commit();
                     // 查询stock和stock_sum表，将其中0数据删除
@@ -160,7 +167,7 @@ namespace MSS.API.Dao.Implement
                 }
                 if (parm.SearchAgreement != null)
                 {
-                    whereSql.Append(" and a.agreement = " + parm.SearchAgreement);
+                    whereSql.Append(" and a.agreement like '%" + parm.SearchAgreement+"%' ");
                 }
                 if (parm.SearchPicker != null)
                 {
@@ -168,11 +175,11 @@ namespace MSS.API.Dao.Implement
                 }
                 if (parm.SearchStart != null)
                 {
-                    whereSql.Append(" and a.create_time >= " + parm.SearchStart);
+                    whereSql.Append(" and a.created_time >= '" + parm.SearchStart+"' ");
                 }
                 if (parm.SearchEnd != null)
                 {
-                    whereSql.Append(" and a.create_time <= " + parm.SearchEnd);
+                    whereSql.Append(" and a.created_time <= '" + parm.SearchEnd + "' ");
                 }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
@@ -242,6 +249,10 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and a.spare_parts = " + parm.SearchSpareParts);
                 }
+                if (parm.SearchIsAlarm)
+                {
+                    whereSql.Append(" and a.is_alarm = " + Convert.ToInt32(parm.SearchIsAlarm));
+                }
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
@@ -301,7 +312,7 @@ namespace MSS.API.Dao.Implement
         }
         #endregion
 
-        #region 根据不同的条件查询
+        #region 各个库存相关表的操作
         #region StockSum
         public async Task<List<StockSum>> ListBySPs(List<int> spareParts)
         {
@@ -315,6 +326,15 @@ namespace MSS.API.Dao.Implement
                     return result.ToList();
                 }
                 return new List<StockSum>();
+            });
+        }
+
+        public async Task<int> UpdateStockSumAlarm(List<int> spareParts, int isAlarm)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "update stock_sum set is_alarm=@isAlarm where spare_parts in @spareParts";
+                return await c.ExecuteAsync(sql, new { isAlarm, spareParts });
             });
         }
         #endregion
@@ -367,6 +387,15 @@ namespace MSS.API.Dao.Implement
                     return result.ToList();
                 }
                 return new List<object>();
+            });
+        }
+
+        public async Task<int> UpdateStockAlarm(List<int> spareParts,int isAlarm)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "update stock set is_alarm=@isAlarm where spare_parts in @spareParts";
+                return await c.ExecuteAsync(sql, new { isAlarm, spareParts });
             });
         }
 
@@ -486,14 +515,14 @@ namespace MSS.API.Dao.Implement
                 " left join dictionary_tree dt on sod.currency=dt.id " +
                 " left join dictionary_tree dt1 on sd.status=dt1.id " +
                 " left join stock_operation so on sod.operation=so.id " +
-                " left join warehouse w on so.warehouse=w.id " +
+                " left join warehouse w on sd.warehouse=w.id " +
                 " left join firm f on sod.supplier=f.id " +
                 " left join spare_parts sp on sd.spare_parts=sp.id " +
                 " WHERE sd.spare_parts in @ids and sd.stock_no!=0";
                 object obj = new { ids = spareParts };
                 if (warehouse!=0)
                 {
-                    sql += " and so.warehouse=@warehouse";
+                    sql += " and sd.warehouse=@warehouse";
                     obj=new { ids = spareParts, warehouse };
                 }
                 var result = await c.QueryAsync<StockDetail>(
@@ -555,6 +584,36 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<StockDetail>> GetStockDetailByEntityIDs(List<int> ids, int warehouse = 0)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price," +
+                " sp.name as spname,w.name,f.name as sname,dt.name as cname,sod.remark,so.warehouse, " +
+                " sp.model,sod.some_order,sod.working_order,sod.exchange_rate FROM stock_detail sd" +
+                " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
+                " left join dictionary_tree dt on sod.currency=dt.id " +
+                " left join stock_operation so on sod.operation=so.id " +
+                " left join warehouse w on so.warehouse=w.id " +
+                " left join firm f on sod.supplier=f.id " +
+                " left join spare_parts sp on sd.spare_parts=sp.id " +
+                " WHERE sd.id in @ids ";
+                object obj = new { ids };
+                if (warehouse != 0)
+                {
+                    sql += " and so.warehouse=@warehouse";
+                    obj = new { ids, warehouse };
+                }
+                var result = await c.QueryAsync<StockDetail>(
+                    sql, obj);
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockDetail>();
+            });
+        }
+
         /// <summary>
         /// 库存数量和操作数量直接有关，通过操作明细字段StockDetail关联查询
         /// 采购/其他接收、采购退货
@@ -605,12 +664,13 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price,sod.exchange_rate," +
-                " dt.name as cname,sp.name as spname,f.name as sname,sod.id as fsod FROM stock_detail sd" +
+                " dt.name as cname,sp.name as spname,f.name as sname,sod.id as fsod,w.name FROM stock_detail sd" +
                 " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
                 " left join firm f on sod.supplier=f.id " +
                 " left join spare_parts sp on sod.spare_parts=sp.id " +
                 " left join dictionary_tree dt on sod.currency=dt.id " +
                 " left join stock_operation so on sod.operation=so.id " +
+                " left join warehouse w on w.id=sd.warehouse " +
                 " WHERE sod.operation=@id";
                 var result = await c.QueryAsync<StockDetail>(
                     sql, new { id = operation });
@@ -663,7 +723,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT count(id) from stock WHERE spare_parts in @ids and stock_no=0";
+                string sql = "SELECT count(id) from stock WHERE spare_parts in @ids and stock_no!=0";
                 var result = await c.QueryFirstOrDefaultAsync<int>(
                     sql, new { ids = spareParts });
                 return result>0;

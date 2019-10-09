@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
 using MSS.API.Common;
+using System.Data;
 
 namespace MSS.API.Dao.Implement
 {
@@ -33,10 +34,10 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" update warehouse_alarm " +
+                int ret = await c.ExecuteAsync(" update warehouse_alarm " +
                     " set warehouse=@Warehouse,spare_parts=@SpareParts,safe_storage=@SafeStorage, " +
                     " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", warehouseAlarm);
-                return result;
+                return ret;
             });
         }
 
@@ -44,11 +45,22 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" Delete from warehouse_alarm " + 
+                int ret = await c.ExecuteAsync(" Delete from warehouse_alarm " + 
                 " WHERE id in @ids ", new { ids = ids });
-                return result;
+                return ret;
             });
         }
+
+        public async Task<int> DeleteBySPs(string[] ids)
+        {
+            return await WithConnection(async c =>
+            {
+                int ret = await c.ExecuteAsync(" Delete from warehouse_alarm " +
+                " WHERE spare_parts in @ids ", new { ids = ids });
+                return ret;
+            });
+        }
+
 
         public async Task<object> GetPageByParm(WarehouseAlarmQueryParm parm)
         {
@@ -77,20 +89,20 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<WarehouseAlarm> GetBySpareParts(int spartParts)
+        public async Task<List<WarehouseAlarm>> GetBySPsAndWH(List<int> spartParts,int warehouse)
         {
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,w.name,u1.user_name as created_name,u2.user_name as updated_name ")
-                .Append(" FROM warehouse_alarm a ")
-                .Append(" left join warehouse w on a.warehouse=w.id ")
-                .Append(" left join user u1 on a.created_by=u1.id ")
-                .Append(" left join user u2 on a.updated_by=u2.id ")
-                .Append(" WHERE a.spare_parts = @id ");
-                var result = await c.QueryFirstOrDefaultAsync<WarehouseAlarm>(
-                    sql.ToString(), new { id = spartParts });
-                return result;
+                sql.Append("SELECT * FROM warehouse_alarm ")
+                .Append(" WHERE spare_parts in @spartParts and warehouse=@warehouse ");
+                var result = await c.QueryAsync<WarehouseAlarm>(
+                    sql.ToString(), new { spartParts, warehouse });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<WarehouseAlarm>();
             });
         }
 
@@ -99,7 +111,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<WarehouseAlarm>(
-                    "select * from warehouse_alarm", new { id = id });
+                    "select * from warehouse_alarm where id=@id", new { id = id });
                 return result;
             });
         }

@@ -49,7 +49,7 @@
             <div class="inp-wrap">
               <span class="text">采购接收流水号<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="stockOperation" clearable filterable placeholder="请选择采购接收流水号" @change="operationChange">
+                <el-select v-model="stockOperation" filterable placeholder="请选择采购接收流水号" @change="operationChange">
                 <el-option
                   v-for="item in stockOperationList"
                   :key="item.key"
@@ -65,7 +65,7 @@
             <div class="inp-wrap">
               <span class="text">仓库<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select :disabled="isShowPurchaseReturn" v-model="warehouse.text" clearable filterable placeholder="请选择仓库" @change="validateSelect(warehouse)">
+                <el-select :disabled="isShowPurchaseReturn" v-model="warehouse.text" filterable placeholder="请选择仓库" @change="validateSelect(warehouse)">
                 <el-option
                   v-for="item in warehouseList"
                   :key="item.key"
@@ -297,6 +297,7 @@
           <ul class="content-header">
             <li class="list name">物资ID</li>
             <li class="list name">接收物资</li>
+            <li class="list name">所在仓库</li>
             <li class="list name">供应商</li>
             <li class="list name">接收数量</li>
             <li class="list name">存货数量</li>
@@ -314,6 +315,7 @@
                   <div class="list-content">
                     <div class="name">{{ item.entity}}</div>
                     <div class="name">{{ item.sparePartsName}}</div>
+                    <div class="name">{{ item.warehouseName}}</div>
                     <div class="name">{{ item.supplierName}}</div>
                     <div class="name">{{ item.acceptNo }}</div>
                     <div class="name">{{ item.inStockNo }}</div>
@@ -436,6 +438,7 @@ export default {
   },
   methods: {
     reasonChange () {
+      this.reason.tips = ''
       if (this.reason.text === sparePartsOperationDetailType.purchaseReturn) {
         this.getStockOperationSelect()
         this.isShowPurchaseReturn = true
@@ -592,6 +595,7 @@ export default {
         let editObj = this.detailList.find(val => {
           return val.orderNo === this.editID[0]
         })
+        this.entity.text = editObj.entity
         this.spareParts.text = editObj.spareParts
         this.countNo.text = editObj.countNo
         this.unitPrice.text = editObj.unitPrice
@@ -707,14 +711,15 @@ export default {
       return true
     },
     save () {
+      if (this.detailList.length === 0) {
+        let msg = this.isShowPurchaseReturn ? '请选择退货物资及其数量' : '请添加物资明细'
+        this.$message({
+          message: msg,
+          type: 'warning'
+        })
+        return
+      }
       if (!this.isShowPurchaseReturn) {
-        if (this.detailList.length === 0) {
-          this.$message({
-            message: '请添加物资明细',
-            type: 'warning'
-          })
-          return
-        }
         if (!this.validateInputAll() || this.deptPath.tips !== '') {
           this.$message({
             message: '验证失败，请查看提示信息',
@@ -756,6 +761,13 @@ export default {
             tmp.push(obj)
           }
         })
+        if (tmp.length === 0) {
+          this.$message({
+            message: '至少一种物资退货数量非0',
+            type: 'error'
+          })
+          return
+        }
         stockReceive.DetailList = JSON.stringify(tmp)
       }
       if (this.$route.query.type === 'Add') {
