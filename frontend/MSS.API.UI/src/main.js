@@ -22,10 +22,12 @@ import 'echarts/lib/chart/bar'
 import 'echarts/lib/chart/line'
 
 // // 引入折线图
-// import 'echarts/lib/chart/pie'
+import 'echarts/lib/chart/pie'
 
 // // 引入气泡图
 import 'echarts/lib/chart/scatter'
+
+import 'echarts/lib/chart/radar'
 
 // // 引入提示框和标题组件
 import 'echarts/lib/component/tooltip'

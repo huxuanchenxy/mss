@@ -4,25 +4,73 @@
       <h2>
         <img class="icon" src="../common/images/icon-home.svg" alt=""> 首页
       </h2>
+            <li class="list">
+        <h2 class="title"><span class="text">上海轨道交通18号线智能运维系统</span></h2>
+      </li>
       <a href="#/monitorCenter/eqpmonitor/list">进入系统</a>
     </div>
     <div class="con-padding-horizontal content">
       <div class="right">
         <div class="charts-wrap">
-                      <el-col :span="12" id="countChart" v-resize="onResize" v-loading="loading_count"
+            <el-col :span="12" id="countChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:300px;" ref="countChart"  class="echart"></div>
+              <div style="width:100%; height:290px;" ref="countChart"  class="echart"></div>
             </el-col>
+        </div>
+        <div class="charts-wrap"><el-col :span="12" id="radarChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:270px;" ref="radarChart"  class="echart"></div>
+            </el-col>
+        </div>
+        <div class="charts-wrap">
+                <span>我的待办</span>
+                      <li class="list" v-for="(item) in DataList" :key="item.key">
+              <div class="list-content">
+                <div class="name">{{ item.appName }}</div>
+                <div class="name">{{ item.activityName }}</div>
+                <div class="name">{{ item.createdDateTime }}</div>
+              </div>
+            </li>
+        </div>
+      </div>
+      <div class="right">
+        <div class="charts-wrap">
+                      <el-col :span="12" id="avgTimeChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart"></div>
+              </el-col>
+        </div>
+        <div class="charts-wrap">
+          <span>我的申请</span>
+            <li class="list" v-for="(item) in DataList1" :key="item.key">
+              <div class="list-content">
+                <div class="name">{{ item.appName }}</div>
+                <div class="name">{{ item.processState }}</div>
+                <div class="name">{{ item.createdDateTime }}</div>
+              </div>
+            </li>
         </div>
         <div class="charts-wrap">
           <charts-ht-rt :tunelID="{TunnelCode: '01', TunnelName: '管廊有分区修改'}" isFirst='1' ></charts-ht-rt>
         </div>
       </div>
-      <div class="right">
+            <div class="right">
         <div class="charts-wrap">
-          <charts-task-complete :tunelID="{id: 1, name: '管廊有分区修改'}" type='1'></charts-task-complete>
+                      <el-col :span="12" id="pieChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:290px;" ref="pieChart"  class="echart"></div>
+            </el-col>
+        </div>
+        <div class="charts-wrap">
+          <charts-ht-rt :tunelID="{TunnelCode: '01', TunnelName: '管廊有分区修改'}" isFirst='1' ></charts-ht-rt>
         </div>
         <div class="charts-wrap">
           <charts-ht-rt :tunelID="{TunnelCode: '01', TunnelName: '管廊有分区修改'}" isFirst='1' ></charts-ht-rt>
@@ -33,8 +81,10 @@
 </template>
 <script>
 import mychart from './StatisticsReport/alarm/children/chart'
+import indexchart from './StatisticsReport/alarm/children/chartIndex'
 import staticsapi from '@/api/statisticsApi'
-import { getNowFormatDate, ApiRESULT } from '@/common/js/utils.js'
+import { getNowFormatDate, ApiRESULT, transformDate } from '@/common/js/utils.js'
+import workflowapi from '@/api/workflowApi'
 export default {
   name: 'Index',
   data () {
@@ -47,8 +97,13 @@ export default {
         text: '',
         tips: ''
       },
+      DataList: [],
+      DataList1: [],
       dateType: 0,
       dateChartCount: null,
+      dateChartAvg: null,
+      dateChartPie: null,
+      dateChartRadar: null,
       loading_count: false,
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
       groupidxForCount: 0,
@@ -91,6 +146,12 @@ export default {
     this.time.text = [startDate, nowDate]
     this.searchResult()
   },
+  mounted () {
+    this.myMission()
+    this.myapply()
+    this.drawPie()
+    this.drawRadar()
+  },
   methods: {
     drawCountChart (param, data, store) {
       if (store) {
@@ -124,15 +185,46 @@ export default {
       mychart.prepareChartData(data, groupModel, cursor)
       this.dateChartCount.setOption(mychart.optionCount)
     },
+    drawAvgChart (param, data, store) {
+      if (store) {
+        this.resultAvgHistory.push({param: param, data: data})
+      }
+
+      this.dateChartAvg = this.$echarts.init(this.$refs.avgTimeChart)
+      this.dateChartAvg.on('click', this.goAvg)
+      mychart.optionAvg.toolbox.feature.myTool.onclick = this.backAvg
+      mychart.optionAvg.title.subtext = this.subTitleAvg.join('->')
+      let groupModel = this.groups[this.groupby[this.groupidxForAvg]]
+      let cursor = 'pointer'
+      if (this.groupidxForAvg === 3) {
+        cursor = 'default'
+      }
+      switch (this.groupidxForAvg) {
+        case 0:
+          this.bottomDesForAvg = '以子系统统计'
+          break
+        case 1:
+          this.bottomDesForAvg = '以设备类型统计'
+          break
+        case 2:
+          this.bottomDesForAvg = '以供应商统计'
+          break
+        case 3:
+          this.bottomDesForAvg = '以班组统计'
+      }
+      mychart.prepareChartData(data, groupModel, cursor)
+      this.dateChartAvg.clear()
+      this.dateChartAvg.setOption(mychart.optionAvg)
+    },
     search (param, callbacks) {
       // this.loading = true
       callbacks.forEach(item => {
         if (item === this.drawCountChart) {
           this.loading_count = true
         }
-        // if (item === this.drawAvgChart) {
-        //   this.loading_avg = true
-        // }
+        if (item === this.drawAvgChart) {
+          this.loading_avg = true
+        }
       })
       staticsapi.reportAlarm(param).then(res => {
         // this.loading = false
@@ -140,15 +232,73 @@ export default {
           if (item === this.drawCountChart) {
             this.loading_count = false
           }
-          // if (item === this.drawAvgChart) {
-          //   this.loading_avg = false
-          // }
+          if (item === this.drawAvgChart) {
+            this.loading_avg = false
+          }
         })
         if (res.code === ApiRESULT.Success) {
           for (let callback of callbacks) {
             callback(param, res.data, true)
           }
         }
+      }).catch(err => console.log(err))
+    },
+    drawPie () {
+      this.dateChartPie = this.$echarts.init(this.$refs.pieChart)
+      this.dateChartPie.clear()
+      this.dateChartPie.setOption(indexchart.optionPie)
+    },
+    drawRadar () {
+      this.dateChartRadar = this.$echarts.init(this.$refs.radarChart)
+      this.dateChartRadar.clear()
+      this.dateChartRadar.setOption(indexchart.optionRadar)
+    },
+    myMission () {
+      let parm = {
+        order: 'asc',
+        sort: 'id',
+        rows: 4,
+        page: 1
+      }
+      workflowapi.getPage(parm).then(res => {
+        this.loading = false
+        res.data.rows.map(item => {
+          item.createdDateTime = transformDate(item.createdDateTime)
+        })
+        this.DataList = res.data.rows
+        this.total = res.data.total
+      }).catch(err => console.log(err))
+    },
+    myapply () {
+      let parm = {
+        order: 'asc',
+        sort: 'id',
+        rows: 4,
+        page: 1
+      }
+      workflowapi.getMyApplyPage(parm).then(res => {
+        this.loading = false
+        res.data.rows.map(item => {
+          item.createdDateTime = transformDate(item.createdDateTime)
+          if (item.processState === 0) {
+            item.processState = 'NotStart'
+          } else if (item.processState === 1) {
+            item.processState = 'Ready'
+          } else if (item.processState === 2) {
+            item.processState = 'Running'
+          } else if (item.processState === 4) {
+            item.processState = 'Completed'
+          } else if (item.processState === 5) {
+            item.processState = 'Suspended'
+          } else if (item.processState === 6) {
+            item.processState = 'Canceled'
+          } else if (item.processState === 7) {
+            item.processState = 'Discarded'
+          } else if (item.processState === 8) {
+            item.processState = 'Terminated'
+          }
+        })
+        this.DataList1 = res.data.rows
       }).catch(err => console.log(err))
     },
     onResize (el) {
@@ -233,6 +383,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.wrap{
+  height:72%;
+}
 .header{
   display: flex;
   align-items: center;
@@ -291,16 +444,16 @@ export default {
     display: flex;
     flex-wrap: wrap;
     // width: percent(325, $content-width - 48);
-    width: 48%;
+    width: 33%;
 
     .charts-wrap{
       box-sizing: border-box;
       width: 100%;
       height: percent(215, $content-height - 100);
-      padding: 10px;
+      padding: 0px;
       background: #28272E;
       border-radius: $border-radius;
-
+      margin:10px;
       &:last-of-type{
         align-self: flex-end;
       }
@@ -313,5 +466,9 @@ export default {
 }
 a{
  cursor: pointer;
+}
+.echart{
+  height: 100%;
+  width: 100%;
 }
 </style>
