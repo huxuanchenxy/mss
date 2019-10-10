@@ -13,19 +13,6 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="">线路</label>
-            <div class="inp">
-              <el-select v-model="line" filterable placeholder="请选择">
-                <el-option
-                  v-for="item in lineList"
-                  :key="item.key"
-                  :label="item.lineName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="input-group">
             <label for="">子系统</label>
             <div class="inp">
               <el-select v-model="subSystem" clearable filterable placeholder="请选择">
@@ -173,7 +160,6 @@ import XButton from '@/components/button'
 import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
-import lineApi from '@/api/metroLineApi'
 export default {
   name: 'SeeEqpList',
   components: {
@@ -193,8 +179,6 @@ export default {
       },
       title: ' | 设备定义',
       eqpCode: '',
-      line: '',
-      lineList: [],
       subSystem: '',
       subSystemList: [],
       eqpType: '',
@@ -246,10 +230,6 @@ export default {
       this.eqp = this.$route.params.id
     }
     this.init()
-    // 线路加载
-    lineApi.getAll().then(res => {
-      this.lineList = res.data
-    }).catch(err => console.log(err))
     // 子系统加载
     apiAuth.getSubCode(dictionary.subSystem).then(res => {
       this.subSystemList = res.data
@@ -320,8 +300,7 @@ export default {
         SearchCode: this.eqpCode,
         SearchType: this.eqpType,
         SearchLocation: this.area[l],
-        SearchLocationBy: l,
-        SearchLine: this.line
+        SearchLocationBy: l
       }
       api.getEqp(parm).then(res => {
         this.loading = false

@@ -31,6 +31,7 @@ namespace MSS.API.Core
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            InitConst();
         }
 
         //readonly string AllowSpecificOrigins = "_AllowSpecificOrigins";
@@ -107,6 +108,13 @@ namespace MSS.API.Core
             
             app.UseCors();
             app.UseMvc();
+        }
+
+        private void InitConst()
+        {
+            Const.LINE = Convert.ToInt32(Configuration["InitConst:Line"]);
+            FilePath.BASEFILE = Configuration["InitConst:BaseFile"];
+            FilePath.SHAREFILE = Configuration["InitConst:ShareFile"];
         }
     }
 }

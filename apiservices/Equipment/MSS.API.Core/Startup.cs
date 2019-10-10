@@ -119,6 +119,7 @@ namespace MSS.API.Core
         private void InitConst()
         {
             Const.PAGESIZE = Convert.ToInt32(Configuration["InitConst:PageSize"]);
+            Const.LINE = Convert.ToInt32(Configuration["InitConst:Line"]);
             FilePath.BASEFILE = Configuration["InitConst:BaseFile"];
             FilePath.SHAREFILE = Configuration["InitConst:ShareFile"];
         }

@@ -26,19 +26,6 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="">线路</label>
-            <div class="inp">
-              <el-select v-model="line" filterable placeholder="请选择" @change="eqpTypeChange">
-                <el-option
-                  v-for="item in lineList"
-                  :key="item.key"
-                  :label="item.lineName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="input-group">
             <label for="">设备</label>
             <div class="inp">
               <el-cascader class="cascader_width"
@@ -105,7 +92,6 @@ import { PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
 import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import api from '@/api/DeviceMaintainRegApi.js'
 import apiEqp from '@/api/eqpApi'
-import lineApi from '@/api/metroLineApi'
 export default {
   name: 'SeeHistory',
   components: {
@@ -128,28 +114,21 @@ export default {
       eqpTypeList: [],
       eqp: '',
       eqpSelected: [],
-      eqpList: [],
-      line: '',
-      lineList: []
+      eqpList: []
     }
   },
   created () {
     // this.loading = true
-    // 线路加载
-    lineApi.getAll().then(res => {
-      this.lineList = res.data
-      this.line = this.lineList[0]
-      // 设备类型加载
-      apiEqp.getEqpTypeAll().then(res => {
-        this.eqpTypeList = res.data
-        this.eqpType = this.eqpTypeList[0].id
-        // 设备加载
-        api.GetEqpByTypeAndLine(this.eqpType, this.line).then(res => {
-          this.eqpList = res.data
-          // this.eqpSelected.push(this.eqpList[0].id)
-          // this.eqp = this.getDefaultEqp(this.eqpList[0])
-          // this.searchRes()
-        }).catch(err => console.log(err))
+    // 设备类型加载
+    apiEqp.getEqpTypeAll().then(res => {
+      this.eqpTypeList = res.data
+      this.eqpType = this.eqpTypeList[0].id
+      // 设备加载
+      api.GetEqpByTypeAndLine(this.eqpType).then(res => {
+        this.eqpList = res.data
+        // this.eqpSelected.push(this.eqpList[0].id)
+        // this.eqp = this.getDefaultEqp(this.eqpList[0])
+        // this.searchRes()
       }).catch(err => console.log(err))
     }).catch(err => console.log(err))
   },
@@ -163,7 +142,7 @@ export default {
   methods: {
     eqpTypeChange () {
       this.eqpSelected = []
-      api.GetEqpByTypeAndLine(this.eqpType, this.line).then(res => {
+      api.GetEqpByTypeAndLine(this.eqpType).then(res => {
         this.eqpList = res.data
       }).catch(err => console.log(err))
     },
@@ -405,6 +384,11 @@ $con-height: $content-height - 145 - 56 - 56;
       .inp{
         width: PXtoEm(160);
         margin-left: PXtoEm(14);
+      }
+
+      .btn{
+        border: 0;
+        background: $color-main-btn;
       }
     }
   }

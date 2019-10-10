@@ -41,6 +41,8 @@ namespace MSS.API.Common
         public static string REDIS_AUTH_KEY_ACTIONINFO = "Auth_ActionInfo";
         public static string REDIS_AUTH_KEY_ROLEACTION = "Auth_RoleAction";
         public static string REDIS_AUTH_KEY_USER = "Auth_User";
+
+        public static int LINE = 3;
     }
 
     public static class FilePath

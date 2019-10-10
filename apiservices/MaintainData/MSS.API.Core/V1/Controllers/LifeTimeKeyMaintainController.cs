@@ -57,10 +57,10 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         // 查询
-        [HttpGet("GetEqpByTypeAndLine/{type}/{line}")]
-        public async Task<ActionResult<ApiResult>> GetdeviceList(int type,int line)
+        [HttpGet("GetEqpByTypeAndLine/{type}")]
+        public async Task<ActionResult<ApiResult>> ListCascaderByEqpType(int type)
         {
-            var ret = await _lifeTimeKeyMaintainService.ListCascaderByEqpTypeAndLine(type,line);
+            var ret = await _lifeTimeKeyMaintainService.ListCascaderByEqpTypeAndLine(type,Const.LINE);
             return ret;
         }
     }
