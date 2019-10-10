@@ -363,7 +363,7 @@ export default {
     // this.init()
     var nowDate = getNowFormatDate()
     var d = new Date()
-    d.setDate(d.getDate() - 30)
+    d.setDate(d.getDate() - 60)
     var startDate = getNowFormatDate(d)
     this.time.text = [startDate, nowDate]
   },

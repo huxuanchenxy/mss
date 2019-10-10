@@ -8,6 +8,7 @@
     </div>
     <app-footer></app-footer>
   </div>
+  <index v-else-if="isLoadingCompleted === '3'"></index>
 </template>
 
 <script>
@@ -15,6 +16,7 @@ import AppHeader from '@/components/header/AppHeader'
 import AppSidebar from '@/components/sidebar/AppSidebar'
 import AppFooter from '@/components/footer/AppFooter'
 import Login from '@/views/login/Login'
+import Index from '@/views/Index'
 export default {
   name: 'App',
   data () {
@@ -26,7 +28,8 @@ export default {
     AppHeader,
     AppSidebar,
     AppFooter,
-    Login
+    Login,
+    Index
   },
   computed: {
     isLoadingCompleted () {
@@ -39,6 +42,9 @@ export default {
       } else if (this.$route.name === 'Login') {
         loading.close()
         return '1'
+      } else if (this.$route.name === 'Index') {
+        loading.close()
+        return '3'
       } else {
         loading.close()
         return '2'

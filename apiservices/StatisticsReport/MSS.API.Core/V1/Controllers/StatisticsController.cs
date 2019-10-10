@@ -50,8 +50,9 @@ namespace MSS.API.Core.V1.Controllers
             }
             else
             {
+                var _services1 = await _consulServiceProvider.GetServiceAsync("OrgService");
                 IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
-                ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + _userId);
+                ApiResult result = await httpHelper.GetSingleItemRequest(_services1 + "/api/v1/org/topnode/" + _userId);
                 if (result.data != null)
                 {
                     JObject obj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
