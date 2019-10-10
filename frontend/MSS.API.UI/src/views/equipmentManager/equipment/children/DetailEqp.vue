@@ -28,6 +28,12 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
+                <span class="text">线路</span>
+                <div class="inp">{{eqp.lineName}}</div>
+              </div>
+            </li>
+            <li class="list">
+              <div class="inp-wrap">
                 <span class="text">子系统</span>
                 <div class="inp">{{eqp.subSystem}}</div>
               </div>
@@ -62,7 +68,7 @@
                 <div class="inp">{{eqp.barCode}}</div>
               </div>
             </li>
-            <li class="list">
+            <li class="list list-block">
               <div class="inp-wrap">
                 <span class="text">描述</span>
                 <div class="inp word-break">{{eqp.desc}}</div>
@@ -294,6 +300,15 @@ export default {
       margin-top: PXtoEm(25);
       margin-bottom: PXtoEm(25);
       width: 50%;
+    }
+    .list-block{
+      width: 100%;
+      .span-block{
+        width: 8.5%;
+      }
+      .whole-line{
+        width: 86.5%;
+      }
     }
   }
 }

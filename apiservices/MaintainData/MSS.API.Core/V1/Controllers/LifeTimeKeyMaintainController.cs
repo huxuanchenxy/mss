@@ -55,5 +55,13 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _lifeTimeKeyMaintainService.GetdeviceList(where);
             return ret;
         }
+
+        // 查询
+        [HttpGet("GetEqpByTypeAndLine/{type}/{line}")]
+        public async Task<ActionResult<ApiResult>> GetdeviceList(int type,int line)
+        {
+            var ret = await _lifeTimeKeyMaintainService.ListCascaderByEqpTypeAndLine(type,line);
+            return ret;
+        }
     }
 }

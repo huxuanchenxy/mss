@@ -17,6 +17,7 @@ export default {
   addEqp: parm => { return axios.post(`${api}/Equipment`, parm).then(res => res.data) },
   updateEqp: parm => { return axios.put(`${api}/Equipment`, parm).then(res => res.data) },
   delEqp: ids => { return axios.delete(`${api}/Equipment/${ids}`).then(res => res.data) },
+  getEqpByEqpType: ids => { return axios.get(`${api}/Equipment/GetByEqpType/${ids}`).then(res => res.data) },
   getEqpAll: () => { return axios.get(`${api}/Equipment/All`).then(res => res.data) },
 
   getFirm: parm => { return axios.get(`${api}/Firm`, {params: parm}).then(res => res.data) },

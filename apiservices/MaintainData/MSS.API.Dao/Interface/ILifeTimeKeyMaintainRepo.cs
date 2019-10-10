@@ -11,5 +11,6 @@ namespace MSS.API.Dao.Interface
         Task<List<LifeTimeKeyMaintainInfo>> GetListByPage(string strWhere, string sort, string orderby, int page, int size);
         Task<List<LocatioInfo>> GetdeviceList(int level ,int location, string strWhere);
         Task<List<LocationDeviceInfo>> GetlocationList();
+        Task<List<Equipment>> ListEqpAllByCond(int? topOrg,int eqpType,int line);
     }
 }

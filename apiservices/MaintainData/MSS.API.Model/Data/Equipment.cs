@@ -5,7 +5,7 @@ using Dapper;
 using Dapper.FluentMap.Mapping;
 namespace MSS.API.Model.Data
 {
-    public class Equipment:BaseEntity
+    public class Equipment : BaseEntity
     {
         public string Code { get; set; }
         public string Name { get; set; }
@@ -18,8 +18,6 @@ namespace MSS.API.Model.Data
         public int Team { get; set; }
         public string TeamPath { get; set; }
         public int TopOrg { get; set; }
-        public int Line { get; set; }
-        public string LineName { get; set; }
         public string TeamName { get; set; }
         public string BarCode { get; set; }
         public string Desc { get; set; }
@@ -45,10 +43,6 @@ namespace MSS.API.Model.Data
         public DateTime? OnlineAgain { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
-        /// <summary>
-        /// 上传图片的id，用逗号隔开
-        /// </summary>
-        public string FileIDs { get; set; }
     }
 
     public class EquipmentMap : EntityMap<Equipment>
@@ -67,7 +61,6 @@ namespace MSS.API.Model.Data
             Map(o => o.Team).ToColumn("team");
             Map(o => o.TeamPath).ToColumn("team_path");
             Map(o => o.TopOrg).ToColumn("top_org");
-            Map(o => o.LineName).ToColumn("line_name");
             Map(o => o.TeamName).ToColumn("name");
             Map(o => o.BarCode).ToColumn("bar_code");
             Map(o => o.Desc).ToColumn("discription");
@@ -101,37 +94,5 @@ namespace MSS.API.Model.Data
             Map(o => o.UpdatedTime).ToColumn("updated_time");
             Map(o => o.IsDel).ToColumn("is_del");
         }
-    }
-
-    public class EqpQueryParm:BaseQueryParm
-    {
-        public int? SearchSubSystem { get; set; }
-        public int? SearchType { get; set; }
-        public string SearchCode { get; set; }
-        public int? SearchLocation { get; set; }
-
-        public int? SearchLocationBy { get; set; }
-        public int? SearchTopOrg { get; set; }
-        public int? SearchLine { get; set; }
-        // 根据location_path字段查询
-        public string LocationPath { get; set; }
-    }
-
-    public class EqpQueryByIDParm : BaseQueryParm
-    {
-        public List<int> IDs { get; set; }
-    }
-
-    public class AllArea
-    {
-        public int ID { get; set; }
-        public string AreaName { get; set; }
-        public int Tablename { get; set; }
-    }
-
-    public class EqpView
-    {
-        public List<Equipment> rows { get; set; }
-        public int total { get; set; }
     }
 }

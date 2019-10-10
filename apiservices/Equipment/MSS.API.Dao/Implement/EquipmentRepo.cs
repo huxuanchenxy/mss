@@ -29,7 +29,7 @@ namespace MSS.API.Dao.Implement
                 {
                     sql = " insert into equipment " +
                         " values (0,@Code,@Name,@Type,@AssetNo,@Model, " +
-                        " @SubSystem,@Team,@TeamPath,@TopOrg,@BarCode,@Desc,@Supplier,@Manufacturer, " +
+                        " @SubSystem,@Team,@TeamPath,@TopOrg,@Line,@BarCode,@Desc,@Supplier,@Manufacturer, " +
                         " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
                         " @Location,@LocationBy,@LocationPath,@Online,@Life, " +
                         " @MediumRepair,@LargeRepair,@OnlineAgain, " +
@@ -80,7 +80,7 @@ namespace MSS.API.Dao.Implement
                         " eqp_model=@Model,sub_system=@SubSystem,team=@Team,team_path=@TeamPath,bar_code=@BarCode, " +
                         " discription=@Desc,supplier=@Supplier,manufacturer=@Manufacturer,serial_number=@SerialNo, " +
                         " rated_voltage=@RatedVoltage,rated_current=@RatedCurrent,team=@Team,rated_power=@RatedPower, " +
-                        " location=@Location,location_by=@LocationBy,location_path=@LocationPath,top_org=@TopOrg, " +
+                        " location=@Location,location_by=@LocationBy,location_path=@LocationPath,top_org=@TopOrg,line=@Line, " +
                         " online_date=@Online,life=@Life,medium_repair=@MediumRepair,large_repair=@LargeRepair, " +
                         " online_again=@OnlineAgain,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
                     if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
@@ -133,12 +133,13 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT distinct a.*,u1.user_name as created_name,u2.user_name as updated_name, ")
-                .Append(" et.type_name,d.name as sub_code_name,ot.name,f1.name as supplierName,f2.name as manufacturerName ")
-                .Append(" FROM equipment a ")
+                .Append(" et.type_name,d.name as sub_code_name,ot.name,f1.name as supplierName,f2.name as manufacturerName, ")
+                .Append(" l.line_name FROM equipment a ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id ")
                 .Append(" left join equipment_type et on et.id=a.eqp_type ")
                 .Append(" left join org_tree ot on ot.id=a.team ")
+                .Append(" left join metro_line l on l.id=a.line ")
                 .Append(" left join firm f1 on f1.id=a.Supplier ")
                 .Append(" left join firm f2 on f2.id=a.Manufacturer ")
                 .Append(" left join dictionary_tree d on a.sub_system=d.id ");
@@ -164,6 +165,10 @@ namespace MSS.API.Dao.Implement
                 if (parm.SearchTopOrg!=null)
                 {
                     whereSql.Append(" and a.top_org=" + parm.SearchTopOrg);
+                }
+                if (parm.SearchLine != null)
+                {
+                    whereSql.Append(" and a.line=" + parm.SearchLine);
                 }
                 if (!string.IsNullOrWhiteSpace(parm.LocationPath))
                 {
@@ -245,7 +250,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<Equipment>(
-                    "SELECT * FROM equipment WHERE eqp_type in @ids", new { ids = ids.Split(',') });
+                    "SELECT * FROM equipment WHERE eqp_type in @ids and is_del=" + (int)IsDeleted.no, new { ids = ids.Split(',') });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
