@@ -121,7 +121,35 @@ var optionRadar = {
   ]
 }
 
+var optionGauge = {
+  title: {
+    text: '业务指标' // 标题文本内容
+  },
+  toolbox: { // 可视化的工具箱
+    show: true,
+    feature: {
+      restore: { // 重置
+        show: true
+      },
+      saveAsImage: {// 保存图片
+        show: true
+      }
+    }
+  },
+  tooltip: { // 弹窗组件
+    formatter: '{a} <br/>{b} : {c}%'
+  },
+  series: [{
+    name: '业务指标',
+    type: 'gauge',
+    detail: {formatter: '{value}%'},
+    data: [{value: 45, name: '完成率'}]
+  }]
+
+}
+
 export default {
   optionPie: optionPie,
-  optionRadar: optionRadar
+  optionRadar: optionRadar,
+  optionGauge: optionGauge
 }

@@ -47,7 +47,15 @@
               </el-col>
         </div>
         <div class="charts-wrap">
-          <span>我的申请</span>
+              <el-col :span="12" id="gaugeChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:300px;" ref="gaugeChart"  class="echart"></div>
+              </el-col>
+        </div>
+        <div class="charts-wrap">
+                   <span>我的申请</span>
             <li class="list" v-for="(item) in DataList1" :key="item.key">
               <div class="list-content">
                 <div class="name">{{ item.appName }}</div>
@@ -55,9 +63,6 @@
                 <div class="name">{{ item.createdDateTime }}</div>
               </div>
             </li>
-        </div>
-        <div class="charts-wrap">
-          <charts-ht-rt :tunelID="{TunnelCode: '01', TunnelName: '管廊有分区修改'}" isFirst='1' ></charts-ht-rt>
         </div>
       </div>
             <div class="right">
@@ -104,6 +109,7 @@ export default {
       dateChartAvg: null,
       dateChartPie: null,
       dateChartRadar: null,
+      dateChartGauge: null,
       loading_count: false,
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
       groupidxForCount: 0,
@@ -151,6 +157,7 @@ export default {
     this.myapply()
     this.drawPie()
     this.drawRadar()
+    this.drawGauge()
   },
   methods: {
     drawCountChart (param, data, store) {
@@ -252,6 +259,11 @@ export default {
       this.dateChartRadar = this.$echarts.init(this.$refs.radarChart)
       this.dateChartRadar.clear()
       this.dateChartRadar.setOption(indexchart.optionRadar)
+    },
+    drawGauge () {
+      this.dateChartGauge = this.$echarts.init(this.$refs.gaugeChart)
+      this.dateChartGauge.clear()
+      this.dateChartGauge.setOption(indexchart.optionGauge)
     },
     myMission () {
       let parm = {

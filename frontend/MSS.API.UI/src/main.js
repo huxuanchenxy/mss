@@ -29,6 +29,7 @@ import 'echarts/lib/chart/scatter'
 
 import 'echarts/lib/chart/radar'
 
+import 'echarts/lib/chart/gauge'
 // // 引入提示框和标题组件
 import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/title'
