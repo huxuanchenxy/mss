@@ -34,6 +34,7 @@ namespace MSS.API.Dao
                 config.AddMap(new tb_expert_dataMap());
                 config.AddMap(new tb_devicemaintain_regMap());
                 config.AddMap(new EqpHistoryMap());
+                config.AddMap(new EquipmentMap());
                 config.AddMap(new WorkingApplicationMap());
                 config.AddMap(new WorkingApplicationManagerMap());
                 config.AddMap(new TroubleReportMap());

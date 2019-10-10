@@ -192,6 +192,7 @@
                 <div class="inp">
                   <el-cascader class="cascader_width" clearable
                     change-on-select
+                    @change="position_change"
                     :props="areaParams"
                     :show-all-levels="true"
                     :options="areaList"
@@ -442,6 +443,16 @@ export default {
     // visibleChange (parm) {
     //   console.log(parm)
     // },
+    position_change () {
+      if (this.area.text.length < 3) {
+        this.area.tips = '设备必须安装在3级和4级位置'
+        this.area.text = []
+        return false
+      } else {
+        this.area.tips = ''
+        return true
+      }
+    },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
@@ -500,6 +511,7 @@ export default {
         Team: this.team,
         TeamPath: this.teamPath.text.join(','),
         TopOrg: this.teamPath.text[0],
+        Line: this.area.text[0],
         BarCode: this.barCode.text,
         Desc: this.desc.text,
         Supplier: this.supplier,
@@ -663,10 +675,7 @@ export default {
         this.teamPath.tips = '您选的并非是班组，请选择班组'
         return false
       }
-      if (this.area.text.length === 0) {
-        this.area.tips = '此项必选'
-        return false
-      }
+      if (!this.position_change()) return false
       if (this.time.text === '') {
         this.time.tips = '此项必选'
         return false

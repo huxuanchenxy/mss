@@ -295,6 +295,15 @@ export default {
       margin-bottom: PXtoEm(25);
       width: 50%;
     }
+    .list-block{
+      width: 100%;
+      .span-block{
+        width: 8.5%;
+      }
+      .whole-line{
+        width: 86.5%;
+      }
+    }
   }
 }
 .btn-enter{

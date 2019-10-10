@@ -72,6 +72,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
+        [HttpGet("GetByEqpType/{ids}")]
+        public ActionResult ListByEqpType(string ids)
+        {
+            var resp = _eqpService.ListByEqpType(ids);
+            return Ok(resp.Result);
+        }
+
         [HttpGet("All")]
         public ActionResult GetAll()
         {

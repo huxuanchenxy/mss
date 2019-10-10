@@ -11,6 +11,7 @@ export default {
   GetDirectorList: () => { return axios.get(`${api}/DeviceMaintainReg/GetDirectorList`).then(res => res.data) },
   GetEquipmentTypeList: () => { return axios.get(`${api}/DeviceMaintainReg/GetEquipmentTypeList`).then(res => res.data) },
   GetDeviceListByTypeId: id => { return axios.get(`${api}/LifeTimeKeyMaintain/GetDeviceListByTypeId/${id}`).then(res => res.data) },
+  GetEqpByTypeAndLine: type => { return axios.get(`${api}/LifeTimeKeyMaintain/GetEqpByTypeAndLine/${type}`).then(res => res.data) },
   Delete: id => { return axios.delete(`${api}/DeviceMaintainReg/Delete/${id}`).then(res => res.data) },
   GetLifeTimeKeyListByPage: parm => { return axios.get(`${api}/LifeTimeKeyMaintain/GetLifeTimeKeyListByPage`, {params: parm}).then(res => res.data) },
   DeleteList: Ids => { return axios.delete(`${api}/DeviceMaintainReg/DeleteList/${Ids}`, Ids).then(res => res.data) },

@@ -49,12 +49,12 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("select  " +
-                          "  case a.ConfigType  when 1 then '车站'" +
-                          "    when 2 then '正线轨行区'" +
-                          "    when 3 then '保护区'" +
-                          "    when 4 then '车场生产区'" +
+                          "  case a.ConfigType  when 9 then '车站'" +
+                          "    when 10 then '正线轨行区'" +
+                          "    when 11 then '保护区'" +
+                          "    when 12 then '车场生产区'" +
                           "    end as ConfigType, " +
-                          "    a.ConfigType as ConfigTypeID, " +
+                          "    a.ConfigType as ConfigTypeID,a.MetroLineID, " +
                           "    a.AreaName as StationName,  a.id as StationID, b.AreaName as LocationName, b.id as LocationID  from tb_config_bigarea a left" +
                           "    join tb_config_midarea b on a.id = b.pid   order by ConfigTypeID asc "); 
                 var list = await c.QueryAsync<LocationDeviceInfo>(sql.ToString());
@@ -72,6 +72,23 @@ namespace MSS.API.Dao.Implement
                 return list.ToList();
             });
         }
-     
+
+        public async Task<List<Equipment>> ListEqpAllByCond(int? topOrg, int eqpType, int line)
+        {
+            return await WithConnection(async c =>
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append(" select * from equipment where is_del=0 and eqp_type=@eqpType and line=@line ");
+                object o = new { eqpType, line };
+                if (topOrg != null)
+                {
+                    sql.Append(" and top_org=@topOrg");
+                    o = new { eqpType, line,topOrg };
+                }
+                var list = await c.QueryAsync<Equipment>(sql.ToString(),o);
+                return list.ToList();
+            });
+        }
+
     }
 }

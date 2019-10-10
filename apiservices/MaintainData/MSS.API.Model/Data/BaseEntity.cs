@@ -13,6 +13,7 @@ namespace MSS.API.Model.Data
         public int UpdatedBy { get; set; }
         public DateTime UpdatedTime { get; set; }
         public int Is_deleted { get; set;}
+        public int IsDel { get; set; }
     }
 
     public class BaseEntityMap : EntityMap<BaseEntity>

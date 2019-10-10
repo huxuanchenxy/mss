@@ -22,6 +22,8 @@ namespace MSS.API.Model.Data
 
         public int ConfigTypeID { get; set; }
 
+        public int MetroLineID { get; set; }
+
         public string ConfigType { get; set; }
 
         public int StationID { get; set; }

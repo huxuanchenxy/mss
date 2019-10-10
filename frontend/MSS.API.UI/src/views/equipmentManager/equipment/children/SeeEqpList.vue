@@ -230,7 +230,6 @@ export default {
       this.eqp = this.$route.params.id
     }
     this.init()
-
     // 子系统加载
     apiAuth.getSubCode(dictionary.subSystem).then(res => {
       this.subSystemList = res.data

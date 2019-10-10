@@ -18,6 +18,7 @@ namespace MSS.API.Core.V1.Business
         /// <returns></returns>
         Task<ApiResult> GetListByPage(string strWhere, string sort, string orderby, int page, int size); 
 
-        Task<ApiResult> GetdeviceList(string strWhere); 
+        Task<ApiResult> GetdeviceList(string strWhere);
+        Task<ApiResult> ListCascaderByEqpTypeAndLine(int eqpType, int line);
     }
 }

@@ -8,7 +8,7 @@
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
     </div>
-    <div class="box">
+    <div class="box1">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
@@ -124,7 +124,7 @@ export default {
       this.eqpTypeList = res.data
       this.eqpType = this.eqpTypeList[0].id
       // 设备加载
-      api.GetDeviceListByTypeId(this.eqpType).then(res => {
+      api.GetEqpByTypeAndLine(this.eqpType).then(res => {
         this.eqpList = res.data
         // this.eqpSelected.push(this.eqpList[0].id)
         // this.eqp = this.getDefaultEqp(this.eqpList[0])
@@ -142,7 +142,7 @@ export default {
   methods: {
     eqpTypeChange () {
       this.eqpSelected = []
-      api.GetDeviceListByTypeId(this.eqpType).then(res => {
+      api.GetEqpByTypeAndLine(this.eqpType).then(res => {
         this.eqpList = res.data
       }).catch(err => console.log(err))
     },
@@ -218,7 +218,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$con-height: $content-height - 145 - 56 + 64;
+$con-height: $content-height - 145 - 56 - 56;
 // 内容区
 .content-wrap{
   overflow: hidden;
@@ -356,4 +356,40 @@ $con-height: $content-height - 145 - 56 + 64;
 .el-collapse .el-collapse-item__content{
   padding-bottom: 0px;
 }
+
+// 子组件下边的按钮加搜索
+  /deep/ .box1{
+    // height: percent(145, $content-height);
+    height: 100px;
+    // 搜索组
+    .search-wrap{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 56%;
+      // height: percent(80, 145);
+      background: rgba(128, 128, 128, 0.1);
+      color: $color-white;
+
+      .wrap{
+        display: flex;
+      }
+
+      .input-group{
+        display: inherit;
+        align-items: center;
+        margin-right: PXtoEm(24);
+      }
+
+      .inp{
+        width: PXtoEm(160);
+        margin-left: PXtoEm(14);
+      }
+
+      .btn{
+        border: 0;
+        background: $color-main-btn;
+      }
+    }
+  }
 </style>
