@@ -75,10 +75,20 @@
             </el-col>
         </div>
         <div class="charts-wrap">
-          <charts-ht-rt :tunelID="{TunnelCode: '01', TunnelName: '管廊有分区修改'}" isFirst='1' ></charts-ht-rt>
+            <el-col :span="12" id="barChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:290px;" ref="barChart"  class="echart"></div>
+            </el-col>
         </div>
         <div class="charts-wrap">
-          <charts-ht-rt :tunelID="{TunnelCode: '01', TunnelName: '管廊有分区修改'}" isFirst='1' ></charts-ht-rt>
+            <el-col :span="12" id="lineChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:290px;" ref="lineChart"  class="echart"></div>
+            </el-col>
         </div>
       </div>
     </div>
@@ -110,6 +120,8 @@ export default {
       dateChartPie: null,
       dateChartRadar: null,
       dateChartGauge: null,
+      dateChartBar: null,
+      dateChartLine: null,
       loading_count: false,
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
       groupidxForCount: 0,
@@ -158,6 +170,8 @@ export default {
     this.drawPie()
     this.drawRadar()
     this.drawGauge()
+    this.drawBar()
+    this.drawLine()
   },
   methods: {
     drawCountChart (param, data, store) {
@@ -264,6 +278,16 @@ export default {
       this.dateChartGauge = this.$echarts.init(this.$refs.gaugeChart)
       this.dateChartGauge.clear()
       this.dateChartGauge.setOption(indexchart.optionGauge)
+    },
+    drawBar () {
+      this.dateChartBar = this.$echarts.init(this.$refs.barChart)
+      this.dateChartBar.clear()
+      this.dateChartBar.setOption(indexchart.optionBar)
+    },
+    drawLine () {
+      this.dateChartLine = this.$echarts.init(this.$refs.lineChart)
+      this.dateChartLine.clear()
+      this.dateChartLine.setOption(indexchart.optionLine)
     },
     myMission () {
       let parm = {
