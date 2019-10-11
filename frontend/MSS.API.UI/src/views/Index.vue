@@ -79,7 +79,7 @@
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:290px;" ref="barChart"  class="echart"></div>
+              <div style="width:100%; height:260px;" ref="barChart"  class="echart"></div>
             </el-col>
         </div>
         <div class="charts-wrap">
