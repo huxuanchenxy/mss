@@ -24,9 +24,9 @@
         </div>
       </div>
             <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
+        <li class="list" @click="add"><x-button>添加</x-button></li>
         <!-- <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li> -->
-        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
+        <!-- <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li> -->
       </ul>
     </div>
     <!-- 内容 -->
@@ -216,6 +216,9 @@ export default {
       this.loading = true
       this.init()
       this.searchResult(1)
+    },
+    add () {
+      this.$router.push({name: 'AddConstructionPlan', query: { type: 'Add' }})
     },
     edit () {
       if (!this.IDS.length) {

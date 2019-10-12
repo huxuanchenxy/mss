@@ -12,12 +12,12 @@
     <div class="con-padding-horizontal content">
       <div class="right">
         <div class="charts-wrap">
-            <el-col :span="12" id="countChart"
+              <el-col :span="12" id="gaugeChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:290px;" ref="countChart"  class="echart"></div>
-            </el-col>
+              <div style="width:100%; height:300px;" ref="gaugeChart"  class="echart"></div>
+              </el-col>
         </div>
         <div class="charts-wrap"><el-col :span="12" id="radarChart"
                 element-loading-text="加载中"
@@ -37,32 +37,48 @@
             </li>
         </div>
       </div>
-      <div class="right">
+      <div class="right1">
+        <div class="charts-wrap1">
+          <div class="innerwrap">
+            <div class="innerdiv1">
+            <span class="innerspan1">累计无故障运营时间(min)</span>
+            </div>
+            <div class="innerdiv2">
+            <span class="innerspan2">5896328</span>
+            </div>
+          </div>
+          <div class="innerwrap">
+                                      <el-col :span="12" id="hbarChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:200px;" ref="hbarChart"  class="echart"></div>
+            </el-col>
+          </div>
+        </div>
         <div class="charts-wrap">
-                      <el-col :span="12" id="avgTimeChart"
+                          <el-col :span="12" id="countChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:290px;" ref="countChart"  class="echart"></div>
+            </el-col>
+        </div>
+        <div class="charts-wrap">
+                                <el-col :span="12" id="avgTimeChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
               <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart"></div>
               </el-col>
-        </div>
-        <div class="charts-wrap">
-              <el-col :span="12" id="gaugeChart"
-                element-loading-text="加载中"
-                element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:300px;" ref="gaugeChart"  class="echart"></div>
-              </el-col>
-        </div>
-        <div class="charts-wrap">
-                   <span>我的申请</span>
+                   <!-- <span>我的申请</span>
             <li class="list" v-for="(item) in DataList1" :key="item.key">
               <div class="list-content">
                 <div class="name">{{ item.appName }}</div>
                 <div class="name">{{ item.processState }}</div>
                 <div class="name">{{ item.createdDateTime }}</div>
               </div>
-            </li>
+            </li> -->
         </div>
       </div>
             <div class="right">
@@ -122,6 +138,7 @@ export default {
       dateChartGauge: null,
       dateChartBar: null,
       dateChartLine: null,
+      dateChartHBar: null,
       loading_count: false,
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
       groupidxForCount: 0,
@@ -172,6 +189,7 @@ export default {
     this.drawGauge()
     this.drawBar()
     this.drawLine()
+    this.drawHBar()
   },
   methods: {
     drawCountChart (param, data, store) {
@@ -288,6 +306,11 @@ export default {
       this.dateChartLine = this.$echarts.init(this.$refs.lineChart)
       this.dateChartLine.clear()
       this.dateChartLine.setOption(indexchart.optionLine)
+    },
+    drawHBar () {
+      this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
+      this.dateChartHBar.clear()
+      this.dateChartHBar.setOption(indexchart.optionHBar)
     },
     myMission () {
       let parm = {
@@ -440,7 +463,7 @@ export default {
   }
 
   .title{
-    font-size: PXtoEm(18);
+      font-size: 40px;
   }
 
   .icon{
@@ -480,18 +503,74 @@ export default {
     display: flex;
     flex-wrap: wrap;
     // width: percent(325, $content-width - 48);
-    width: 33%;
+    width: 25%;
 
     .charts-wrap{
       box-sizing: border-box;
       width: 100%;
       height: percent(215, $content-height - 100);
       padding: 0px;
-      background: #28272E;
+      // background: #28272E;
       border-radius: $border-radius;
+      border: 1px solid #14314e;
       margin:10px;
       &:last-of-type{
         align-self: flex-end;
+      }
+    }
+  }
+
+  .right1{
+    display: flex;
+    flex-wrap: wrap;
+    // width: percent(325, $content-width - 48);
+    width: 50%;
+
+    .charts-wrap{
+      box-sizing: border-box;
+      width: 100%;
+      height: 56%;
+      padding: 0px;
+      // background: #28272E;
+      border-radius: $border-radius;
+      margin:10px;
+      border: 1px solid #14314e;
+      &:last-of-type{
+        align-self: flex-end;
+      }
+    }
+
+    .charts-wrap1{
+      box-sizing: border-box;
+      width: 100%;
+      height: 30%;
+      padding: 0px;
+      // background: #28272E;
+      border-radius: $border-radius;
+      margin:10px;
+      border: 1px solid #14314e;
+      &:last-of-type{
+        align-self: flex-end;
+      }
+      .innerwrap{
+          float: left;
+          width: 50%;
+          height: 100%;
+          display: flex;
+          justify-content:center;
+          // align-items:center;
+          .innerdiv1{
+            display: inline-block;
+            position: absolute;
+            padding-top: 38px;
+            font-size: 20px;
+          }
+          .innerdiv2{
+            display: inline-block;
+            // position: absolute;
+            padding-top: 63px;
+            font-size: 53px;
+          }
       }
     }
   }
@@ -506,5 +585,10 @@ a{
 .echart{
   height: 100%;
   width: 100%;
+}
+</style>
+<style>
+#hbarChart>.echart>div{
+  top:-16px;
 }
 </style>
