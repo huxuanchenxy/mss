@@ -4,8 +4,8 @@
       <h2>
         <img class="icon" src="../common/images/icon-home.svg" alt=""> 首页
       </h2>
-            <li class="list">
-        <h2 class="title"><span class="text">上海轨道交通18号线智能运维系统</span></h2>
+      <li class="listtitle">
+        <span class="title">上海轨道交通18号线智能运维系统</span>
       </li>
       <a href="#/monitorCenter/eqpmonitor/list">进入系统</a>
     </div>
@@ -44,7 +44,11 @@
             <span class="innerspan1">累计无故障运营时间(min)</span>
             </div>
             <div class="innerdiv2">
-            <span class="innerspan2">5896328</span>
+            <span class="innerspan2">    <ICountUp
+      :delay="delay"
+      :endVal="endVal"
+      :options="options"
+    /></span>
             </div>
           </div>
           <div class="innerwrap">
@@ -116,11 +120,25 @@ import indexchart from './StatisticsReport/alarm/children/chartIndex'
 import staticsapi from '@/api/statisticsApi'
 import { getNowFormatDate, ApiRESULT, transformDate } from '@/common/js/utils.js'
 import workflowapi from '@/api/workflowApi'
+import ICountUp from 'vue-countup-v2'
 export default {
   name: 'Index',
+  components: {
+    ICountUp
+  },
   data () {
     return {
       name: '',
+      delay: 1000,
+      endVal: 5896328,
+      options: {
+        useEasing: true,
+        useGrouping: true,
+        separator: ',',
+        decimal: '.',
+        prefix: '',
+        suffix: ''
+      },
       cycle: {id: 1, name: '管廊有分区修改'},
       tunnelList: [],
       tunnel: '',
@@ -437,6 +455,10 @@ export default {
       // // 获取当前制造商
       // this.getManufacturerSelected()
       this.search(param, [this.drawCountChart, this.drawAvgChart])
+    },
+    onReady: function (instance, CountUp) {
+      const that = this
+      instance.update(that.endVal + 100)
     }
   }
 }
@@ -461,11 +483,6 @@ export default {
     height: 11px;
     background: url(../common/images/line.png) no-repeat 0 0/100% 100%;
   }
-
-  .title{
-      font-size: 40px;
-  }
-
   .icon{
     vertical-align: middle;
   }
@@ -486,12 +503,12 @@ export default {
     background: #28272E;
     border-radius: $border-radius;
 
-    .title{
-      display: flex;
-      align-items: center;
-      height: percent(40, 565);
-      padding-left: 15px;
-    }
+    // .title{
+    //   display: flex;
+    //   align-items: center;
+    //   height: percent(40, 565);
+    //   padding-left: 15px;
+    // }
 
     .picture-wrap{
       height: percent(565 - 40, 565);
@@ -585,6 +602,27 @@ a{
 .echart{
   height: 100%;
   width: 100%;
+}
+  .iCountUp {
+    font-size: 12em;
+    margin: 0;
+    color: #4d63bc;
+  }
+
+.listtitle{
+  // box-sizing: border-box;
+  width: 456px;
+  height: 127px;
+  background: url(../components/header/images/title.png) no-repeat 0 13px/100% 100%;
+  // text-align: center;
+  // font-size: 1.5em;
+  display: flex;
+  justify-content:center;
+  align-items:center;
+  .title{
+    font-size: 1.5em;
+    font-weight: bold;
+  }
 }
 </style>
 <style>

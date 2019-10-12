@@ -1,4 +1,5 @@
 
+import Echarts from 'echarts'
 const optionPie = {
   tooltip: {
     trigger: 'item',
@@ -175,14 +176,20 @@ var optionBar = {
   },
   xAxis: {
     type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    textStyle: {
-      fontSize: '13',
-      color: 'white'
+    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    axisLine: {
+      lineStyle: {
+        color: '#fff'
+      }
     }
   },
   yAxis: {
-    type: 'value'
+    type: 'value',
+    axisLine: {
+      lineStyle: {
+        color: '#fff'
+      }
+    }
   },
   series: [{
     data: [120, 200, 150, 80, 70, 110, 130],
@@ -203,18 +210,24 @@ var optionLine = {
     trigger: 'axis'
   },
   legend: {
-    data: ['最低气温']
+    data: ['最低气温'],
+    textStyle: {
+      fontSize: '13',
+      color: '#fff'
+    },
+    x: 'left'
+    // y: 'bottom',
   },
-  toolbox: {
-    show: true,
-    feature: {
-      mark: {show: true},
-      dataView: {show: true, readOnly: false},
-      magicType: {show: true, type: ['line', 'bar']},
-      restore: {show: true},
-      saveAsImage: {show: true}
-    }
-  },
+  // toolbox: {
+  //   show: true,
+  //   feature: {
+  //     mark: {show: true},
+  //     dataView: {show: true, readOnly: false},
+  //     magicType: {show: true, type: ['line', 'bar']},
+  //     restore: {show: true},
+  //     saveAsImage: {show: true}
+  //   }
+  // },
   calculable: true,
   xAxis: [
     {
@@ -313,21 +326,21 @@ var optionHBar = {
       itemStyle: {// 图形样式
         normal: { // normal 图形在默认状态下的样式;
           // emphasis图形在高亮状态下的样式
-          barBorderRadius: 10 // 柱条圆角半径,单位px.
+          barBorderRadius: 10, // 柱条圆角半径,单位px.
           // 此处统一设置4个角的圆角大小;
           // 也可以分开设置[10,10,10,10]顺时针左上、右上、右下、左下
-          // color: new Echarts.graphic.LinearGradient(
-          //   0, 0, 1, 0,
-          //   [{
-          //     offset: 0,
-          //     color: '#22B6ED'// 柱图渐变色起点颜色
-          //   },
-          //   {
-          //     offset: 1,
-          //     color: '#3FE279'// 柱图渐变色终点颜色
-          //   }
-          //   ]
-          // )
+          color: new Echarts.graphic.LinearGradient(
+            0, 0, 1, 0,
+            [{
+              offset: 0,
+              color: '#22B6ED'// 柱图渐变色起点颜色
+            },
+            {
+              offset: 1,
+              color: '#3FE279'// 柱图渐变色终点颜色
+            }
+            ]
+          )
         }
       },
       zlevel: 1// 柱状图所有图形的 zlevel 值,
