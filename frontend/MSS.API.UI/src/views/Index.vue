@@ -628,5 +628,9 @@ a{
 <style>
 #hbarChart>.echart>div{
   top:-16px;
+  background-color: unset !important;
+}
+#barChart>.echart>div{
+  background-color: unset !important;
 }
 </style>
