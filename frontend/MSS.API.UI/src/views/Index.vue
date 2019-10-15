@@ -4,20 +4,20 @@
       <h2>
         <img class="icon" src="../common/images/icon-home.svg" alt=""> 首页
       </h2>
-            <li class="list">
-        <h2 class="title"><span class="text">上海轨道交通18号线智能运维系统</span></h2>
+      <li class="listtitle">
+        <span class="title">上海轨道交通18号线智能运维系统</span>
       </li>
       <a href="#/monitorCenter/eqpmonitor/list">进入系统</a>
     </div>
     <div class="con-padding-horizontal content">
       <div class="right">
         <div class="charts-wrap">
-            <el-col :span="12" id="countChart"
+              <el-col :span="12" id="gaugeChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:290px;" ref="countChart"  class="echart"></div>
-            </el-col>
+              <div style="width:100%; height:300px;" ref="gaugeChart"  class="echart"></div>
+              </el-col>
         </div>
         <div class="charts-wrap"><el-col :span="12" id="radarChart"
                 element-loading-text="加载中"
@@ -37,32 +37,52 @@
             </li>
         </div>
       </div>
-      <div class="right">
+      <div class="right1">
+        <div class="charts-wrap1">
+          <div class="innerwrap">
+            <div class="innerdiv1">
+            <span class="innerspan1">累计无故障运营时间(min)</span>
+            </div>
+            <div class="innerdiv2">
+            <span class="innerspan2">    <ICountUp
+      :delay="delay"
+      :endVal="endVal"
+      :options="options"
+    /></span>
+            </div>
+          </div>
+          <div class="innerwrap">
+                                      <el-col :span="12" id="hbarChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:200px;" ref="hbarChart"  class="echart"></div>
+            </el-col>
+          </div>
+        </div>
         <div class="charts-wrap">
-                      <el-col :span="12" id="avgTimeChart"
+                          <el-col :span="12" id="countChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:290px;" ref="countChart"  class="echart"></div>
+            </el-col>
+        </div>
+        <div class="charts-wrap">
+                                <el-col :span="12" id="avgTimeChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
               <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart"></div>
               </el-col>
-        </div>
-        <div class="charts-wrap">
-              <el-col :span="12" id="gaugeChart"
-                element-loading-text="加载中"
-                element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:300px;" ref="gaugeChart"  class="echart"></div>
-              </el-col>
-        </div>
-        <div class="charts-wrap">
-                   <span>我的申请</span>
+                   <!-- <span>我的申请</span>
             <li class="list" v-for="(item) in DataList1" :key="item.key">
               <div class="list-content">
                 <div class="name">{{ item.appName }}</div>
                 <div class="name">{{ item.processState }}</div>
                 <div class="name">{{ item.createdDateTime }}</div>
               </div>
-            </li>
+            </li> -->
         </div>
       </div>
             <div class="right">
@@ -100,11 +120,25 @@ import indexchart from './StatisticsReport/alarm/children/chartIndex'
 import staticsapi from '@/api/statisticsApi'
 import { getNowFormatDate, ApiRESULT, transformDate } from '@/common/js/utils.js'
 import workflowapi from '@/api/workflowApi'
+import ICountUp from 'vue-countup-v2'
 export default {
   name: 'Index',
+  components: {
+    ICountUp
+  },
   data () {
     return {
       name: '',
+      delay: 1000,
+      endVal: 5896328,
+      options: {
+        useEasing: true,
+        useGrouping: true,
+        separator: ',',
+        decimal: '.',
+        prefix: '',
+        suffix: ''
+      },
       cycle: {id: 1, name: '管廊有分区修改'},
       tunnelList: [],
       tunnel: '',
@@ -122,6 +156,7 @@ export default {
       dateChartGauge: null,
       dateChartBar: null,
       dateChartLine: null,
+      dateChartHBar: null,
       loading_count: false,
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
       groupidxForCount: 0,
@@ -172,6 +207,7 @@ export default {
     this.drawGauge()
     this.drawBar()
     this.drawLine()
+    this.drawHBar()
   },
   methods: {
     drawCountChart (param, data, store) {
@@ -288,6 +324,11 @@ export default {
       this.dateChartLine = this.$echarts.init(this.$refs.lineChart)
       this.dateChartLine.clear()
       this.dateChartLine.setOption(indexchart.optionLine)
+    },
+    drawHBar () {
+      this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
+      this.dateChartHBar.clear()
+      this.dateChartHBar.setOption(indexchart.optionHBar)
     },
     myMission () {
       let parm = {
@@ -414,6 +455,10 @@ export default {
       // // 获取当前制造商
       // this.getManufacturerSelected()
       this.search(param, [this.drawCountChart, this.drawAvgChart])
+    },
+    onReady: function (instance, CountUp) {
+      const that = this
+      instance.update(that.endVal + 100)
     }
   }
 }
@@ -438,11 +483,6 @@ export default {
     height: 11px;
     background: url(../common/images/line.png) no-repeat 0 0/100% 100%;
   }
-
-  .title{
-    font-size: PXtoEm(18);
-  }
-
   .icon{
     vertical-align: middle;
   }
@@ -463,12 +503,12 @@ export default {
     background: #28272E;
     border-radius: $border-radius;
 
-    .title{
-      display: flex;
-      align-items: center;
-      height: percent(40, 565);
-      padding-left: 15px;
-    }
+    // .title{
+    //   display: flex;
+    //   align-items: center;
+    //   height: percent(40, 565);
+    //   padding-left: 15px;
+    // }
 
     .picture-wrap{
       height: percent(565 - 40, 565);
@@ -480,18 +520,74 @@ export default {
     display: flex;
     flex-wrap: wrap;
     // width: percent(325, $content-width - 48);
-    width: 33%;
+    width: 25%;
 
     .charts-wrap{
       box-sizing: border-box;
       width: 100%;
       height: percent(215, $content-height - 100);
       padding: 0px;
-      background: #28272E;
+      // background: #28272E;
       border-radius: $border-radius;
+      border: 1px solid #14314e;
       margin:10px;
       &:last-of-type{
         align-self: flex-end;
+      }
+    }
+  }
+
+  .right1{
+    display: flex;
+    flex-wrap: wrap;
+    // width: percent(325, $content-width - 48);
+    width: 50%;
+
+    .charts-wrap{
+      box-sizing: border-box;
+      width: 100%;
+      height: 56%;
+      padding: 0px;
+      // background: #28272E;
+      border-radius: $border-radius;
+      margin:10px;
+      border: 1px solid #14314e;
+      &:last-of-type{
+        align-self: flex-end;
+      }
+    }
+
+    .charts-wrap1{
+      box-sizing: border-box;
+      width: 100%;
+      height: 30%;
+      padding: 0px;
+      // background: #28272E;
+      border-radius: $border-radius;
+      margin:10px;
+      border: 1px solid #14314e;
+      &:last-of-type{
+        align-self: flex-end;
+      }
+      .innerwrap{
+          float: left;
+          width: 50%;
+          height: 100%;
+          display: flex;
+          justify-content:center;
+          // align-items:center;
+          .innerdiv1{
+            display: inline-block;
+            position: absolute;
+            padding-top: 38px;
+            font-size: 20px;
+          }
+          .innerdiv2{
+            display: inline-block;
+            // position: absolute;
+            padding-top: 63px;
+            font-size: 53px;
+          }
       }
     }
   }
@@ -506,5 +602,31 @@ a{
 .echart{
   height: 100%;
   width: 100%;
+}
+  .iCountUp {
+    font-size: 12em;
+    margin: 0;
+    color: #4d63bc;
+  }
+
+.listtitle{
+  // box-sizing: border-box;
+  width: 456px;
+  height: 127px;
+  background: url(../components/header/images/title.png) no-repeat 0 13px/100% 100%;
+  // text-align: center;
+  // font-size: 1.5em;
+  display: flex;
+  justify-content:center;
+  align-items:center;
+  .title{
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+}
+</style>
+<style>
+#hbarChart>.echart>div{
+  top:-16px;
 }
 </style>

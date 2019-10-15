@@ -88,6 +88,11 @@ const routes = [
               path: 'list',
               name: 'SeeConstructionPlan',
               component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeConstructionPlan.vue')
+            }, 
+            {
+              path: 'add',
+              name: 'AddConstructionPlan',
+              component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/AddConstructionPlan.vue')
             }
           ]
         }
