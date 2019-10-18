@@ -23,5 +23,6 @@ namespace MSS.API.Core.V1.Business
 
         // 所有地铁线
         Task<ApiResult> ListAllMetroLine();
+        Task<ApiResult> GetMetroStation();
     }
 }
