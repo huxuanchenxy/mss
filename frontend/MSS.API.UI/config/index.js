@@ -27,6 +27,13 @@ module.exports = {
       '/Main': {
         target: 'http://10.89.36.198:8091',
         changeOrigin: true
+      },
+      '/MetroSh': {
+        target: 'http://m.shmetro.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/MetroSh': ''
+        }
       }
     },
 

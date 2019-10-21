@@ -1,12 +1,17 @@
 ﻿using Dapper;
 using MSS.Platform.Workflow.WebApi.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static MSS.API.Common.MyDictionary;
 
 
-// Coded By admin 2019/9/27 11:18:53
+// Coded By admin 2019/10/21 13:06:57
 namespace MSS.Platform.Workflow.WebApi.Data
 {
     public interface IConstructionPlanRepo<T> where T : BaseEntity
@@ -44,6 +49,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 end_time,
                 register_station_id,
                 device_num,
+                trouble_num,
+                operation_address,
                 construction_content,
                 construction_detail,
                 coordination_request,
@@ -102,7 +109,11 @@ namespace MSS.Platform.Workflow.WebApi.Data
         {
             return await WithConnection(async c =>
             {
-                string sql = $@" INSERT INTO `construction_plan`(
+                IDbTransaction trans = c.BeginTransaction();
+                try
+                {
+                    
+                    string sql = $@" INSERT INTO `construction_plan`(
                     
                     line_id,
                     area_id,
@@ -118,6 +129,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     end_time,
                     register_station_id,
                     device_num,
+                    trouble_num,
+                    operation_address,
                     construction_content,
                     construction_detail,
                     coordination_request,
@@ -157,6 +170,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     @EndTime,
                     @RegisterStationId,
                     @DeviceNum,
+                    @TroubleNum,
+                    @OperationAddress,
                     @ConstructionContent,
                     @ConstructionDetail,
                     @CoordinationRequest,
@@ -182,10 +197,37 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     @IsDel
                     );
                     ";
-                sql += "SELECT LAST_INSERT_ID() ";
-                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, obj);
-                obj.Id = newid;
-                return obj;
+                    sql += "SELECT LAST_INSERT_ID() ";
+                    int newid = await c.QueryFirstOrDefaultAsync<int>(sql, obj, trans);
+                    obj.Id = newid;
+                    if (!string.IsNullOrWhiteSpace(obj.FileIDs))
+                    {
+                        List<object> objs = new List<object>();
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(obj.FileIDs);
+                        foreach (var o in jobj)
+                        {
+                            foreach (var item in o["ids"].ToString().Split(','))
+                            {
+                                objs.Add(new
+                                {
+                                    entityID = newid,
+                                    fileID = Convert.ToInt32(item),
+                                    type = Convert.ToInt32(o["type"]),
+                                    systemResource = (int)SystemResource.ConstructionPlan
+                                });
+                            }
+                        }
+                        sql = "insert into upload_file_relation values (0,@entityID,@fileID,@type,@systemResource)";
+                        int ret = await c.ExecuteAsync(sql, objs, trans);
+                    }
+                    trans.Commit();
+                    return obj;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    throw new Exception(ex.ToString());
+                }
             });
         }
 
@@ -219,6 +261,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     end_time=@EndTime,
                     register_station_id=@RegisterStationId,
                     device_num=@DeviceNum,
+                    trouble_num=@TroubleNum,
+                    operation_address=@OperationAddress,
                     construction_content=@ConstructionContent,
                     construction_detail=@ConstructionDetail,
                     coordination_request=@CoordinationRequest,

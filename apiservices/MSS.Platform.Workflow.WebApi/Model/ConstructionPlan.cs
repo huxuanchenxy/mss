@@ -3,7 +3,7 @@ using Dapper.FluentMap.Mapping;
 using MSS.Platform.Workflow.WebApi.Data;
 using System.Collections.Generic;
 
-// Coded by admin 2019/9/26 16:46:46
+// Coded by admin 2019/10/21 11:18:41
 namespace MSS.Platform.Workflow.WebApi.Model
 {
     public class ConstructionPlanParm : BaseQueryParm
@@ -33,6 +33,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public System.DateTime EndTime { get; set; }
         public string RegisterStationId { get; set; }
         public string DeviceNum { get; set; }
+        public string TroubleNum { get; set; }
+        public string OperationAddress { get; set; }
         public string ConstructionContent { get; set; }
         public string ConstructionDetail { get; set; }
         public string CoordinationRequest { get; set; }
@@ -56,6 +58,7 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public System.DateTime UpdatedTime { get; set; }
         public int UpdatedBy { get; set; }
         public sbyte IsDel { get; set; }
+        public string FileIDs { get; set; }
     }
 
     public class ConstructionPlanMap : EntityMap<ConstructionPlan>
@@ -77,6 +80,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
             Map(o => o.EndTime).ToColumn("end_time");
             Map(o => o.RegisterStationId).ToColumn("register_station_id");
             Map(o => o.DeviceNum).ToColumn("device_num");
+            Map(o => o.TroubleNum).ToColumn("trouble_num");
+            Map(o => o.OperationAddress).ToColumn("operation_address");
             Map(o => o.ConstructionContent).ToColumn("construction_content");
             Map(o => o.ConstructionDetail).ToColumn("construction_detail");
             Map(o => o.CoordinationRequest).ToColumn("coordination_request");
