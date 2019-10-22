@@ -16,6 +16,8 @@ namespace MSS.Platform.Workflow.WebApi.Infrastructure
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
             services.AddTransient<IConstructionPlanService, ConstructionPlanService>();
+            services.AddTransient<IConstructionPlanImportService, ConstructionPlanImportService>();
+            services.AddTransient<IConstructionPlanMonthDetailService, ConstructionPlanMonthDetailService>();
             return services;
         }
     }

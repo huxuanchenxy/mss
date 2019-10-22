@@ -306,13 +306,11 @@ export default {
     // 上一页
     prevPage (val) {
       this.currentPage = val
-      this.searchResult(val)
     },
 
     // 下一页
     nextPage (val) {
       this.currentPage = val
-      this.searchResult(val)
     }
   }
 }
