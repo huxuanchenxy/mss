@@ -27,10 +27,10 @@
             </el-col>
         </div>
         <div class="charts-wrap">
-                <span>我的待办</span>
+                <span style="font-size: 16px;font-family: cursive;">我的待办</span>
                       <li class="list" v-for="(item) in DataList" :key="item.key">
               <div class="list-content">
-                <div class="name">{{ item.appName }}</div>
+                <div class="name"><a href="#">{{ item.appName }}</a></div>
                 <div class="name">{{ item.activityName }}</div>
                 <div class="name">{{ item.createdDateTime }}</div>
               </div>
@@ -201,7 +201,7 @@ export default {
   },
   mounted () {
     this.myMission()
-    this.myapply()
+    // this.myapply()
     this.drawPie()
     this.drawRadar()
     this.drawGauge()
@@ -622,6 +622,18 @@ a{
   .title{
     font-size: 1.5em;
     font-weight: bold;
+  }
+}
+.list{
+  padding-left:10px;
+  padding-top: 10px;
+  list-style:unset;
+  // margin:0;
+  // padding:0;
+  .list-content{
+    padding-left: 13px;
+    top: -17px;
+    position: relative;
   }
 }
 </style>

@@ -14,44 +14,238 @@
         <!-- 列表 -->
         <ul class="con-padding-horizontal input-group">
           <li class="list">
-            <div class="inp-wrap">
-              <span class="text">设备类型ID</span>
-              <div class="inp disabled">
-                <el-input v-model="eqpTypeID" :disabled="true"></el-input>
+              <span class="text">计划名称:</span>
+              <div class="inp-wrap">
+                <el-select v-model="lineid.text"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in lineList"
+                    :key="item.id"
+                    :label="item.lineName"
+                    :value="item.id">
+                  </el-option>
+                </el-select><p class="validate-tips">{{ lineid.tips }}</p>
+                <el-select v-model="areaid.text"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in areaList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key">
+                  </el-option>
+                </el-select><p class="validate-tips">{{ areaid.tips }}</p>
+                <el-select v-model="areaTypeName.text"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in areaTypeNameList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key">
+                  </el-option>
+                </el-select><p class="validate-tips">{{ areaTypeName.tips }}</p>
+                <span style="width: 200px;">施工检修申请单</span>
               </div>
-            </div>
           </li>
           <li class="list">
-            <div class="inp-wrap">
-              <span class="text">设备类型名称<em class="validate-mark">*</em></span>
-              <div class="inp">
-                <el-input placeholder="请输入设备类型名称" v-model="eqpTypeName.text" @keyup.native="validateInput()"></el-input>
+              <span class="text">作业类别:</span>
+              <div class="inp-wrap">
+                <el-radio-group v-model="planType">
+                  <el-radio :label=1>单点</el-radio>
+                  <el-radio :label=2>多点</el-radio>
+                </el-radio-group>
               </div>
-            </div>
-            <p class="validate-tips">{{ eqpTypeName.tips }}</p>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <span class="text">型号</span>
-              <div class="inp">
-                <el-input v-model="model.text" placeholder="请输入设备类型型号" @keyup.native="validateInputNull(model)"></el-input>
-              </div>
-            </div>
             <p class="validate-tips">{{ model.tips }}</p>
           </li>
+        </ul>
+        <ul class="con-padding-horizontal input-group">
+          <li class="list">
+              <span class="text">重要程度:</span>
+              <div class="inp-wrap">
+                <el-select v-model="importantLevel"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in importantLevelList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
+                <span>日常/重大</span>
+                <el-select v-model="planLevel"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in planLevelList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
+              </div>
+          </li>
+          <li class="list">
+              <span class="text">计划编号:</span>
+              <div class="inp-wrap">
+                <el-input style="width:200px;"
+                  placeholder="输入计划编号"
+                  v-model="planNumber.text" clearable>
+                </el-input><p class="validate-tips">{{ planNumber.tips }}</p>
+              </div>
+          </li>
+        </ul>
+        <ul class="con-padding-horizontal input-group">
+          <li class="list">
+              <span class="text">申请单位:</span>
+              <div class="inp-wrap">
+                <el-select v-model="applyCompanyOrgId"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in applyCompanyOrgIdList"
+                    :key="item.id"
+                    :label="item.label"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </div>
+          </li>
+          <li class="list">
+              <span class="text">施工单位:</span>
+              <div class="inp-wrap">
+                <el-select v-model="constructionCompanyOrgId"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in constructionCompanyOrgIdList"
+                    :key="item.id"
+                    :label="item.label"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </div>
+          </li>
+        </ul>
+        <ul class="con-padding-horizontal input-group">
+          <li class="list">
+              <span class="text">起止时间:</span>
+              <div class="inp-wrap">
+                <el-date-picker
+                  v-model="time.text"
+                  type="daterange"
+                  prefix-icon="el-icon-date"
+                  :unlink-panels="true"
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="计划开始日期"
+                  end-placeholder="计划结束日期">
+                </el-date-picker>
+              </div>
+          </li>
+          <li class="list">
+              <span class="text">登记车站:</span>
+              <div class="inp-wrap">
+                <el-select v-model="registerStationId"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in registerStationIdList"
+                    :key="item.title"
+                    :label="item.title"
+                    :value="item.title">
+                  </el-option>
+                </el-select>
+              </div>
+          </li>
+        </ul>
+        <ul class="con-padding-horizontal input-group">
+          <li class="list">
+              <span class="text">设施设备号:</span>
+              <div class="inp-wrap">
+                <el-input style="width:200px;"
+                  placeholder="输入设施设备号"
+                  v-model="deviceNum" clearable>
+                </el-input>
+              </div>
+          </li>
+          <li class="list">
+              <span class="text">故障令号:</span>
+              <div class="inp-wrap">
+                <el-input style="width:200px;"
+                  placeholder="输入故障令号"
+                  v-model="troubleNum" clearable>
+                </el-input>
+              </div>
+          </li>
+        </ul>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">工作地点:</span>
+            <el-input type="textarea" v-model="operationAddress.text" placeholder="请输入工作地点" @keyup.native="validateInputNull(operationAddress)"></el-input>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">施工内容:</span>
+            <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionContent)"></el-input>
+        </div>
+        <div class="validate-tips left">{{ eqpTypeDesc.tips }}</div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">施工详细说明:</span>
+            <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionContent)"></el-input>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">配合要求:</span>
+            <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(constructionContent)"></el-input>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">停送电范围:</span>
+            <el-input type="textarea" v-model="electricRange.text" placeholder="请输入停送电范围" @keyup.native="validateInputNull(electricRange)"></el-input>
+        </div>
+        <ul class="con-padding-horizontal input-group">
+          <li class="list">
+              <span class="text">接触网/轨停电:</span>
+              <div class="inp-wrap">
+                <el-select v-model="stopElectric"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in stopElectricList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
+                <span class="text">牵引动力:</span>
+                <el-select v-model="tractionPower"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in tractionPowerList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
+              </div>
+          </li>
+          <li class="list">
+              <span class="text">使用梯车:</span>
+              <div class="inp-wrap">
+                <el-select v-model="useLaddercar"  collapse-tags  clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in useLaddercarList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
+              </div>
+          </li>
+        </ul>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">施工影响区段:</span>
+            <el-input type="textarea" v-model="effectArea.text" placeholder="请输入施工影响区段" @keyup.native="validateInputNull(effectArea)"></el-input>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">施工影响说明:</span>
+            <el-input type="textarea" v-model="effectExplain.text" placeholder="请输入施工影响说明" @keyup.native="validateInputNull(effectExplain)"></el-input>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">安全措施:</span>
+            <el-input type="textarea" v-model="safeMeasure.text" placeholder="请输入安全措施" @keyup.native="validateInputNull(safeMeasure)"></el-input>
+        </div>
+        <ul class="con-padding-horizontal input-group">
           <div class="upload-list">
             <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
           </div>
         </ul>
-        <div class="con-padding-horizontal cause">
-            <span class="lable">设备类型描述：</span>
-            <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述" @keyup.native="validateInputNull(eqpTypeDesc)"></el-input>
-        </div>
-        <div class="validate-tips left">{{ eqpTypeDesc.tips }}</div>
+        <button @click="changeShow">显示元素</button>
+        <area-dialog :name="show" @changeShowChild = "changeShow"></area-dialog>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
-            <router-link :to="{name: 'SeeEqpTypeList'}">取消</router-link>
+            <router-link :to="{name: 'SeeConstructionPlan'}">取消</router-link>
           </x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
@@ -64,31 +258,75 @@ import { validateInputCommon, vInput, nullToEmpty } from '@/common/js/utils.js'
 import { systemResource } from '@/common/js/dictionary.js'
 import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
-import api from '@/api/eqpApi'
+import constructionapi from '@/api/workflowApi'
 import MyUploadPDF from '@/components/UploadPDF'
+import lineapi from '@/api/metroLineApi'
+import orgapi from '@/api/orgApi'
+import AreaDialog from '@/components/AreaDialog'
 export default {
   name: 'AddConstructionPlan',
   components: {
     XButton,
-    'upload-pdf': MyUploadPDF
+    'upload-pdf': MyUploadPDF,
+    'area-dialog': AreaDialog
   },
   data () {
     return {
-      systemResource: systemResource.eqpType,
+      msg: 'Welcome to Your Vue.js App',
+      show: false,
+      systemResource: systemResource.construction,
       loading: false,
-      title: '| 添加设备类型',
+      title: '| 添加施工计划',
       eqpTypeID: '',
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
+      operationAddress: {text: '', tips: ''},
+      constructionContent: {text: '', tips: ''},
+      electricRange: {text: '', tips: ''},
+      effectArea: {text: '', tips: ''},
+      effectExplain: {text: '', tips: ''},
+      safeMeasure: {text: '', tips: ''},
       fileIDs: '',
-      fileIDsEdit: []
+      fileIDsEdit: [],
+      planType: 0,
+      areaid: {text: '', tips: ''},
+      areaList: [],
+      areaTypeName: {text: '', tips: ''},
+      areaTypeNameList: [],
+      importantLevel: [],
+      importantLevelList: [],
+      planLevel: [],
+      planLevelList: [],
+      applyCompanyOrgId: [],
+      applyCompanyOrgIdList: [],
+      constructionCompanyOrgId: [],
+      constructionCompanyOrgIdList: [],
+      lineList: [],
+      lineid: {text: '', tips: ''},
+      time: {text: '', tips: ''},
+      planNumber: {text: '', tips: ''},
+      areaTypename: {text: '', tips: ''},
+      planName: '',
+      registerStationId: [],
+      registerStationIdList: [],
+      deviceNum: '',
+      troubleNum: '',
+      stopElectric: [],
+      stopElectricList: [],
+      tractionPower: [],
+      tractionPowerList: [],
+      useLaddercar: [],
+      useLaddercarList: []
     }
   },
   created () {
-    // this.init()
+    this.InitPage()
   },
   methods: {
+    changeShow () {
+      this.show = !this.show
+    },
     init () {
       if (this.$route.query.type !== 'Add') {
         this.title = '| 修改设备类型'
@@ -100,7 +338,7 @@ export default {
       this.fileIDsEdit = ids
     },
     getEqpType () {
-      api.getEqpTypeByID(this.$route.query.id).then(res => {
+      constructionapi.getEqpTypeByID(this.$route.query.id).then(res => {
         if (res.code === 0) {
           let data = res.data
           this.eqpTypeID = data.id
@@ -121,14 +359,22 @@ export default {
         return true
       }
     },
-    validateInput () {
-      if (!validateInputCommon(this.eqpTypeName)) {
+    validateSelect (val) {
+      if (val.text === '') {
+        val.tips = '此项必选'
         return false
+      } else {
+        val.tips = ''
+        return true
       }
+    },
+    validateInput () {
+      if (!validateInputCommon(this.planNumber)) return false
+      if (!this.validateSelect(this.lineid)) return false
       return true
     },
     validateInputAll () {
-      if (!this.validateInput() || !this.validateInputNull(this.model) || !this.validateInputNull(this.eqpTypeDesc)) {
+      if (!this.validateInput()) {
         return false
       }
       return true
@@ -148,16 +394,28 @@ export default {
         })
         return
       }
-      let eqpType = {
-        TName: this.eqpTypeName.text,
-        Desc: this.eqpTypeDesc.text,
-        Model: this.model.text,
-        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+      var lineidobj = {}
+      lineidobj = this.lineList.find(item => {
+        return item.id === this.lineid.text
+      })
+      var areaidobj = {}
+      areaidobj = this.areaList.find(item => {
+        return item.key === this.areaid.text
+      })
+      // console.log(obj.chname)
+      this.planName = lineidobj.lineName + areaidobj.name + this.areaTypeName.text + '施工检修申请单'
+      let dataObj = {
+        LineId: this.lineid.text,
+        AreaId: this.areaid.text,
+        AreaTypename: this.areaTypeName.text,
+        PlanNumber: this.planNumber.text,
+        PlanName: this.planName,
+        FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
-        api.addEqpType(eqpType).then(res => {
+        constructionapi.addConstructionPlan(dataObj).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEqpTypeList'})
+            this.$router.push({name: 'SeeConstructionPlan'})
             this.$message({
               message: '添加成功',
               type: 'success'
@@ -170,10 +428,10 @@ export default {
           }
         }).catch(err => console.log(err))
       } else {
-        eqpType.ID = this.eqpTypeID
-        api.updateEqpType(eqpType).then(res => {
+        dataObj.ID = this.eqpTypeID
+        constructionapi.updateEqpType(dataObj).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeEqpTypeList'})
+            this.$router.push({name: 'SeeConstructionPlan'})
             this.$message({
               message: '修改成功',
               type: 'success'
@@ -186,6 +444,46 @@ export default {
           }
         }).catch(err => console.log(err))
       }
+    },
+    InitPage () {
+      this.InitLine()
+      this.InitArea()
+      this.InitImportantLevel()
+      this.InitCompany()
+      this.InitStation()
+    },
+    InitLine () {
+      let parm = {
+        order: 'asc',
+        sort: 'id',
+        rows: 20,
+        page: 1
+      }
+      lineapi.getByPage(parm).then(res => {
+        this.lineList = res.data.rows
+      }).catch(err => console.log(err))
+    },
+    InitArea () {
+      this.areaList = [{key: '1', name: '轨行区'}, {key: '2', name: '车场'}, {key: '3', name: '车站'}, {key: '4', name: '保护区'}]
+      this.areaTypeNameList = [{key: '正线', name: '正线'}, {key: '不下线', name: '不下线'}]
+    },
+    InitImportantLevel () {
+      this.importantLevelList = [{key: '1', name: '普通计划'}, {key: '2', name: '核心计划'}, {key: '3', name: '临时计划'}, {key: '4', name: '抢修计划'}]
+      this.planLevelList = [{key: '1', name: '日常'}, {key: '2', name: '重大'}]
+      this.stopElectricList = [{key: '1', name: '是'}, {key: '2', name: '否'}]
+      this.tractionPowerList = [{key: '1', name: '电客'}, {key: '2', name: '轨道'}, {key: '3', name: '无'}]
+      this.useLaddercarList = [{key: '1', name: '是'}, {key: '2', name: '否'}]
+    },
+    InitCompany () {
+      orgapi.getOrgAll().then(res => {
+        this.applyCompanyOrgIdList = res.data.filter((item) => { return item.node_type === 1 })
+        this.constructionCompanyOrgIdList = res.data.filter((item) => { return item.node_type === 1 })
+      }).catch(err => console.log(err))
+    },
+    InitStation () {
+      lineapi.getAllStation().then(res => {
+        this.registerStationIdList = res.data
+      }).catch(err => console.log(err))
     }
   }
 }
@@ -277,7 +575,7 @@ export default {
    * $content-height内容区域总高度
    * 页面标题栏高度：56
    */
-  height: percent($content-height - 56, $content-height);
+  height: 93.8%;
   .upload-wrap{
     display: flex;
     align-items: center;
@@ -294,18 +592,22 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  height: 50px;
 
   .list{
-    width: 30%;
+    width: 49%;
     margin-top: PXtoEm(20);
 
     .inp-wrap{
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      height: 28px;
+      width: 500px;
     }
 
     .text{
-      width: 28%;
+      width: 16%;
+      display: inline-block;
     }
 
     &:nth-of-type(3n+1){

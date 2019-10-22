@@ -7,7 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 
-// Coded By admin 2019/9/26 17:41:26
+// Coded By admin 2019/10/21 13:07:35
 namespace MSS.Platform.Workflow.WebApi.Service
 {
     public interface IConstructionPlanService
@@ -63,6 +63,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 obj.UpdatedBy = _userID;
                 obj.CreatedBy = _userID;
                 ret.data = await _repo.Save(obj);
+                ret.code = Code.Success;
                 return ret;
             }
             catch (Exception ex)
@@ -85,6 +86,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     obj.UpdatedTime = dt;
                     obj.UpdatedBy = _userID;
                     ret.data = await _repo.Update(obj);
+                    ret.code = Code.Success;
                 }
                 else
                 {
@@ -107,6 +109,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             try
             {
                 ret.data = await _repo.Delete(ids.Split(','), _userID);
+                ret.code = Code.Success;
                 return ret;
             }
             catch (Exception ex)
@@ -124,6 +127,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             {
                 ConstructionPlan obj = await _repo.GetByID(id);
                 ret.data = obj;
+                ret.code = Code.Success;
                 return ret;
             }
             catch (Exception ex)

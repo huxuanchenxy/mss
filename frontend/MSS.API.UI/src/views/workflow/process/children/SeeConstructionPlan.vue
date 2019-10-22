@@ -13,9 +13,9 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">流程名称</label>
+            <label for="name">施工计划名称</label>
             <div class="inp">
-              <el-input v-model.trim="appName" placeholder="请输入流程名称" clearable></el-input>
+              <el-input v-model.trim="planName" placeholder="请输入施工计划名称" clearable></el-input>
             </div>
           </div>
         </div>
@@ -34,23 +34,19 @@
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
-          流程ID
+          ID
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
        </li>
-        <li class="list name c-pointer" @click="changeOrder('appName')">
-          流程名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.appName === 0 }, { 'el-icon-caret-top': headOrder.appName === 1 }, { 'el-icon-caret-bottom': headOrder.appName === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('planName')">
+          计划名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.planName === 0 }, { 'el-icon-caret-top': headOrder.planName === 1 }, { 'el-icon-caret-bottom': headOrder.planName === 2 }]"></i>
        </li>
        <li class="list number c-pointer" @click="changeOrder('appInstanceID')" style="display:none;">
           业务ID
           <i :class="[{ 'el-icon-d-caret': headOrder.appInstanceID === 0 }, { 'el-icon-caret-top': headOrder.appInstanceID === 1 }, { 'el-icon-caret-bottom': headOrder.appInstanceID === 2 }]"></i>
        </li>
-        <li class="list name c-pointer" @click="changeOrder('processState')" >
-          当前状态
-          <i :class="[{ 'el-icon-d-caret': headOrder.processState === 0 }, { 'el-icon-caret-top': headOrder.processState === 1 }, { 'el-icon-caret-bottom': headOrder.processState === 2 }]"></i>
-       </li>
-        <li class="list name c-pointer" @click="changeOrder('createdDateTime')">创建日期
-          <i :class="[{ 'el-icon-d-caret': headOrder.createdDateTime === 0 }, { 'el-icon-caret-top': headOrder.createdDateTime === 1 }, { 'el-icon-caret-bottom': headOrder.createdDateTime === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('createdTime')">创建日期
+          <i :class="[{ 'el-icon-d-caret': headOrder.createdTime === 0 }, { 'el-icon-caret-top': headOrder.createdTime === 1 }, { 'el-icon-caret-bottom': headOrder.createdTime === 2 }]"></i>
         </li>
           <li class="list number c-pointer" style="display:none;">
         </li>
@@ -64,15 +60,12 @@
                   <input type="checkbox" v-model="IDS" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
-                <div class="name">{{ item.appName }}</div>
+                <div class="name">{{ item.planName }}</div>
                 <!--<div class="name">
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.appInstanceID }}</router-link>
                 </div>-->
-                <div class="number" style="display:none;">{{ item.appInstanceID }}</div>
-                <div class="name">{{ item.processState }}</div>
                 <!-- <div class="name">{{ item.mac_add }}</div> -->
-                <div class="name">{{ item.createdDateTime }}</div>
-                <div class="number" style="display:none;">{{ item.processGUID }}</div>
+                <div class="name">{{ item.createdTime }}</div>
               </div>
             </li>
           </ul>
@@ -110,7 +103,7 @@ export default {
       id: '',
       startTime: '',
       endTime: '',
-      appName: '',
+      planName: '',
       roleList: [],
       DataList: [],
       IDS: [],
@@ -131,9 +124,9 @@ export default {
       headOrder: {
         id: 0,
         processState: 0,
-        appName: 0,
+        planName: 0,
         appInstanceID: 0,
-        createdDateTime: 0
+        createdTime: 0
       }
     }
   },
@@ -157,8 +150,8 @@ export default {
         this.headOrder.id = 0
         this.headOrder.processState = 0
         this.headOrder.appInstanceID = 0
-        this.headOrder.appName = 0
-        this.headOrder.createdDateTime = 0
+        this.headOrder.planName = 0
+        this.headOrder.createdTime = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -182,29 +175,12 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        AppName: this.appName
+        AppName: this.planName
       }
-      api.getMyApplyPage(parm).then(res => {
+      api.getConstructionPlanPage(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.createdDateTime = transformDate(item.createdDateTime)
-          if (item.processState === 0) {
-            item.processState = 'NotStart'
-          } else if (item.processState === 1) {
-            item.processState = 'Ready'
-          } else if (item.processState === 2) {
-            item.processState = 'Running'
-          } else if (item.processState === 4) {
-            item.processState = 'Completed'
-          } else if (item.processState === 5) {
-            item.processState = 'Suspended'
-          } else if (item.processState === 6) {
-            item.processState = 'Canceled'
-          } else if (item.processState === 7) {
-            item.processState = 'Discarded'
-          } else if (item.processState === 8) {
-            item.processState = 'Terminated'
-          }
+          item.createdTime = transformDate(item.createdTime)
         })
         this.DataList = res.data.rows
         this.total = res.data.total
