@@ -6,5 +6,6 @@ export default {
   getMyApplyPage: parm => { return axios.get(`${api}/Wf/GetPageMyApply`, {params: parm}).then(res => res.data) },
   getProcessHisPage: parm => { return axios.get(`${api}/Wf/GetPageActivityInstance`, {params: parm}).then(res => res.data) },
   addConstructionPlan: parm => { return axios.post(`${api}/ConstructionPlan`, parm).then(res => res.data) },
-  getConstructionPlanPage: parm => { return axios.get(`${api}/ConstructionPlan/GetPageList`, {params: parm}).then(res => res.data) }
+  getConstructionPlanPage: parm => { return axios.get(`${api}/ConstructionPlan/GetPageList`, {params: parm}).then(res => res.data) },
+  getConstructionPlanByID: (id) => { return axios.get(`${api}/ConstructionPlan/${id}`).then(res => res.data) }
 }
