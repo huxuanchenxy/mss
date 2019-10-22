@@ -240,7 +240,7 @@
             <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
           </div>
         </ul>
-        <button @click="changeShow">显示元素</button>
+        <button @click="changeShow"></button>
         <area-dialog :name="show" @changeShowChild = "changeShow"></area-dialog>
         <!-- 按钮 -->
         <div class="btn-group">
