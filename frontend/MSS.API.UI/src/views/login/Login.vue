@@ -16,7 +16,7 @@
       <div class="text-wrap">
         <!-- <p class="con-sub-title">上海电气自动化设计研究所有限公司</p> -->
         <h2 class="con-title">上海轨道交通18号线智能运维系统</h2>
-        <div class="en-title">Intelligent Maintenance System</div>
+        <div class="en-title">Intelligent  Maintenance  Support System of Shanghai Metro Line 18</div>
       </div>
       <!-- 登录框 -->
       <div class="content-wrap" id="loginwrap">
@@ -175,7 +175,7 @@ export default {
   .en-title{
     position: relative;
     // width: 400px;
-    font-size: 30px;
+    font-size: 16px;
 
     &:after{
       content: "";

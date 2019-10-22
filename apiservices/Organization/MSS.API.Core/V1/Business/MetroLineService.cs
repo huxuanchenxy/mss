@@ -16,6 +16,8 @@ using MSS.API.Core.EventServer;
 using MSS.Common.Consul;
 using MSS.API.Common.Utility;
 using MSS.API.Core.Models.Ex;
+using Microsoft.Extensions.Configuration;
+
 namespace MSS.API.Core.V1.Business
 {
     public class MetroLineService : IMetroLineService
@@ -24,14 +26,17 @@ namespace MSS.API.Core.V1.Business
         private readonly IMetroLineRepo<MetroLine> _lineRepo;
         private readonly IDistributedCache _cache;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
+        private readonly IConfiguration _configuration;
 
         public MetroLineService(IMetroLineRepo<MetroLine> lineRepo, IDistributedCache cache,
-            IServiceDiscoveryProvider consulServiceProvider)
+            IServiceDiscoveryProvider consulServiceProvider
+            , IConfiguration configuration)
         {
             //_logger = logger;
             _lineRepo = lineRepo;
             _cache = cache;
             _consulServiceProvider = consulServiceProvider;
+            _configuration = configuration;
         }
 
         public async Task<ApiResult> SaveLine(MetroLine line)
@@ -163,6 +168,49 @@ namespace MSS.API.Core.V1.Business
             }
 
             return ret;
+        }
+
+        public async Task<ApiResult> GetMetroStation()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                string url = _configuration["MetroStation"];
+                var list =  HttpClientHelper.GetResponse<MetroLineObj>(url);
+
+                List<locations> data = new List<locations>();
+                foreach (var obj in list.levels[0].locations)
+                {
+                    if (data.Where(c=>c.title == obj.title).FirstOrDefault() == null)
+                    {
+                        data.Add(obj);
+                    }
+                }
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public class MetroLineObj
+        {
+            public List<levels> levels { get; set; }
+        }
+
+        public class levels
+        {
+            public List<locations> locations { get; set; }
+        }
+        public class locations
+        {
+            public string id { get; set; }
+            public string title { get; set; }
         }
 
     }

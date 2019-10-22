@@ -20,7 +20,8 @@ export const systemResource = {
   expert: 27,
   maintainReg: 28,
   emergencyPlan: 57,
-  regulation: 58
+  regulation: 58,
+  construction: 109
 }
 
 export const sparePartsOperationType = {

@@ -100,5 +100,12 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
 
+        [HttpGet("GetLineStation")]
+        public async Task<ActionResult<ApiResult>> GetLineStation()
+        {
+            var ret = await _lineService.GetMetroStation();
+            return ret;
+        }
+
     }
 }

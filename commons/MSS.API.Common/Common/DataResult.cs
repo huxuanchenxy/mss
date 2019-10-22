@@ -72,7 +72,8 @@ namespace MSS.API.Common
             Eqp=26,
             Expert=27,
             MaintainReg=28,
-            EmergencyPlan=57
+            EmergencyPlan=57,
+            ConstructionPlan=109
         }
 
         public enum EqpHistoryType
