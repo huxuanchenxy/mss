@@ -1,6 +1,4 @@
 import axios from './interceptors'
-// let api = 'http://10.89.36.160:8443/api/v1'
-// let api = 'http://localhost:3851/api/v1'
 // let api = 'http://localhost:8443/api/v1'
 let api = 'http://10.89.36.154:5801/workflowapi'
 export default {
