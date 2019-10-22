@@ -20,6 +20,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
             services.AddTransient<IConstructionPlanRepo<ConstructionPlan>, ConstructionPlanRepo>();
             services.AddTransient<IConstructionPlanImportRepo<ConstructionPlanYear>, ConstructionPlanImportRepo>();
             services.AddTransient<IConstructionPlanMonthDetailRepo<ConstructionPlanMonthDetail>, ConstructionPlanMonthDetailRepo>();
+            services.AddTransient<IWorkTaskRepo<TaskViewModel>, WorkTaskRepo>();
 
             //配置列名映射
             FluentMapper.Initialize(config =>

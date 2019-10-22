@@ -277,7 +277,7 @@ export default {
       systemResource: systemResource.construction,
       loading: false,
       title: '| 添加施工计划',
-      eqpTypeID: '',
+      ID: '',
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
@@ -329,22 +329,22 @@ export default {
     },
     init () {
       if (this.$route.query.type !== 'Add') {
-        this.title = '| 修改设备类型'
+        this.title = '| 修改施工计划'
         this.loading = true
-        this.getEqpType()
+        this.getObjByID()
       }
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
-    getEqpType () {
-      constructionapi.getEqpTypeByID(this.$route.query.id).then(res => {
+    getObjByID () {
+      constructionapi.getConstructionPlanByID(this.$route.query.id).then(res => {
         if (res.code === 0) {
           let data = res.data
-          this.eqpTypeID = data.id
-          this.eqpTypeName.text = data.tName
-          this.model.text = nullToEmpty(data.model)
-          this.eqpTypeDesc.text = data.desc
+          this.ID = data.id
+          this.lineid.text = data.lineId
+          this.areaid.text = data.areaId
+          this.planNumber.text = nullToEmpty(data.planNumber)
           this.fileIDs = data.uploadFiles
         }
         this.loading = false
@@ -428,7 +428,7 @@ export default {
           }
         }).catch(err => console.log(err))
       } else {
-        dataObj.ID = this.eqpTypeID
+        dataObj.ID = this.ID
         constructionapi.updateEqpType(dataObj).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeConstructionPlan'})

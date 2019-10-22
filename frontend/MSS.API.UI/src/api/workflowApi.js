@@ -16,5 +16,6 @@ export default {
   getMonthPlanDetailByID: id => { return axios.get(`${api}/ConstructionPlanMonthDetail/${id}`).then(res => res.data) },
   updateMonthPlan: parm => { return axios.put(`${api}/ConstructionPlanMonthDetail`, parm).then(res => res.data) },
   addConstructionPlan: parm => { return axios.post(`${api}/ConstructionPlan`, parm).then(res => res.data) },
-  getConstructionPlanPage: parm => { return axios.get(`${api}/ConstructionPlan/GetPageList`, {params: parm}).then(res => res.data) }
+  getConstructionPlanPage: parm => { return axios.get(`${api}/ConstructionPlan/GetPageList`, {params: parm}).then(res => res.data) },
+  getConstructionPlanByID: (id) => { return axios.get(`${api}/ConstructionPlan/${id}`).then(res => res.data) }
 }
