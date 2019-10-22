@@ -388,7 +388,6 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
     },
 
     // 下一页
@@ -396,7 +395,6 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
     }
   }
 }

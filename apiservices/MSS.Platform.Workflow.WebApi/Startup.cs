@@ -34,6 +34,20 @@ namespace MSS.Platform.Workflow.WebApi
 
             });
             services.AddDapper(Configuration);
+            //跨域 Cors
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                builder =>
+                {
+
+                    builder.WithOrigins("http://localhost:8080",
+                                        "http://www.contoso.com")
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                });
+                // options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+            });
             //PollingEngine.Configure(t => Task.Run(t));
             services.AddTransient<IWorkTaskService, WorkTaskService>();
             services.AddEssentialService();
@@ -41,6 +55,10 @@ namespace MSS.Platform.Workflow.WebApi
             {
                 options.ConnectionString = this.Configuration["redis:ConnectionString"];
             });
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "MyAuthor API", Version = "v1" });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,8 +73,16 @@ namespace MSS.Platform.Workflow.WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection().UseCors(builder =>
 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                //设置不限制content-type，即任何上传的文件都可以被下载
+                ServeUnknownFileTypes = true
+            });
+
             app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.

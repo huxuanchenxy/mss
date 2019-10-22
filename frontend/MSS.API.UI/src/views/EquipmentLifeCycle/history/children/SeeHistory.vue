@@ -360,13 +360,13 @@ $con-height: $content-height - 145 - 56 - 56;
 // 子组件下边的按钮加搜索
   /deep/ .box1{
     // height: percent(145, $content-height);
-    height: 100px;
+    height: 70px;
     // 搜索组
     .search-wrap{
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 56%;
+      height: 90%;
       // height: percent(80, 145);
       background: rgba(128, 128, 128, 0.1);
       color: $color-white;

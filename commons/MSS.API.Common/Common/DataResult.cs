@@ -18,7 +18,9 @@ namespace MSS.API.Common
         [Description("数据校验失败")]
         CheckDataRulesFail= 4,
         [Description("绑定用户存在冲突")]
-        BindUserConflict = 5
+        BindUserConflict = 5,
+        [Description("导入失败")]
+        ImportError = 6
     }
     public class ApiResult
     {
