@@ -1,0 +1,17 @@
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\bin\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.deps.json
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\bin\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.runtimeconfig.json
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\bin\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.runtimeconfig.dev.json
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\bin\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.dll
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\bin\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.pdb
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\bin\Release\netcoreapp2.2\MSS.API.Common.dll
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\bin\Release\netcoreapp2.2\MSS.API.Common.pdb
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.csprojAssemblyReference.cache
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.csproj.CoreCompileInputs.cache
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.RazorAssemblyInfo.cache
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.RazorAssemblyInfo.cs
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.AssemblyInfoInputs.cache
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.AssemblyInfo.cs
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.RazorTargetAssemblyInfo.cache
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.csproj.CopyComplete
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.dll
+F:\mssAll\MSS\apiservices\MSS.Platform.Workflow.WebApi\obj\Release\netcoreapp2.2\MSS.Platform.Workflow.WebApi.pdb
