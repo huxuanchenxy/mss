@@ -4,7 +4,9 @@ export const dictionary = {
   firmType: 22,
   sparePartsType: 59,
   currency: 94,
-  troubleType: 51
+  troubleType: 51,
+  workType: 111,
+  pmType: 116
 }
 
 export const firmType = {

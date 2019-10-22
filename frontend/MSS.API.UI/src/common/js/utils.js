@@ -209,3 +209,19 @@ export const getNowFormatDate = (date = new Date()) => {
   var currentdate = year + seperator1 + month + seperator1 + strDate
   return currentdate
 }
+
+export const getCascaderObj = (val, opt) => {
+  for (let i = 0; i < opt.length; ++i) {
+    let item = opt[i]
+    if (val === item.id) {
+      return item
+    } else {
+      if (item.children) {
+        let ret = getCascaderObj(val, item.children)
+        if (ret) {
+          return ret
+        }
+      }
+    }
+  }
+}

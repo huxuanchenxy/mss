@@ -279,7 +279,7 @@
 </template>
 <script>
 // import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
-import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, strToIntArr } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, strToIntArr, getCascaderObj } from '@/common/js/utils.js'
 import { dictionary, firmType, systemResource } from '@/common/js/dictionary.js'
 import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
@@ -460,7 +460,7 @@ export default {
     cascader_change (val) {
       // console.log(val)
       let selectedTeam = val[val.length - 1]
-      let obj = this.getCascaderObj(selectedTeam, this.teamList)
+      let obj = getCascaderObj(selectedTeam, this.teamList)
       if (obj.node_type === 3) {
         this.team = selectedTeam
         this.teamPath.tips = ''
@@ -469,21 +469,6 @@ export default {
       }
       // let el = document.querySelector('.pop-team')
       // el.style.display = 'none'
-    },
-    getCascaderObj (val, opt) {
-      for (let i = 0; i < opt.length; ++i) {
-        let item = opt[i]
-        if (val === item.id) {
-          return item
-        } else {
-          if (item.children) {
-            let ret = this.getCascaderObj(val, item.children)
-            if (ret) {
-              return ret
-            }
-          }
-        }
-      }
     },
     // 添加设备
     enter () {
@@ -533,7 +518,8 @@ export default {
       if (this.ratedPower.text !== '') {
         eqp.RatedPower = this.ratedPower.text
       }
-      let l = this.area.text.length - 1
+      // 新增了路线 为了和原来保持 再-1
+      let l = this.area.text.length - 1 - 1
       if (l > -1) {
         eqp.Location = this.area.text[l]
         eqp.LocationBy = l

@@ -18,11 +18,17 @@ namespace MSS.Platform.Workflow.WebApi.Data
             services.AddSingleton<DapperOptions>(options);
 
             services.AddTransient<IConstructionPlanRepo<ConstructionPlan>, ConstructionPlanRepo>();
+            services.AddTransient<IConstructionPlanImportRepo<ConstructionPlanYear>, ConstructionPlanImportRepo>();
+            services.AddTransient<IConstructionPlanMonthDetailRepo<ConstructionPlanMonthDetail>, ConstructionPlanMonthDetailRepo>();
 
             //配置列名映射
             FluentMapper.Initialize(config =>
             {
                 config.AddMap(new ConstructionPlanMap());
+                config.AddMap(new ConstructionPlanYearMap());
+                config.AddMap(new ConstructionPlanMonthMap());
+                config.AddMap(new ConstructionPlanMonthDetailMap());
+                config.AddMap(new ConstructionPlanImportCommonMap());
             });
             return services;
         }

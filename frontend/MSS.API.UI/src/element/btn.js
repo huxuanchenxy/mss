@@ -93,5 +93,12 @@ export const btn = {
   },
   stockMove: {
     save: 105
+  },
+  import: {
+    save: 118
+  },
+  monthDetail: {
+    create: 120,
+    update: 122
   }
 }
