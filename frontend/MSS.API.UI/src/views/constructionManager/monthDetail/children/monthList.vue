@@ -179,7 +179,6 @@ export default {
   },
   created () {
     this.importCommon = this.$route.params.item
-    console.log(this.importCommon)
     this.type = this.$route.params.type
     this.title = ' | 月计划生成 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
     this.activeName = new Date().getMonth() + ''
@@ -208,6 +207,11 @@ export default {
   },
   methods: {
     position_change (val) {
+      if (val.length === 0) {
+        this.area = ''
+        this.areaPath = []
+        return
+      }
       if (this.areaPath.length < 3) {
         this.areaPath = []
         this.$message({
@@ -220,6 +224,11 @@ export default {
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
+      if (val.length === 0) {
+        this.teamPath = []
+        this.team = ''
+        return
+      }
       let selectedTeam = val[val.length - 1]
       let obj = getCascaderObj(selectedTeam, this.teamList)
       if (obj.node_type === 3) {
