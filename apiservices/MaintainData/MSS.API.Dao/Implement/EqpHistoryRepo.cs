@@ -55,5 +55,22 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<QueryItem>> ListAllLocations()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "select AreaName as name,id,1 as LocationBy from tb_config_bigarea UNION " +
+                "select AreaName as name,id,2 as LocationBy from tb_config_midarea";
+                var result = await c.QueryAsync<QueryItem>(sql);
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
     }
 }         

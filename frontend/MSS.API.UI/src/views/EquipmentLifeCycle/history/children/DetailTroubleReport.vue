@@ -144,7 +144,7 @@ export default {
         this.troubleReport.reportedByName = _res.reportedByName
         this.troubleReport.createdByName = _res.createdByName
         this.troubleReport.createdTime = transformDate(_res.createdTime)
-        this.troubleReport.acceptedTime = transformDate(_res.acceptedTime)
+        this.troubleReport.acceptedTime = _res.acceptedTime !== null && _res.acceptedTime !== '' ? transformDate(_res.acceptedTime) : ''
         this.troubleReport.acceptedByName = _res.acceptedByName
       }).catch(err => console.log(err))
     }

@@ -301,11 +301,11 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$con-height: $content-height - 145 - 56 - 25;
+$con-height: $content-height - 53;
 // 内容区
 .content-wrap{
   overflow: hidden;
-  height: percent($con-height, $content-height);
+  height: percent($con-height, $content-height)!important;
   // height: 90%!important;
   text-align: center;
   .content-header{
@@ -325,7 +325,7 @@ $con-height: $content-height - 145 - 56 - 25;
   }
   /deep/ .el-tabs__header{
     margin-left: 10px!important;
-    height: percent(25, $con-height)
+    height: percent(30, $con-height)
   }
   /deep/ .el-tabs__content{
     height: percent($con-height - 50, $con-height)

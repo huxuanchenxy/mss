@@ -409,7 +409,7 @@ $height: $content-height - 60;
 }
 // 内容区
 .content-wrap{
-  height: percent($height - 145, $height);
+  height: percent($height - 46, $height)!important;
   overflow: hidden;
   text-align: center;
 
