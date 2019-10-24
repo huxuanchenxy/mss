@@ -252,11 +252,9 @@
             <el-input type="textarea" v-model="safeMeasure.text" placeholder="请输入安全措施" @keyup.native="validateInputNull(safeMeasure)"></el-input>
             <p class="validate-tips">{{ safeMeasure.tips }}</p>
         </div>
-        <ul class="con-padding-horizontal input-group">
-          <div class="upload-list">
-            <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
-          </div>
-        </ul>
+        <div class="upload-list">
+          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+        </div>
         <button @click="changeShow"></button>
         <area-dialog :name="show" @changeShowChild = "changeShow"></area-dialog>
         <!-- 按钮 -->
@@ -753,7 +751,7 @@ export default {
 
 // 提交底部按钮
 .btn-group{
-  padding: 20px 0;
+  // padding: 20px 0;
   text-align: center;
 }
 

@@ -16,5 +16,6 @@ export default {
   addConstructionPlan: parm => { return axios.post(`${api}/ConstructionPlan`, parm).then(res => res.data) },
   getConstructionPlanPage: parm => { return axios.get(`${api}/ConstructionPlan/GetPageList`, {params: parm}).then(res => res.data) },
   updateConstructionPlan: parm => { return axios.put(`${api}/ConstructionPlan`, parm).then(res => res.data) },
+  delConstructionPlan: ids => { return axios.delete(`${api}/ConstructionPlan/${ids}`).then(res => res.data) },
   getConstructionPlanByID: id => { return axios.get(`${api}/ConstructionPlan/${id}`).then(res => res.data) }
 }

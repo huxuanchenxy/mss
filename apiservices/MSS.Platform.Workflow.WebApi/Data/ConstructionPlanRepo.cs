@@ -75,12 +75,12 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 updated_by,is_del FROM construction_plan
                  ");
                 StringBuilder whereSql = new StringBuilder();
-                //whereSql.Append(" WHERE ai.ProcessInstanceID = '" + parm.ProcessInstanceID + "'");
+                whereSql.Append(" WHERE is_del = 0 ");
 
-                //if (parm.AppName != null)
-                //{
-                //    whereSql.Append(" and ai.AppName like '%" + parm.AppName.Trim() + "%'");
-                //}
+                if (parm.planName != null)
+                {
+                    whereSql.Append(" and plan_name like '%" + parm.planName.Trim() + "%'");
+                }
 
                 sql.Append(whereSql);
                 //验证是否有参与到流程中

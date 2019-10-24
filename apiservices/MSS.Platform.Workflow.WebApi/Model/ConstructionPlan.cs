@@ -8,7 +8,7 @@ namespace MSS.Platform.Workflow.WebApi.Model
 {
     public class ConstructionPlanParm : BaseQueryParm
     {
-
+        public string planName { get; set; }
     }
     public class ConstructionPlanPageView
     {
