@@ -81,7 +81,8 @@
               <div class="inp-wrap">
                 <el-input style="width:200px;"
                   placeholder="输入计划编号"
-                  v-model="planNumber.text" clearable>
+                  v-model="planNumber.text" clearable
+                  @keyup.native="validateInputNull(planNumber)">
                 </el-input><p class="validate-tips">{{ planNumber.tips }}</p>
               </div>
           </li>
@@ -412,8 +413,16 @@ export default {
       }
     },
     validateInput () {
-      if (!validateInputCommon(this.planNumber)) return false
       if (!this.validateSelect(this.lineid)) return false
+      if (!this.validateSelect(this.areaid)) return false
+      if (!this.validateSelect(this.areaTypeName)) return false
+      if (!this.validateSelect(this.planType)) return false
+      if (!this.validateSelect(this.importantLevel)) return false
+      if (!this.validateSelect(this.planLevel)) return false
+      if (!validateInputCommon(this.planNumber)) return false
+      if (!this.validateSelect(this.applyCompanyOrgId)) return false
+      if (!this.validateSelect(this.constructionCompanyOrgId)) return false
+      if (!this.validateSelect(this.time)) return false
       return true
     },
     validateInputAll () {
