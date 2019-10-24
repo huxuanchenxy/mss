@@ -16,16 +16,23 @@ namespace MSS.API.Core.V1.Controllers
     [ApiController]
     public class TroubleReportController : ControllerBase
     {
-        private readonly ITroubleReportService _TroubleReportService;
-        public TroubleReportController(ITroubleReportService TroubleReportService)
+        private readonly ITroubleReportService _troubleReportService;
+        public TroubleReportController(ITroubleReportService troubleReportService)
         {
-            _TroubleReportService = TroubleReportService;
+            _troubleReportService = troubleReportService;
         }
 
         [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
-            var resp = _TroubleReportService.GetByID(id);
+            var resp = _troubleReportService.GetByID(id);
+            return Ok(resp.Result);
+        }
+
+        [HttpGet]
+        public ActionResult ListPage(TroubleReportParm parm)
+        {
+            var resp = _troubleReportService.ListPage(parm);
             return Ok(resp.Result);
         }
     }

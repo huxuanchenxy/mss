@@ -11,6 +11,6 @@ namespace MSS.API.Dao.Interface
         Task<List<EqpHistory>> ListByEqp(int id);
         Task<List<EqpHistory>> ListByType(string[] types);
 
-
+        Task<List<QueryItem>> ListAllLocations();
     }
 }

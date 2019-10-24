@@ -9,6 +9,6 @@ namespace MSS.API.Dao.Interface
    public interface ITroubleReportRepo<T>
     {
         Task<TroubleReport> GetByID(int id);
-
+        Task<TroubleReportView> ListPage(TroubleReportParm parm);
     }
 }

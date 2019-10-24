@@ -179,7 +179,6 @@ export default {
   },
   created () {
     this.importCommon = this.$route.params.item
-    console.log(this.importCommon)
     this.type = this.$route.params.type
     this.title = ' | 月计划生成 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
     this.activeName = new Date().getMonth() + ''
@@ -208,6 +207,11 @@ export default {
   },
   methods: {
     position_change (val) {
+      if (val.length === 0) {
+        this.area = ''
+        this.areaPath = []
+        return
+      }
       if (this.areaPath.length < 3) {
         this.areaPath = []
         this.$message({
@@ -220,6 +224,11 @@ export default {
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
+      if (val.length === 0) {
+        this.teamPath = []
+        this.team = ''
+        return
+      }
       let selectedTeam = val[val.length - 1]
       let obj = getCascaderObj(selectedTeam, this.teamList)
       if (obj.node_type === 3) {
@@ -292,11 +301,11 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$con-height: $content-height - 145 - 56 - 25;
+$con-height: $content-height - 53;
 // 内容区
 .content-wrap{
   overflow: hidden;
-  height: percent($con-height, $content-height);
+  height: percent($con-height, $content-height)!important;
   // height: 90%!important;
   text-align: center;
   .content-header{
@@ -316,7 +325,7 @@ $con-height: $content-height - 145 - 56 - 25;
   }
   /deep/ .el-tabs__header{
     margin-left: 10px!important;
-    height: percent(25, $con-height)
+    height: percent(30, $con-height)
   }
   /deep/ .el-tabs__content{
     height: percent($con-height - 50, $con-height)

@@ -49,8 +49,11 @@
     </div>
     <div class="btn-enter">
       <!--:headers="uploadHeaders"-->
+      <!--http://10.89.36.154:5801/workflowApi/ConstructionPlanImport-->
+      <!--http://localhost:3851/api/v1/ConstructionPlanImport-->
       <el-upload
         action="http://10.89.36.154:5801/workflowApi/ConstructionPlanImport"
+        :headers="uploadHeaders"
         :multiple="false"
         :data="yearCommon"
         accept=".xls,.xlsx"
