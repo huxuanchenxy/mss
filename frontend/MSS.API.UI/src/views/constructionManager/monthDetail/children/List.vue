@@ -200,6 +200,11 @@ export default {
   },
   methods: {
     company_change (val) {
+      if (val.length === 0) {
+        this.company = ''
+        this.companyPath = []
+        return
+      }
       let selectedTeam = val[val.length - 1]
       let obj = getCascaderObj(selectedTeam, this.companyList)
       if (obj.node_type === 1) {
@@ -212,6 +217,11 @@ export default {
       }
     },
     dept_change (val) {
+      if (val.length === 0) {
+        this.dept = ''
+        this.deptPath = []
+        return
+      }
       let selectedTeam = val[val.length - 1]
       let obj = getCascaderObj(selectedTeam, this.companyList)
       if (obj.node_type === 2) {
@@ -336,10 +346,10 @@ $height: $content-height - 18 + 50;
   }
 
   .inp{
-    width: PXtoEm(160);
-    margin-left: PXtoEm(14);
+    width: PXtoEm(160)!important;
+    margin-left: PXtoEm(14)!important;
     .el-date-editor{
-      width: PXtoEm(160);
+      width: PXtoEm(160)!important;
     }
   }
 

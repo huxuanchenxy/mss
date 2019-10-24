@@ -139,7 +139,7 @@ namespace MSS.API.Dao.Implement
                 .Append(" left join user u2 on a.updated_by=u2.id ")
                 .Append(" left join equipment_type et on et.id=a.eqp_type ")
                 .Append(" left join org_tree ot on ot.id=a.team ")
-                //.Append(" left join metro_line l on l.id=a.line ")
+                .Append(" left join metro_line l on l.id=a.line ")
                 .Append(" left join firm f1 on f1.id=a.Supplier ")
                 .Append(" left join firm f2 on f2.id=a.Manufacturer ")
                 .Append(" left join dictionary_tree d on a.sub_system=d.id ");

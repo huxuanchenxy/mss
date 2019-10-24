@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MSS.API.Common;
+using MSS.API.Common.Utility;
 using MSS.Platform.Workflow.WebApi.Model;
 using MySql.Data.MySqlClient;
 using System;
@@ -358,8 +359,10 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 }
                 sb.AppendLine();
             }
-
-            File.WriteAllText(@"\\10.89.36.63\uploads\" + table.TableName + ".csv", sb.ToString());
+            using (ShareFolderHelper helper = new ShareFolderHelper("test", "yfzx.2019", @"10.89.36.63\uploads\" + table.TableName + ".csv"))
+            {
+                File.WriteAllText(@"\\10.89.36.63\uploads\" + table.TableName + ".csv", sb.ToString());
+            }
         }
     }
 }
