@@ -18,6 +18,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> ListByIDs(string ids);
         Task<ApiResult> ListByEntity(int[] entitys, SystemResource sr, UploadShowType ust);
+        Task<ApiResult> ListByEntity(int[] entitys, SystemResource sr);
         Task<ApiResult> ListByEqp(int id);
         Task<ApiResult> ListAll();
         Task<ApiResult> CascaderByIDs(string ids);

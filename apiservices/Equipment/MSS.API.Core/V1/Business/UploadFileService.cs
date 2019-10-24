@@ -224,5 +224,22 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
+
+        public async Task<ApiResult> ListByEntity(int[] entitys, SystemResource sr)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(entitys, sr);
+                ret.data = ufs;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
     }
 }

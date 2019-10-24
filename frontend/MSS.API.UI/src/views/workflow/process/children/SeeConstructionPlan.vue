@@ -212,7 +212,8 @@ export default {
           name: 'AddConstructionPlan',
           params: {
             id: this.IDS[0]
-          }
+          },
+          query: { type: 'Edit', id: this.IDS[0] }
         })
       }
     },
