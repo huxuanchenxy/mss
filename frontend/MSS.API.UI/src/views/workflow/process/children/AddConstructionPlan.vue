@@ -423,6 +423,20 @@ export default {
       if (!this.validateSelect(this.applyCompanyOrgId)) return false
       if (!this.validateSelect(this.constructionCompanyOrgId)) return false
       if (!this.validateSelect(this.time)) return false
+      if (!this.validateSelect(this.registerStationId)) return false
+      if (!this.validateSelect(this.deviceNum)) return false
+      if (!this.validateSelect(this.operationAddress)) return false
+      if (!this.validateSelect(this.constructionContent)) return false
+      if (!this.validateSelect(this.constructionDetail)) return false
+      if (!this.validateSelect(this.coordinationRequest)) return false
+      if (!this.validateSelect(this.coordinationAudit)) return false
+      if (!this.validateSelect(this.electricRange)) return false
+      if (!this.validateSelect(this.stopElectric)) return false
+      if (!this.validateSelect(this.tractionPower)) return false
+      if (!this.validateSelect(this.useLaddercar)) return false
+      if (!this.validateSelect(this.effectArea)) return false
+      if (!this.validateSelect(this.effectExplain)) return false
+      if (!this.validateSelect(this.safeMeasure)) return false
       return true
     },
     validateInputAll () {
