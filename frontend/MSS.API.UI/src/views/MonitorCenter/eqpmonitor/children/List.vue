@@ -201,8 +201,8 @@ export default {
       dataList: [],
       alarmList: [],
       totalEqp: 0,
-      troubleCount: 0,
-      otherCount: 0,
+      troubleCount: 3,
+      otherCount: 5,
       newMsg: null,
 
       bCheckAll: false,
@@ -450,8 +450,14 @@ export default {
       }
       eqpApi.getEqp(parm).then(res => {
         this.loading = false
-        res.data.rows.map(item => {
-          item.status = EqpStatus.normal
+        res.data.rows.map((item, index) => {
+          if (index === 1) {
+            item.status = EqpStatus.normal
+          } else if (index === 2 || index === 5) {
+            item.status = EqpStatus.warning
+          } else if (index === 3 || index === 8) {
+            item.status = EqpStatus.fault
+          }
         })
         this.dataList = res.data.rows
         this.total = res.data.total
@@ -577,7 +583,7 @@ $con-height: $content-height - 145 - 56;
   .number,
   .name,
   .btn-wrap{
-    width: 10%;
+    width: 16%;
   }
   /deep/ .el-checkbox__label{
     display: none;

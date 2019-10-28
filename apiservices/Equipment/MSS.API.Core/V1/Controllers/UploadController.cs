@@ -82,6 +82,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(ret.Result);
         }
 
+        [HttpGet("ListByEntity2/{entitys}/{sr}")]
+        public ActionResult ListByEntity2(string entitys, SystemResource sr)
+        {
+            var ret = _uploadService.ListByEntity(entitys.Split(',').Select(a => Convert.ToInt32(a)).ToArray(), sr);
+            return Ok(ret.Result);
+        }
+
 
         [HttpGet("ListByEqp/{id}")]
         public ActionResult ListByEqp(int id)

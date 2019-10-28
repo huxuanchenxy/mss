@@ -122,8 +122,8 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 all.eqpTypes = await _importRepo.ListAllEqpTypes();
                 all.locations = await _importRepo.ListAllLocations();
                 all.team = await _importRepo.ListAllOrgByType(OrgType.Team);
-                all.workType = await _importRepo.ListDictionarysByParent(Common.WORK_TYPE);
-                all.pmType =await _importRepo.ListDictionarysByParent(Common.PM_TYPE);
+                all.workType = await _importRepo.ListDictionarysByParent(MSS.Platform.Workflow.WebApi.Model.Common.WORK_TYPE);
+                all.pmType =await _importRepo.ListDictionarysByParent(MSS.Platform.Workflow.WebApi.Model.Common.PM_TYPE);
                 int year = cpic.Year;
                 int index = 0;
                 // 12月份循环
@@ -136,7 +136,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                         string m = "." + i.ToString("D2");
                         if (item.Frequency == 31 || item.Frequency%31==0)
                         {
-                            string d = "." + Common.GetLastDay(i, year);
+                            string d = "." + MSS.Platform.Workflow.WebApi.Model.Common.GetLastDay(i, year);
                             ConstructionPlanMonthDetail c = GetCommonProperty(item,i, cpic,all,dtNow, ref dt);
                             c.PlanDate = year + m+".01-" + year + m+d;
                             dt.Rows[j+index][12] = c.PlanDate;

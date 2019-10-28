@@ -25,25 +25,29 @@
       </div>
             <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="add"><x-button>添加</x-button></li>
-        <!-- <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li> -->
         <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="remove"><x-button>删除</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
-        <li class="list number c-pointer" @click="changeOrder('id')">
-          ID
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
+        <li class="list number c-pointer" @click="changeOrder('planNumber')">
+          计划编号
+          <i :class="[{ 'el-icon-d-caret': headOrder.planNumber === 0 }, { 'el-icon-caret-top': headOrder.planNumber === 1 }, { 'el-icon-caret-bottom': headOrder.planNumber === 2 }]"></i>
        </li>
         <li class="list name c-pointer" @click="changeOrder('planName')">
           计划名称
           <i :class="[{ 'el-icon-d-caret': headOrder.planName === 0 }, { 'el-icon-caret-top': headOrder.planName === 1 }, { 'el-icon-caret-bottom': headOrder.planName === 2 }]"></i>
        </li>
-       <li class="list number c-pointer" @click="changeOrder('appInstanceID')" style="display:none;">
-          业务ID
-          <i :class="[{ 'el-icon-d-caret': headOrder.appInstanceID === 0 }, { 'el-icon-caret-top': headOrder.appInstanceID === 1 }, { 'el-icon-caret-bottom': headOrder.appInstanceID === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('registerStationId')">
+          登记车站
+          <i :class="[{ 'el-icon-d-caret': headOrder.registerStationId === 0 }, { 'el-icon-caret-top': headOrder.registerStationId === 1 }, { 'el-icon-caret-bottom': headOrder.registerStationId === 2 }]"></i>
+       </li>
+       <li class="list name c-pointer" @click="changeOrder('importantLevel')">
+          重要程度
+          <i :class="[{ 'el-icon-d-caret': headOrder.importantLevel === 0 }, { 'el-icon-caret-top': headOrder.importantLevel === 1 }, { 'el-icon-caret-bottom': headOrder.importantLevel === 2 }]"></i>
        </li>
         <li class="list name c-pointer" @click="changeOrder('createdTime')">创建日期
           <i :class="[{ 'el-icon-d-caret': headOrder.createdTime === 0 }, { 'el-icon-caret-top': headOrder.createdTime === 1 }, { 'el-icon-caret-bottom': headOrder.createdTime === 2 }]"></i>
@@ -59,12 +63,10 @@
                 <div class="checkbox">
                   <input type="checkbox" v-model="IDS" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.id }}</div>
+                <div class="number">{{ item.planNumber }}</div>
                 <div class="name">{{ item.planName }}</div>
-                <!--<div class="name">
-                  <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.appInstanceID }}</router-link>
-                </div>-->
-                <!-- <div class="name">{{ item.mac_add }}</div> -->
+                <div class="name">{{ item.registerStationId }}</div>
+                <div class="name">{{ item.importantLevel }}</div>
                 <div class="name">{{ item.createdTime }}</div>
               </div>
             </li>
@@ -84,7 +86,20 @@
         </el-scrollbar>
       </div>
     </div>
-
+    <!-- dialog对话框 -->
+    <el-dialog
+      :visible.sync="dialogVisible.isShow"
+      :modal-append-to-body="false"
+      :show-close="false">
+      {{ dialogVisible.text }}
+      <template slot="footer" class="dialog-footer">
+        <template v-if="dialogVisible.btn">
+          <el-button @click="dialogVisible.isShow = false">否</el-button>
+          <el-button @click="dialogEnter">是</el-button>
+        </template>
+        <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -175,12 +190,30 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        AppName: this.planName
+        planName: this.planName
       }
       api.getConstructionPlanPage(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
           item.createdTime = transformDate(item.createdTime)
+          var importlevel = ''
+          switch (item.importantLevel) {
+            case 1:
+              importlevel = '普通计划'
+              break
+            case 2:
+              importlevel = '核心计划'
+              break
+            case 3:
+              importlevel = '临时计划'
+              break
+            case 4:
+              importlevel = '抢修计划'
+              break
+            default:
+              importlevel = '普通计划'
+          }
+          item.importantLevel = importlevel
         })
         this.DataList = res.data.rows
         this.total = res.data.total
@@ -212,15 +245,45 @@ export default {
           name: 'AddConstructionPlan',
           params: {
             id: this.IDS[0]
-          }
+          },
+          query: { type: 'Edit', id: this.IDS[0] }
         })
       }
     },
-    // 全选
-    // checkAll () {
-    //   this.bCheckAll ? this.DataList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
-    //   this.emitEditID()
-    // },
+    // 删除设备
+    remove () {
+      if (!this.IDS.length) {
+        this.$message({
+          message: '请选择需要删除的施工计划',
+          type: 'warning'
+        })
+      } else {
+        this.dialogVisible.isShow = true
+        this.dialogVisible.btn = true
+        this.dialogVisible.text = '确定删除该条施工计划?'
+      }
+    },
+    // 弹框确认是否删除
+    dialogEnter () {
+      api.delConstructionPlan(this.IDS.join(',')).then(res => {
+        if (res.code === 0) {
+          this.IDS = []
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.currentPage = 1
+          this.searchResult(1)
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        // 隐藏dialog
+        this.dialogVisible.isShow = false
+      }).catch(err => console.log(err))
+    },
     emitEditID () {
       this.$emit('IDS', this.IDS)
     },
