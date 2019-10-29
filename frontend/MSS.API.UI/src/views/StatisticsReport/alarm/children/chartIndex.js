@@ -624,6 +624,53 @@ var middleOption2 = {
   ]
 }
 
+var pieOption2 = {
+  title: {
+    text: '成本去向对比',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: '{a} <br/>{b}: {c} ({d}%)'
+  },
+  series: [
+    {
+      name: '去年',
+      type: 'pie',
+      selectedMode: 'single',
+      radius: [0, '30%'],
+      center: ['50%', '45%'],
+      label: {
+        normal: {
+          position: 'inner'
+        }
+      },
+      labelLine: {
+        normal: {
+          show: false
+        }
+      },
+      data: [
+        {value: 335, name: '检修', selected: true},
+        {value: 679, name: '故障'}
+      ]
+    },
+    {
+      name: '今年',
+      type: 'pie',
+      radius: ['55%', '70%'],
+      center: ['50%', '45%'],
+      data: [
+        {value: 345, name: '检修'},
+        {value: 310, name: '故障'}
+      ]
+    }
+  ]
+}
+
 export default {
   optionPie: optionPie,
   optionRadar: optionRadar,
@@ -632,5 +679,6 @@ export default {
   optionLine: optionLine,
   optionHBar: optionHBar,
   middleOption1: middleOption1,
-  middleOption2: middleOption2
+  middleOption2: middleOption2,
+  pieOption2: pieOption2
 }

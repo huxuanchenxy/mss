@@ -123,6 +123,12 @@
             </el-col>
         </div>
         <div class="charts-wrap">
+          <el-col :span="12" id="pie2Chart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:280px;" ref="pie2Chart"  class="echart"></div>
+            </el-col>
         </div>
       </div>
     </div>
@@ -175,6 +181,7 @@ export default {
       dateChartBar: null,
       dateChartLine: null,
       dateChartHBar: null,
+      dateChartPie2: null,
       loading_count: false,
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
       groupidxForCount: 0,
@@ -231,6 +238,7 @@ export default {
     this.drawHBar()
     this.drawCountChart()
     this.drawAvgChart()
+    this.drawPie2()
   },
   computed: {
     top () {
@@ -304,6 +312,11 @@ export default {
       this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
       this.dateChartHBar.clear()
       this.dateChartHBar.setOption(indexchart.optionHBar)
+    },
+    drawPie2 () {
+      this.dateChartPie2 = this.$echarts.init(this.$refs.pie2Chart)
+      this.dateChartPie2.clear()
+      this.dateChartPie2.setOption(indexchart.pieOption2)
     },
     myMission () {
       // let parm = {
