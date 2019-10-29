@@ -28,13 +28,18 @@
         </div>
         <div class="charts-wrap">
                 <span style="font-size: 16px;font-family: cursive;">重要通知</span>
-                      <li class="list" v-for="(item) in DataList" :key="item.key">
+                      <!-- <li class="list" v-for="(item) in DataList" :key="item.key">
               <div class="list-content">
                 <div class="name"><a href="#">{{ item.appName }}</a></div>
                 <div class="name">{{ item.activityName }}</div>
                 <div class="name">{{ item.createdDateTime }}</div>
               </div>
-            </li>
+            </li> -->
+            <div class="scroll-wrap">
+              <div class="scroll-content" :style="{ top }" @mouseenter="Stop()" @mouseleave="Up()">
+                <p v-for="(item) in DataList" :key="item.name"><a>{{item.name}}</a></p>
+              </div>
+            </div>
         </div>
       </div>
       <div class="right1">
@@ -191,7 +196,9 @@ export default {
       },
       bottomDesForCount: '',
       bottomDesForAvg: '',
-      loading: false
+      loading: false,
+      activeIndex: 0,
+      intnum: undefined
     }
   },
   created () {
@@ -201,9 +208,10 @@ export default {
     var startDate = getNowFormatDate(d)
     this.time.text = [startDate, nowDate]
     this.searchResult()
+    this.ScrollUp()
   },
   mounted () {
-    // this.myMission()
+    this.myMission()
     // this.myapply()
     this.drawPie()
     this.drawRadar()
@@ -211,6 +219,11 @@ export default {
     this.drawBar()
     this.drawLine()
     this.drawHBar()
+  },
+  computed: {
+    top () {
+      return -this.activeIndex * 50 + 'px'
+    }
   },
   methods: {
     drawCountChart (param, data, store) {
@@ -334,20 +347,29 @@ export default {
       this.dateChartHBar.setOption(indexchart.optionHBar)
     },
     myMission () {
-      let parm = {
-        order: 'asc',
-        sort: 'id',
-        rows: 4,
-        page: 1
-      }
-      workflowapi.getPage(parm).then(res => {
-        this.loading = false
-        res.data.rows.map(item => {
-          item.createdDateTime = transformDate(item.createdDateTime)
-        })
-        this.DataList = res.data.rows
-        this.total = res.data.total
-      }).catch(err => console.log(err))
+      // let parm = {
+      //   order: 'asc',
+      //   sort: 'id',
+      //   rows: 4,
+      //   page: 1
+      // }
+      // workflowapi.getPage(parm).then(res => {
+      //   this.loading = false
+      //   res.data.rows.map(item => {
+      //     item.createdDateTime = transformDate(item.createdDateTime)
+      //   })
+      //   this.DataList = res.data.rows
+      //   this.total = res.data.total
+      // }).catch(err => console.log(err))
+      this.DataList = [
+        {key: 1, name: '习近平发表大力发展基建的重要讲话'},
+        {key: 2, name: '应勇等市领导调研18号线江浦路站'},
+        {key: 3, name: '18号线11月29日起工作日早高峰增能'},
+        {key: 4, name: '18号线正式进入轨道工程施工阶段'},
+        {key: 5, name: '“不忘初心、牢记使命”主题教育全面启动'},
+        {key: 6, name: '“城市荣光—庆祝上海解放70周年”主题展览'},
+        {key: 7, name: '中央环保督察组交办问题处理情况'}
+      ]
     },
     myapply () {
       let parm = {
@@ -462,6 +484,21 @@ export default {
     onReady: function (instance, CountUp) {
       const that = this
       instance.update(that.endVal + 100)
+    },
+    Stop () {
+      clearInterval(this.intnum)
+    },
+    Up () {
+      this.ScrollUp()
+    },
+    ScrollUp () {
+      this.intnum = setInterval(_ => {
+        if (this.activeIndex < this.DataList.length) {
+          this.activeIndex += 1
+        } else {
+          this.activeIndex = 0
+        }
+      }, 1000)
     }
   }
 }
@@ -650,5 +687,17 @@ a{
 }
 #radarChart>div>div>canvas{
   top:1%;
+}
+.scroll-wrap{
+ height: 80%;
+ overflow: hidden;
+}
+.scroll-content {
+position: relative;
+transition: top 0.5s;
+}
+.scroll-content p{
+line-height: 50px;
+text-align: center;
 }
 </style>
