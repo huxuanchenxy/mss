@@ -109,20 +109,20 @@
             </el-col>
         </div>
         <div class="charts-wrap">
-            <el-col :span="12" id="barChart"
+            <!-- <el-col :span="12" id="barChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
               <div style="width:100%; height:260px;" ref="barChart"  class="echart"></div>
-            </el-col>
-        </div>
-        <div class="charts-wrap">
+            </el-col> -->
             <el-col :span="12" id="lineChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:290px;" ref="lineChart"  class="echart"></div>
+              <div style="width:100%; height:240px;" ref="lineChart"  class="echart"></div>
             </el-col>
+        </div>
+        <div class="charts-wrap">
         </div>
       </div>
     </div>
@@ -226,7 +226,7 @@ export default {
     this.drawPie()
     this.drawRadar()
     this.drawGauge()
-    this.drawBar()
+    // this.drawBar()
     this.drawLine()
     this.drawHBar()
     this.drawCountChart()
@@ -432,12 +432,6 @@ export default {
       this.resultAvgHistory = []
       this.subTitleCount = []
       this.subTitleAvg = []
-      // // 获取当前子系统类别
-      // this.getSubSystemSelected()
-      // // 获取当前设备类型
-      // this.getEqpTypeSelected()
-      // // 获取当前制造商
-      // this.getManufacturerSelected()
       this.search(param, [this.drawCountChart, this.drawAvgChart])
     },
     onReady: function (instance, CountUp) {

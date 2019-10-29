@@ -203,7 +203,7 @@ var optionLine = {
     trigger: 'axis'
   },
   legend: {
-    data: ['最低气温'],
+    data: ['设备健康度'],
     textStyle: {
       fontSize: '13',
       color: '#fff'
@@ -211,38 +211,49 @@ var optionLine = {
     x: 'left'
     // y: 'bottom',
   },
-  // toolbox: {
-  //   show: true,
-  //   feature: {
-  //     mark: {show: true},
-  //     dataView: {show: true, readOnly: false},
-  //     magicType: {show: true, type: ['line', 'bar']},
-  //     restore: {show: true},
-  //     saveAsImage: {show: true}
-  //   }
-  // },
+  grid: { // 直角坐标系内绘图网格
+    left: '15%', // grid 组件离容器左侧的距离,
+    // // left的值可以是80这样具体像素值，
+    // // 也可以是'80%'这样相对于容器高度的百分比
+    top: '12%',
+    right: '10%',
+    bottom: '10%'
+    // containLabel: true // gid区域是否包含坐标轴的刻度标签。为true的时候，
+    // left/right/top/bottom/width/height决定的是包括了坐标轴标签在内的
+    // 所有内容所形成的矩形的位置.常用于【防止标签溢出】的场景
+  },
   calculable: true,
   xAxis: [
     {
       type: 'category',
       boundaryGap: false,
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+      data: ['5月', '6月', '7月', '8月', '9月', '10月', '11月'],
+      axisLabel: {
+        textStyle: {
+          fontSize: '13',
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
       type: 'value',
       axisLabel: {
-        formatter: '{value} °C'
+        formatter: '{value} %',
+        textStyle: {
+          fontSize: '13',
+          color: '#fff'
+        }
       }
     }
   ],
   series: [
 
     {
-      name: '标准气温',
+      name: '理想健康度',
       type: 'line',
-      data: [6, 6, 6, 6, 6, 6, 6], // 标准线效果
+      data: [80, 80, 80, 80, 80, 80, 80], // 标准线效果
       markLine: {
         data: [
           {type: 'average', name: '平均值'}
@@ -251,12 +262,12 @@ var optionLine = {
 
     },
     {
-      name: '最低气温',
+      name: '设备健康度',
       type: 'line',
-      data: [1, -2, 2, 5, 3, 2, 0],
+      data: [99, 30, 50, 40, 33, 88, 66],
       markPoint: {
         data: [
-          {name: '周最低', value: -2, xAxis: 1, yAxis: -1.5}
+          {name: '最低', value: 30, xAxis: 1, yAxis: 30}
         ]
       },
       markLine: {
