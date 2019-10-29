@@ -47,6 +47,15 @@
           <div class="innerwrap">
             <div class="innerdiv1">
             <span class="innerspan1">累计无故障运营时间(min)</span>
+            <div>
+              <svg t="1572317585470" class="iconarrowup" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="32" height="32"><path d="M703.280488 365.511671c-4.329609 10.697643-13.921058 17.040095-25.236777 17.040095L544.234145 382.551766 544.234145 835.109955c0 17.838274-14.398942 32.296567-32.232099 32.296567-17.838274 0-32.236192-14.458293-32.236192-32.296567L479.765855 382.551766l-134.206608 0c-11.314697 0-20.906146-6.342452-25.234731-17.040095-4.330632-10.69969-2.081405-22.148439 5.92085-30.334889l166.241208-170.104189c5.333472-5.459339 11.773138-8.1711 19.315928-8.1711 7.543813 0 13.982456 2.742461 19.316951 8.201799l166.241208 170.068374C705.358823 343.358115 707.610096 354.813005 703.280488 365.511671z" p-id="1561" fill="#d4237a"></path></svg>
+              <span class="spantongbi">同比增加</span>
+              <span class="spantongbi1"><ICountUp
+      :delay="delay"
+      :endVal="endVal1"
+      :options="options"
+    />%</span>
+            </div>
             </div>
             <div class="innerdiv2">
             <span class="innerspan2">    <ICountUp
@@ -139,6 +148,7 @@ export default {
       name: '',
       delay: 1000,
       endVal: 5896328,
+      endVal1: 38,
       options: {
         useEasing: true,
         useGrouping: true,
@@ -484,6 +494,7 @@ export default {
     onReady: function (instance, CountUp) {
       const that = this
       instance.update(that.endVal + 100)
+      instance.update(that.endVal1 + 100)
     },
     Stop () {
       clearInterval(this.intnum)
@@ -619,8 +630,23 @@ export default {
           .innerdiv1{
             display: inline-block;
             position: absolute;
-            padding-top: 38px;
-            font-size: 20px;
+            padding-top: 31px;
+            font-size: 19px;
+            .iconarrowup{
+                position: absolute;
+                right: -13%;
+            }
+            .spantongbi{
+              position: absolute;
+              font-size: 1px;
+              right: -32%;
+            }
+            .spantongbi1{
+              position: absolute;
+              font-size: 1px;
+              right: -21%;
+              top: 125%;
+            }
           }
           .innerdiv2{
             display: inline-block;
