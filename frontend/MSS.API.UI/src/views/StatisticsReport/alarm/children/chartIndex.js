@@ -1,6 +1,13 @@
 
 import Echarts from 'echarts'
 const optionPie = {
+  title: {
+    text: '设备故障数量(前5)',
+    textStyle: {
+      fontSize: '13',
+      color: 'white'
+    }
+  },
   tooltip: {
     trigger: 'item',
     formatter: '{a}<br/>{b}:{c} ({d}%)'
@@ -8,6 +15,7 @@ const optionPie = {
   legend: {
     orient: 'vertical',
     x: 'left',
+    y: 'middle',
     data: [ '航头站', '周浦站', '御桥站', '江浦路站', '政立路站' ],
     textStyle: {
       fontSize: '13',
@@ -16,9 +24,10 @@ const optionPie = {
   },
   series: [
     {
-      name: '设备报警数量',
+      name: '设备故障数量',
       type: 'pie',
       radius: ['50%', '70%'],
+      center: ['60%', '50%'],
       avoidLabelOverlap: false,
       label: {
         normal: {
