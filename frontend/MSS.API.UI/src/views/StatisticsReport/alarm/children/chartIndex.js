@@ -60,34 +60,29 @@ var optionRadar = {
   },
   legend: {
     orient: 'vertical',
-    x: 'right',
-    y: 'bottom',
-    data: ['报警数', '故障数']
-  },
-  toolbox: {
-    show: true,
-    feature: {
-      mark: {show: true},
-      dataView: {show: true, readOnly: false},
-      restore: {show: true},
-      saveAsImage: {show: true}
+    x: 'left',
+    y: 'top',
+    data: ['今年成本分摊', '去年成本分摊'],
+    textStyle: {
+      fontSize: '13',
+      color: 'white'
     }
   },
   polar: [
     {
       indicator: [
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '风机', max: 6000},
+        { text: '运营', max: 6000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '水泵', max: 16000},
+        { text: '人力', max: 16000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '烟感', max: 30000},
+        { text: '故障', max: 30000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '空调', max: 38000},
+        { text: '物料', max: 38000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '空气质量', max: 52000},
+        { text: '检修', max: 52000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '信号', max: 25000}
+        { text: '管理', max: 25000}
       ],
       splitArea: {
         show: true,
@@ -115,11 +110,11 @@ var optionRadar = {
       data: [
         {
           value: [4300, 10000, 28000, 35000, 50000, 19000],
-          name: '报警数'
+          name: '今年成本分摊'
         },
         {
           value: [5000, 14000, 28000, 31000, 42000, 21000],
-          name: '故障数'
+          name: '去年成本分摊'
         }
       ]
     }
@@ -128,28 +123,17 @@ var optionRadar = {
 
 var optionGauge = {
   title: {
-    text: '业务指标', // 标题文本内容
+    text: '年度运营成本目标', // 标题文本内容
     textStyle: {
       fontSize: '13',
       color: 'white'
-    }
-  },
-  toolbox: { // 可视化的工具箱
-    show: true,
-    feature: {
-      restore: { // 重置
-        show: true
-      },
-      saveAsImage: {// 保存图片
-        show: true
-      }
     }
   },
   tooltip: { // 弹窗组件
     formatter: '{a} <br/>{b} : {c}%'
   },
   series: [{
-    name: '业务指标',
+    name: '年度运营成本目标',
     type: 'gauge',
     detail: {formatter: '{value}%'},
     data: [{value: 45, name: '完成率'}]

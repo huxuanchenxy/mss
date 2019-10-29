@@ -16,18 +16,18 @@
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:300px;" ref="gaugeChart"  class="echart"></div>
+              <div style="width:100%; height:270px;" ref="gaugeChart"  class="echart"></div>
               </el-col>
         </div>
         <div class="charts-wrap"><el-col :span="12" id="radarChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:270px;" ref="radarChart"  class="echart"></div>
+              <div style="width:100%; height:240px;" ref="radarChart"  class="echart"></div>
             </el-col>
         </div>
         <div class="charts-wrap">
-                <span style="font-size: 16px;font-family: cursive;">我的待办</span>
+                <span style="font-size: 16px;font-family: cursive;">重要通知</span>
                       <li class="list" v-for="(item) in DataList" :key="item.key">
               <div class="list-content">
                 <div class="name"><a href="#">{{ item.appName }}</a></div>
@@ -112,6 +112,7 @@
         </div>
       </div>
     </div>
+    <app-footer></app-footer>
   </div>
 </template>
 <script>
@@ -121,10 +122,12 @@ import staticsapi from '@/api/statisticsApi'
 import { getNowFormatDate, ApiRESULT, transformDate } from '@/common/js/utils.js'
 import workflowapi from '@/api/workflowApi'
 import ICountUp from 'vue-countup-v2'
+import AppFooter from '@/components/footer/AppFooter'
 export default {
   name: 'Index',
   components: {
-    ICountUp
+    ICountUp,
+    AppFooter
   },
   data () {
     return {
@@ -200,7 +203,7 @@ export default {
     this.searchResult()
   },
   mounted () {
-    this.myMission()
+    // this.myMission()
     // this.myapply()
     this.drawPie()
     this.drawRadar()
@@ -525,7 +528,7 @@ export default {
     .charts-wrap{
       box-sizing: border-box;
       width: 100%;
-      height: percent(215, $content-height - 100);
+      height: 46%;
       padding: 0px;
       // background: #28272E;
       border-radius: $border-radius;
@@ -546,7 +549,7 @@ export default {
     .charts-wrap{
       box-sizing: border-box;
       width: 100%;
-      height: 56%;
+      height: 54%;
       padding: 0px;
       // background: #28272E;
       border-radius: $border-radius;
@@ -644,5 +647,8 @@ a{
 }
 #barChart>.echart>div{
   background-color: unset !important;
+}
+#radarChart>div>div>canvas{
+  top:1%;
 }
 </style>
