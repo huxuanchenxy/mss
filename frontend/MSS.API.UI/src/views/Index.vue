@@ -217,7 +217,7 @@ export default {
     d.setDate(d.getDate() - 60)
     var startDate = getNowFormatDate(d)
     this.time.text = [startDate, nowDate]
-    this.searchResult()
+    // this.searchResult()
     this.ScrollUp()
   },
   mounted () {
@@ -229,6 +229,7 @@ export default {
     this.drawBar()
     this.drawLine()
     this.drawHBar()
+    this.drawCountChart()
   },
   computed: {
     top () {
@@ -236,37 +237,10 @@ export default {
     }
   },
   methods: {
-    drawCountChart (param, data, store) {
-      if (store) {
-        this.resultCountHistory.push({param: param, data: data})
-      }
-
+    drawCountChart () {
       this.dateChartCount = this.$echarts.init(this.$refs.countChart)
       this.dateChartCount.clear()
-      // this.dateChartCount.on('click', this.goCount)
-      // this.dateChartCount.on('magicTypeChanged', this.magicTypeChanged)
-      // mychart.optionCount.toolbox.feature.myTool.onclick = this.backCount
-      mychart.optionCount.title.subtext = this.subTitleCount.join('->')
-      let groupModel = this.groups[this.groupby[this.groupidxForCount]]
-      let cursor = 'pointer'
-      if (this.groupidxForCount === 3) {
-        cursor = 'default'
-      }
-      switch (this.groupidxForCount) {
-        case 0:
-          this.bottomDesForCount = '以子系统统计'
-          break
-        case 1:
-          this.bottomDesForCount = '以设备类型统计'
-          break
-        case 2:
-          this.bottomDesForCount = '以供应商统计'
-          break
-        case 3:
-          this.bottomDesForCount = '以班组统计'
-      }
-      mychart.prepareChartData(data, groupModel, cursor)
-      this.dateChartCount.setOption(mychart.optionCount)
+      this.dateChartCount.setOption(indexchart.middleOption1)
     },
     drawAvgChart (param, data, store) {
       if (store) {
