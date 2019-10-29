@@ -130,7 +130,7 @@
   </div>
 </template>
 <script>
-import mychart from './StatisticsReport/alarm/children/chart'
+// import mychart from './StatisticsReport/alarm/children/chart'
 import indexchart from './StatisticsReport/alarm/children/chartIndex'
 import staticsapi from '@/api/statisticsApi'
 import { getNowFormatDate, ApiRESULT, transformDate } from '@/common/js/utils.js'
@@ -230,6 +230,7 @@ export default {
     this.drawLine()
     this.drawHBar()
     this.drawCountChart()
+    this.drawAvgChart()
   },
   computed: {
     top () {
@@ -242,36 +243,10 @@ export default {
       this.dateChartCount.clear()
       this.dateChartCount.setOption(indexchart.middleOption1)
     },
-    drawAvgChart (param, data, store) {
-      if (store) {
-        this.resultAvgHistory.push({param: param, data: data})
-      }
-
+    drawAvgChart () {
       this.dateChartAvg = this.$echarts.init(this.$refs.avgTimeChart)
-      this.dateChartAvg.on('click', this.goAvg)
-      mychart.optionAvg.toolbox.feature.myTool.onclick = this.backAvg
-      mychart.optionAvg.title.subtext = this.subTitleAvg.join('->')
-      let groupModel = this.groups[this.groupby[this.groupidxForAvg]]
-      let cursor = 'pointer'
-      if (this.groupidxForAvg === 3) {
-        cursor = 'default'
-      }
-      switch (this.groupidxForAvg) {
-        case 0:
-          this.bottomDesForAvg = '以子系统统计'
-          break
-        case 1:
-          this.bottomDesForAvg = '以设备类型统计'
-          break
-        case 2:
-          this.bottomDesForAvg = '以供应商统计'
-          break
-        case 3:
-          this.bottomDesForAvg = '以班组统计'
-      }
-      mychart.prepareChartData(data, groupModel, cursor)
       this.dateChartAvg.clear()
-      this.dateChartAvg.setOption(mychart.optionAvg)
+      this.dateChartAvg.setOption(indexchart.middleOption2)
     },
     search (param, callbacks) {
       // this.loading = true

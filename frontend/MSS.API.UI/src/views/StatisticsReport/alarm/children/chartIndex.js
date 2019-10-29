@@ -483,6 +483,127 @@ var middleOption1 = {
   ]
 }
 
+var middleOption2 = {
+  /* 柱状图颜色 */
+  color: ['#06a45f', '#078ed6', '#e3982f'],
+  title: {
+    text: '平均恢复时间(分钟)',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  /* 四周边距(单位默认px，可以使用百分比) */
+  grid: {
+    left: 40,
+    top: 30,
+    right: 50,
+    bottom: 50
+  },
+  /* 鼠标悬浮显示数据 */
+  tooltip: {
+    trigger: 'axis',
+    // eslint-disable-next-line no-irregular-whitespace
+    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+      // eslint-disable-next-line no-irregular-whitespace
+      type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+    }
+  },
+  /* 图例说明 */
+  legend: {
+    // 图例排项 vertical-"竖向"; horizontal-"横向"
+    orient: 'horizontal',
+    // 图例组件离容器左侧的距离
+    right: 40,
+    top: 0,
+    // 图例文字的样式
+    textStyle: {
+      color: '#6ab2ec'
+    },
+    // 与series中每个name对应
+    data: ['车辆', '供电', '信号']
+  },
+  toolbox: {
+    show: true
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      // 设置轴线的属性
+      axisLine: {
+        lineStyle: {
+          color: '#6ab2ec'
+        }
+      },
+      // 调整x轴的lable
+      //                axisLabel:{
+      //                    textStyle:{
+      //                        fontSize:10 // 让字体变小
+      //                    },
+      //                    rotate: 30,    // 字体倾斜30度
+      //                },
+      data: ['7月', '8月', '9月', '10月', '11月']
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      // 控制网格线是否显示
+      splitLine: {
+        show: true,
+        lineStyle: {
+          // 使用深浅的间隔色
+          color: ['#132a6e']
+        }
+      },
+      // 设置轴线的属性
+      axisLine: {
+        lineStyle: {
+          color: '#6ab2ec'
+        }
+      }
+    }
+  ],
+  series: [
+    {
+      name: '车辆',
+      type: 'line',
+      /* 柱子的显示宽度 */
+      barWidth: '20%',
+      data: [20, 25, 13, 100, 80],
+      /* 显示平均线 */
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    },
+    {
+      name: '供电',
+      type: 'line',
+      barWidth: '20%',
+      data: [66, 28, 77, 10, 30],
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    },
+    {
+      name: '信号',
+      type: 'line',
+      barWidth: '20%',
+      data: [90, 87, 70, 74, 54],
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    }
+  ]
+}
+
 export default {
   optionPie: optionPie,
   optionRadar: optionRadar,
@@ -490,5 +611,6 @@ export default {
   optionBar: optionBar,
   optionLine: optionLine,
   optionHBar: optionHBar,
-  middleOption1: middleOption1
+  middleOption1: middleOption1,
+  middleOption2: middleOption2
 }
