@@ -25,6 +25,18 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<OrgTree>> ListNodeByNodeType(int nodeType)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM org_tree where node_type=@nodeType and is_del=0";
+
+                var list = await c.QueryAsync<OrgTree>(sql, new { nodeType });
+                return list.ToList();
+            });
+        }
+
+
         public async Task<OrgTree> SaveOrgNode(OrgTree node)
         {
             return await WithConnection(async c =>
@@ -332,6 +344,19 @@ namespace MSS.API.Dao.Implement
                     UpdatedTime = users.UpdatedTime
                 });
                 return affectedRows;
+            });
+        }
+
+        public async Task<List<OrgUser>> ListUserByNode(int node)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT a.*, b.user_name FROM org_user AS a"
+                    + " INNER JOIN user AS b on a.user_id=b.id " +
+                    " WHERE a.is_del != 1 and a.org_node_id=@node and b.is_del != 1";
+                var orguser = await c.QueryAsync<OrgUser>(sql, new { node });
+                if (orguser.Count() > 0) return orguser.ToList();
+                else return new List<OrgUser>();
             });
         }
     }

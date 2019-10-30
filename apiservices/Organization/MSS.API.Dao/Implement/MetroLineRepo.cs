@@ -21,8 +21,8 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "INSERT INTO metro_line (line_name, description, created_time, created_by, updated_time, updated_by, is_del)"
-                            + " Values (@LineName, @Description, @CreatedTime, @CreatedBy, @UpdatedTime, @UpdatedBy, @IsDel);";
+                string sql = "INSERT INTO metro_line (code,line_name, description, created_time, created_by, updated_time, updated_by, is_del)"
+                            + " Values (@code,@LineName, @Description, @CreatedTime, @CreatedBy, @UpdatedTime, @UpdatedBy, @IsDel);";
                 sql += "SELECT LAST_INSERT_ID()";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, line);
                 line.ID = newid;
@@ -34,7 +34,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM metro_line WHERE line_name=@LineName and is_del!=1 and ID != @ID";
+                string sql = "SELECT * FROM metro_line WHERE (line_name=@LineName or code=@Code) and is_del!=1 and ID != @ID";
 
                 MetroLine exist = await c.QueryFirstOrDefaultAsync<MetroLine>(sql, line);
                 return exist != null ? true : false;
@@ -45,7 +45,7 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "UPDATE metro_line SET line_name = @LineName, description = @Description,"
+                string sql = "UPDATE metro_line SET code=@Code, line_name = @LineName, description = @Description,"
                             + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE ID = @ID;";
                 await c.ExecuteAsync(sql, line);
                 return line;
@@ -60,6 +60,17 @@ namespace MSS.API.Dao.Implement
                             + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE ID = @ID;";
                 int affectedRows = await c.ExecuteAsync(sql, line);
                 return affectedRows;
+            });
+        }
+
+        public async Task<bool> CheckUsing(List<int> ids)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM tb_config_bigarea WHERE MetroLineID in @ids";
+
+                MetroLine exist = await c.QueryFirstOrDefaultAsync<MetroLine>(sql, new { ids});
+                return exist != null ? true : false;
             });
         }
 

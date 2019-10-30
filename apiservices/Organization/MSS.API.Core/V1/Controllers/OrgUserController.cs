@@ -79,5 +79,12 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _orgService.ListTopNodeWithUsers();
             return ret;
         }
+
+        [HttpGet("ListUserByNode/{node}")]
+        public async Task<ActionResult<ApiResult>> ListUserByNode(int node)
+        {
+            var ret = await _orgService.ListUserByNode(node);
+            return ret;
+        }
     }
 }

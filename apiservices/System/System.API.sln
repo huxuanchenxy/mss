@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.API.Core", "System.API\System.API.Core.csproj", "{F7D021D6-86F5-449E-B5DD-324E95A62B80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.API.Core", "System.API\System.API.Core.csproj", "{F7D021D6-86F5-449E-B5DD-324E95A62B80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.API.DTO", "System.API.DTO\System.API.DTO.csproj", "{27CEA358-1282-404E-87D9-F7BA614EDC4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.API.DTO", "System.API.DTO\System.API.DTO.csproj", "{27CEA358-1282-404E-87D9-F7BA614EDC4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.API.Model", "System.API.Model\System.API.Model.csproj", "{9F9ACDDB-0270-40B6-AE6A-E59A822CBD13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.API.Model", "System.API.Model\System.API.Model.csproj", "{9F9ACDDB-0270-40B6-AE6A-E59A822CBD13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.API.Service", "System.API.Service\System.API.Service.csproj", "{12277E5A-61F5-4247-8DBD-689D6E25424C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.API.Service", "System.API.Service\System.API.Service.csproj", "{12277E5A-61F5-4247-8DBD-689D6E25424C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.API.DAO", "System.API.DAO\System.API.DAO.csproj", "{F209BDA7-A3E6-421E-9B03-6E39F23574DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.API.DAO", "System.API.DAO\System.API.DAO.csproj", "{F209BDA7-A3E6-421E-9B03-6E39F23574DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Common", "..\..\commons\MSS.API.Common\MSS.API.Common.csproj", "{D8254336-065C-4E6F-ADA3-6ED28D084004}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{F209BDA7-A3E6-421E-9B03-6E39F23574DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F209BDA7-A3E6-421E-9B03-6E39F23574DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F209BDA7-A3E6-421E-9B03-6E39F23574DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8254336-065C-4E6F-ADA3-6ED28D084004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8254336-065C-4E6F-ADA3-6ED28D084004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8254336-065C-4E6F-ADA3-6ED28D084004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8254336-065C-4E6F-ADA3-6ED28D084004}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

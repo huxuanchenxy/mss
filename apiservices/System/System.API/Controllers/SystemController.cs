@@ -197,6 +197,30 @@ namespace System.API.Core.Controllers
             return result;
         }
 
+        /// <summary>
+        /// 根据路线获取大区列表
+        /// </summary>
+        /// <param name="id">查询参数</param>
+        /// <returns></returns>
+        [HttpGet("ListBigAreaByLine/{id}")]
+        public ResponseContext ListBigAreaByLine(int id)
+        {
+            ResponseContext result = new ResponseContext();
+            TB_Config_BigAreaDTO model = new TB_Config_BigAreaDTO();
+            string where = " MetroLineID='" + id + "' and ConfigType='9'";
+            List<TB_Config_BigArea> list = _SystemService._IConfigBigAreaService.GetList(where);
+            if (list != null && list.Count > 0)
+            {
+                result.data = list;
+                result.ret = 0;
+            }
+            else
+            {
+                result.data = null;
+                result.ret = -1;
+            }
+            return result;
+        }
 
 
         /// <summary>

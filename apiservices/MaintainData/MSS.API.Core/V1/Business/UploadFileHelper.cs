@@ -1,9 +1,14 @@
-﻿using MSS.API.Model.Data;
+﻿using MSS.API.Common;
+using MSS.API.Common.Utility;
+using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
+using MSS.Common.Consul;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -89,5 +94,22 @@ namespace MSS.API.Core.V1.Business
             return objs;
         }
 
+        public static async Task<List<UploadFilesEntity>> GetUploadFile(string ids, UploadShowType ust,
+            IServiceDiscoveryProvider _consulServiceProvider, SystemResource systemResource)
+        {
+            var _services = await _consulServiceProvider.GetServiceAsync("EqpService");
+            IHttpClientHelper<ApiResult> h = new HttpClientHelper<ApiResult>();
+            //string ids = String.Join(",", etv.rows.Select(a => a.ID));
+            string url = "/api/v1/Upload/ListByEntity/" + ids + "/" + (int)systemResource + "/" + (int)ust;
+            ApiResult r = await h.GetSingleItemRequest(_services + url);
+            return JsonConvert.DeserializeObject<List<UploadFilesEntity>>(r.data.ToString());
+        }
     }
+
+    public class UploadFilesEntity
+    {
+        public int Entity { get; set; }
+        public string UploadFiles { get; set; }
+    }
+
 }

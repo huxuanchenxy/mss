@@ -60,6 +60,21 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
+        public async Task<ApiResult> ListNodeByNodeType(int nodeType)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data =await _orgRepo.ListNodeByNodeType(nodeType);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
 
         public async Task<ApiResult> GetOrgByIDs(List<int> ids)
         {
@@ -765,6 +780,25 @@ namespace MSS.API.Core.V1.Business
                 ret.code = Code.Failure;
                 ret.msg = ex.Message;
             }
+            return ret;
+        }
+
+        public async Task<ApiResult> ListUserByNode(int node)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<OrgUser> users = await _orgRepo.ListUserByNode(node);
+
+                ret.code = Code.Success;
+                ret.data = users;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
             return ret;
         }
     }

@@ -26,11 +26,12 @@
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
           <x-button :disabled="btn.save">
-            <router-link :to="{ name: 'AddTrouble', query: { type: 'Add' } }">添加</router-link>
+            <router-link :to="{ name: 'AddTrouble', params: { type: 'Add' } }">添加</router-link>
           </x-button>
         </li>
         <li class="list" @click="remove" :disabled="btn.delete"><x-button>取消</x-button></li>
         <li class="list" @click="edit" :disabled="btn.update"><x-button>修改</x-button></li>
+        <li class="list" @click="detail" ><x-button>查看明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -173,6 +174,27 @@ export default {
     this.searchResult(this.currentPage)
   },
   methods: {
+    detail () {
+      if (!this.editTroubleID.length) {
+        this.$message({
+          message: '请选择需要查看明细的报修故障',
+          type: 'warning'
+        })
+      } else if (this.editTroubleID.length > 1) {
+        this.$message({
+          message: '查看明细的报修故障不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        this.$router.push({
+          name: 'DetailTroubleReport',
+          params: {
+            id: this.editTroubleID[0],
+            sourceName: 'SeeTroubleList'
+          }
+        })
+      }
+    },
     init () {
       this.bCheckAll = false
       this.checkAll()
@@ -242,7 +264,7 @@ export default {
       } else {
         this.$router.push({
           name: 'AddTrouble',
-          query: {
+          params: {
             id: this.editTroubleID[0],
             type: 'edit'
           }
