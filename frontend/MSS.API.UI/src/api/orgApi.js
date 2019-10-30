@@ -16,5 +16,7 @@ export default {
   getCanSelectedUser: id => { return axios.get(`${api}/org/user/all/${id}`).then(res => res.data) },
   delOrgNode: id => { return axios.delete(`${api}/org/${id}`).then(res => res.data) },
   getOrgUserByNodeID: (id) => { return axios.get(`${api}/orguser/${id}`).then(res => res.data) },
-  delOrgUser: ids => { return axios.delete(`${api}/orguser/${ids}`).then(res => res.data) }
+  delOrgUser: ids => { return axios.delete(`${api}/orguser/${ids}`).then(res => res.data) },
+  ListNodeByNodeType: (nodeType) => { return axios.get(`${api}/org/ListNodeByNodeType/${nodeType}`).then(res => res.data) },
+  ListUserByNode: (node) => { return axios.get(`${api}/orguser/ListUserByNode/${node}`).then(res => res.data) }
 }

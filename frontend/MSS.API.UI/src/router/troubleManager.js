@@ -16,7 +16,7 @@ const routes = [
         children: [
           {
             path: '/',
-            name: 'TroubleList',
+            name: 'list',
             redirect: 'troubleList'
           }, {
             path: 'troubleList',

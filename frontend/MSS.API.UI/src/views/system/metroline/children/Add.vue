@@ -17,6 +17,11 @@
         class="custom-form" label-width="80px">
         <el-row :gutter="40" style="padding-top:20px;">
           <el-col :span="8">
+            <el-form-item label="线路代码" prop="Code">
+              <el-input v-model="form.Code" ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
             <el-form-item label="线路名称" prop="LineName">
               <el-input v-model="form.LineName" ></el-input>
             </el-form-item>
@@ -60,6 +65,7 @@ export default {
       isShow: 'Add',
       form: {
         ID: '0',
+        Code: '',
         LineName: '',
         Description: ''
       },
@@ -136,6 +142,7 @@ export default {
         this.loading = false
         if (res.code === ApiRESULT.Success) {
           this.form.ID = res.data.id
+          this.form.Code = res.data.code
           this.form.LineName = res.data.lineName
           this.form.Description = res.data.description
         }

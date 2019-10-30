@@ -18,5 +18,9 @@ export default {
 
   ListByEqp: id => { return axios.get(`${api}/EqpHistory/ListByEqp/${id}`).then(res => res.data) },
   getWorkingApplicationByID: id => { return axios.get(`${api}/WorkingApplication/${id}`).then(res => res.data) },
-  getTroubleReportByID: id => { return axios.get(`${api}/TroubleReport/${id}`).then(res => res.data) }
+
+  getTroubleReportByID: id => { return axios.get(`${api}/TroubleReport/${id}`).then(res => res.data) },
+  getTroubleReportPage: parm => { return axios.get(`${api}/TroubleReport`, {params: parm}).then(res => res.data) },
+  UpdateTroubleStatus: (ids, status) => { return axios.put(`${api}/TroubleReport/UpdateStatus/${ids}/${status}`).then(res => res.data) },
+  SaveTroubleReport: parm => { return axios.post(`${api}/TroubleReport`, parm).then(res => res.data) }
 }

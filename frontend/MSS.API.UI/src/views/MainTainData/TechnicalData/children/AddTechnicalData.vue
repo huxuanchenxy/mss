@@ -157,7 +157,7 @@ export default {
       this.eqpTypeList = res.data
       this.eqpType = this.eqpTypeList[0].id
       // 设备加载
-      apiMainTain.GetDeviceListByTypeId(this.eqpType).then(res => {
+      apiMainTain.GetEqpByTypeAndLine(this.eqpType).then(res => {
         this.eqpList = res.data
       }).catch(err => console.log(err))
     }).catch(err => console.log(err))
@@ -184,7 +184,7 @@ export default {
     },
     eqpTypeChange () {
       this.eqpSelected = []
-      apiMainTain.GetDeviceListByTypeId(this.eqpType).then(res => {
+      apiMainTain.GetEqpByTypeAndLine(this.eqpType).then(res => {
         this.eqpList = res.data
         this.unSelectedEqp = systemResource.eqp
       }).catch(err => console.log(err))
