@@ -36,10 +36,10 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><el-checkbox v-model="bCheckAll" @change="checkAll"></el-checkbox></li>
-        <!-- <li class="list number c-pointer" @click="changeOrder('id')">
-          序号
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
-        </li> -->
+        <li class="list number c-pointer" @click="changeOrder('code')">
+          线路代码
+          <i :class="[{ 'el-icon-d-caret': headOrder.code === 0 }, { 'el-icon-caret-top': headOrder.code === 1 }, { 'el-icon-caret-bottom': headOrder.code === 2 }]"></i>
+        </li>
         <li class="list name c-pointer" @click="changeOrder('line_name')">
           线路名称
           <i :class="[{ 'el-icon-d-caret': headOrder.line_name === 0 }, { 'el-icon-caret-top': headOrder.line_name === 1 }, { 'el-icon-caret-bottom': headOrder.line_name === 2 }]"></i>
@@ -64,7 +64,7 @@
                 <div class="checkbox">
                   <el-checkbox v-model="checkedID" :label="item.id"></el-checkbox>
                 </div>
-                <!-- <div class="number">{{ item.id }}</div> -->
+                <div class="number">{{ item.code }}</div>
                 <div class="name">{{ item.lineName }}</div>
                 <div class="name">{{ item.description }}</div>
                 <div class="last-maintainer">{{ item.userName }}</div>
@@ -141,6 +141,7 @@ export default {
       },
       headOrder: {
         id: 1,
+        code: 0,
         line_name: 0,
         updated_time: 0,
         updated_by: 0
@@ -165,8 +166,8 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.equipment_type_id = 0
-        this.headOrder.param_name = 0
+        this.headOrder.code = 0
+        this.headOrder.line_name = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -290,7 +291,6 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.search()
     },
 
     // 下一页
@@ -298,7 +298,6 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.search()
     },
     initBtn () {
       let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))

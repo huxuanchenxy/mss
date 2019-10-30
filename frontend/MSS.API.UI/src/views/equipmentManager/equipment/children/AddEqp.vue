@@ -445,7 +445,7 @@ export default {
     // },
     position_change () {
       if (this.area.text.length < 3) {
-        this.area.tips = '设备必须安装在3级和4级位置'
+        this.area.tips = '设备必须安装在站点和区域上'
         this.area.text = []
         return false
       } else {

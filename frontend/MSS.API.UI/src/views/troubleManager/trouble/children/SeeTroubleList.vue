@@ -13,9 +13,9 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">权限组名称</label>
+            <label for="name">故障报修关键字</label>
             <div class="inp">
-              <el-input v-model.trim="actionGroupName" placeholder="请输入权限组别名称"></el-input>
+              <el-input v-model.trim="desc" placeholder="请输入故障报修关键字"></el-input>
             </div>
           </div>
         </div>
@@ -26,10 +26,10 @@
       <ul class="con-padding-horizontal btn-group">
         <li class="list">
           <x-button :disabled="btn.save">
-            <router-link :to="{ name: 'AddActionGroup', params: { mark: 'add' } }">添加</router-link>
+            <router-link :to="{ name: 'AddTrouble', query: { type: 'Add' } }">添加</router-link>
           </x-button>
         </li>
-        <li class="list" @click="remove" :disabled="btn.delete"><x-button>删除</x-button></li>
+        <li class="list" @click="remove" :disabled="btn.delete"><x-button>取消</x-button></li>
         <li class="list" @click="edit" :disabled="btn.update"><x-button>修改</x-button></li>
       </ul>
     </div>
@@ -37,53 +37,43 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('id')">
-          权限组编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('code')">
+          故障编号
+          <i :class="[{ 'el-icon-d-caret': headOrder.code === 0 }, { 'el-icon-caret-top': headOrder.code === 1 }, { 'el-icon-caret-bottom': headOrder.code === 2 }]"></i>
         </li>
-        <li class="list name c-pointer" @click="changeOrder('group_name')">
-          权限组名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.group_name === 0 }, { 'el-icon-caret-top': headOrder.group_name === 1 }, { 'el-icon-caret-bottom': headOrder.group_name === 2 }]"></i>
+        <li class="list last-update-time c-pointer" @click="changeOrder('happening_time')">
+          发生时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.happening_time === 0 }, { 'el-icon-caret-top': headOrder.happening_time === 1 }, { 'el-icon-caret-bottom': headOrder.happening_time === 2 }]"></i>
         </li>
-        <li class="list number">权限组URL</li>
-        <li class="list number c-pointer" @click="changeOrder('group_type')">
-          权限组类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.group_type === 0 }, { 'el-icon-caret-top': headOrder.group_type === 1 }, { 'el-icon-caret-bottom': headOrder.group_type === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('line')">
+          线路
+          <i :class="[{ 'el-icon-d-caret': headOrder.line === 0 }, { 'el-icon-caret-top': headOrder.line === 1 }, { 'el-icon-caret-bottom': headOrder.line === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('group_order')">
-          权限组顺序
-          <i :class="[{ 'el-icon-d-caret': headOrder.group_order === 0 }, { 'el-icon-caret-top': headOrder.group_order === 1 }, { 'el-icon-caret-bottom': headOrder.group_order === 2 }]"></i>
-        </li>
-        <li class="list number">默认图标</li>
-        <li class="list number">激活图标</li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
-          最后更新时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
-        </li>
-        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
-          最后更新人
-          <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
+        <li class="list name">起始位置</li>
+        <li class="list last-update-time">故障现象</li>
+        <li class="list name">报修单位</li>
+        <li class="list name">报修人</li>
+        <li class="list name c-pointer" @click="changeOrder('status')">
+          状态
+          <i :class="[{ 'el-icon-d-caret': headOrder.status === 0 }, { 'el-icon-caret-top': headOrder.status === 1 }, { 'el-icon-caret-bottom': headOrder.status === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="(item) in ActionGroupList" :key="item.key">
+            <li class="list" v-for="(item) in troubleList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editActionGroupID" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editTroubleID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.id }}</div>
-                <div class="name">
-                  <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.group_name }}</router-link>
-                </div>
-                <div class="number">{{ item.request_url }}</div>
-                <div class="number">{{ item.group_type_name }}</div>
-                <div class="number">{{ item.group_order }}</div>
-                <div class="number">{{ item.icon }}</div>
-                <div class="number">{{ item.active_icon }}</div>
-                <div class="last-update-time color-white">{{ item.updated_time }}</div>
-                <div class="last-maintainer">{{ item.updated_name }}</div>
+                <div class="name">{{ item.code }}</div>
+                <div class="last-update-time color-white">{{ item.happeningTime }}</div>
+                <div class="name">{{ item.lineName }}</div>
+                <div class="name">{{ item.startLocationName }}</div>
+                <div class="last-update-time color-white">{{ item.desc }}</div>
+                <div class="name">{{ item.reportedCompanyName }}</div>
+                <div class="name">{{ item.reportedByName }}</div>
+                <div class="last-maintainer color-white">{{ item.statusName }}</div>
               </div>
             </li>
           </ul>
@@ -120,9 +110,10 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
+import { troubleStatus } from '@/common/js/dictionary.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
-import api from '@/api/authApi'
+import api from '@/api/DeviceMaintainRegApi.js'
 export default {
   name: 'SeeTroubleList',
   components: {
@@ -136,9 +127,10 @@ export default {
         update: false
       },
       title: ' | 故障报修',
-      actionGroupName: '',
-      ActionGroupList: [],
-      editActionGroupID: [],
+      desc: '',
+      troubleList: [],
+      troubleListByID: {},
+      editTroubleID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -155,11 +147,9 @@ export default {
       },
       headOrder: {
         id: 1,
-        group_name: 0,
-        group_type: 0,
-        group_order: 0,
-        updated_time: 0,
-        updated_by: 0
+        happening_time: 0,
+        line: 0,
+        status: 0
       }
     }
   },
@@ -168,13 +158,13 @@ export default {
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.actionGroup.save
+        return item.actionID === btn.troubleReport.save
       })
       this.btn.delete = !actions.some((item, index) => {
-        return item.actionID === btn.actionGroup.delete
+        return item.actionID === btn.troubleReport.delete
       })
       this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.actionGroup.update
+        return item.actionID === btn.troubleReport.update
       })
     }
     this.init()
@@ -193,11 +183,9 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.group_name = 0
-        this.headOrder.group_type = 0
-        this.headOrder.group_order = 0
-        this.headOrder.updated_by = 0
-        this.headOrder.updated_time = 0
+        this.headOrder.happening_time = 0
+        this.headOrder.line = 0
+        this.headOrder.status = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -215,67 +203,80 @@ export default {
     // 搜索
     searchResult (page) {
       this.currentPage = page
-      this.loading = true
+      // this.loading = true
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.actionGroupName
+        TroubleReportDesc: this.desc
       }
-      api.getActionGroup(parm).then(res => {
+      api.getTroubleReportPage(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
-          item.updated_time = transformDate(item.updated_time)
+          this.troubleListByID[item.id] = item
+          item.happeningTime = transformDate(item.happeningTime)
         })
-        this.ActionGroupList = res.data.rows
+        this.troubleList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
-    // 修改权限组
+    // 修改报修故障
     edit () {
-      if (!this.editActionGroupID.length) {
+      if (!this.editTroubleID.length) {
         this.$message({
-          message: '请选择需要修改的权限组',
+          message: '请选择需要修改的报修故障',
           type: 'warning'
         })
-      } else if (this.editActionGroupID.length > 1) {
+      } else if (this.editTroubleID.length > 1) {
         this.$message({
-          message: '修改的权限组不能超过1个',
+          message: '修改的报修故障不能超过1个',
+          type: 'warning'
+        })
+      } else if (!this.isNewTrouble()) {
+        this.$message({
+          message: '非新报修的故障不允许修改',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddActionGroup',
-          params: {
-            id: this.editActionGroupID[0],
-            mark: 'edit'
+          name: 'AddTrouble',
+          query: {
+            id: this.editTroubleID[0],
+            type: 'edit'
           }
         })
       }
     },
-
-    // 删除权限组
+    isNewTrouble () {
+      return this.troubleListByID[this.editTroubleID].status === troubleStatus.newTrouble
+    },
+    // 取消报修故障
     remove () {
-      if (!this.editActionGroupID.length) {
+      if (!this.editTroubleID.length) {
         this.$message({
-          message: '请选择需要删除的权限组',
+          message: '请选择需要取消的报修故障',
+          type: 'warning'
+        })
+      } else if (!this.isNewTrouble()) {
+        this.$message({
+          message: '非新报修的故障不允许取消',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条权限组信息?'
+        this.dialogVisible.text = '确定取消该条报修故障信息?'
       }
     },
-    // 弹框确认是否删除
+    // 弹框确认是否取消
     dialogEnter () {
-      api.delActionGroup(this.editActionGroupID.join(',')).then(res => {
+      api.UpdateTroubleStatus(this.editTroubleID.join(','), troubleStatus.canceled).then(res => {
         if (res.code === 0) {
-          this.editActionGroupID = []
+          this.editTroubleID = []
           this.$message({
-            message: '删除成功',
+            message: '取消成功',
             type: 'success'
           })
           this.currentPage = 1
@@ -292,20 +293,19 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 权限组别')
       this.loading = true
       this.init()
       this.searchResult(1)
     },
 
-    // 获取修改权限组id
+    // 获取修改报修故障id
     emitEditID () {
-      this.$emit('editActionGroupID', this.editActionGroupID)
+      this.$emit('editTroubleID', this.editTroubleID)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.ActionGroupList.map(val => this.editActionGroupID.push(val.id)) : this.editActionGroupID = []
+      this.bCheckAll ? this.troubleList.map(val => this.editTroubleID.push(val.id)) : this.editTroubleID = []
       this.emitEditID()
     },
 
@@ -414,7 +414,9 @@ $con-height: $content-height - 145 - 56;
     }
   }
 
-  .number,
+  .number{
+    width: 6%;
+  }
   .name,
   .btn-wrap{
     width: 10%;

@@ -100,5 +100,10 @@ export const btn = {
   monthDetail: {
     create: 120,
     update: 122
+  },
+  troubleReport: {
+    save: 124,
+    delete: 125,
+    update: 126
   }
 }
