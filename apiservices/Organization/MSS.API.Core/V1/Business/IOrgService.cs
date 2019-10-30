@@ -11,6 +11,7 @@ namespace MSS.API.Core.V1.Business
     public interface IOrgService
     {
         Task<ApiResult> GetAllOrg();
+        Task<ApiResult> ListNodeByNodeType(int nodeType);
         Task<ApiResult> GetOrgByIDs(List<int> ids);
         Task<ApiResult> GetOrgByUserID(int userId);
         Task<ApiResult> GetOrgUserByUserID(int userId);
@@ -35,5 +36,7 @@ namespace MSS.API.Core.V1.Business
 
         // 获取所有顶级节点下所有用户，包括子级节点的用户
         Task<ApiResult> ListTopNodeWithUsers();
+
+        Task<ApiResult> ListUserByNode(int node);
     }
 }

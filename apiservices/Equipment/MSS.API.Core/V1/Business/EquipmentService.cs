@@ -210,6 +210,21 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
+        public async Task<ApiResult> ListByTopOrg(int topOrg,int line,int location=0,int locationBy=0)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _eqpRepo.ListByTopOrg(new List<int>() { topOrg },line, location, locationBy);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
         public async Task<ApiResult> ListByEqpType(string ids)
         {
             ApiResult ret = new ApiResult();

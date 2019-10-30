@@ -257,7 +257,8 @@ export default {
       reportByList: [],
       repairDesc: {text: '', tips: ''},
       fileIDs: '',
-      fileIDsEdit: []
+      fileIDsEdit: [],
+      editID: ''
     }
   },
   created () {
@@ -382,8 +383,9 @@ export default {
       this.happeningTime.text = new Date()
       this.reportedTime.text = this.happeningTime.text
       this.initCardList()
-      if (this.$route.query.type !== 'Add') {
-        // this.loading = true
+      if (this.$route.params.type !== 'Add') {
+        this.editID = this.$route.params.id
+        this.loading = true
         this.getTroubleReport()
       }
     },
@@ -396,7 +398,7 @@ export default {
       return ret
     },
     getTroubleReport () {
-      api.getTroubleReportByID(this.$route.query.id).then(res => {
+      api.getTroubleReportByID(this.editID).then(res => {
         this.loading = false
         let _res = res.data
         this.title = '| 修改报修故障-' + _res.code
@@ -452,6 +454,13 @@ export default {
     },
     save () {
       if (!this.validateInputAll()) return
+      if ((new Date(this.reportedTime.text).getTime() - new Date(this.happeningTime.text).getTime()) / (3600 * 1000) > 2) {
+        this.$message({
+          message: '故障必须在发生后两小时内登记',
+          type: 'warning'
+        })
+        return
+      }
       if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
         this.$message({
           message: '文件正在上传中，请耐心等待',
@@ -460,16 +469,30 @@ export default {
         return
       }
       let eqpIDs = []
-      this.cardList.map(val => {
-        val.eqpList.map(item => {
-          if (item.id !== undefined) {
-            eqpIDs.push({
-              eqp: item.id,
-              org: item.topOrg
-            })
-          }
+      if (this.$route.params.type === 'Add') {
+        this.cardList.map(val => {
+          val.eqpList.map(item => {
+            if (item.id !== undefined) {
+              eqpIDs.push({
+                eqp: item.id,
+                org: item.topOrg
+              })
+            }
+          })
         })
-      })
+      } else {
+        this.cardList.map(val => {
+          val.eqpList.map(item => {
+            if (item.id !== undefined) {
+              eqpIDs.push({
+                trouble: this.editID,
+                eqp: item.id,
+                org: item.topOrg
+              })
+            }
+          })
+        })
+      }
       if (eqpIDs.length === 0) {
         this.msg('设备故障必选')
         return
@@ -492,8 +515,7 @@ export default {
         Desc: this.repairDesc.text,
         UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
-      console.log(troubleReport)
-      if (this.$route.query.type === 'Add') {
+      if (this.$route.params.type === 'Add') {
         api.SaveTroubleReport(troubleReport).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeTroubleList'})
@@ -509,21 +531,21 @@ export default {
           }
         }).catch(err => console.log(err))
       } else {
-        // eqpType.ID = this.eqpTypeID
-        // api.updateEqpType(eqpType).then(res => {
-        //   if (res.code === 0) {
-        //     this.$router.push({name: 'SeeEqpTypeList'})
-        //     this.$message({
-        //       message: '修改成功',
-        //       type: 'success'
-        //     })
-        //   } else {
-        //     this.$message({
-        //       message: res.msg === '' ? '修改失败' : res.msg,
-        //       type: 'error'
-        //     })
-        //   }
-        // }).catch(err => console.log(err))
+        troubleReport.ID = this.editID
+        api.UpdateTroubleReport(troubleReport).then(res => {
+          if (res.code === 0) {
+            this.$router.push({name: 'SeeTroubleList'})
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+          } else {
+            this.$message({
+              message: res.msg === '' ? '修改失败' : res.msg,
+              type: 'error'
+            })
+          }
+        }).catch(err => console.log(err))
       }
     }
   }

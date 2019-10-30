@@ -22,5 +22,6 @@ export default {
   getTroubleReportByID: id => { return axios.get(`${api}/TroubleReport/${id}`).then(res => res.data) },
   getTroubleReportPage: parm => { return axios.get(`${api}/TroubleReport`, {params: parm}).then(res => res.data) },
   UpdateTroubleStatus: (ids, status) => { return axios.put(`${api}/TroubleReport/UpdateStatus/${ids}/${status}`).then(res => res.data) },
-  SaveTroubleReport: parm => { return axios.post(`${api}/TroubleReport`, parm).then(res => res.data) }
+  SaveTroubleReport: parm => { return axios.post(`${api}/TroubleReport`, parm).then(res => res.data) },
+  UpdateTroubleReport: parm => { return axios.put(`${api}/TroubleReport`, parm).then(res => res.data) }
 }

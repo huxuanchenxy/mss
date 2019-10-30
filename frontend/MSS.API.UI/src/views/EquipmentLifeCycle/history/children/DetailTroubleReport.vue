@@ -1,96 +1,98 @@
 <template>
-  <div
-    class="wrap height-full"
+  <div class="wrap height-full"
     v-loading="loading"
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
-    <div class="con-padding-horizontal header">
-      <h2 class="title">
+    <div ref="header" class="header con-padding-horizontal">
+      <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active">
-        <router-link :to="{name:'SeeHistory'}">返回</router-link>
-      </x-button>
+      <i @click="back"><x-button class="active">返回</x-button></i>
     </div>
     <div class="scroll">
       <el-scrollbar>
-        <div class="con-padding-horizontal operation">
-          <ul class="input-group">
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">故障编号</span>
-                <div class="inp">{{troubleReport.id}}</div>
+        <!-- 列表 -->
+        <ul class="con-padding-horizontal input-group">
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">发生时间</span>
+              <div class="inp">{{troubleReport.happeningTime}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">报修时间</span>
+              <div class="inp">{{troubleReport.reportedTime}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">状态</span>
+              <div class="inp">{{troubleReport.statusName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">起始站点/区域</span>
+              <div class="inp">{{troubleReport.startLocationName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">结束站点</span>
+              <div class="inp">{{troubleReport.endLocationName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">抢修令号</span>
+              <div class="inp">{{troubleReport.urgentOrder}}</div>
+            </div>
+          </li>
+          <li class="list" v-for="(company, index) in cardList" :key="company.id">
+            <div class="inp-wrap">
+              <span class="text" v-show="index===0">故障设备</span>
+              <span class="text" v-show="index!==0"></span>
+              <div class="inp">
+                <el-card class="box-card">
+                  <div slot="header" class="clearfix">
+                    <span>{{company.companyName}}</span>
+                  </div>
+                  <div v-for="o in company.eqpList" :key="o.id" class="item">
+                    {{o.name }}
+                  </div>
+                </el-card>
               </div>
-            </li>
-            <li class="list" >
-              <div class="inp-wrap">
-                <span class="text">故障类别</span>
-                <div class="inp">{{troubleReport.typeName}}</div>
-              </div>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">故障时间</span>
-                <div class="inp">{{troubleReport.happeningTime}}</div>
-              </div>
-            </li>
-            <li class="list list-block">
-              <div class="inp-wrap">
-                <span class="text span-block">故障描述</span>
-                <div class="inp">{{troubleReport.desc}}</div>
-              </div>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">设备图纸编号</span>
-                <div class="inp">{{troubleReport.eqpCode}}</div>
-              </div>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">设备名称</span>
-                <div class="inp">{{troubleReport.eqpName}}</div>
-              </div>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">报告人</span>
-                <div class="inp">{{troubleReport.reportedByName}}</div>
-              </div>
-            </li>
-            <li class="list list-block" >
-              <div class="inp-wrap">
-                <span class="text span-block">故障诊断</span>
-                <div class="inp">{{troubleReport.solution}}</div>
-              </div>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">开单人</span>
-                <div class="inp">{{troubleReport.createdByName}}</div>
-              </div>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">开单时间</span>
-                <div class="inp">{{troubleReport.createdTime}}</div>
-              </div>
-            </li>
-            <li class="list"/>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">接收人</span>
-                <div class="inp">{{troubleReport.acceptedByName}}</div>
-              </div>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">接收时间</span>
-                <div class="inp">{{troubleReport.acceptedTime}}</div>
-              </div>
-            </li>
-            <li class="list"/>
-          </ul>
+            </div>
+          </li>
+          <li class="list" v-show="cardList.length % 3 === 2 || cardList.length % 3 === 1"/>
+          <li class="list" v-show="cardList.length % 3 === 1"/>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">故障等级</span>
+              <div class="inp">{{troubleReport.levelName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">报修单位</span>
+              <div class="inp">{{troubleReport.reportedCompanyName}}</div>
+            </div>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">报修人</span>
+              <div class="inp">{{troubleReport.reportedByName}}</div>
+            </div>
+          </li>
+          <li class="list"/>
+        </ul>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">报修故障描述</span>
+            {{troubleReport.desc}}
+        </div>
+        <div class="con-padding-horizontal upload-list">
+          <upload-pdf :systemResource="systemResource" :fileIDs="troubleReport.fileIDs" :readOnly="true"></upload-pdf>
         </div>
       </el-scrollbar>
     </div>
@@ -98,130 +100,144 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
+import { systemResource } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
+import MyUploadPDF from '@/components/UploadPDF'
 export default {
   name: 'DetailTroubleReport',
   components: {
-    XButton
+    XButton,
+    'upload-pdf': MyUploadPDF
   },
   data () {
     return {
-      title: '| 故障报告单明细',
+      systemResource: systemResource.troubleReport,
       loading: false,
+      title: '| 故障报告单明细',
+      cardList: [],
       troubleReport: {
-        id: this.$route.params.id,
-        typeName: '',
-        desc: '',
-        eqpName: '',
-        eqpCode: '',
-        happeningTime: '',
-        statusName: '',
-        solution: '',
-        reportedByName: '',
-        createdByName: '',
-        createdTime: '',
-        acceptedByName: '',
-        acceptedTime: ''
-      }
+        id: this.$route.params.id
+      },
+      fileIDs: ''
     }
   },
   created () {
+    this.sourceName = this.$route.params.sourceName
     this.getTroubleReport()
   },
   methods: {
+    back () {
+      this.$router.push({
+        name: this.sourceName
+      })
+    },
     getTroubleReport () {
       api.getTroubleReportByID(this.troubleReport.id).then(res => {
         this.loading = false
         let _res = res.data
-        this.troubleReport.typeName = _res.typeName
+        console.log(_res)
+        this.title = '| 故障报修明细-' + _res.code
         this.troubleReport.desc = _res.desc
-        this.troubleReport.eqpName = _res.eqpName
-        this.troubleReport.eqpCode = _res.eqpCode
         this.troubleReport.happeningTime = transformDate(_res.happeningTime)
+        this.troubleReport.reportedTime = transformDate(_res.reportedTime)
+        this.troubleReport.startLocationName = _res.startLocationName
+        this.troubleReport.endLocationName = _res.endLocationName
+        this.troubleReport.urgentOrder = _res.urgentRepairOrder
         this.troubleReport.statusName = _res.statusName
-        this.troubleReport.solution = _res.solution
         this.troubleReport.reportedByName = _res.reportedByName
         this.troubleReport.createdByName = _res.createdByName
         this.troubleReport.createdTime = transformDate(_res.createdTime)
-        this.troubleReport.acceptedTime = _res.acceptedTime !== null && _res.acceptedTime !== '' ? transformDate(_res.acceptedTime) : ''
-        this.troubleReport.acceptedByName = _res.acceptedByName
+        this.troubleReport.reportedCompanyName = _res.reportedCompanyName
+        this.cardList = JSON.parse(_res.repairCompany)
+        this.troubleReport.levelName = _res.levelName
+        this.troubleReport.fileIDs = _res.uploadFiles
       }).catch(err => console.log(err))
     }
   }
 }
 </script>
 <style lang="scss" scoped>
+// 显示大图容器
+.el-dialog__wrapper{
+  width: 100%;
+  height: 100%;
+
+  .el-carousel{
+    height: 100%;
+  }
+}
+
 .header{
   display: flex;
   justify-content: space-between;
 }
-// 功能区
-.operation{
-  .input-group{
+
+// 顶部信息
+.middle{
+  position: relative;
+  margin-bottom: 10px;
+  padding-bottom: 20px;
+
+  .text-right{
+    text-align: right !important;
+  }
+
+  [class*="list-wrap"]{
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
 
     .list{
-      width: 30%;
-      margin-top: PXtoEm(25);
+      margin-top: 20px;
+      padding: 0 2%;
+      border-right: 1px solid #C9CACD;
+      text-align: center;
+
+      &:first-of-type{
+        padding-left: 0;
+        text-align: left;
+      }
+
+      &:last-of-type{
+        padding-right: 0;
+        border: 0;
+        text-align: right;
+      }
+    }
+  }
+
+  .list-wrap{
+    .list{
+      width: 16%;
 
       span{
-        width: 27%;
-      }
-
-      .inp-wrap{
-        display: flex;
-        align-items: center;
-        .inp{
-          max-width: 90%;
-          word-wrap: break-word;
-        }
-      }
-
-      .inp-wrap-upload{
-        // display: flex;
-        align-items: center;
-      }
-
-      &:nth-of-type(3n+1){
-        // justify-content: flex-start;
-      }
-
-      &:nth-of-type(3n){
-        // justify-content: flex-end;
-      }
-    }
-    .list-last{
-      margin-bottom: PXtoEm(25);
-    }
-    .list-block{
-      width: 100%;
-      .span-block{
-        width: 8%;
+        display: inline-block;
+        width: 100%;
+        @extend %ellipsis;
       }
     }
   }
-}
-.btn-enter{
-  margin: 15px 0;
-  text-align: center;
 
-  button{
-    border-color: $color-main-btn;
-    background: $color-main-btn;
+  .sub-list-wrap{
+    .list{
+      margin-right: 40px;
+      padding: 0;
+      border: 0;
+      text-align: left;
+    }
+
+    .text{
+      color: $color-content-text;
+    }
+
+    &:after{
+      content: "";
+      flex: auto;
+    }
   }
 }
-.cascader_width{
-  width: 100%!important;
-}
-// .el-date-editor.el-input, .el-date-editor.el-input__inner{
-//   width: 80%!important;
-// }
-.el-date-width{
-  width: 93%!important;
-}
+
 .scroll{
   /**
    * percent函数转换百分比
@@ -241,49 +257,137 @@ export default {
   }
 }
 
-  // 图片预览
-  /deep/ .show-list-wrap{
-    width: 100% !important;
-    height: 100%;
+.input-group{
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 
-    .el-dialog__header{
-      display: block;
-      padding: 0;
+  .list{
+    width: 30%;
+    margin-top: PXtoEm(20);
 
-      .el-dialog__headerbtn{
-        top: 0!important;
-        right: 0!important;
-        z-index: 999;
-        width: 27px;
-        height: 27px;
-        background: url(../../../../common/images/icon-close.png) no-repeat 0 0/100% 100%;
-      }
-
-      .el-dialog__close{
-        display: none;
-      }
-    }
-
-    .el-dialog__body{
-      width: 100%;
-      height: 100%;
-      padding: 0 !important;
-
-      img{
-        max-width: 100%;
-        max-height: 100%;
-      }
-    }
-
-    .el-carousel__item.is-animating{
+    .inp-wrap{
       display: flex;
-      justify-content: center;
       align-items: center;
     }
 
-    // 左右箭头
-    .el-carousel__arrow i{
-      font-size: 20px;
+    .text{
+      width: 28%;
+    }
+
+    &:nth-of-type(3n+1){
+      justify-content: flex-start;
+    }
+
+    &:nth-of-type(3n){
+      justify-content: flex-end;
     }
   }
+}
+.cause{
+  display: flex;
+  margin-top: 20px;
+  align-items: center;
+
+  .el-textarea{
+    flex: 1;
+    width: auto;
+  }
+}
+
+// 列表
+.list-bottom-wrap{
+  margin-top: 10px;
+
+  .list{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    // @extend .con-padding-horizontal;
+    background: rgba(186,186,186,.1);
+    text-align: center;
+
+    &:nth-of-type(odd){
+      background: rgba(128,128,128,.1);
+    }
+
+    &.list-header{
+      height: 50px;
+      background: $color-content-table-header;
+    }
+
+    &:not(.list-header){
+      padding: {
+        top: 20px;
+        bottom: 20px;
+      }
+    }
+  }
+
+  .list-con{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20%;
+
+    &:first-of-type{
+      justify-content: flex-start;
+    }
+  }
+
+  .textarea-wrap{
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+// 提交底部按钮
+.btn-group{
+  padding: 20px 0;
+  text-align: center;
+}
+
+.lable{
+  width: 100px;
+}
+
+.disabled{
+  background: #8c939d;
+}
+
+.upload-list{
+  margin-top: PXtoEm(25);
+  margin-bottom: PXtoEm(25);
+  width: 50%;
+}
+.left{
+  text-indent: 9.5%
+}
+.datetime-width{
+  width: 93%;
+}
+/deep/
+.el-tag--small{
+  display: none;
+}
+// 卡片
+.item {
+  margin-bottom: 10px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+// .clearfix:after {
+//   clear: both
+// }
+
+.box-card {
+  width: 200px;
+  background-color: #29282E;
+  color: $color-content-text
+}
 </style>

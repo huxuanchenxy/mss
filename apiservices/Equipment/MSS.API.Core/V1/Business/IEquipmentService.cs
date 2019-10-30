@@ -18,6 +18,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> GetDetailByID(int id);
         Task<ApiResult> ListByPosition(int location, int locationBy, int eqpType);
+        Task<ApiResult> ListByTopOrg(int topOrg, int line, int location = 0, int locationBy = 0);
         Task<ApiResult> ListByEqpType(string ids);
         Task<ApiResult> GetAll();
         Task<ApiResult> CountAllEqp();

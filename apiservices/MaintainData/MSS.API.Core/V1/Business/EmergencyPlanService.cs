@@ -109,7 +109,8 @@ namespace MSS.API.Core.V1.Business
                 if (etv.total != 0)
                 {
                     string ids = String.Join(",", etv.rows.Select(a => a.ID));
-                    List<UploadFilesEntity> jarr = await GetUploadFile(ids, UploadShowType.Cascader);
+                    List<UploadFilesEntity> jarr = await UploadFileHelper.GetUploadFile(ids,
+                    UploadShowType.Cascader, _consulServiceProvider, SystemResource.EmergencyPlan);
                     if (jarr != null && jarr.Count() > 0)
                     {
                         foreach (var item in etv.rows)
@@ -140,7 +141,9 @@ namespace MSS.API.Core.V1.Business
             {
                 EmergencyPlan et = await _emergencyPlanRepo.GetByID(id);
                 string ids = id.ToString();
-                List<UploadFilesEntity> jarr = await GetUploadFile(ids,UploadShowType.List);
+                //List<UploadFilesEntity> jarr = await GetUploadFile(ids,UploadShowType.List);
+                List<UploadFilesEntity> jarr = await UploadFileHelper.GetUploadFile(ids, 
+                    UploadShowType.List, _consulServiceProvider, SystemResource.EmergencyPlan);
                 if (jarr != null && jarr.Count() > 0)
                 {
                     et.UploadFiles= jarr.FirstOrDefault().UploadFiles;
@@ -172,20 +175,20 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        private async Task<List<UploadFilesEntity>> GetUploadFile(string ids, UploadShowType ust)
-        {
-            var _services = await _consulServiceProvider.GetServiceAsync("EqpService");
-            IHttpClientHelper<ApiResult> h = new HttpClientHelper<ApiResult>();
-            //string ids = String.Join(",", etv.rows.Select(a => a.ID));
-            string url = "/api/v1/Upload/ListByEntity/" + ids + "/" + (int)SystemResource.EmergencyPlan + "/" + (int)ust;
-            ApiResult r = await h.GetSingleItemRequest(_services + url);
-            return JsonConvert.DeserializeObject<List<UploadFilesEntity>>(r.data.ToString());
-        }
+        //private async Task<List<UploadFilesEntity>> GetUploadFile(string ids, UploadShowType ust)
+        //{
+        //    var _services = await _consulServiceProvider.GetServiceAsync("EqpService");
+        //    IHttpClientHelper<ApiResult> h = new HttpClientHelper<ApiResult>();
+        //    //string ids = String.Join(",", etv.rows.Select(a => a.ID));
+        //    string url = "/api/v1/Upload/ListByEntity/" + ids + "/" + (int)SystemResource.EmergencyPlan + "/" + (int)ust;
+        //    ApiResult r = await h.GetSingleItemRequest(_services + url);
+        //    return JsonConvert.DeserializeObject<List<UploadFilesEntity>>(r.data.ToString());
+        //}
 
-        private class UploadFilesEntity
-        {
-            public int Entity { get; set; }
-            public string UploadFiles { get; set; }
-        }
+        //private class UploadFilesEntity
+        //{
+        //    public int Entity { get; set; }
+        //    public string UploadFiles { get; set; }
+        //}
     }
 }
