@@ -50,7 +50,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 if (!string.IsNullOrWhiteSpace(parm.PlanDate))
                 {
                     string[] tmpDate = parm.PlanDate.Split('.');
-                    string lastDay = Common.GetLastDay(Convert.ToInt32(tmpDate[1]), Convert.ToInt32(tmpDate[0]));
+                    string lastDay = MSS.Platform.Workflow.WebApi.Model.Common.GetLastDay(Convert.ToInt32(tmpDate[1]), Convert.ToInt32(tmpDate[0]));
                     string myDate = tmpDate[0] + "." + tmpDate[1] + ".01-" + tmpDate[0] + "." + tmpDate[1] + "." + lastDay;
                     sqlwhere += " and (c.plan_date='" + parm.PlanDate + "' or c.plan_date='" + myDate+"') ";
                 }

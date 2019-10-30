@@ -8,7 +8,7 @@ const optionPie = {
   legend: {
     orient: 'vertical',
     x: 'left',
-    data: [ '马当路', '新天地', '人民广场', '江浦路', '陆家浜路' ],
+    data: [ '航头站', '周浦站', '御桥站', '江浦路站', '政立路站' ],
     textStyle: {
       fontSize: '13',
       color: 'white'
@@ -39,11 +39,11 @@ const optionPie = {
         }
       },
       data: [
-        {value: 335, name: '马当路'},
-        {value: 310, name: '新天地'},
-        {value: 234, name: '人民广场'},
-        {value: 135, name: '江浦路'},
-        {value: 1548, name: '陆家浜路'}
+        {value: 335, name: '航头站'},
+        {value: 310, name: '周浦站'},
+        {value: 234, name: '御桥站'},
+        {value: 135, name: '江浦路站'},
+        {value: 1548, name: '政立路站'}
       ]
     }
   ]

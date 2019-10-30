@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:3851",
+      "applicationUrl": "http://localhost:8084",
       "sslPort": 0
     }
   },
@@ -11,7 +11,7 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "commandLineArgs": "3871",
+      "commandLineArgs": "8084",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {

@@ -7,6 +7,8 @@ using MSS.Platform.Workflow.WebApi.Data;
 using MSS.Platform.Workflow.WebApi.Service;
 using MSS.API.Common;
 using MSS.Platform.Workflow.WebApi.Infrastructure;
+using MSS.Common.Consul;
+using Microsoft.Extensions.Options;
 
 namespace MSS.Platform.Workflow.WebApi
 {
@@ -59,10 +61,11 @@ namespace MSS.Platform.Workflow.WebApi
             //{
             //    c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "MyAuthor API", Version = "v1" });
             //});
+            services.AddConsulService(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
         {
             if (env.IsDevelopment())
             {
@@ -90,6 +93,7 @@ builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
             });
+            app.RegisterConsul(lifetime, consulService);
             app.UseHttpsRedirection();
             app.UseMvc();
         }

@@ -46,35 +46,34 @@
           <li class="list">
               <span class="text">作业类别:</span>
               <div class="inp-wrap">
-                <el-radio-group v-model="planType">
+                <el-radio-group v-model="planType.text">
                   <el-radio :label=1>单点</el-radio>
                   <el-radio :label=2>多点</el-radio>
-                </el-radio-group>
+                </el-radio-group><p class="validate-tips">{{ planType.tips }}</p>
               </div>
-            <p class="validate-tips">{{ model.tips }}</p>
           </li>
         </ul>
         <ul class="con-padding-horizontal input-group">
           <li class="list">
               <span class="text">重要程度:</span>
               <div class="inp-wrap">
-                <el-select v-model="importantLevel"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="importantLevel.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in importantLevelList"
                     :key="item.key"
                     :label="item.name"
                     :value="item.key">
                   </el-option>
-                </el-select>
+                </el-select><p class="validate-tips">{{ importantLevel.tips }}</p>
                 <span>日常/重大</span>
-                <el-select v-model="planLevel"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="planLevel.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in planLevelList"
                     :key="item.key"
                     :label="item.name"
                     :value="item.key">
                   </el-option>
-                </el-select>
+                </el-select><p class="validate-tips">{{ planLevel.tips }}</p>
               </div>
           </li>
           <li class="list">
@@ -82,7 +81,8 @@
               <div class="inp-wrap">
                 <el-input style="width:200px;"
                   placeholder="输入计划编号"
-                  v-model="planNumber.text" clearable>
+                  v-model="planNumber.text" clearable
+                  @keyup.native="validateInputNull(planNumber)">
                 </el-input><p class="validate-tips">{{ planNumber.tips }}</p>
               </div>
           </li>
@@ -91,27 +91,27 @@
           <li class="list">
               <span class="text">申请单位:</span>
               <div class="inp-wrap">
-                <el-select v-model="applyCompanyOrgId"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="applyCompanyOrgId.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in applyCompanyOrgIdList"
                     :key="item.id"
                     :label="item.label"
                     :value="item.id">
                   </el-option>
-                </el-select>
+                </el-select><p class="validate-tips">{{ applyCompanyOrgId.tips }}</p>
               </div>
           </li>
           <li class="list">
               <span class="text">施工单位:</span>
               <div class="inp-wrap">
-                <el-select v-model="constructionCompanyOrgId"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="constructionCompanyOrgId.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in constructionCompanyOrgIdList"
                     :key="item.id"
                     :label="item.label"
                     :value="item.id">
                   </el-option>
-                </el-select>
+                </el-select><p class="validate-tips">{{ constructionCompanyOrgId.tips }}</p>
               </div>
           </li>
         </ul>
@@ -120,27 +120,28 @@
               <span class="text">起止时间:</span>
               <div class="inp-wrap">
                 <el-date-picker
+                  class="eldatepicker"
                   v-model="time.text"
-                  type="daterange"
+                  type="datetimerange"
                   prefix-icon="el-icon-date"
                   :unlink-panels="true"
-                  value-format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd HH:mm"
                   range-separator="至"
                   start-placeholder="计划开始日期"
                   end-placeholder="计划结束日期">
-                </el-date-picker>
+                </el-date-picker><p class="validate-tips">{{ time.tips }}</p>
               </div>
           </li>
           <li class="list">
               <span class="text">登记车站:</span>
               <div class="inp-wrap">
-                <el-select v-model="registerStationId"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="registerStationId.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in registerStationIdList"
                     :key="item.title"
                     :label="item.title"
                     :value="item.title">
-                  </el-option>
+                  </el-option><p class="validate-tips">{{ registerStationId.tips }}</p>
                 </el-select>
               </div>
           </li>
@@ -151,8 +152,8 @@
               <div class="inp-wrap">
                 <el-input style="width:200px;"
                   placeholder="输入设施设备号"
-                  v-model="deviceNum" clearable>
-                </el-input>
+                  v-model="deviceNum.text" clearable>
+                </el-input><p class="validate-tips">{{ deviceNum.tips }}</p>
               </div>
           </li>
           <li class="list">
@@ -160,86 +161,101 @@
               <div class="inp-wrap">
                 <el-input style="width:200px;"
                   placeholder="输入故障令号"
-                  v-model="troubleNum" clearable>
-                </el-input>
+                  v-model="troubleNum.text" clearable>
+                </el-input><p class="validate-tips">{{ troubleNum.tips }}</p>
               </div>
           </li>
         </ul>
         <div class="con-padding-horizontal cause">
             <span class="lable">工作地点:</span>
             <el-input type="textarea" v-model="operationAddress.text" placeholder="请输入工作地点" @keyup.native="validateInputNull(operationAddress)"></el-input>
+            <p class="validate-tips">{{ operationAddress.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工内容:</span>
             <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionContent)"></el-input>
+            <p class="validate-tips">{{ constructionContent.tips }}</p>
         </div>
-        <div class="validate-tips left">{{ eqpTypeDesc.tips }}</div>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工详细说明:</span>
-            <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionContent)"></el-input>
+            <el-input type="textarea" v-model="constructionDetail.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionDetail)"></el-input>
+            <p class="validate-tips">{{ constructionDetail.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">配合要求:</span>
-            <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(constructionContent)"></el-input>
+            <el-input type="textarea" v-model="coordinationRequest.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(coordinationRequest)"></el-input>
+            <p class="validate-tips">{{ coordinationRequest.tips }}</p>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">配合意见:</span>
+            <el-input type="textarea" v-model="coordinationAudit.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(coordinationAudit)"></el-input>
+            <p class="validate-tips">{{ coordinationAudit.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">停送电范围:</span>
             <el-input type="textarea" v-model="electricRange.text" placeholder="请输入停送电范围" @keyup.native="validateInputNull(electricRange)"></el-input>
+            <p class="validate-tips">{{ electricRange.tips }}</p>
         </div>
         <ul class="con-padding-horizontal input-group">
           <li class="list">
               <span class="text">接触网/轨停电:</span>
               <div class="inp-wrap">
-                <el-select v-model="stopElectric"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="stopElectric.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in stopElectricList"
                     :key="item.key"
                     :label="item.name"
                     :value="item.key">
-                  </el-option>
+                  </el-option><p class="validate-tips">{{ stopElectric.tips }}</p>
                 </el-select>
                 <span class="text">牵引动力:</span>
-                <el-select v-model="tractionPower"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="tractionPower.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in tractionPowerList"
                     :key="item.key"
                     :label="item.name"
                     :value="item.key">
                   </el-option>
-                </el-select>
+                </el-select><p class="validate-tips">{{ tractionPower.tips }}</p>
               </div>
           </li>
           <li class="list">
               <span class="text">使用梯车:</span>
               <div class="inp-wrap">
-                <el-select v-model="useLaddercar"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="useLaddercar.text"  collapse-tags  clearable filterable placeholder="请选择">
                   <el-option
                     v-for="item in useLaddercarList"
                     :key="item.key"
                     :label="item.name"
                     :value="item.key">
                   </el-option>
-                </el-select>
+                </el-select><p class="validate-tips">{{ useLaddercar.tips }}</p>
+                <span class="lable">牵引动力列数:</span>
+                <el-input style="width:150px;"
+                  placeholder="输入牵引动力列数"
+                  v-model="tractionTrainNum.text" clearable>
+                </el-input><p class="validate-tips">{{ tractionTrainNum.tips }}</p>
               </div>
           </li>
         </ul>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工影响区段:</span>
             <el-input type="textarea" v-model="effectArea.text" placeholder="请输入施工影响区段" @keyup.native="validateInputNull(effectArea)"></el-input>
+            <p class="validate-tips">{{ effectArea.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工影响说明:</span>
             <el-input type="textarea" v-model="effectExplain.text" placeholder="请输入施工影响说明" @keyup.native="validateInputNull(effectExplain)"></el-input>
+            <p class="validate-tips">{{ effectExplain.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">安全措施:</span>
             <el-input type="textarea" v-model="safeMeasure.text" placeholder="请输入安全措施" @keyup.native="validateInputNull(safeMeasure)"></el-input>
+            <p class="validate-tips">{{ safeMeasure.tips }}</p>
         </div>
-        <ul class="con-padding-horizontal input-group">
-          <div class="upload-list">
-            <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
-          </div>
-        </ul>
+        <div class="upload-list">
+          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+        </div>
         <button @click="changeShow"></button>
         <area-dialog :name="show" @changeShowChild = "changeShow"></area-dialog>
         <!-- 按钮 -->
@@ -277,75 +293,103 @@ export default {
       systemResource: systemResource.construction,
       loading: false,
       title: '| 添加施工计划',
-      ID: '',
+      ID: this.$route.params.id,
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
       operationAddress: {text: '', tips: ''},
       constructionContent: {text: '', tips: ''},
+      constructionDetail: {text: '', tips: ''},
+      coordinationRequest: {text: '', tips: ''},
+      coordinationAudit: {text: '', tips: ''},
       electricRange: {text: '', tips: ''},
       effectArea: {text: '', tips: ''},
       effectExplain: {text: '', tips: ''},
       safeMeasure: {text: '', tips: ''},
       fileIDs: '',
       fileIDsEdit: [],
-      planType: 0,
+      planType: {text: '', tips: ''},
       areaid: {text: '', tips: ''},
       areaList: [],
       areaTypeName: {text: '', tips: ''},
       areaTypeNameList: [],
-      importantLevel: [],
+      importantLevel: {text: '', tips: ''},
       importantLevelList: [],
-      planLevel: [],
+      planLevel: {text: '', tips: ''},
       planLevelList: [],
-      applyCompanyOrgId: [],
+      applyCompanyOrgId: {text: '', tips: ''},
       applyCompanyOrgIdList: [],
-      constructionCompanyOrgId: [],
+      constructionCompanyOrgId: {text: '', tips: ''},
       constructionCompanyOrgIdList: [],
       lineList: [],
       lineid: {text: '', tips: ''},
       time: {text: '', tips: ''},
       planNumber: {text: '', tips: ''},
       areaTypename: {text: '', tips: ''},
-      planName: '',
-      registerStationId: [],
+      planName: {text: '', tips: ''},
+      registerStationId: {text: '', tips: ''},
       registerStationIdList: [],
-      deviceNum: '',
-      troubleNum: '',
-      stopElectric: [],
+      deviceNum: {text: '', tips: ''},
+      troubleNum: {text: '', tips: ''},
+      stopElectric: {text: '', tips: ''},
       stopElectricList: [],
-      tractionPower: [],
+      tractionPower: {text: '', tips: ''},
       tractionPowerList: [],
-      useLaddercar: [],
-      useLaddercarList: []
+      useLaddercar: {text: '', tips: ''},
+      useLaddercarList: [],
+      tractionTrainNum: {text: '', tips: ''}
     }
   },
   created () {
     this.InitPage()
   },
+  mounted () {
+    if (this.$route.query.type !== 'Add') {
+      this.title = '| 修改施工计划'
+      this.loading = true
+      this.getObjByID()
+    }
+  },
   methods: {
     changeShow () {
       this.show = !this.show
-    },
-    init () {
-      if (this.$route.query.type !== 'Add') {
-        this.title = '| 修改施工计划'
-        this.loading = true
-        this.getObjByID()
-      }
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
     getObjByID () {
-      constructionapi.getConstructionPlanByID(this.$route.query.id).then(res => {
+      constructionapi.getConstructionPlanByID(this.ID).then(res => {
         if (res.code === 0) {
           let data = res.data
           this.ID = data.id
           this.lineid.text = data.lineId
           this.areaid.text = data.areaId
+          this.areaTypeName.text = data.areaTypename
           this.planNumber.text = nullToEmpty(data.planNumber)
-          this.fileIDs = data.uploadFiles
+          this.planType.text = data.planType
+          this.importantLevel.text = data.importantLevel
+          this.planLevel.text = data.planLevel
+          this.applyCompanyOrgId.text = data.applyCompanyOrgId
+          this.importantLevel.text = data.importantLevel
+          this.constructionCompanyOrgId.text = data.constructionCompanyOrgId
+          this.time.text = [data.startTime, data.endTime]
+          this.registerStationId.text = data.registerStationId
+          this.deviceNum.text = data.deviceNum
+          this.troubleNum.text = data.troubleNum
+          this.operationAddress.text = data.operationAddress
+          this.constructionContent.text = data.constructionContent
+          this.constructionDetail.text = data.constructionDetail
+          this.coordinationRequest.text = data.coordinationRequest
+          this.coordinationAudit.text = data.coordinationAudit
+          this.electricRange.text = data.electricRange
+          this.stopElectric.text = data.stopElectric
+          this.tractionPower.text = data.tractionPower
+          this.tractionTrainNum.text = data.tractionTrainNum
+          this.useLaddercar.text = data.useLaddercar
+          this.effectArea.text = data.effectArea
+          this.effectExplain.text = data.effectExplain
+          this.safeMeasure.text = data.safeMeasure
+          this.fileIDs = data.fileIDs
         }
         this.loading = false
       }).catch(err => console.log(err))
@@ -369,8 +413,30 @@ export default {
       }
     },
     validateInput () {
-      if (!validateInputCommon(this.planNumber)) return false
       if (!this.validateSelect(this.lineid)) return false
+      if (!this.validateSelect(this.areaid)) return false
+      if (!this.validateSelect(this.areaTypeName)) return false
+      if (!this.validateSelect(this.planType)) return false
+      if (!this.validateSelect(this.importantLevel)) return false
+      if (!this.validateSelect(this.planLevel)) return false
+      if (!validateInputCommon(this.planNumber)) return false
+      if (!this.validateSelect(this.applyCompanyOrgId)) return false
+      if (!this.validateSelect(this.constructionCompanyOrgId)) return false
+      if (!this.validateSelect(this.time)) return false
+      if (!this.validateSelect(this.registerStationId)) return false
+      if (!this.validateSelect(this.deviceNum)) return false
+      if (!this.validateSelect(this.operationAddress)) return false
+      if (!this.validateSelect(this.constructionContent)) return false
+      if (!this.validateSelect(this.constructionDetail)) return false
+      if (!this.validateSelect(this.coordinationRequest)) return false
+      if (!this.validateSelect(this.coordinationAudit)) return false
+      if (!this.validateSelect(this.electricRange)) return false
+      if (!this.validateSelect(this.stopElectric)) return false
+      if (!this.validateSelect(this.tractionPower)) return false
+      if (!this.validateSelect(this.useLaddercar)) return false
+      if (!this.validateSelect(this.effectArea)) return false
+      if (!this.validateSelect(this.effectExplain)) return false
+      if (!this.validateSelect(this.safeMeasure)) return false
       return true
     },
     validateInputAll () {
@@ -404,12 +470,41 @@ export default {
       })
       // console.log(obj.chname)
       this.planName = lineidobj.lineName + areaidobj.name + this.areaTypeName.text + '施工检修申请单'
+      var sTime = ''
+      var eTime = ''
+      if (this.time.text) {
+        sTime = this.time.text[0]
+        eTime = this.time.text[1]
+      }
       let dataObj = {
         LineId: this.lineid.text,
         AreaId: this.areaid.text,
         AreaTypename: this.areaTypeName.text,
         PlanNumber: this.planNumber.text,
         PlanName: this.planName,
+        PlanType: this.planType.text,
+        PlanLevel: this.planLevel.text,
+        ApplyCompanyOrgId: this.applyCompanyOrgId.text,
+        ImportantLevel: this.importantLevel.text,
+        constructionCompanyOrgId: this.constructionCompanyOrgId.text,
+        StartTime: sTime,
+        EndTime: eTime,
+        registerStationId: this.registerStationId.text,
+        deviceNum: this.deviceNum.text,
+        troubleNum: this.troubleNum.text,
+        operationAddress: this.operationAddress.text,
+        constructionContent: this.constructionContent.text,
+        constructionDetail: this.constructionDetail.text,
+        coordinationRequest: this.coordinationRequest.text,
+        coordinationAudit: this.coordinationAudit.text,
+        electricRange: this.electricRange.text,
+        stopElectric: this.stopElectric.text,
+        tractionPower: this.tractionPower.text,
+        tractionTrainNum: this.tractionTrainNum.text,
+        useLaddercar: this.useLaddercar.text,
+        effectArea: this.effectArea.text,
+        effectExplain: this.effectExplain.text,
+        safeMeasure: this.safeMeasure.text,
         FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
@@ -429,7 +524,7 @@ export default {
         }).catch(err => console.log(err))
       } else {
         dataObj.ID = this.ID
-        constructionapi.updateEqpType(dataObj).then(res => {
+        constructionapi.updateConstructionPlan(dataObj).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeConstructionPlan'})
             this.$message({
@@ -464,15 +559,15 @@ export default {
       }).catch(err => console.log(err))
     },
     InitArea () {
-      this.areaList = [{key: '1', name: '轨行区'}, {key: '2', name: '车场'}, {key: '3', name: '车站'}, {key: '4', name: '保护区'}]
+      this.areaList = [{key: 1, name: '轨行区'}, {key: 2, name: '车场'}, {key: 3, name: '车站'}, {key: 4, name: '保护区'}]
       this.areaTypeNameList = [{key: '正线', name: '正线'}, {key: '不下线', name: '不下线'}]
     },
     InitImportantLevel () {
-      this.importantLevelList = [{key: '1', name: '普通计划'}, {key: '2', name: '核心计划'}, {key: '3', name: '临时计划'}, {key: '4', name: '抢修计划'}]
-      this.planLevelList = [{key: '1', name: '日常'}, {key: '2', name: '重大'}]
-      this.stopElectricList = [{key: '1', name: '是'}, {key: '2', name: '否'}]
-      this.tractionPowerList = [{key: '1', name: '电客'}, {key: '2', name: '轨道'}, {key: '3', name: '无'}]
-      this.useLaddercarList = [{key: '1', name: '是'}, {key: '2', name: '否'}]
+      this.importantLevelList = [{key: 1, name: '普通计划'}, {key: 2, name: '核心计划'}, {key: 3, name: '临时计划'}, {key: 4, name: '抢修计划'}]
+      this.planLevelList = [{key: 1, name: '日常'}, {key: 2, name: '重大'}]
+      this.stopElectricList = [{key: 1, name: '是'}, {key: 2, name: '否'}]
+      this.tractionPowerList = [{key: 1, name: '电客'}, {key: 2, name: '轨道'}, {key: 3, name: '无'}]
+      this.useLaddercarList = [{key: 1, name: '是'}, {key: 2, name: '否'}]
     },
     InitCompany () {
       orgapi.getOrgAll().then(res => {
@@ -679,7 +774,7 @@ export default {
 
 // 提交底部按钮
 .btn-group{
-  padding: 20px 0;
+  // padding: 20px 0;
   text-align: center;
 }
 
@@ -698,5 +793,8 @@ export default {
 }
 .left{
   text-indent: 9.5%
+}
+.eldatepicker{
+  width:466px !important;
 }
 </style>

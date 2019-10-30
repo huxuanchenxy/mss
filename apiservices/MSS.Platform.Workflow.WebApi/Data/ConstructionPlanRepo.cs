@@ -75,12 +75,12 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 updated_by,is_del FROM construction_plan
                  ");
                 StringBuilder whereSql = new StringBuilder();
-                //whereSql.Append(" WHERE ai.ProcessInstanceID = '" + parm.ProcessInstanceID + "'");
+                whereSql.Append(" WHERE is_del = 0 ");
 
-                //if (parm.AppName != null)
-                //{
-                //    whereSql.Append(" and ai.AppName like '%" + parm.AppName.Trim() + "%'");
-                //}
+                if (parm.planName != null)
+                {
+                    whereSql.Append(" and plan_name like '%" + parm.planName.Trim() + "%'");
+                }
 
                 sql.Append(whereSql);
                 //验证是否有参与到流程中
@@ -245,7 +245,10 @@ namespace MSS.Platform.Workflow.WebApi.Data
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync($@" UPDATE construction_plan set 
+                IDbTransaction trans = c.BeginTransaction();
+                try
+                {
+                    var result = await c.ExecuteAsync($@" UPDATE construction_plan set 
                     
                     line_id=@LineId,
                     area_id=@AreaId,
@@ -281,13 +284,40 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     force_unlock_key=@ForceUnlockKey,
                     other_request=@OtherRequest,
                     memo=@Memo,
-                    created_time=@CreatedTime,
-                    created_by=@CreatedBy,
                     updated_time=@UpdatedTime,
                     updated_by=@UpdatedBy,
                     is_del=@IsDel
-                 where id=@Id", obj);
-                return result;
+                 where id=@Id", obj,trans);
+                    if (!string.IsNullOrWhiteSpace(obj.FileIDs))
+                    {
+                        string delsql = $@" DELETE FROM upload_file_relation WHERE entity_id = '{obj.Id}' AND system_resource = '{(int)SystemResource.ConstructionPlan}' ";
+                        await c.ExecuteAsync(delsql, trans);
+                        List<object> objs = new List<object>();
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(obj.FileIDs);
+                        foreach (var o in jobj)
+                        {
+                            foreach (var item in o["ids"].ToString().Split(','))
+                            {
+                                objs.Add(new
+                                {
+                                    entityID = obj.Id,
+                                    fileID = Convert.ToInt32(item),
+                                    type = Convert.ToInt32(o["type"]),
+                                    systemResource = (int)SystemResource.ConstructionPlan
+                                });
+                            }
+                        }
+                        string sql = "insert into upload_file_relation values (0,@entityID,@fileID,@type,@systemResource)";
+                        int ret = await c.ExecuteAsync(sql, objs, trans);
+                    }
+                    trans.Commit();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    throw new Exception(ex.ToString());
+                }
             });
         }
 
