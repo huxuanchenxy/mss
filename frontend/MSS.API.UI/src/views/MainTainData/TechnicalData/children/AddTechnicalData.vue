@@ -211,7 +211,7 @@ export default {
         })
         return
       }
-      if (!this.validateAll()) return
+      if (!this.validateAll(this.fileIDsEdit)) return
       this.saveEqpLoading = true
       let obj = {
         entity: this.eqp,
@@ -255,7 +255,7 @@ export default {
         })
         return
       }
-      if (!this.validateAll()) return
+      if (!this.validateAll(this.eqpTypeFileIDsEdit)) return
       this.saveEqpTypeLoading = true
       let obj = {
         entity: this.eqpTypeOnly,
@@ -277,14 +277,14 @@ export default {
         }
       }).catch(err => console.log(err))
     },
-    validateAll () {
-      if (this.fileIDsEdit.length === 0) {
+    validateAll (fileIDsEdit) {
+      if (fileIDsEdit.length === 0) {
         this.$message({
           message: '请修改后进行保存操作',
           type: 'warning'
         })
         return false
-      } else if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
+      } else if (fileIDsEdit.length !== 0 && !isUploadFinished(fileIDsEdit)) {
         this.$message({
           message: '文件正在上传中，请耐心等待',
           type: 'warning'
