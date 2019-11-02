@@ -30,9 +30,30 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpGet]
-        public ActionResult ListPage(TroubleReportParm parm)
+        public ActionResult ListPage([FromQuery] TroubleReportParm parm)
         {
             var resp = _troubleReportService.ListPage(parm);
+            return Ok(resp.Result);
+        }
+
+        [HttpPut("UpdateStatus/{ids}/{status}")]
+        public ActionResult UpdateStatus(string ids,TroubleStatus status)
+        {
+            var resp = _troubleReportService.UpdateStatus(ids,status);
+            return Ok(resp.Result);
+        }
+
+        [HttpPost]
+        public ActionResult Save(TroubleReport troubleReport)
+        {
+            var ret = _troubleReportService.Save(troubleReport);
+            return Ok(ret.Result);
+        }
+
+        [HttpPut()]
+        public ActionResult Update(TroubleReport troubleReport)
+        {
+            var resp = _troubleReportService.Update(troubleReport);
             return Ok(resp.Result);
         }
     }

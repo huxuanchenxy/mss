@@ -7,6 +7,7 @@ namespace MSS.API.Model.Data
 {
     public class MetroLine :BaseEntity
     {
+        public string Code { get; set; }
         public string LineName { get; set; }
         public string Description { get; set; }
 

@@ -244,7 +244,28 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-
+        public async Task<List<Equipment>> ListByTopOrg(IEnumerable<int> topOrgs, int line, int location = 0, int locationBy = 0)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM equipment WHERE top_org in @topOrgs and line=@line and is_del=" + (int)IsDeleted.no;
+                object obj = new { topOrgs, line };
+                if (location!=0 && locationBy!=0)
+                {
+                    sql += " and location=@location and location_by=@locationBy";
+                    obj= new { topOrgs, line,location,locationBy };
+                }
+                var result = await c.QueryAsync<Equipment>(sql, obj);
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
         public async Task<List<Equipment>> ListByEqpType(string ids)
         {
             return await WithConnection(async c =>

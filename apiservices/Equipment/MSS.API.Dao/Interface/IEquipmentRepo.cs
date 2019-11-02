@@ -14,6 +14,7 @@ namespace MSS.API.Dao.Interface
         Task<EqpView> GetPageByParm(EqpQueryParm parm);
         Task<Equipment> GetByID(int id);
         Task<Equipment> GetDetailByID(int id);
+        Task<List<Equipment>> ListByTopOrg(IEnumerable<int> topOrgs, int line, int location = 0, int locationBy = 0);
         Task<List<Equipment>> ListByEqpType(string ids);
         Task<List<Equipment>> ListByPosition(int location, int locationBy, int eqpType,int? topOrg);
         Task<List<Equipment>> GetAll();

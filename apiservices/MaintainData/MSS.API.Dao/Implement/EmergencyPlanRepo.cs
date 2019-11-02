@@ -78,8 +78,8 @@ namespace MSS.API.Dao.Implement
                         " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", ePlan,trans);
                     if (!string.IsNullOrWhiteSpace(ePlan.UploadFiles))
                     {
-                        sql = "delete from upload_file_relation where entity_id=@id";
-                        int ret = await c.ExecuteAsync(sql, new { id = ePlan.ID }, trans);
+                        sql = "delete from upload_file_relation where entity_id=@id and system_resource=@sr";
+                        int ret = await c.ExecuteAsync(sql, new { id = ePlan.ID, sr=SystemResource.EmergencyPlan }, trans);
                         List<object> objs = new List<object>();
                         JArray jobj = JsonConvert.DeserializeObject<JArray>(ePlan.UploadFiles);
                         foreach (var obj in jobj)

@@ -20,6 +20,7 @@
     },
     "MSS.API.Core": {
       "commandName": "Project",
+      "commandLineArgs": "3851",
       "launchBrowser": true,
       "launchUrl": "api/values",
       "environmentVariables": {

@@ -184,7 +184,8 @@ export default {
           this.$router.push({
             name: 'DetailTroubleReport',
             params: {
-              id: id
+              id: id,
+              sourceName: 'SeeHistory'
             }
           })
           break

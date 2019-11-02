@@ -94,20 +94,23 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
+              <el-form-item label="班组编码">
+                <el-input v-model="form.Code" :disabled="this.ReadOnly"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
               <el-form-item label="负责人">
                 <el-select v-model="form.Leader" :disabled="this.ReadOnly" style="width:100%" placeholder="请选择">
                   <el-option v-for="item in Users" :key="item.key" :value="item.id" :label="item.user_name"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
+          </el-row>
+          <el-row :gutter="40">
             <el-col :span="8">
               <el-form-item label="地址">
                 <el-input v-model="form.Address" :disabled="this.ReadOnly"></el-input>
               </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="40">
-            <el-col :span="8">
             </el-col>
             <el-col :span="8">
               <el-form-item label="电话" prop="PhoneNum">
@@ -313,6 +316,9 @@ export default {
       if (props) {
         for (var prop in props) {
           switch (props[prop].nodeAttr) {
+            case 'Code':
+              this.form.Code = props[prop].attrValue
+              break
             case 'Leader':
               this.form.Leader = this.parseLeader(props[prop].attrValue)
               break
@@ -441,6 +447,10 @@ export default {
           })
           break
         case '3':
+          propEx.push({
+            NodeAttr: 'Code',
+            AttrValue: this.form.Code
+          })
           propEx.push({
             NodeAttr: 'Leader',
             AttrValue: this.form.Leader

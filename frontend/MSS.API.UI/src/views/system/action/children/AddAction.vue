@@ -140,7 +140,7 @@ export default {
   methods: {
     // 添加权限
     enter () {
-      if (this.actionGroup !== '' && this.parentMenu !== '' && this.parentMenu !== null) {
+      if (this.actionGroup !== null && this.actionGroup !== '' && this.parentMenu !== '' && this.parentMenu !== null) {
         this.$message({
           message: '如果是按钮权限，则属于菜单；如果是菜单权限，则属于权限组；不允许同时属于两者',
           type: 'error'

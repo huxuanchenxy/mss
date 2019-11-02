@@ -126,5 +126,11 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _orgService.GetOrgNode(id);
             return ret;
         }
+        [HttpGet("ListNodeByNodeType/{nodeType}")]
+        public async Task<ActionResult<ApiResult>> ListNodeByNodeType(int nodeType)
+        {
+            var ret = await _orgService.ListNodeByNodeType(nodeType);
+            return ret;
+        }
     }
 }

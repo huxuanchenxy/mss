@@ -10,6 +10,7 @@ namespace MSS.API.Dao.Interface
     public interface IOrgRepo<T> where T:BaseEntity
     {
         Task<List<OrgTree>> ListAllOrgNode();
+        Task<List<OrgTree>> ListNodeByNodeType(int nodeType);
         Task<OrgTree> SaveOrgNode(OrgTree node);
         Task<OrgTree> UpdateOrgNode(OrgTree node);
         Task<bool> DeleteOrgNode(OrgTree node);
@@ -32,5 +33,6 @@ namespace MSS.API.Dao.Interface
         // 取出所有已关联组织的用户
         Task<List<OrgUser>> ListAllOrgUser();
         Task<int> DeleteOrgNodeUsers(OrgUserView users);
+        Task<List<OrgUser>> ListUserByNode(int node);
     }
 }

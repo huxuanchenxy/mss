@@ -7,7 +7,7 @@
       "sslPort": 0
     },
     "iisExpress": {
-      "applicationUrl": "http://localhost:3880",
+      "applicationUrl": "http://localhost:3851",
       "sslPort": 0
     }
   },
@@ -24,6 +24,7 @@
     },
     "System.API": {
       "commandName": "IISExpress",
+      "commandLineArgs": "3851",
       "launchBrowser": true,
       "launchUrl": "api/values",
       "environmentVariables": {

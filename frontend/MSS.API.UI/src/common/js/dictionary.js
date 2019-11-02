@@ -11,6 +11,15 @@ export const dictionary = {
   troubleLevel: 126
 }
 
+export const troubleStatus = {
+  newTrouble: 48,
+  processing: 49,
+  repaired: 50,
+  delayed: 133,
+  finished: 134,
+  canceled: 135
+}
+
 export const firmType = {
   supplier: 23,
   manufacturer: 24
@@ -23,7 +32,8 @@ export const systemResource = {
   maintainReg: 28,
   emergencyPlan: 57,
   regulation: 58,
-  construction: 109
+  construction: 109,
+  troubleReport: 136
 }
 
 export const sparePartsOperationType = {
@@ -52,4 +62,10 @@ export const sparePartsOperationDetailType = {
   inStockScrap: 88,
   lendReturn: 92,
   repairReceive: 93
+}
+
+export const orgType = {
+  company: 1,
+  department: 2,
+  team: 3
 }
