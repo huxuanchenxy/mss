@@ -9,6 +9,9 @@ namespace MSS.API.Model.Data
     {
         public string TroubleReportDesc { get; set; }
         public string RepairDesc { get; set; }
+        public int? TroubleStatus { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
     }
 
     /// <summary>

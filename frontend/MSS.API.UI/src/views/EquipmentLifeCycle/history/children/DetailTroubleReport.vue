@@ -142,15 +142,15 @@ export default {
         this.troubleReport.happeningTime = transformDate(_res.happeningTime)
         this.troubleReport.reportedTime = transformDate(_res.reportedTime)
         this.troubleReport.startLocationName = _res.startLocationName
-        this.troubleReport.endLocationName = _res.endLocationName
-        this.troubleReport.urgentOrder = _res.urgentRepairOrder
+        this.troubleReport.endLocationName = _res.endLocationName === null ? '无' : _res.endLocationName
+        this.troubleReport.urgentOrder = _res.urgentRepairOrder === null ? '无' : _res.urgentRepairOrder
         this.troubleReport.statusName = _res.statusName
         this.troubleReport.reportedByName = _res.reportedByName
         this.troubleReport.createdByName = _res.createdByName
         this.troubleReport.createdTime = transformDate(_res.createdTime)
         this.troubleReport.reportedCompanyName = _res.reportedCompanyName
         this.cardList = JSON.parse(_res.repairCompany)
-        this.troubleReport.levelName = _res.levelName
+        this.troubleReport.levelName = _res.levelName === null ? '无' : _res.levelName
         this.troubleReport.fileIDs = _res.uploadFiles
       }).catch(err => console.log(err))
     }

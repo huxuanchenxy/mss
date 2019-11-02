@@ -13,9 +13,37 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">故障报修关键字</label>
+            <label for="name">故障现象关键字</label>
             <div class="inp">
-              <el-input v-model.trim="desc" placeholder="请输入故障报修关键字"></el-input>
+              <el-input v-model.trim="desc" placeholder="请输入故障现象关键字"></el-input>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="name">故障状态</label>
+            <div class="inp">
+              <el-select v-model="troubleStatus" clearable filterable placeholder="请选择故障状态">
+                <el-option
+                  v-for="item in troubleStatusList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="name">发生日期</label>
+            <div class="inp">
+              <el-date-picker
+                v-model="searchDate"
+                type="daterange"
+                prefix-icon="el-icon-date"
+                :unlink-panels="true"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </div>
           </div>
         </div>
@@ -111,10 +139,11 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import { troubleStatus } from '@/common/js/dictionary.js'
+import { troubleStatus, dictionary } from '@/common/js/dictionary.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
+import apiAuth from '@/api/authApi'
 export default {
   name: 'SeeTroubleList',
   components: {
@@ -129,6 +158,9 @@ export default {
       },
       title: ' | 故障报修',
       desc: '',
+      searchDate: [],
+      troubleStatus: '',
+      troubleStatusList: [],
       troubleList: [],
       troubleListByID: {},
       editTroubleID: [],
@@ -168,6 +200,10 @@ export default {
         return item.actionID === btn.troubleReport.update
       })
     }
+    // 故障状态列表
+    apiAuth.getSubCode(dictionary.troubleStatus).then(res => {
+      this.troubleStatusList = res.data
+    }).catch(err => console.log(err))
     this.init()
   },
   activated () {
@@ -225,13 +261,21 @@ export default {
     // 搜索
     searchResult (page) {
       this.currentPage = page
-      // this.loading = true
+      this.loading = true
+      let st, et
+      if (this.searchDate != null && this.searchDate.length !== 0) {
+        st = this.searchDate[0] + ' 00:00:00'
+        et = this.searchDate[1] + ' 23:59:59'
+      }
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        TroubleReportDesc: this.desc
+        TroubleReportDesc: this.desc,
+        TroubleStatus: this.troubleStatus,
+        StartTime: st,
+        EndTime: et
       }
       api.getTroubleReportPage(parm).then(res => {
         this.loading = false

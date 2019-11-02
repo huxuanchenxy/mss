@@ -68,6 +68,18 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and tr.description like '%" + parm.TroubleReportDesc + "%' ");
                 }
+                if (parm.TroubleStatus!=null)
+                {
+                    whereSql.Append(" and tr.status = " + parm.TroubleStatus);
+                }
+                if (parm.StartTime != null)
+                {
+                    whereSql.Append(" and tr.happening_time >= '" + parm.StartTime + "' ");
+                }
+                if (parm.EndTime != null)
+                {
+                    whereSql.Append(" and tr.happening_time <= '" + parm.EndTime + "' ");
+                }
                 sql.Append(whereSql).Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows); ;
                 var tmp = await c.QueryAsync<TroubleReport>(sql.ToString());
                 if (tmp.Count() > 0)
