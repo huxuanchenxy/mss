@@ -147,6 +147,15 @@
           </div>
           <p class="validate-tips">{{ Name.tips }}</p>
         </li>
+        <li class="list" >
+          <div class="inp-wrap">
+            <span class="text">班组编码</span>
+            <div class="inp">
+              <el-input v-model="Code.text" :disabled="this.ReadOnly"></el-input>
+            </div>
+          </div>
+          <p class="validate-tips">{{ Code.tips }}</p>
+        </li>
         <li class="list">
           <div class="inp-wrap">
             <span class="text">负责人</span>

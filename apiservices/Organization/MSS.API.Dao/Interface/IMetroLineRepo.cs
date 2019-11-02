@@ -17,6 +17,7 @@ namespace MSS.API.Dao.Interface
         Task<MetroLine> UpdateLine(MetroLine line);
 
         Task<int> DeleteLine(List<MetroLine> line);
+        Task<bool> CheckUsing(List<int> ids);
 
         // 根据id查询
         Task<MetroLine> GetMetroLineByID(int id);

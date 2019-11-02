@@ -169,6 +169,10 @@
   background-color: $color-highlight-text !important;
 }
 
+.el-cascader-menu__item.is-active{
+  background-color: $color-highlight-text !important;
+}
+
 // 下拉选择框样式
 .el-select-dropdown__item.selected{
   color: $color-white !important;

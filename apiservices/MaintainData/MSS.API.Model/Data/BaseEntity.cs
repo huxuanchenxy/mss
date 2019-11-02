@@ -54,4 +54,13 @@ namespace MSS.API.Model.Data
         public string Name { get; set; }
         public int LocationBy { get; set; }
     }
+    public enum TroubleStatus
+    {
+        NewTrouble=48,
+        Processing=49,
+        Repaired=50,
+        Delayed=133,
+        Finished=134,
+        Canceled=135
+    }
 }

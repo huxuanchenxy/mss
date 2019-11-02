@@ -72,6 +72,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
+        [HttpGet("ListByTopOrg/{topOrg}/{line}/{location}/{locationBy}")]
+        public ActionResult ListByTopOrg(int topOrg,int line,int location,int locationBy)
+        {
+            var resp = _eqpService.ListByTopOrg(topOrg,line,location,locationBy);
+            return Ok(resp.Result);
+        }
+
         [HttpGet("GetByEqpType/{ids}")]
         public ActionResult ListByEqpType(string ids)
         {

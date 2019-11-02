@@ -104,8 +104,17 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                await _lineRepo.DeleteLine(lines);
-                ret.code = Code.Success;
+                bool isUsing = await _lineRepo.CheckUsing(lines.Select(a => a.ID).ToList());
+                if (isUsing)
+                {
+                    ret.code = Code.CheckDataRulesFail;
+                    ret.msg = "有线路正在被站点使用，不允许删除";
+                }
+                else
+                {
+                    await _lineRepo.DeleteLine(lines);
+                    ret.code = Code.Success;
+                }
             }
             catch (Exception ex)
             {
