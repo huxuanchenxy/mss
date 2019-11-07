@@ -1,6 +1,13 @@
 
 import Echarts from 'echarts'
 const optionPie = {
+  title: {
+    text: '设备故障数量(前5)',
+    textStyle: {
+      fontSize: '13',
+      color: 'white'
+    }
+  },
   tooltip: {
     trigger: 'item',
     formatter: '{a}<br/>{b}:{c} ({d}%)'
@@ -8,6 +15,7 @@ const optionPie = {
   legend: {
     orient: 'vertical',
     x: 'left',
+    y: 'middle',
     data: [ '航头站', '周浦站', '御桥站', '江浦路站', '政立路站' ],
     textStyle: {
       fontSize: '13',
@@ -16,9 +24,10 @@ const optionPie = {
   },
   series: [
     {
-      name: '设备报警数量',
+      name: '设备故障数量',
       type: 'pie',
       radius: ['50%', '70%'],
+      center: ['60%', '50%'],
       avoidLabelOverlap: false,
       label: {
         normal: {
@@ -60,34 +69,29 @@ var optionRadar = {
   },
   legend: {
     orient: 'vertical',
-    x: 'right',
-    y: 'bottom',
-    data: ['报警数', '故障数']
-  },
-  toolbox: {
-    show: true,
-    feature: {
-      mark: {show: true},
-      dataView: {show: true, readOnly: false},
-      restore: {show: true},
-      saveAsImage: {show: true}
+    x: 'left',
+    y: 'top',
+    data: ['今年成本分摊', '去年成本分摊'],
+    textStyle: {
+      fontSize: '13',
+      color: 'white'
     }
   },
   polar: [
     {
       indicator: [
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '风机', max: 6000},
+        { text: '运营', max: 6000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '水泵', max: 16000},
+        { text: '人力', max: 16000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '烟感', max: 30000},
+        { text: '故障', max: 30000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '空调', max: 38000},
+        { text: '物料', max: 38000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '空气质量', max: 52000},
+        { text: '检修', max: 52000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '信号', max: 25000}
+        { text: '管理', max: 25000}
       ],
       splitArea: {
         show: true,
@@ -115,11 +119,11 @@ var optionRadar = {
       data: [
         {
           value: [4300, 10000, 28000, 35000, 50000, 19000],
-          name: '报警数'
+          name: '今年成本分摊'
         },
         {
           value: [5000, 14000, 28000, 31000, 42000, 21000],
-          name: '故障数'
+          name: '去年成本分摊'
         }
       ]
     }
@@ -128,28 +132,17 @@ var optionRadar = {
 
 var optionGauge = {
   title: {
-    text: '业务指标', // 标题文本内容
+    text: '年度运营成本目标', // 标题文本内容
     textStyle: {
       fontSize: '13',
       color: 'white'
-    }
-  },
-  toolbox: { // 可视化的工具箱
-    show: true,
-    feature: {
-      restore: { // 重置
-        show: true
-      },
-      saveAsImage: {// 保存图片
-        show: true
-      }
     }
   },
   tooltip: { // 弹窗组件
     formatter: '{a} <br/>{b} : {c}%'
   },
   series: [{
-    name: '业务指标',
+    name: '年度运营成本目标',
     type: 'gauge',
     detail: {formatter: '{value}%'},
     data: [{value: 45, name: '完成率'}]
@@ -210,7 +203,7 @@ var optionLine = {
     trigger: 'axis'
   },
   legend: {
-    data: ['最低气温'],
+    data: ['设备健康度'],
     textStyle: {
       fontSize: '13',
       color: '#fff'
@@ -218,38 +211,49 @@ var optionLine = {
     x: 'left'
     // y: 'bottom',
   },
-  // toolbox: {
-  //   show: true,
-  //   feature: {
-  //     mark: {show: true},
-  //     dataView: {show: true, readOnly: false},
-  //     magicType: {show: true, type: ['line', 'bar']},
-  //     restore: {show: true},
-  //     saveAsImage: {show: true}
-  //   }
-  // },
+  grid: { // 直角坐标系内绘图网格
+    left: '15%', // grid 组件离容器左侧的距离,
+    // // left的值可以是80这样具体像素值，
+    // // 也可以是'80%'这样相对于容器高度的百分比
+    top: '12%',
+    right: '10%',
+    bottom: '10%'
+    // containLabel: true // gid区域是否包含坐标轴的刻度标签。为true的时候，
+    // left/right/top/bottom/width/height决定的是包括了坐标轴标签在内的
+    // 所有内容所形成的矩形的位置.常用于【防止标签溢出】的场景
+  },
   calculable: true,
   xAxis: [
     {
       type: 'category',
       boundaryGap: false,
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+      data: ['5月', '6月', '7月', '8月', '9月', '10月', '11月'],
+      axisLabel: {
+        textStyle: {
+          fontSize: '13',
+          color: '#fff'
+        }
+      }
     }
   ],
   yAxis: [
     {
       type: 'value',
       axisLabel: {
-        formatter: '{value} °C'
+        formatter: '{value} %',
+        textStyle: {
+          fontSize: '13',
+          color: '#fff'
+        }
       }
     }
   ],
   series: [
 
     {
-      name: '标准气温',
+      name: '理想健康度',
       type: 'line',
-      data: [6, 6, 6, 6, 6, 6, 6], // 标准线效果
+      data: [80, 80, 80, 80, 80, 80, 80], // 标准线效果
       markLine: {
         data: [
           {type: 'average', name: '平均值'}
@@ -258,12 +262,12 @@ var optionLine = {
 
     },
     {
-      name: '最低气温',
+      name: '设备健康度',
       type: 'line',
-      data: [1, -2, 2, 5, 3, 2, 0],
+      data: [99, 30, 50, 40, 33, 88, 66],
       markPoint: {
         data: [
-          {name: '周最低', value: -2, xAxis: 1, yAxis: -1.5}
+          {name: '最低', value: 30, xAxis: 1, yAxis: 30}
         ]
       },
       markLine: {
@@ -365,11 +369,316 @@ var optionHBar = {
   ]
 }
 
+var middleOption1 = {
+  /* 柱状图颜色 */
+  color: ['#06a45f', '#078ed6', '#e3982f'],
+  title: {
+    text: '报警次数统计（次）',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  /* 四周边距(单位默认px，可以使用百分比) */
+  grid: {
+    left: 40,
+    top: 30,
+    right: 50,
+    bottom: 30
+  },
+  /* 鼠标悬浮显示数据 */
+  tooltip: {
+    trigger: 'axis',
+    // eslint-disable-next-line no-irregular-whitespace
+    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+      // eslint-disable-next-line no-irregular-whitespace
+      type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+    }
+  },
+  /* 图例说明 */
+  legend: {
+    // 图例排项 vertical-"竖向"; horizontal-"横向"
+    orient: 'horizontal',
+    // 图例组件离容器左侧的距离
+    right: 40,
+    top: 0,
+    // 图例文字的样式
+    textStyle: {
+      color: '#6ab2ec'
+    },
+    // 与series中每个name对应
+    data: ['车辆', '供电', '信号']
+  },
+  toolbox: {
+    show: true
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      // 设置轴线的属性
+      axisLine: {
+        lineStyle: {
+          color: '#6ab2ec'
+        }
+      },
+      // 调整x轴的lable
+      //                axisLabel:{
+      //                    textStyle:{
+      //                        fontSize:10 // 让字体变小
+      //                    },
+      //                    rotate: 30,    // 字体倾斜30度
+      //                },
+      data: ['7月', '8月', '9月', '10月', '11月']
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      // 控制网格线是否显示
+      splitLine: {
+        show: true,
+        lineStyle: {
+          // 使用深浅的间隔色
+          color: ['#132a6e']
+        }
+      },
+      // 设置轴线的属性
+      axisLine: {
+        lineStyle: {
+          color: '#6ab2ec'
+        }
+      }
+    }
+  ],
+  series: [
+    {
+      name: '车辆',
+      type: 'bar',
+      /* 柱子的显示宽度 */
+      barWidth: '20%',
+      data: [10, 25, 21, 25, 36],
+      /* 显示平均线 */
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+      // ,
+      /* 显示柱子数据 */
+      // label: {
+      //   normal: {
+      //     show: true,
+      //     // 数据在柱子头部显示
+      //     position: 'top',
+      //     textStyle: {
+      //       color: '#5475c7',
+      //       fontSize: 16
+      //     }
+      //   }
+      // }
+    },
+    {
+      name: '供电',
+      type: 'bar',
+      barWidth: '20%',
+      data: [40, 28, 45, 36, 12],
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    },
+    {
+      name: '信号',
+      type: 'bar',
+      barWidth: '20%',
+      data: [15, 56, 34, 21, 8],
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    }
+  ]
+}
+
+var middleOption2 = {
+  /* 柱状图颜色 */
+  color: ['#06a45f', '#078ed6', '#e3982f'],
+  title: {
+    text: '平均恢复时间(分钟)',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  /* 四周边距(单位默认px，可以使用百分比) */
+  grid: {
+    left: 40,
+    top: 30,
+    right: 50,
+    bottom: 50
+  },
+  /* 鼠标悬浮显示数据 */
+  tooltip: {
+    trigger: 'axis',
+    // eslint-disable-next-line no-irregular-whitespace
+    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+      // eslint-disable-next-line no-irregular-whitespace
+      type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+    }
+  },
+  /* 图例说明 */
+  legend: {
+    // 图例排项 vertical-"竖向"; horizontal-"横向"
+    orient: 'horizontal',
+    // 图例组件离容器左侧的距离
+    right: 40,
+    top: 0,
+    // 图例文字的样式
+    textStyle: {
+      color: '#6ab2ec'
+    },
+    // 与series中每个name对应
+    data: ['车辆', '供电', '信号']
+  },
+  toolbox: {
+    show: true
+  },
+  calculable: true,
+  xAxis: [
+    {
+      type: 'category',
+      // 设置轴线的属性
+      axisLine: {
+        lineStyle: {
+          color: '#6ab2ec'
+        }
+      },
+      // 调整x轴的lable
+      //                axisLabel:{
+      //                    textStyle:{
+      //                        fontSize:10 // 让字体变小
+      //                    },
+      //                    rotate: 30,    // 字体倾斜30度
+      //                },
+      data: ['7月', '8月', '9月', '10月', '11月']
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      // 控制网格线是否显示
+      splitLine: {
+        show: true,
+        lineStyle: {
+          // 使用深浅的间隔色
+          color: ['#132a6e']
+        }
+      },
+      // 设置轴线的属性
+      axisLine: {
+        lineStyle: {
+          color: '#6ab2ec'
+        }
+      }
+    }
+  ],
+  series: [
+    {
+      name: '车辆',
+      type: 'line',
+      /* 柱子的显示宽度 */
+      barWidth: '20%',
+      data: [20, 25, 13, 100, 80],
+      /* 显示平均线 */
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    },
+    {
+      name: '供电',
+      type: 'line',
+      barWidth: '20%',
+      data: [66, 28, 77, 10, 30],
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    },
+    {
+      name: '信号',
+      type: 'line',
+      barWidth: '20%',
+      data: [90, 87, 70, 74, 54],
+      markLine: {
+        data: [
+          {type: 'average', name: '平均值'}
+        ]
+      }
+    }
+  ]
+}
+
+var pieOption2 = {
+  title: {
+    text: '成本去向对比',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: '{a} <br/>{b}: {c} ({d}%)'
+  },
+  series: [
+    {
+      name: '去年',
+      type: 'pie',
+      selectedMode: 'single',
+      radius: [0, '30%'],
+      center: ['50%', '45%'],
+      label: {
+        normal: {
+          position: 'inner'
+        }
+      },
+      labelLine: {
+        normal: {
+          show: false
+        }
+      },
+      data: [
+        {value: 335, name: '检修', selected: true},
+        {value: 679, name: '故障'}
+      ]
+    },
+    {
+      name: '今年',
+      type: 'pie',
+      radius: ['55%', '70%'],
+      center: ['50%', '45%'],
+      data: [
+        {value: 345, name: '检修'},
+        {value: 310, name: '故障'}
+      ]
+    }
+  ]
+}
+
 export default {
   optionPie: optionPie,
   optionRadar: optionRadar,
   optionGauge: optionGauge,
   optionBar: optionBar,
   optionLine: optionLine,
-  optionHBar: optionHBar
+  optionHBar: optionHBar,
+  middleOption1: middleOption1,
+  middleOption2: middleOption2,
+  pieOption2: pieOption2
 }
