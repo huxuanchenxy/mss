@@ -1,5 +1,6 @@
 ﻿using MSS.API.Common;
 using MSS.API.Common.Utility;
+using MSS.Common.Consul;
 using MSS.Platform.Workflow.WebApi.Data;
 using MSS.Platform.Workflow.WebApi.Model;
 using System;
@@ -12,10 +13,14 @@ namespace MSS.Platform.Workflow.WebApi.Service
     {
         private readonly IWorkTaskRepo<TaskViewModel> _repo;
         private readonly IAuthHelper _authhelper;
-        public WorkTaskService(IWorkTaskRepo<TaskViewModel> repo, IAuthHelper authhelper)
+        private readonly IServiceDiscoveryProvider _consulclient;
+        private readonly IWfprocessRepo<Wfprocess> _wfprocessRepo;
+        public WorkTaskService(IWorkTaskRepo<TaskViewModel> repo, IAuthHelper authhelper, IServiceDiscoveryProvider consulclient, IWfprocessRepo<Wfprocess> wfprocessRepo)
         {
             _repo = repo;
             _authhelper = authhelper;
+            _consulclient = consulclient;
+            _wfprocessRepo = wfprocessRepo;
         }
 
         /// <summary>
@@ -99,7 +104,108 @@ namespace MSS.Platform.Workflow.WebApi.Service
 
 
 
+        public async Task<WfRet> StartProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet();
 
+            try
+            {
+                parm.UserID = _authhelper.GetUserId();
+                //parm.AssignedToUserID = 40;
+                string url1 = await _consulclient.GetServiceAsync("AuthService");
+                url1 += "/api/v1/User/" + parm.UserID;
+                var userresponse = HttpClientHelper.GetResponse<ApiResult>(url1);
+                dynamic dyuser = userresponse.data;
+                string username = dyuser.user_name;
+
+                var wfprocessobj = await _wfprocessRepo.GetByID(parm.ProcessID);
+                parm.ProcessGUID = wfprocessobj.ProcessGUID;
+                parm.AppName = wfprocessobj.ProcessName;//TODO 待需求确认写流程名称
+                parm.UserName = username;
+
+                string url2 = await _consulclient.GetServiceAsync("WorkFlowProcessService");
+                url2 += "/api/v1/WfProcess/StartProcess";
+                var wfresponse = HttpClientHelper.PostResponse<WfRet>(url2, parm);
+                ret = wfresponse;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.Status = -999;
+                ret.Message = ex.Message.ToString();
+            }
+
+            return ret;
+        }
+
+
+        public async Task<WfRet> GetNextStepRoleUserTree(WfReq parm)
+        {
+            WfRet ret = new WfRet();
+
+            try
+            {
+                parm.UserID = _authhelper.GetUserId();
+                //parm.AssignedToUserID = 40;
+                string url1 = await _consulclient.GetServiceAsync("AuthService");
+                url1 += "/api/v1/User/" + parm.UserID;
+                var userresponse = HttpClientHelper.GetResponse<ApiResult>(url1);
+                dynamic dyuser = userresponse.data;
+                string username = dyuser.user_name;
+
+                var wfprocessobj = await _wfprocessRepo.GetByID(parm.ProcessID);
+                parm.ProcessGUID = wfprocessobj.ProcessGUID;
+                parm.AppName = wfprocessobj.ProcessName;//TODO 待需求确认写流程名称
+                parm.UserName = username;
+
+                string url2 = await _consulclient.GetServiceAsync("WorkFlowProcessService");
+                url2 += "/api/v1/WfProcess/GetNextStepRoleUserTree";
+                var wfresponse = HttpClientHelper.PostResponse<WfRet>(url2, parm);
+                ret = wfresponse;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.Status = -999;
+                ret.Message = ex.Message.ToString();
+            }
+
+            return ret;
+        }
+
+        public async Task<WfRet> NextProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet();
+
+            try
+            {
+                parm.UserID = _authhelper.GetUserId();
+                //parm.AssignedToUserID = 40;
+                string url1 = await _consulclient.GetServiceAsync("AuthService");
+                url1 += "/api/v1/User/" + parm.UserID;
+                var userresponse = HttpClientHelper.GetResponse<ApiResult>(url1);
+                dynamic dyuser = userresponse.data;
+                string username = dyuser.user_name;
+
+                var wfprocessobj = await _wfprocessRepo.GetByID(parm.ProcessID);
+                parm.ProcessGUID = wfprocessobj.ProcessGUID;
+                parm.AppName = wfprocessobj.ProcessName;//TODO 待需求确认写流程名称
+                parm.UserName = username;
+
+                string url2 = await _consulclient.GetServiceAsync("WorkFlowProcessService");
+                url2 += "/api/v1/WfProcess/RunProcessApp";
+                var wfresponse = HttpClientHelper.PostResponse<WfRet>(url2, parm);
+                ret = wfresponse;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.Status = -999;
+                ret.Message = ex.Message.ToString();
+            }
+
+            return ret;
+        }
 
     }
 
@@ -108,6 +214,9 @@ namespace MSS.Platform.Workflow.WebApi.Service
         Task<ApiResult> GetReadyTasks(WorkTaskQueryParm parm);
         Task<ApiResult> GetPageMyApply(WorkTaskQueryParm parm);
         Task<ApiResult> GetPageActivityInstance(WorkQueryParm parm);
+        Task<WfRet> StartProcess(WfReq parm);
+        Task<WfRet> GetNextStepRoleUserTree(WfReq parm);
+        Task<WfRet> NextProcess(WfReq parm);
     }
 
 

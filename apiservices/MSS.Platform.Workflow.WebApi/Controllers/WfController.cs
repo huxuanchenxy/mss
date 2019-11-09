@@ -71,6 +71,59 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
             return ret;
         }
 
+        [HttpPost("StartProcess")]
+        public async Task<ActionResult<WfRet>> StartProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.StartProcess(parm);
+
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "启动工作流失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPost("GetNextStepRoleUserTree")]
+        public async Task<ActionResult<WfRet>> GetNextStepRoleUserTree(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.GetNextStepRoleUserTree(parm);
+
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "获取下一步信息失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPost("NextProcess")]
+        public async Task<ActionResult<WfRet>> NextProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.NextProcess(parm);
+
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "转到下一步流程失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
 
 
     }

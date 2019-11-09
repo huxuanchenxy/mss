@@ -102,5 +102,27 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public string LastUpdatedByUserName { get; set; }
     }
 
+    public class WfRet
+    {
+        public int Status { get; set; }
+        public string Message { get; set; }
+        public string NewID { get; set; }
+        public object ExtraData { get; set; }
+        public object Entity { get; set; }
+    }
+
+    public class WfReq
+    {
+
+        public string AppName { get; set; }
+        public long AppInstanceID { get; set; }
+        public string ProcessGUID { get; set; }
+        public int ProcessID { get; set; }
+        public int UserID { get; set; }
+        public string UserName { get; set; }
+        public dynamic Conditions { get; set; }
+        public dynamic NextActivityPerformers { get; set; }
+    }
+
 
 }
