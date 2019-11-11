@@ -11,6 +11,7 @@ using System.Data;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using static MSS.API.Common.MyDictionary;
+using MSS.API.Common;
 
 namespace MSS.API.Dao.Implement
 {
@@ -18,8 +19,8 @@ namespace MSS.API.Dao.Implement
     {
         public TroubleReportRepo(DapperOptions options) :base(options)
             {
-            } 
-
+            }
+        #region trouble_report
         public async Task<TroubleReport> GetByID(int id)
         {
             return await WithConnection(async c =>
@@ -47,13 +48,14 @@ namespace MSS.API.Dao.Implement
                 StringBuilder sql = new StringBuilder();
                 sql.Append("select tr.*,dt1.name,")
                 .Append("u.user_name,u1.user_name as cname,dt2.name as lname,ml.line_name, ")
-                .Append("ot.name as rcname,u.mobile,u2.user_name as uname ")
+                .Append("ot.name as rcname,u.mobile,u2.user_name as uname,dt3.name as loname ")
                 .Append("from trouble_report tr ")
                 .Append("LEFT JOIN metro_line ml on ml.id=tr.line ")
                 //.Append("LEFT JOIN equipment e on e.id=tr.eqp ")
                 //.Append("LEFT JOIN dictionary_tree dt on dt.ID=tr.type ")
-                .Append("LEFT JOIN dictionary_tree dt1 on dt1.ID=tr.`status` ")
+                .Append("LEFT JOIN dictionary_tree dt1 on dt1.ID=tr.status ")
                 .Append("LEFT JOIN dictionary_tree dt2 on dt2.ID=tr.level ")
+                .Append("LEFT JOIN dictionary_tree dt3 on dt3.ID=tr.last_operation ")
                 .Append("LEFT JOIN `user` u on u.id=tr.reported_by ")
                 .Append("LEFT JOIN `user` u1 on u1.id=tr.created_by ")
                 .Append("LEFT JOIN `user` u2 on u2.id=tr.updated_by ")
@@ -71,6 +73,25 @@ namespace MSS.API.Dao.Implement
                 if (parm.TroubleStatus!=null)
                 {
                     whereSql.Append(" and tr.status = " + parm.TroubleStatus);
+                }
+                else if (parm.MenuView==TroubleView.MyRepair)
+                {
+                    whereSql.Append(" and (tr.status = " + (int)TroubleStatus.NewTrouble)
+                        .Append(" or tr.status = " + (int)TroubleStatus.Delayed+")")
+                        .Append(" and tr.last_operation != " + (int)TroubleOperation.RepairReject);
+                }
+                else if (parm.MenuView == TroubleView.MyProcessing)
+                {
+                    whereSql.Append(" and tr.status = " + (int)TroubleStatus.Processing );
+                }
+                else if (parm.MenuView == TroubleView.MyCheck)
+                {
+                    whereSql.Append(" and tr.status = " + (int)TroubleStatus.Repaired);
+                }
+                if (parm.RepairCompany>0)
+                {
+                    whereSql.Append(" and tr.id in (select trouble from trouble_eqp where org=" + parm.RepairCompany+")");
+                    ret.RepairCompany = parm.RepairCompany;
                 }
                 if (parm.StartTime != null)
                 {
@@ -99,18 +120,72 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status)
+        public async Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation)
         {
             return await WithConnection(async c =>
             {
                 string sql = " update trouble_report " +
-                        " set status=@status,updated_by=@userID,updated_time=@time where id in @ids ";
+                        " set status=@status,last_operation=@operation,updated_by=@userID,updated_time=@time where id in @ids ";
                 int ret = await c.ExecuteAsync(sql, 
-                    new { ids, userID, time = DateTime.Now,status});
+                    new { ids, userID, time = DateTime.Now,status,operation});
                 return ret;
             });
         }
-
+        public async Task<int> Update(TroubleReport troubleReport, TroubleHistory troubleHistory)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql;
+                IDbTransaction trans = c.BeginTransaction();
+                try
+                {
+                    var result = await c.ExecuteAsync(" update trouble_report " +
+                        " set code=@Code,happening_time=@HappeningTime,reported_time=@ReportedTime,line=@Line, " +
+                        " start_location=@StartLocation,start_location_by=@StartLocationBy,start_location_path=@StartLocationPath, " +
+                        " end_location=@EndLocation,end_location_by=@EndLocationBy,urgent_repair_order=@UrgentRepairOrder, " +
+                        " level=@Level,reported_company=@ReportedCompany,reported_company_path=@ReportedCompanyPath, " +
+                        " reported_by=@ReportedBy,description=@Desc,last_operation=@LastOperation," +
+                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", troubleReport, trans);
+                    List<TroubleEqp> eqps = JsonConvert.DeserializeObject<List<TroubleEqp>>(troubleReport.Eqps);
+                    sql = "delete from trouble_eqp where trouble=@id";
+                    int ret = await c.ExecuteAsync(sql, new { id = troubleReport.ID }, trans);
+                    sql = "insert into trouble_eqp values (0,@Trouble,@Org,@Eqp,null,null,null,null)";
+                    ret = await c.ExecuteAsync(sql, eqps, trans);
+                    if (!string.IsNullOrWhiteSpace(troubleReport.UploadFiles))
+                    {
+                        sql = "delete from upload_file_relation where entity_id=@id and system_resource=@sr";
+                        ret = await c.ExecuteAsync(sql, new { id = troubleReport.ID, sr = SystemResource.TroubleReport }, trans);
+                        List<object> objs = new List<object>();
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(troubleReport.UploadFiles);
+                        foreach (var obj in jobj)
+                        {
+                            foreach (var item in obj["ids"].ToString().Split(','))
+                            {
+                                objs.Add(new
+                                {
+                                    ePlanID = troubleReport.ID,
+                                    fileID = Convert.ToInt32(item),
+                                    type = Convert.ToInt32(obj["type"]),
+                                    systemResource = (int)SystemResource.TroubleReport
+                                });
+                            }
+                        }
+                        sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
+                        ret = await c.ExecuteAsync(sql, objs, trans);
+                    }
+                    sql = "insert into trouble_history " +
+                    " values (0,@Trouble,@Operation,@Content,@CreatedBy,@CreatedTime)";
+                    await c.QueryFirstOrDefaultAsync<int>(sql, troubleHistory, trans);
+                    trans.Commit();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    throw new Exception(ex.ToString());
+                }
+            });
+        }
         public async Task<TroubleReport> Save(TroubleReport troubleReport)
         {
             return await WithConnection(async c =>
@@ -122,7 +197,7 @@ namespace MSS.API.Dao.Implement
                     sql = " insert into trouble_report " +
                         " values (0,@Code,@HappeningTime,@ReportedTime,@Line,@StartLocation,@StartLocationBy,@StartLocationPath, " +
                         " @EndLocation,@EndLocationBy,@UrgentRepairOrder,@Level,@ReportedCompany,@ReportedCompanyPath,@ReportedBy," +
-                        " @Desc,@Status,@CreatedBy,@CreatedTime,@AcceptedTime,@UpdatedTime,@UpdatedBy); ";
+                        " @Desc,@Status,@LastOperation,@CreatedBy,@CreatedTime,@AcceptedTime,@UpdatedTime,@UpdatedBy); ";
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, troubleReport, trans);
                     troubleReport.ID = newid;
@@ -131,7 +206,7 @@ namespace MSS.API.Dao.Implement
                     {
                         item.Trouble = newid;
                     }
-                    sql = "insert into trouble_eqp values (0,@Trouble,@Org,@Eqp)";
+                    sql = "insert into trouble_eqp values (0,@Trouble,@Org,@Eqp,null,null,null,null)";
                     int ret = await c.ExecuteAsync(sql, eqps, trans);
                     if (!string.IsNullOrWhiteSpace(troubleReport.UploadFiles))
                     {
@@ -153,6 +228,17 @@ namespace MSS.API.Dao.Implement
                         sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
                         ret = await c.ExecuteAsync(sql, objs, trans);
                     }
+                    sql = "insert into trouble_history " +
+                    " values (0,@trouble,@operation,@content,@user,@time)";
+                    object myObj = new
+                    {
+                        trouble = newid,
+                        operation = TroubleOperation.NewTrouble,
+                        content = troubleReport.Code,
+                        user = troubleReport.CreatedBy,
+                        time=troubleReport.CreatedTime
+                    };
+                    await c.QueryFirstOrDefaultAsync<int>(sql, myObj, trans);
                     trans.Commit();
 
                     return troubleReport;
@@ -164,6 +250,9 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
+        #endregion
+
+        #region get
         public async Task<string> GetLineCodeByID(int id)
         {
             return await WithConnection(async c =>
@@ -194,15 +283,24 @@ namespace MSS.API.Dao.Implement
                 return ret;
             });
         }
-        public async Task<List<TroubleEqp>> ListEqpByTrouble(int trouble)
+        #endregion
+
+        #region trouble_eqp
+        public async Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0)
         {
             return await WithConnection(async c =>
             {
-                string sql = " select a.*,ot.name,e.eqp_name from trouble_eqp a " +
+                string sql = " select a.*,ot.name,e.eqp_name,e.team_path from trouble_eqp a " +
                 " left join org_tree ot on ot.id=a.org " +
                 " left join equipment e on e.id =a.eqp " +
-                " where trouble=@trouble";
-                var ret = await c.QueryAsync<TroubleEqp>(sql, new { trouble });
+                " where a.trouble=@trouble";
+                object obj = new { trouble };
+                if (topOrg>0)
+                {
+                    sql += " and a.org=@topOrg";
+                    obj= new { trouble,topOrg };
+                }
+                var ret = await c.QueryAsync<TroubleEqp>(sql, obj);
                 if (ret.Count()>0)
                 {
                     return ret.ToList();
@@ -213,58 +311,57 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
-
-        public async Task<int> Update(TroubleReport troubleReport)
+        public async Task<int> UpdateTroubleEqp(List<TroubleEqp> troubleEqp)
         {
             return await WithConnection(async c =>
             {
-                string sql;
-                IDbTransaction trans = c.BeginTransaction();
-                try
+                string sql = "Update trouble_eqp " +
+                    " set org_node=@OrgNode,org_path=@OrgPath,assigned_by=@AssignedBy,assigned_time=@AssignedTime" +
+                    " where id=@ID";
+                return await c.ExecuteAsync(sql, troubleEqp);
+            });
+        }
+        #endregion
+
+        #region history
+        public async Task<int> SaveHistory(TroubleHistory troubleHistory)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "insert into trouble_history " +
+                    " values (0,@Trouble,@Operation,@Content,@CreatedBy,@CreatedTime)";
+                return await c.ExecuteAsync(sql, troubleHistory);
+            });
+        }
+
+        public async Task<int> SaveHistory(List<TroubleHistory> troubleHistory)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "insert into trouble_history " +
+                    " values (0,@Trouble,@Operation,@Content,@CreatedBy,@CreatedTime)";
+                return await c.ExecuteAsync(sql, troubleHistory);
+            });
+        }
+        public async Task<List<TroubleHistory>> ListHistoryByTrouble(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT th.*,tr.code,dt.name,u.user_name from trouble_history th " +
+                    " LEFT JOIN trouble_report tr on tr.id=th.trouble " +
+                    " LEFT JOIN dictionary_tree dt on dt.id=th.operation " +
+                    " LEFT JOIN user u on u.id = th.created_by where th.trouble=@id";
+                var tmp= await c.QueryAsync<TroubleHistory>(sql, new { id });
+                if (tmp.Count()>0)
                 {
-                    var result = await c.ExecuteAsync(" update trouble_report " +
-                        " set code=@Code,happening_time=@HappeningTime,reported_time=@ReportedTime,line=@Line, " +
-                        " start_location=@StartLocation,start_location_by=@StartLocationBy,start_location_path=@StartLocationPath, " +
-                        " end_location=@EndLocation,end_location_by=@EndLocationBy,urgent_repair_order=@UrgentRepairOrder, " +
-                        " level=@Level,reported_company=@ReportedCompany,reported_company_path=@ReportedCompanyPath, " +
-                        " reported_by=@ReportedBy,description=@Desc," +
-                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", troubleReport, trans);
-                    List<TroubleEqp> eqps = JsonConvert.DeserializeObject<List<TroubleEqp>>(troubleReport.Eqps);
-                    sql = "delete from trouble_eqp where trouble=@id";
-                    int ret = await c.ExecuteAsync(sql, new { id = troubleReport.ID}, trans);
-                    sql = "insert into trouble_eqp values (0,@Trouble,@Org,@Eqp)";
-                    ret = await c.ExecuteAsync(sql, eqps, trans);
-                    if (!string.IsNullOrWhiteSpace(troubleReport.UploadFiles))
-                    {
-                        sql = "delete from upload_file_relation where entity_id=@id and system_resource=@sr";
-                        ret = await c.ExecuteAsync(sql, new { id = troubleReport.ID,sr=SystemResource.TroubleReport }, trans);
-                        List<object> objs = new List<object>();
-                        JArray jobj = JsonConvert.DeserializeObject<JArray>(troubleReport.UploadFiles);
-                        foreach (var obj in jobj)
-                        {
-                            foreach (var item in obj["ids"].ToString().Split(','))
-                            {
-                                objs.Add(new
-                                {
-                                    ePlanID = troubleReport.ID,
-                                    fileID = Convert.ToInt32(item),
-                                    type = Convert.ToInt32(obj["type"]),
-                                    systemResource = (int)SystemResource.TroubleReport
-                                });
-                            }
-                        }
-                        sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
-                        ret = await c.ExecuteAsync(sql, objs, trans);
-                    }
-                    trans.Commit();
-                    return result;
+                    return tmp.ToList();
                 }
-                catch (Exception ex)
+                else
                 {
-                    trans.Rollback();
-                    throw new Exception(ex.ToString());
+                    return new List<TroubleHistory>();
                 }
             });
         }
+        #endregion
     }
 }         

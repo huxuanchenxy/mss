@@ -119,19 +119,36 @@ export default {
     }
   },
   created () {
+    console.log(this.$route.params)
     // this.loading = true
-    // 设备类型加载
-    apiEqp.getEqpTypeAll().then(res => {
-      this.eqpTypeList = res.data
-      this.eqpType = this.eqpTypeList[0].id
-      // 设备加载
-      api.GetEqpByTypeAndLine(this.eqpType).then(res => {
-        this.eqpList = res.data
-        // this.eqpSelected.push(this.eqpList[0].id)
-        // this.eqp = this.getDefaultEqp(this.eqpList[0])
-        // this.searchRes()
+    if ('eqpSelected' in this.$route.params) {
+      // 设备类型加载
+      apiEqp.getEqpTypeAll().then(res => {
+        this.eqpTypeList = res.data
+        this.eqpType = this.$route.params.eqpType
+        // 设备加载
+        api.GetEqpByTypeAndLine(this.eqpType).then(res => {
+          this.eqpList = res.data
+          this.eqpSelected = this.$route.params.eqpSelected
+          // this.eqpSelected.push(this.eqpList[0].id)
+          // this.eqp = this.getDefaultEqp(this.eqpList[0])
+          this.searchRes()
+        }).catch(err => console.log(err))
       }).catch(err => console.log(err))
-    }).catch(err => console.log(err))
+    } else {
+      // 设备类型加载
+      apiEqp.getEqpTypeAll().then(res => {
+        this.eqpTypeList = res.data
+        this.eqpType = this.eqpTypeList[0].id
+        // 设备加载
+        api.GetEqpByTypeAndLine(this.eqpType).then(res => {
+          this.eqpList = res.data
+          // this.eqpSelected.push(this.eqpList[0].id)
+          // this.eqp = this.getDefaultEqp(this.eqpList[0])
+          // this.searchRes()
+        }).catch(err => console.log(err))
+      }).catch(err => console.log(err))
+    }
   },
   activated () {
     if ('eqpSelected' in this.$route.params) {
@@ -186,7 +203,9 @@ export default {
             name: 'DetailTroubleReport',
             params: {
               id: id,
-              sourceName: 'SeeHistory'
+              sourceName: 'SeeHistory',
+              eqpSelected: this.eqpSelected,
+              eqpType: this.eqpType
             }
           })
           break

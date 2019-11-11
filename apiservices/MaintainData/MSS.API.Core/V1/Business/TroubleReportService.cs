@@ -19,9 +19,12 @@ namespace MSS.API.Core.V1.Business
 {
     public interface ITroubleReportService
     {
+        Task<ApiResult> ListHistoryByTrouble(int id);
+        Task<ApiResult> ListEqpByTrouble(int id,int topOrg);
+        Task<ApiResult> AssignEqp(List<TroubleEqp> troubleEqp);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> ListPage(TroubleReportParm parm);
-        Task<ApiResult> UpdateStatus(string ids, TroubleStatus status);
+        Task<ApiResult> Operation(string ids, TroubleOperation operation, string content);
         Task<ApiResult> Save(TroubleReport troubleReport);
         Task<ApiResult> Update(TroubleReport troubleReport);
     }
@@ -43,20 +46,68 @@ namespace MSS.API.Core.V1.Business
         }
 
 
-        //public async Task<ApiResult> GetByID(int id)
-        //{
-        //    ApiResult ret = new ApiResult();
-        //    try
-        //    {
-        //        ret.data = await _troubleReportRepo.GetByID(id);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ret.code = Code.Failure;
-        //        ret.msg = ex.Message;
-        //    }
-        //    return ret;
-        //}
+        public async Task<ApiResult> ListHistoryByTrouble(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _troubleReportRepo.ListHistoryByTrouble(id);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+        public async Task<ApiResult> ListEqpByTrouble(int id,int topOrg)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _troubleReportRepo.ListEqpByTrouble(id,topOrg);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+        public async Task<ApiResult> AssignEqp(List<TroubleEqp> troubleEqp)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                DateTime dt = DateTime.Now;
+                TroubleHistory thTmp = new TroubleHistory();
+                thTmp.Trouble = troubleEqp[0].Trouble;
+                thTmp.Operation = TroubleOperation.Assign;
+                thTmp.CreatedBy = _userID;
+                thTmp.CreatedTime = dt;
+
+                foreach (var item in troubleEqp)
+                {
+                    item.AssignedBy = _userID;
+                    item.AssignedTime = dt;
+                    thTmp.Content += "设备-"+item.EqpName + " 调度分配给 " + item.OrgNodeName+";";
+                }
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    await _troubleReportRepo.SaveHistory(thTmp);
+                    await _troubleReportRepo.UpdateStatus(new string[] { thTmp.Trouble.ToString() }, 
+                        _userID, TroubleStatus.Processing, TroubleOperation.Assign);
+                    ret.data = await _troubleReportRepo.UpdateTroubleEqp(troubleEqp);
+                    scope.Complete();
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
 
         public async Task<ApiResult> ListPage(TroubleReportParm parm)
         {
@@ -64,6 +115,10 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 List<QueryItem> locations =await _eqpHistoryRepo.ListAllLocations();
+                if (parm.MenuView != null)
+                {
+                    parm.RepairCompany = await getTopOrgByUser();
+                }
                 TroubleReportView view = await _troubleReportRepo.ListPage(parm);
                 List<TroubleReport>  trs= view.rows;
                 foreach (var item in trs)
@@ -87,12 +142,65 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<ApiResult> UpdateStatus(string ids,TroubleStatus status)
+        public async Task<ApiResult> Operation(string ids,TroubleOperation operation,string content)
         {
             ApiResult ret = new ApiResult();
+            DateTime dt = DateTime.Now;
+            TroubleStatus status=TroubleStatus.NewTrouble;
+            List<TroubleHistory> ths = new List<TroubleHistory>();
+            TroubleHistory thTmp = new TroubleHistory();
+            if (operation != TroubleOperation.CancelTrouble)
+            {
+                thTmp.Trouble = Convert.ToInt32(ids);
+                thTmp.Operation = operation;
+                thTmp.Content = content=="null"?"":content;
+                thTmp.CreatedBy = _userID;
+                thTmp.CreatedTime = dt;
+            }
+            else
+            {
+                foreach (var item in ids.Split(','))
+                {
+                    TroubleHistory th = new TroubleHistory();
+                    th.Trouble = Convert.ToInt32(item);
+                    th.Operation = TroubleOperation.CancelTrouble;
+                    th.CreatedBy = _userID;
+                    th.CreatedTime = dt;
+                    ths.Add(th);
+                }
+                status = TroubleStatus.Canceled;
+            }
+            switch (operation)
+            {
+                case TroubleOperation.Delayed:
+                    status = TroubleStatus.Delayed;
+                    break;
+                case TroubleOperation.Pass:
+                    status = TroubleStatus.Finished;
+                    break;
+                case TroubleOperation.Unpass:
+                    status = TroubleStatus.Processing;
+                    break;
+                case TroubleOperation.RepairReject:
+                case TroubleOperation.AssignReject:
+                    status = TroubleStatus.NewTrouble;
+                    break;
+            }
             try
             {
-                ret.data = await _troubleReportRepo.UpdateStatus(ids.Split(),_userID,status);
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    if (operation == TroubleOperation.CancelTrouble)
+                    {
+                        await _troubleReportRepo.SaveHistory(ths);
+                    }
+                    else
+                    {
+                        await _troubleReportRepo.SaveHistory(thTmp);
+                    }
+                    ret.data = await _troubleReportRepo.UpdateStatus(ids.Split(), _userID, status, operation);
+                    scope.Complete();
+                }
             }
             catch (Exception ex)
             {
@@ -113,6 +221,7 @@ namespace MSS.API.Core.V1.Business
                 troubleReport.UpdatedBy = _userID;
                 troubleReport.CreatedBy = _userID;
                 troubleReport.Status = (int)TroubleStatus.NewTrouble;
+                troubleReport.LastOperation = (int)TroubleOperation.NewTrouble;
                 string lineCode = await _troubleReportRepo.GetLineCodeByID(troubleReport.Line);
                 string orgCode = await _troubleReportRepo.GetNodeCodeByID(troubleReport.ReportedCompany);
                 string lastNum = await _troubleReportRepo.GetLastNumByDate(troubleReport.ReportedTime);
@@ -199,16 +308,36 @@ namespace MSS.API.Core.V1.Business
                 DateTime dt = DateTime.Now;
                 troubleReport.UpdatedTime = dt;
                 troubleReport.UpdatedBy = _userID;
+                troubleReport.LastOperation = (int)TroubleOperation.UpdateTrouble;
                 TroubleReport oldtr = await _troubleReportRepo.GetByID(troubleReport.ID);
                 string oldDate = oldtr.ReportedTime.ToString("yyyyMMdd");
                 string nowDate = troubleReport.ReportedTime.ToString("yyyyMMdd");
                 troubleReport.Code = oldtr.Code;
+                string lineCode, orgCode;
+                TroubleHistory th = new TroubleHistory();
+                th.Trouble = troubleReport.ID;
+                th.Operation = TroubleOperation.UpdateTrouble;
+                th.CreatedBy = _userID;
+                th.CreatedTime = dt;
+                string myOld = JsonConvert.SerializeObject(oldtr);
+                string myNew= JsonConvert.SerializeObject(troubleReport);
+                th.Content = myOld + "-" + myNew;
+                //if (oldtr.Line != troubleReport.Line)
+                //{
+                //    lineCode = await _troubleReportRepo.GetLineCodeByID(troubleReport.Line);
+                //    th.Content += "线路:"+oldtr.LineName+"-"+ troubleReport.LineName + ",";
+                //}
+                //if (oldtr.ReportedCompanyPath != troubleReport.ReportedCompanyPath)
+                //{
+                //    orgCode = await _troubleReportRepo.GetNodeCodeByID(troubleReport.ReportedCompany);
+                //    th.Content += "报告单位:" + oldtr.ReportedCompany + "-" + troubleReport.ReportedCompany + ",";
+                //}
                 if (oldtr.Line != troubleReport.Line || oldtr.ReportedCompanyPath != troubleReport.ReportedCompanyPath ||
                     oldDate != nowDate)
                 {
                     //根据主键查询，效率高，所以没有再次判断
-                    string lineCode = await _troubleReportRepo.GetLineCodeByID(troubleReport.Line);
-                    string orgCode = await _troubleReportRepo.GetNodeCodeByID(troubleReport.ReportedCompany);
+                    lineCode = await _troubleReportRepo.GetLineCodeByID(troubleReport.Line);
+                    orgCode = await _troubleReportRepo.GetNodeCodeByID(troubleReport.ReportedCompany);
                     string tmp= oldtr.Code.Substring(oldtr.Code.Length-11);
                     //这个查询效率低，所以再判断下
                     if (oldDate != nowDate)
@@ -225,7 +354,7 @@ namespace MSS.API.Core.V1.Business
                     }
                     troubleReport.Code = orgCode + lineCode + tmp;
                 }
-                ret.data = await _troubleReportRepo.Update(troubleReport);
+                ret.data = await _troubleReportRepo.Update(troubleReport,th);
             }
             catch (Exception ex)
             {
@@ -250,5 +379,30 @@ namespace MSS.API.Core.V1.Business
             public string companyName { get; set; }
             public List<Eqp> eqpList { get; set; }
         }
+
+        private async Task<int> getTopOrgByUser()
+        {
+            var _services = await _consulServiceProvider.GetServiceAsync("AuthService");
+            IHttpClientHelper<ApiResult> h = new HttpClientHelper<ApiResult>();
+            ApiResult r = await h.GetSingleItemRequest(_services + "/api/v1/user/" + _userID);
+            JObject jobj = JsonConvert.DeserializeObject<JObject>(r.data.ToString());
+            if ((bool)jobj["is_super"])
+            {
+                return -1;
+            }
+            else if ((int)jobj["role_id"]==(int)KeyRole.Dispatcher) 
+            {
+                _services = await _consulServiceProvider.GetServiceAsync("OrgService");
+                IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
+                ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + _userID);
+                if (result.data != null)
+                {
+                    JObject obj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());
+                    return Convert.ToInt32(obj["id"]);
+                }
+            }
+            return 0;
+        }
+
     }
 }

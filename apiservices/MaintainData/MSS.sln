@@ -11,11 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Dao", "MSS.API.Dao\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSS.API.Common", "..\..\commons\MSS.API.Common\MSS.API.Common.csproj", "{F3E9C703-C869-46F4-A01C-D190CAFD7191}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4D476772-1B6B-42FA-8C50-133AAF730414}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\frontend\MSS.API.UI\src\views\EquipmentLifeCycle\MaintainReg\children\DeviceMaintainList.vue = ..\..\frontend\MSS.API.UI\src\views\EquipmentLifeCycle\MaintainReg\children\DeviceMaintainList.vue
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -268,6 +268,7 @@ namespace MSS.API.Core.V1.Business
             }
             else
             {
+                _services = await _consulServiceProvider.GetServiceAsync("OrgService");
                 IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
                 ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + userID);
                 if (result.data != null)

@@ -7,7 +7,10 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <i @click="back"><x-button class="active">返回</x-button></i>
+      <i>
+      <i @click="back('history')"><x-button class="active">故障历史</x-button></i>
+      <i @click="back('back')"><x-button class="active">返回</x-button></i>
+      </i>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -119,25 +122,58 @@ export default {
       troubleReport: {
         id: this.$route.params.id
       },
-      fileIDs: ''
+      fileIDs: '',
+      eqpLifeHistory: {
+        eqpSelected: [],
+        eqpType: ''
+      }
     }
   },
   created () {
     this.sourceName = this.$route.params.sourceName
+    if (this.sourceName === 'SeeHistory') {
+      this.eqpLifeHistory.eqpSelected = this.$route.params.eqpSelected
+      this.eqpLifeHistory.eqpType = this.$route.params.eqpType
+    }
+  },
+  activated () {
     this.getTroubleReport()
   },
   methods: {
-    back () {
-      this.$router.push({
-        name: this.sourceName
-      })
+    back (type) {
+      if (type === 'back') {
+        if (this.sourceName === 'SeeHistory') {
+          this.$router.push({
+            name: this.sourceName,
+            params: {
+              eqpSelected: this.eqpLifeHistory.eqpSelected,
+              eqpType: this.eqpLifeHistory.eqpType
+            }
+          })
+        } else {
+          this.$router.push({
+            name: this.sourceName
+          })
+        }
+      } else if (type === 'history') {
+        this.$router.push({
+          name: 'TroubleHistory',
+          params: {
+            id: this.troubleReport.id,
+            code: this.troubleReport.code,
+            sourceName: 'DetailTroubleReport'
+          }
+        })
+      }
     },
     getTroubleReport () {
+      this.loading = true
       api.getTroubleReportByID(this.troubleReport.id).then(res => {
         this.loading = false
         let _res = res.data
         console.log(_res)
         this.title = '| 故障报修明细-' + _res.code
+        this.troubleReport.code = _res.code
         this.troubleReport.desc = _res.desc
         this.troubleReport.happeningTime = transformDate(_res.happeningTime)
         this.troubleReport.reportedTime = transformDate(_res.reportedTime)
@@ -389,5 +425,8 @@ export default {
   width: 200px;
   background-color: #29282E;
   color: $color-content-text
+}
+.right{
+  margin-right: 1em;
 }
 </style>

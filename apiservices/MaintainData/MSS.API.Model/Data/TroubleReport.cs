@@ -12,6 +12,8 @@ namespace MSS.API.Model.Data
         public int? TroubleStatus { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
+        public TroubleView? MenuView { get; set; }
+        public int RepairCompany { get; set; }
     }
 
     /// <summary>
@@ -40,6 +42,10 @@ namespace MSS.API.Model.Data
         public string LevelName { get; set; }
         public int ReportedCompany { get; set; }
         public string ReportedCompanyPath { get; set; }
+        /// <summary>
+        /// 转发专用，转发前的接修单位名称
+        /// </summary>
+        public string OldReportedCompanyName { get; set; }
         public string ReportedCompanyName { get; set; }
         public int ReportedBy { get; set; }
         public string ReportedByName { get; set; }
@@ -49,6 +55,8 @@ namespace MSS.API.Model.Data
         //public string TypeName { get; set; }
         public int Status { get; set; }
         public string StatusName { get; set; }
+        public int LastOperation { get; set; }
+        public string LastOperationName { get; set; }
         //public string Solution { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedByName { get; set; }
@@ -92,6 +100,8 @@ namespace MSS.API.Model.Data
             //Map(o => o.TypeName).ToColumn("typeName");
             Map(o => o.Status).ToColumn("status");
             Map(o => o.StatusName).ToColumn("name");
+            Map(o => o.LastOperation).ToColumn("last_operation");
+            Map(o => o.LastOperationName).ToColumn("loname");
             //Map(o => o.Solution).ToColumn("solution");
             Map(o => o.ReportedBy).ToColumn("reported_by");
             Map(o => o.ReportedByName).ToColumn("user_name");
@@ -109,6 +119,7 @@ namespace MSS.API.Model.Data
     {
         public List<TroubleReport> rows { get; set; }
         public int total { get; set; }
+        public int RepairCompany { get; set; }
     }
 
     public class TroubleEqp
@@ -119,6 +130,13 @@ namespace MSS.API.Model.Data
         public string OrgName { get; set; }
         public int Eqp { get; set; }
         public string EqpName { get; set; }
+        public int? OrgNode { get; set; }
+        public string OrgNodeName { get; set; }
+        public string OrgPath { get; set; }
+        public string OrgPathTmp { get; set; }
+        public int? AssignedBy { get; set; }
+        public string AssignedByName { get; set; }
+        public DateTime? AssignedTime { get; set; }
     }
 
     public class TroubleEqpMap : EntityMap<TroubleEqp>
@@ -127,7 +145,37 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.OrgName).ToColumn("name");
             Map(o => o.EqpName).ToColumn("eqp_name");
+            Map(o => o.OrgNode).ToColumn("org_node");
+            Map(o => o.OrgNodeName).ToColumn("onname");
+            Map(o => o.AssignedBy).ToColumn("assigned_by");
+            Map(o => o.AssignedByName).ToColumn("user_name");
+            Map(o => o.AssignedTime).ToColumn("assigned_time");
+            Map(o => o.OrgPath).ToColumn("org_path");
+            Map(o => o.OrgPathTmp).ToColumn("team_path");
         }
     }
 
+    public class TroubleHistory
+    {
+        public int ID { get; set; }
+        public int Trouble { get; set; }
+        public string Code { get; set; }
+        public TroubleOperation Operation { get; set; }
+        public string OperationName { get; set; }
+        public string Content { get; set; }
+        public int CreatedBy { get; set; }
+        public string CreatedByName { get; set; }
+        public DateTime CreatedTime { get; set; }
+    }
+
+    public class TroubleHistoryMap : EntityMap<TroubleHistory>
+    {
+        public TroubleHistoryMap()
+        {
+            Map(o => o.OperationName).ToColumn("name");
+            Map(o => o.CreatedBy).ToColumn("created_by");
+            Map(o => o.CreatedByName).ToColumn("user_name");
+            Map(o => o.CreatedTime).ToColumn("created_time");
+        }
+    }
 }

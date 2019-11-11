@@ -105,5 +105,18 @@ export const btn = {
     save: 124,
     delete: 125,
     update: 126
+  },
+  myRepair: {
+    assign: 129,
+    wait: 130,
+    reject: 132
+  },
+  myProcessing: {
+    work: 134,
+    reassign: 131,
+    reject: 135
+  },
+  myCheck: {
+    pass: 136
   }
 }

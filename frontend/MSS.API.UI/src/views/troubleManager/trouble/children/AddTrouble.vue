@@ -197,7 +197,7 @@
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
-            <router-link :to="{name: 'SeeEqpTypeList'}">取消</router-link>
+            <router-link :to="{name: 'SeeTroubleList'}">取消</router-link>
           </x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
@@ -366,6 +366,8 @@ export default {
       } else this.areaEnd.tips = ''
     },
     position_change () {
+      this.repairCompany.text = ''
+      this.eqpList = []
       // 起始位置的线路和结束位置的线路必须一致
       if (this.areaStart.text.length < 3) {
         this.areaStart.tips = '起始线路必须是站点或区域'

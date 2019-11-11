@@ -19,19 +19,6 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="name">故障状态</label>
-            <div class="inp">
-              <el-select v-model="troubleStatus" clearable filterable placeholder="请选择故障状态">
-                <el-option
-                  v-for="item in troubleStatusList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="input-group">
             <label for="name">发生日期</label>
             <div class="inp">
               <el-date-picker
@@ -52,21 +39,28 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list">
-          <x-button :disabled="btn.save">
-            <router-link :to="{ name: 'AddTrouble', params: { type: 'Add' } }">添加</router-link>
-          </x-button>
+        <li class="list" @click="operation('pass')" :disabled="btn.pass"><x-button>审核通过</x-button></li>
+        <li class="list" @click="operation('detail')" ><x-button>查看明细</x-button></li>
+        <li class="list" :disabled="btn.pass">
+        <el-popover
+            popper-class="my-pop"
+            placement="bottom"
+            width="260"
+            v-model="popVisiable">
+            <el-input type="textarea" :rows="4" v-model="content" placeholder="请输入不驳回(限100字以内且必填)"></el-input>
+            <div style="text-align: right;">
+                <el-button size="mini" type="text" @click="operation('unPass')">驳回</el-button>
+            </div>
+            <el-button class="btn1" slot="reference">驳回</el-button>
+        </el-popover>
         </li>
-        <li class="list" @click="remove" :disabled="btn.delete"><x-button>取消</x-button></li>
-        <li class="list" @click="edit" :disabled="btn.update"><x-button>修改</x-button></li>
-        <li class="list" @click="detail('detail')" ><x-button>查看明细</x-button></li>
-        <li class="list" @click="detail('history')" ><x-button>操作历史</x-button></li>
+        <li class="list" @click="operation('history')" ><x-button>操作历史</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
+        <li class="list checkbox"></li>
         <li class="list name c-pointer" @click="changeOrder('code')">
           故障编号
           <i :class="[{ 'el-icon-d-caret': headOrder.code === 0 }, { 'el-icon-caret-top': headOrder.code === 1 }, { 'el-icon-caret-bottom': headOrder.code === 2 }]"></i>
@@ -95,7 +89,7 @@
             <li class="list" v-for="(item) in troubleList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editTroubleID" :value="item.id">
+                  <el-radio v-model="editTroubleID" :label="item.id + ',' + item.code"></el-radio>
                 </div>
                 <div class="name">{{ item.code }}</div>
                 <div class="last-update-time color-white">{{ item.happeningTime }}</div>
@@ -124,51 +118,33 @@
         </el-scrollbar>
       </div>
     </div>
-    <!-- dialog对话框 -->
-    <el-dialog
-      :visible.sync="dialogVisible.isShow"
-      :modal-append-to-body="false"
-      :show-close="false">
-      {{ dialogVisible.text }}
-      <template slot="footer" class="dialog-footer">
-        <template v-if="dialogVisible.btn">
-          <el-button @click="dialogVisible.isShow = false">否</el-button>
-          <el-button @click="dialogEnter">是</el-button>
-        </template>
-        <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
-import { troubleOperation, dictionary, troubleStatus } from '@/common/js/dictionary.js'
+import { transformDate, TroubleMenu, vInput } from '@/common/js/utils.js'
 import { btn } from '@/element/btn.js'
+import { troubleOperation } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
-import apiAuth from '@/api/authApi'
 export default {
-  name: 'SeeTroubleList',
+  name: 'MyCheck',
   components: {
     XButton
   },
   data () {
     return {
       btn: {
-        save: false,
-        delete: false,
-        update: false
+        pass: false
       },
-      title: ' | 故障报修',
+      title: ' | 我的审核',
+      popVisiable: false,
       desc: '',
+      content: '',
+      topOrg: '',
       searchDate: [],
-      troubleStatus: '',
-      troubleStatusList: [],
       troubleList: [],
       troubleListByID: {},
-      editTroubleID: [],
-      editTroubleCode: '',
-      bCheckAll: false,
+      editTroubleID: '',
       total: 0,
       currentPage: 1,
       loading: false,
@@ -194,61 +170,80 @@ export default {
     let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
-      this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.troubleReport.save
-      })
-      this.btn.delete = !actions.some((item, index) => {
-        return item.actionID === btn.troubleReport.delete
-      })
-      this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.troubleReport.update
+      this.btn.pass = !actions.some((item, index) => {
+        return item.actionID === btn.myCheck.pass
       })
     }
-    // 故障状态列表
-    apiAuth.getSubCode(dictionary.troubleStatus).then(res => {
-      this.troubleStatusList = res.data
-    }).catch(err => console.log(err))
     this.init()
   },
   activated () {
     this.searchResult(this.currentPage)
   },
   methods: {
-    detail (type) {
-      if (!this.editTroubleID.length) {
+    operation (type) {
+      if (this.editTroubleID === '') {
         this.$message({
-          message: '请选择需要查看的报修故障',
-          type: 'warning'
-        })
-      } else if (this.editTroubleID.length > 1) {
-        this.$message({
-          message: '查看的报修故障不能超过1个',
+          message: '请选择需要操作的报修故障',
           type: 'warning'
         })
       } else {
-        if (type === 'detail') {
-          this.$router.push({
-            name: 'DetailTroubleReport',
-            params: {
-              id: this.editTroubleID[0],
-              sourceName: 'SeeTroubleList'
+        let operation = ''
+        let content = 'null'
+        let arr = this.editTroubleID.split(',')
+        switch (type) {
+          case 'pass':
+            operation = troubleOperation.pass
+            content = this.content
+            break
+          case 'detail':
+            this.$router.push({
+              name: 'DetailTroubleReport',
+              params: {
+                id: arr[0],
+                sourceName: 'MyCheck'
+              }
+            })
+            break
+          case 'unPass':
+            if (this.validateInput()) {
+              operation = troubleOperation.unpass
+              content = this.content
+              break
+            } else {
+              return
             }
-          })
-        } else if (type === 'history') {
-          this.$router.push({
-            name: 'TroubleHistory',
-            params: {
-              id: this.editTroubleID[0],
-              code: this.troubleListByID[this.editTroubleID[0]].code,
-              sourceName: 'SeeTroubleList'
+          case 'history':
+            this.$router.push({
+              name: 'TroubleHistory',
+              params: {
+                id: arr[0],
+                code: arr[1],
+                sourceName: 'MyCheck'
+              }
+            })
+            break
+        }
+        if (operation !== '') {
+          api.Operation(arr[0], operation, content).then(res => {
+            if (res.code === 0) {
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              })
+              this.popVisiable = false
+              this.currentPage = 1
+              this.searchResult(1)
+            } else {
+              this.$message({
+                message: res.msg,
+                type: 'error'
+              })
             }
-          })
+          }).catch(err => console.log(err))
         }
       }
     },
     init () {
-      this.bCheckAll = false
-      this.checkAll()
       this.currentPage = 1
       // this.searchResult(1)
     },
@@ -269,8 +264,6 @@ export default {
         this.headOrder[sort] = 2
       }
       this.currentSort.sort = sort
-      this.bCheckAll = false
-      this.checkAll()
       this.searchResult(this.currentPage)
     },
     // 搜索
@@ -288,9 +281,9 @@ export default {
         rows: 10,
         page: page,
         TroubleReportDesc: this.desc,
-        TroubleStatus: this.troubleStatus,
         StartTime: st,
-        EndTime: et
+        EndTime: et,
+        MenuView: TroubleMenu.myCheck
       }
       api.getTroubleReportPage(parm).then(res => {
         this.loading = false
@@ -300,76 +293,7 @@ export default {
         })
         this.troubleList = res.data.rows
         this.total = res.data.total
-      }).catch(err => console.log(err))
-    },
-
-    // 修改报修故障
-    edit () {
-      if (!this.editTroubleID.length) {
-        this.$message({
-          message: '请选择需要修改的报修故障',
-          type: 'warning'
-        })
-      } else if (this.editTroubleID.length > 1) {
-        this.$message({
-          message: '修改的报修故障不能超过1个',
-          type: 'warning'
-        })
-      } else if (!this.isNewTrouble()) {
-        this.$message({
-          message: '非新报修的故障不允许修改',
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'AddTrouble',
-          params: {
-            id: this.editTroubleID[0],
-            type: 'edit'
-          }
-        })
-      }
-    },
-    isNewTrouble () {
-      return this.troubleListByID[this.editTroubleID].status === troubleStatus.newTrouble
-    },
-    // 取消报修故障
-    remove () {
-      if (!this.editTroubleID.length) {
-        this.$message({
-          message: '请选择需要取消的报修故障',
-          type: 'warning'
-        })
-      } else if (!this.isNewTrouble()) {
-        this.$message({
-          message: '非新报修的故障不允许取消',
-          type: 'warning'
-        })
-      } else {
-        this.dialogVisible.isShow = true
-        this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定取消该条报修故障信息?'
-      }
-    },
-    // 弹框确认是否取消
-    dialogEnter () {
-      api.Operation(this.editTroubleID.join(','), troubleOperation.canceleTrouble, 'null').then(res => {
-        if (res.code === 0) {
-          this.editTroubleID = []
-          this.$message({
-            message: '取消成功',
-            type: 'success'
-          })
-          this.currentPage = 1
-          this.searchResult(1)
-        } else {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
-        // 隐藏dialog
-        this.dialogVisible.isShow = false
+        this.topOrg = res.data.repairCompany
       }).catch(err => console.log(err))
     },
     // 搜索功能
@@ -379,31 +303,37 @@ export default {
       this.searchResult(1)
     },
 
-    // 全选
-    checkAll () {
-      this.bCheckAll ? this.troubleList.map(val => this.editTroubleID.push(val.id)) : this.editTroubleID = []
-    },
-
     // 序号、指定页翻页
     handleCurrentChange (val) {
-      this.bCheckAll = false
-      this.checkAll()
       this.currentPage = val
       this.searchResult(val)
     },
 
     // 上一页
     prevPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
       this.currentPage = val
     },
 
     // 下一页
     nextPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
       this.currentPage = val
+    },
+    validateInput () {
+      if (this.content === '') {
+        this.$message({
+          message: '驳回原因必填',
+          type: 'warning'
+        })
+        return false
+      } else if (!vInput(this.content)) {
+        this.$message({
+          message: '驳回原因中含有非法字符',
+          type: 'warning'
+        })
+        return false
+      } else {
+        return true
+      }
     }
   }
 }
@@ -450,6 +380,10 @@ $con-height: $content-height - 145 - 56;
       div{
         word-break: break-all;
       }
+      /deep/
+      .el-radio__label{
+        display: none;
+      }
     }
 
     .left-title{
@@ -488,7 +422,9 @@ $con-height: $content-height - 145 - 56;
       }
     }
   }
-
+  .checkbox{
+    width: 2%;
+  }
   .number{
     width: 6%;
   }
@@ -515,5 +451,30 @@ $con-height: $content-height - 145 - 56;
   .state{
     width: 5%;
   }
+}
+/deep/
+.btn1{
+  background: none;
+  border: 1px solid $color-main-btn-border;
+  border-radius: $border-radius;
+  color: $color-white;
+  cursor: pointer;
+  &.active,
+  &:hover{
+    border-color: $color-main-btn!important;
+    background: $color-main-btn!important;
+  }
+}
+.el-button--text:hover{
+  color: #4998d4;
+  border-color: transparent;
+  background-color: transparent;
+  border: none;
+}
+</style>
+<style>
+.my-pop{
+  background: #29282E!important;
+  border-color: #29282E!important;
 }
 </style>
