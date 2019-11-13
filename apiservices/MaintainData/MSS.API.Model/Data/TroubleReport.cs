@@ -13,7 +13,14 @@ namespace MSS.API.Model.Data
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public TroubleView? MenuView { get; set; }
+        /// <summary>
+        /// 我的接修和审核时用到
+        /// </summary>
         public int RepairCompany { get; set; }
+        /// <summary>
+        /// 我的在处理故障用到，维修人员所属部门/班组
+        /// </summary>
+        public int OrgNode { get; set; }
     }
 
     /// <summary>

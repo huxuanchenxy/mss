@@ -24,14 +24,14 @@
               <div class="list-content">
                 <div class="last-update-time color-white">{{ item.createdTime }}</div>
                 <div class="name">{{ item.operationName }}</div>
-                <div class="last-maintainer color-white" v-show="item.content.length > 40">
-                {{item.content === null ? '' : item.content.slice(0, 20) + ' ......'}}
+                <div class="last-maintainer color-white" v-show="item.content.length > 50">
+                {{item.content === null ? '' : item.content.slice(0, 40)}}
                 <el-popover
                   popper-class="my-pop"
                   placement="bottom"
                   width="860">
                   <p class="update-content color-white">{{item.content}}</p>
-                  <el-button class="btn1" slot="reference" >完整内容</el-button>
+                  <el-button class="btn1" slot="reference" >...</el-button>
                 </el-popover>
                 </div>
                 <div class="last-maintainer color-white" v-show="item.content.length <= 40">{{item.content}}</div>
@@ -231,6 +231,7 @@ $con-height: $content-height - 145 - 56;
 }
 /deep/
 .btn1{
+  width: 30px;
   background: none;
   border: 1px solid $color-main-btn-border;
   border-radius: $border-radius;

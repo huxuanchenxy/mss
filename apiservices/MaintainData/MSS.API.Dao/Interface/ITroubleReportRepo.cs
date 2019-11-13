@@ -15,7 +15,8 @@ namespace MSS.API.Dao.Interface
         Task<string> GetLineCodeByID(int id);
         Task<string> GetNodeCodeByID(int id);
         Task<string> GetLastNumByDate(DateTime dt);
-        Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0);
+        Task<int> GetOrgNodeByUser(int id);
+        Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0, int orgNode = 0);
         Task<int> UpdateTroubleEqp(List<TroubleEqp> troubleEqp);
         Task<int> Update(TroubleReport troubleReport, TroubleHistory troubleHistory);
         Task<int> SaveHistory(TroubleHistory troubleHistory);

@@ -118,5 +118,10 @@ export const btn = {
   },
   myCheck: {
     pass: 136
+  },
+  line: {
+    save: 137,
+    delete: 138,
+    update: 139
   }
 }

@@ -67,7 +67,7 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list name c-pointer" @click="changeOrder('code')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('code')">
           故障编号
           <i :class="[{ 'el-icon-d-caret': headOrder.code === 0 }, { 'el-icon-caret-top': headOrder.code === 1 }, { 'el-icon-caret-bottom': headOrder.code === 2 }]"></i>
         </li>
@@ -97,15 +97,15 @@
                 <div class="checkbox">
                   <input type="checkbox" v-model="editTroubleID" :value="item.id">
                 </div>
-                <div class="name">{{ item.code }}</div>
+                <div class="last-maintainer">{{ item.code }}</div>
                 <div class="last-update-time color-white">{{ item.happeningTime }}</div>
                 <div class="name">{{ item.lineName }}</div>
                 <div class="name">{{ item.startLocationName }}</div>
                 <div class="last-update-time color-white">{{ item.desc }}</div>
                 <div class="name">{{ item.reportedCompanyName }}</div>
                 <div class="name">{{ item.reportedByName }}</div>
-                <div class="last-maintainer color-white">{{ item.statusName }}</div>
-                <div class="last-maintainer color-white">{{ item.lastOperationName }}</div>
+                <div class="name color-white">{{ item.statusName }}</div>
+                <div class="name color-white">{{ item.lastOperationName }}</div>
               </div>
             </li>
           </ul>
@@ -173,7 +173,7 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'id',
+        sort: 'code',
         order: 'asc'
       },
       dialogVisible: {
@@ -183,7 +183,7 @@ export default {
         btn: true
       },
       headOrder: {
-        id: 1,
+        code: 1,
         happening_time: 0,
         line: 0,
         status: 0
@@ -255,7 +255,7 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.id = 0
+        this.headOrder.code = 0
         this.headOrder.happening_time = 0
         this.headOrder.line = 0
         this.headOrder.status = 0
@@ -509,7 +509,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .last-maintainer{
-    width: 10%;
+    width: 12%;
   }
 
   .state{

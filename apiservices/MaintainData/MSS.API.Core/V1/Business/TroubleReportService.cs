@@ -20,7 +20,7 @@ namespace MSS.API.Core.V1.Business
     public interface ITroubleReportService
     {
         Task<ApiResult> ListHistoryByTrouble(int id);
-        Task<ApiResult> ListEqpByTrouble(int id,int topOrg);
+        Task<ApiResult> ListEqpByTrouble(int id,int topOrg, TroubleView troubleView);
         Task<ApiResult> AssignEqp(List<TroubleEqp> troubleEqp);
         Task<ApiResult> GetByID(int id);
         Task<ApiResult> ListPage(TroubleReportParm parm);
@@ -60,12 +60,17 @@ namespace MSS.API.Core.V1.Business
             }
             return ret;
         }
-        public async Task<ApiResult> ListEqpByTrouble(int id,int topOrg)
+        public async Task<ApiResult> ListEqpByTrouble(int id,int topOrg,TroubleView troubleView)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _troubleReportRepo.ListEqpByTrouble(id,topOrg);
+                int orgNode=0;
+                if (troubleView==TroubleView.MyProcessing)
+                {
+                    orgNode=await _troubleReportRepo.GetOrgNodeByUser(_userID);
+                }
+                ret.data = await _troubleReportRepo.ListEqpByTrouble(id,topOrg, orgNode);
             }
             catch (Exception ex)
             {
@@ -108,16 +113,22 @@ namespace MSS.API.Core.V1.Business
             }
             return ret;
         }
-
+        /// <summary>
+        /// 角色规定了我的接修、我的审核的权限
+        /// 登录用户只要拥有此权限，且属于接修单位就可以执行接修和审核的操作
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
         public async Task<ApiResult> ListPage(TroubleReportParm parm)
         {
             ApiResult ret = new ApiResult();
             try
             {
                 List<QueryItem> locations =await _eqpHistoryRepo.ListAllLocations();
-                if (parm.MenuView != null)
+                parm.RepairCompany = await getTopOrgByUser();
+                if (parm.MenuView == TroubleView.MyProcessing)
                 {
-                    parm.RepairCompany = await getTopOrgByUser();
+                    parm.OrgNode = await _troubleReportRepo.GetOrgNodeByUser(_userID);
                 }
                 TroubleReportView view = await _troubleReportRepo.ListPage(parm);
                 List<TroubleReport>  trs= view.rows;
@@ -229,7 +240,7 @@ namespace MSS.API.Core.V1.Business
                 string tmp;
                 if (!string.IsNullOrWhiteSpace(lastNum))
                 {
-                    tmp = reportDate + (Convert.ToInt32(lastNum) + 1).ToString("D3");
+                    tmp = reportDate + (Convert.ToInt32(lastNum.Substring(lastNum.Length-3)) + 1).ToString("D3");
                 }
                 else
                 {
@@ -390,11 +401,11 @@ namespace MSS.API.Core.V1.Business
             {
                 return -1;
             }
-            else if ((int)jobj["role_id"]==(int)KeyRole.Dispatcher) 
+            else
             {
                 _services = await _consulServiceProvider.GetServiceAsync("OrgService");
                 IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
-                ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + _userID);
+                ApiResult result = await httpHelper.GetSingleItemRequest(_services + "/api/v1/org/topnode/" + _userID);//orguser/ListNodeByUser
                 if (result.data != null)
                 {
                     JObject obj = JsonConvert.DeserializeObject<JObject>(result.data.ToString());

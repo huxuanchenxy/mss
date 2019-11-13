@@ -44,7 +44,7 @@
   </div>
 </template>
 <script>
-import { strToIntArr } from '@/common/js/utils.js'
+import { strToIntArr, troubleMenu } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
 import apiOrg from '@/api/orgApi'
@@ -63,7 +63,8 @@ export default {
       title: ' | 调度分配',
       sourceName: '',
       troubleID: '',
-      repairCompany: '',
+      repairCompany: -2,
+      troubleView: 0,
       troubleEqpList: [],
       orgList: [],
       loading: false
@@ -71,6 +72,11 @@ export default {
   },
   created () {
     this.sourceName = this.$route.params.sourceName
+    if (this.sourceName === 'MyRepair') {
+      this.troubleView = troubleMenu.myRepair
+    } else if (this.sourceName === 'MyProcessing') {
+      this.troubleView = troubleMenu.myProcessing
+    }
     this.troubleID = this.$route.params.id
     this.title = ' | 调度分配-' + this.$route.params.code
     this.repairCompany = this.$route.params.repairCompany
@@ -137,14 +143,18 @@ export default {
     },
     // 搜索
     getEqp () {
-      api.getTroubleEqpByID(this.troubleID, this.repairCompany).then(res => {
+      api.getTroubleEqpByID(this.troubleID, this.repairCompany, this.troubleView).then(res => {
         this.loading = false
         this.troubleEqpList = res.data
         this.troubleEqpList.map(item => {
-          item.orgPath = item.orgPath === null ? strToIntArr(item.orgPathTmp) : strToIntArr(item.orgPath)
-          item.orgPath.splice(0, 1)
+          if (item.orgPath === null) {
+            item.orgPath = strToIntArr(item.orgPathTmp)
+            item.orgPath.splice(0, 1)
+          } else {
+            item.orgPath = strToIntArr(item.orgPath)
+          }
         })
-        // this.total = res.data.total
+        // console.log(this.troubleEqpList)
       }).catch(err => console.log(err))
     }
   }

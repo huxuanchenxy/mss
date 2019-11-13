@@ -83,16 +83,20 @@ namespace MSS.API.Dao.Implement
                 else if (parm.MenuView == TroubleView.MyProcessing)
                 {
                     whereSql.Append(" and tr.status = " + (int)TroubleStatus.Processing );
+                    if (parm.OrgNode >0)
+                    {
+                        whereSql.Append(" and tr.id in (select trouble from trouble_eqp where org_node=" + parm.OrgNode + ")");
+                    }
                 }
                 else if (parm.MenuView == TroubleView.MyCheck)
                 {
                     whereSql.Append(" and tr.status = " + (int)TroubleStatus.Repaired);
                 }
-                if (parm.RepairCompany>0)
+                if (parm.RepairCompany>0 && parm.MenuView != TroubleView.MyProcessing)
                 {
                     whereSql.Append(" and tr.id in (select trouble from trouble_eqp where org=" + parm.RepairCompany+")");
-                    ret.RepairCompany = parm.RepairCompany;
                 }
+                ret.RepairCompany = parm.RepairCompany;
                 if (parm.StartTime != null)
                 {
                     whereSql.Append(" and tr.happening_time >= '" + parm.StartTime + "' ");
@@ -101,7 +105,8 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and tr.happening_time <= '" + parm.EndTime + "' ");
                 }
-                sql.Append(whereSql).Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows); ;
+                sql.Append(whereSql).Append(" order by tr." + parm.sort + " " + parm.order)
+                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows); ;
                 var tmp = await c.QueryAsync<TroubleReport>(sql.ToString());
                 if (tmp.Count() > 0)
                 {
@@ -283,24 +288,36 @@ namespace MSS.API.Dao.Implement
                 return ret;
             });
         }
+        public async Task<int> GetOrgNodeByUser(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select org_node_id from org_user where user_id=@id and is_del=0";
+                int ret = await c.QueryFirstOrDefaultAsync<int>(sql, new { id });
+                return ret;
+            });
+        }
+
         #endregion
 
         #region trouble_eqp
-        public async Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0)
+        public async Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0,int orgNode=0)
         {
             return await WithConnection(async c =>
             {
                 string sql = " select a.*,ot.name,e.eqp_name,e.team_path from trouble_eqp a " +
                 " left join org_tree ot on ot.id=a.org " +
                 " left join equipment e on e.id =a.eqp " +
-                " where a.trouble=@trouble";
-                object obj = new { trouble };
+                " where a.trouble="+ trouble;
                 if (topOrg>0)
                 {
-                    sql += " and a.org=@topOrg";
-                    obj= new { trouble,topOrg };
+                    sql += " and a.org="+topOrg;
                 }
-                var ret = await c.QueryAsync<TroubleEqp>(sql, obj);
+                if (orgNode > 0)
+                {
+                    sql += " and a.org_node="+orgNode;
+                }
+                var ret = await c.QueryAsync<TroubleEqp>(sql);
                 if (ret.Count()>0)
                 {
                     return ret.ToList();

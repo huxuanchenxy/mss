@@ -122,7 +122,7 @@
   </div>
 </template>
 <script>
-import { transformDate, TroubleMenu, vInput } from '@/common/js/utils.js'
+import { transformDate, troubleMenu, vInput } from '@/common/js/utils.js'
 import { btn } from '@/element/btn.js'
 import { troubleOperation } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
@@ -152,7 +152,7 @@ export default {
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'id',
+        sort: 'code',
         order: 'asc'
       },
       dialogVisible: {
@@ -162,7 +162,7 @@ export default {
         btn: true
       },
       headOrder: {
-        id: 1,
+        code: 1,
         happening_time: 0,
         line: 0,
         status: 0
@@ -276,7 +276,7 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.id = 0
+        this.headOrder.code = 0
         this.headOrder.happening_time = 0
         this.headOrder.line = 0
         this.headOrder.status = 0
@@ -309,7 +309,7 @@ export default {
         TroubleReportDesc: this.desc,
         StartTime: st,
         EndTime: et,
-        MenuView: TroubleMenu.myProcessing
+        MenuView: troubleMenu.myProcessing
       }
       api.getTroubleReportPage(parm).then(res => {
         this.loading = false

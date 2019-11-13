@@ -25,6 +25,6 @@ export default {
   SaveTroubleReport: parm => { return axios.post(`${api}/TroubleReport`, parm).then(res => res.data) },
   UpdateTroubleReport: parm => { return axios.put(`${api}/TroubleReport`, parm).then(res => res.data) },
   getTroubleHistoryByID: id => { return axios.get(`${api}/TroubleReport/ListHistoryByTrouble/${id}`).then(res => res.data) },
-  getTroubleEqpByID: (id, topOrg) => { return axios.get(`${api}/TroubleReport/ListEqpByTrouble/${id}/${topOrg}`).then(res => res.data) },
+  getTroubleEqpByID: (id, topOrg, troubleView) => { return axios.get(`${api}/TroubleReport/ListEqpByTrouble/${id}/${topOrg}/${troubleView}`).then(res => res.data) },
   assignEqp: (eqps) => { return axios.put(`${api}/TroubleReport/AssignEqp/${eqps}`).then(res => res.data) }
 }

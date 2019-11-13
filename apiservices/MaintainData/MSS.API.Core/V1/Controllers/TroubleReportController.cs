@@ -44,10 +44,10 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
-        [HttpGet("ListEqpByTrouble/{id}/{topOrg}")]
-        public ActionResult ListEqpByTrouble(int id,int topOrg)
+        [HttpGet("ListEqpByTrouble/{id}/{topOrg}/{troubleView}")]
+        public ActionResult ListEqpByTrouble(int id,int topOrg, TroubleView troubleView)
         {
-            var resp = _troubleReportService.ListEqpByTrouble(id, topOrg);
+            var resp = _troubleReportService.ListEqpByTrouble(id, topOrg, troubleView);
             return Ok(resp.Result);
         }
         [HttpPut("AssignEqp/{troubleEqps}")]

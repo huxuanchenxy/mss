@@ -230,7 +230,7 @@ export const keyRole = {
   dispatcher: 24
 }
 
-export const TroubleMenu = {
+export const troubleMenu = {
   myRepair: 1,
   myProcessing: 2,
   myCheck: 3

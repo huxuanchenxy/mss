@@ -289,7 +289,7 @@ export default {
       }).catch(err => console.log(err))
     },
     eqp_change (val) {
-      let eqpList
+      let eqpList = {}
       let index
       for (let i = 0; i < this.cardList.length; i++) {
         if (this.cardList[i].id === this.repairCompany.text.id) {
@@ -301,9 +301,9 @@ export default {
       // let eqpList = this.cardList.find(item => {
       //   return item.id === this.repairCompany.text.id
       // })
-      if (val !== '') eqpList.eqpList = this.eqp.text
+      if (val.length !== 0) eqpList.eqpList = this.eqp.text
       else this.cardList.splice(index, 1)
-      if (eqpList.eqpList.length === 0) this.initCardList()
+      if (this.cardList.length === 0) this.initCardList()
     },
     repair_change (val) {
       this.eqp.text = []
@@ -433,17 +433,21 @@ export default {
       }
     },
     validateInput () {
-      if (validateInputCommon(this.repairDesc)) return true
-      else return false
+      if (this.repairDesc.length > 500) {
+        this.repairDesc.text = '报修故障描述必须在500字以内'
+        return false
+      }
+      return validateInputCommon(this.repairDesc)
     },
     validateInputAll () {
-      if (this.happeningTime.text === '') { this.msg('发生时间必选'); return false } else
-      if (this.reportedTime.text === '') { this.msg('报修时间必选'); return false } else
+      console.log(this.cardList)
+      if (this.happeningTime.text === null) { this.msg('发生时间必选'); return false } else
+      if (this.reportedTime.text === null) { this.msg('报修时间必选'); return false } else
       if (this.areaStart.text.length === 0) { this.msg('起点站区/区域必选'); return false } else
       if (!this.validateInputNull(this.urgentOrder)) { this.msg('抢修号令验证失败,请查看提示信息'); return false } else
       if (this.reportCompanyPath.text.length === 0) { this.msg('报修单位必选'); return false } else
       if (this.reportBy.text === '') { this.msg('报修人必选'); return false } else
-      if (!validateInputCommon(this.repairDesc)) { this.msg('报修故障描述验证失败,请查看提示信息'); return false }
+      if (!this.validateInput()) { this.msg('报修故障描述验证失败,请查看提示信息'); return false }
       // else if (this.repairCompany.text.length === 0) this.msg('接修单位必选')
       // else if (this.happeningTime.text) this.msg('故障设备必填')
       return true
