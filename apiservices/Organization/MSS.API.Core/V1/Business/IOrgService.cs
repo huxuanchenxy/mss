@@ -38,5 +38,12 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> ListTopNodeWithUsers();
 
         Task<ApiResult> ListUserByNode(int node);
+        /// <summary>
+        /// twg
+        /// 根据用户获得其上的所有组织架构节点
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        Task<ApiResult> ListNodeByUser(int userid);
     }
 }

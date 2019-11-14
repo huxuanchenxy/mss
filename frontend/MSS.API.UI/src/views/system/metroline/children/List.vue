@@ -304,13 +304,13 @@ export default {
       if (!user.is_super) {
         let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
         this.btn.save = !actions.some((item, index) => {
-          return item.actionID === btn.warnsetting.save
+          return item.actionID === btn.line.save
         })
         this.btn.delete = !actions.some((item, index) => {
-          return item.actionID === btn.warnsetting.delete
+          return item.actionID === btn.line.delete
         })
         this.btn.update = !actions.some((item, index) => {
-          return item.actionID === btn.warnsetting.update
+          return item.actionID === btn.line.update
         })
       }
     }

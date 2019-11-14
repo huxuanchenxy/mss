@@ -26,6 +26,30 @@ const routes = [
             path: 'addTrouble',
             name: 'AddTrouble',
             component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/AddTrouble.vue')
+          }, {
+            path: 'myRepair',
+            name: 'MyRepair',
+            component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/MyRepair.vue')
+          }, {
+            path: 'myCheck',
+            name: 'MyCheck',
+            component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/MyCheck.vue')
+          }, {
+            path: 'troubleHistory',
+            name: 'TroubleHistory',
+            component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/TroubleHistory.vue')
+          }, {
+            path: 'detailTroubleReport',
+            name: 'DetailTroubleReport',
+            component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/troubleManager/trouble//children/DetailTroubleReport.vue')
+          }, {
+            path: 'myProcessing',
+            name: 'MyProcessing',
+            component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/MyProcessing.vue')
+          }, {
+            path: 'assignEqp',
+            name: 'AssignEqp',
+            component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/AssignEqp.vue')
           }
         ]
       }

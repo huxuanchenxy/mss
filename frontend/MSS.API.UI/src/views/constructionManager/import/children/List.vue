@@ -27,6 +27,7 @@
             <label for="name">公司</label>
             <div class="inp">
               <el-cascader clearable
+                placeholder="请选择公司"
                 expand-trigger="hover"
                 change-on-select
                 :props="defaultParams"
