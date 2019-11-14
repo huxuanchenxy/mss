@@ -40,7 +40,7 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="operation('work')" :disabled="btn.work"><x-button>施工申请</x-button></li>
-        <li class="list" @click="operation('reassign')" :disabled="btn.reassign"><x-button>重新分配</x-button></li>
+        <li class="list" @click="operation('reassign')" :disabled="btn.reassign" v-show="false"><x-button>重新分配</x-button></li>
         <li class="list" @click="operation('detail')" ><x-button>查看明细</x-button></li>
         <li class="list" :disabled="btn.reject">
         <el-popover
@@ -213,9 +213,10 @@ export default {
             break
           case 'work':
             this.$router.push({
-              name: 'DetailTroubleReport',
-              params: {
-                id: arr[0],
+              name: 'AddConstructionPlan',
+              query: {
+                type: 'Add',
+                troubleID: arr[0],
                 code: arr[1],
                 sourceName: 'MyProcessing'
               }

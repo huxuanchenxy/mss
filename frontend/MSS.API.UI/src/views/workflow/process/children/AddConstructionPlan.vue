@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeConstructionPlan' }">返回</router-link></x-button>
+      <i @click="back"><x-button class="active">返回</x-button></i>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -16,7 +16,7 @@
           <li class="list">
               <span class="text">计划名称:</span>
               <div class="inp-wrap">
-                <el-select v-model="lineid.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="lineid.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in lineList"
                     :key="item.id"
@@ -24,7 +24,7 @@
                     :value="item.id">
                   </el-option>
                 </el-select><p class="validate-tips">{{ lineid.tips }}</p>
-                <el-select v-model="areaid.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="areaid.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in areaList"
                     :key="item.key"
@@ -32,7 +32,7 @@
                     :value="item.key">
                   </el-option>
                 </el-select><p class="validate-tips">{{ areaid.tips }}</p>
-                <el-select v-model="areaTypeName.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="areaTypeName.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in areaTypeNameList"
                     :key="item.key"
@@ -46,7 +46,7 @@
           <li class="list">
               <span class="text">作业类别:</span>
               <div class="inp-wrap">
-                <el-radio-group v-model="planType.text">
+                <el-radio-group v-model="planType.text"  :disabled="isDisabled">
                   <el-radio :label=1>单点</el-radio>
                   <el-radio :label=2>多点</el-radio>
                 </el-radio-group><p class="validate-tips">{{ planType.tips }}</p>
@@ -57,7 +57,7 @@
           <li class="list">
               <span class="text">重要程度:</span>
               <div class="inp-wrap">
-                <el-select v-model="importantLevel.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="importantLevel.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in importantLevelList"
                     :key="item.key"
@@ -66,7 +66,7 @@
                   </el-option>
                 </el-select><p class="validate-tips">{{ importantLevel.tips }}</p>
                 <span>日常/重大</span>
-                <el-select v-model="planLevel.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="planLevel.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in planLevelList"
                     :key="item.key"
@@ -79,7 +79,7 @@
           <li class="list">
               <span class="text">计划编号:</span>
               <div class="inp-wrap">
-                <el-input style="width:200px;"
+                <el-input style="width:200px;" :disabled="isDisabled"
                   placeholder="输入计划编号"
                   v-model="planNumber.text" clearable
                   @keyup.native="validateInputNull(planNumber)">
@@ -91,7 +91,7 @@
           <li class="list">
               <span class="text">申请单位:</span>
               <div class="inp-wrap">
-                <el-select v-model="applyCompanyOrgId.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="applyCompanyOrgId.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in applyCompanyOrgIdList"
                     :key="item.id"
@@ -104,7 +104,7 @@
           <li class="list">
               <span class="text">施工单位:</span>
               <div class="inp-wrap">
-                <el-select v-model="constructionCompanyOrgId.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="constructionCompanyOrgId.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in constructionCompanyOrgIdList"
                     :key="item.id"
@@ -119,7 +119,7 @@
           <li class="list">
               <span class="text">起止时间:</span>
               <div class="inp-wrap">
-                <el-date-picker
+                <el-date-picker :disabled="isDisabled"
                   class="eldatepicker"
                   v-model="time.text"
                   type="datetimerange"
@@ -135,7 +135,7 @@
           <li class="list">
               <span class="text">登记车站:</span>
               <div class="inp-wrap">
-                <el-select v-model="registerStationId.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="registerStationId.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in registerStationIdList"
                     :key="item.title"
@@ -150,7 +150,7 @@
           <li class="list">
               <span class="text">设施设备号:</span>
               <div class="inp-wrap">
-                <el-input style="width:200px;"
+                <el-input style="width:200px;" :disabled="isDisabled"
                   placeholder="输入设施设备号"
                   v-model="deviceNum.text" clearable>
                 </el-input><p class="validate-tips">{{ deviceNum.tips }}</p>
@@ -159,7 +159,7 @@
           <li class="list">
               <span class="text">故障令号:</span>
               <div class="inp-wrap">
-                <el-input style="width:200px;"
+                <el-input style="width:200px;" :disabled="isDisabled"
                   placeholder="输入故障令号"
                   v-model="troubleNum.text" clearable>
                 </el-input><p class="validate-tips">{{ troubleNum.tips }}</p>
@@ -168,39 +168,39 @@
         </ul>
         <div class="con-padding-horizontal cause">
             <span class="lable">工作地点:</span>
-            <el-input type="textarea" v-model="operationAddress.text" placeholder="请输入工作地点" @keyup.native="validateInputNull(operationAddress)"></el-input>
+            <el-input type="textarea" v-model="operationAddress.text" placeholder="请输入工作地点" @keyup.native="validateInputNull(operationAddress)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ operationAddress.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工内容:</span>
-            <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionContent)"></el-input>
+            <el-input type="textarea" v-model="constructionContent.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionContent)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ constructionContent.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工详细说明:</span>
-            <el-input type="textarea" v-model="constructionDetail.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionDetail)"></el-input>
+            <el-input type="textarea" v-model="constructionDetail.text" placeholder="请输入施工内容" @keyup.native="validateInputNull(constructionDetail)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ constructionDetail.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">配合要求:</span>
-            <el-input type="textarea" v-model="coordinationRequest.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(coordinationRequest)"></el-input>
+            <el-input type="textarea" v-model="coordinationRequest.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(coordinationRequest)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ coordinationRequest.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">配合意见:</span>
-            <el-input type="textarea" v-model="coordinationAudit.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(coordinationAudit)"></el-input>
+            <el-input type="textarea" v-model="coordinationAudit.text" placeholder="请输入配合要求" @keyup.native="validateInputNull(coordinationAudit)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ coordinationAudit.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">停送电范围:</span>
-            <el-input type="textarea" v-model="electricRange.text" placeholder="请输入停送电范围" @keyup.native="validateInputNull(electricRange)"></el-input>
+            <el-input type="textarea" v-model="electricRange.text" placeholder="请输入停送电范围" @keyup.native="validateInputNull(electricRange)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ electricRange.tips }}</p>
         </div>
         <ul class="con-padding-horizontal input-group">
           <li class="list">
               <span class="text">接触网/轨停电:</span>
               <div class="inp-wrap">
-                <el-select v-model="stopElectric.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="stopElectric.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in stopElectricList"
                     :key="item.key"
@@ -209,7 +209,7 @@
                   </el-option><p class="validate-tips">{{ stopElectric.tips }}</p>
                 </el-select>
                 <span class="text">牵引动力:</span>
-                <el-select v-model="tractionPower.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="tractionPower.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in tractionPowerList"
                     :key="item.key"
@@ -222,7 +222,7 @@
           <li class="list">
               <span class="text">使用梯车:</span>
               <div class="inp-wrap">
-                <el-select v-model="useLaddercar.text"  collapse-tags  clearable filterable placeholder="请选择">
+                <el-select v-model="useLaddercar.text"  collapse-tags  clearable filterable placeholder="请选择" :disabled="isDisabled">
                   <el-option
                     v-for="item in useLaddercarList"
                     :key="item.key"
@@ -231,7 +231,7 @@
                   </el-option>
                 </el-select><p class="validate-tips">{{ useLaddercar.tips }}</p>
                 <span class="lable">牵引动力列数:</span>
-                <el-input style="width:150px;"
+                <el-input style="width:150px;" :disabled="isDisabled"
                   placeholder="输入牵引动力列数"
                   v-model="tractionTrainNum.text" clearable>
                 </el-input><p class="validate-tips">{{ tractionTrainNum.tips }}</p>
@@ -240,29 +240,27 @@
         </ul>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工影响区段:</span>
-            <el-input type="textarea" v-model="effectArea.text" placeholder="请输入施工影响区段" @keyup.native="validateInputNull(effectArea)"></el-input>
+            <el-input type="textarea" v-model="effectArea.text" placeholder="请输入施工影响区段" @keyup.native="validateInputNull(effectArea)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ effectArea.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">施工影响说明:</span>
-            <el-input type="textarea" v-model="effectExplain.text" placeholder="请输入施工影响说明" @keyup.native="validateInputNull(effectExplain)"></el-input>
+            <el-input type="textarea" v-model="effectExplain.text" placeholder="请输入施工影响说明" @keyup.native="validateInputNull(effectExplain)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ effectExplain.tips }}</p>
         </div>
         <div class="con-padding-horizontal cause">
             <span class="lable">安全措施:</span>
-            <el-input type="textarea" v-model="safeMeasure.text" placeholder="请输入安全措施" @keyup.native="validateInputNull(safeMeasure)"></el-input>
+            <el-input type="textarea" v-model="safeMeasure.text" placeholder="请输入安全措施" @keyup.native="validateInputNull(safeMeasure)" :disabled="isDisabled"></el-input>
             <p class="validate-tips">{{ safeMeasure.tips }}</p>
         </div>
         <div class="upload-list">
-          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs" :readOnly="isDisabled"></upload-pdf>
         </div>
         <button @click="changeShow"></button>
         <area-dialog :name="show" @changeShowChild = "changeShow"></area-dialog>
         <!-- 按钮 -->
-        <div class="btn-group">
-          <x-button class="close">
-            <router-link :to="{name: 'SeeConstructionPlan'}">取消</router-link>
-          </x-button>
+        <div class="btn-group" v-show="!isDisabled">
+          <x-button class="close" @click.native="back">取消</x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
       </el-scrollbar>
@@ -289,6 +287,8 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
+      sourceName: '',
+      isDisabled: false,
       show: false,
       systemResource: systemResource.construction,
       loading: false,
@@ -331,6 +331,7 @@ export default {
       registerStationIdList: [],
       deviceNum: {text: '', tips: ''},
       troubleNum: {text: '', tips: ''},
+      troubleID: '',
       stopElectric: {text: '', tips: ''},
       stopElectricList: [],
       tractionPower: {text: '', tips: ''},
@@ -345,12 +346,26 @@ export default {
   },
   mounted () {
     if (this.$route.query.type !== 'Add') {
-      this.title = '| 修改施工计划'
       this.loading = true
       this.getObjByID()
+      if (this.$route.query.type === 'Eidt') {
+        this.title = '| 修改施工计划'
+      } else {
+        this.title = '| 施工计划明细'
+        this.isDisabled = true
+      }
+    } else if (this.$route.query.code !== undefined) {
+      this.troubleNum.text = this.$route.query.code
+      this.troubleID = this.$route.query.troubleID
     }
+    this.sourceName = this.$route.query.sourceName
   },
   methods: {
+    back () {
+      this.$router.push({
+        name: this.sourceName
+      })
+    },
     changeShow () {
       this.show = !this.show
     },

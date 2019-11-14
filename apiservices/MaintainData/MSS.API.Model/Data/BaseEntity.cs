@@ -87,4 +87,15 @@ namespace MSS.API.Model.Data
         MyProcessing = 2,
         MyCheck = 3
     }
+    /// <summary>
+    /// 员工考勤依据所需的状态，目前只做接口
+    /// </summary>
+    public enum AttandenceStatus
+    {
+        UnReported = 152,
+        UnDeal = 153,
+        UnRepaired = 154,
+        UnFinished = 155,
+        UnRepaired72 = 156
+    }
 }

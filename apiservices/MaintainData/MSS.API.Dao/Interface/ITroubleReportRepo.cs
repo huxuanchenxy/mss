@@ -22,5 +22,6 @@ namespace MSS.API.Dao.Interface
         Task<int> SaveHistory(TroubleHistory troubleHistory);
         Task<int> SaveHistory(List<TroubleHistory> troubleHistory);
         Task<List<TroubleHistory>> ListHistoryByTrouble(int id);
+        Task<int> GetNoByStatus(AttandenceStatus attandenceStatus);
     }
 }

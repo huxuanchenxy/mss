@@ -25,8 +25,9 @@
       </div>
             <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="add"><x-button>添加</x-button></li>
-        <li class="list" @click="edit"><x-button>修改</x-button></li>
+        <li class="list" @click="edit('Edit')"><x-button>修改</x-button></li>
         <li class="list" @click="remove"><x-button>删除</x-button></li>
+        <li class="list" @click="edit('Detail')"><x-button>查看明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -227,9 +228,9 @@ export default {
       this.searchResult(1)
     },
     add () {
-      this.$router.push({name: 'AddConstructionPlan', query: { type: 'Add' }})
+      this.$router.push({name: 'AddConstructionPlan', query: { type: 'Add', sourceName: 'SeeConstructionPlan' }})
     },
-    edit () {
+    edit (type) {
       if (!this.IDS.length) {
         this.$message({
           message: '请选择记录',
@@ -237,7 +238,7 @@ export default {
         })
       } else if (this.IDS.length > 1) {
         this.$message({
-          message: '查看的记录不能超过1个',
+          message: '操作的记录不能超过1个',
           type: 'warning'
         })
       } else {
@@ -246,7 +247,7 @@ export default {
           params: {
             id: this.IDS[0]
           },
-          query: { type: 'Edit', id: this.IDS[0] }
+          query: { type: type, id: this.IDS[0], sourceName: 'SeeConstructionPlan' }
         })
       }
     },

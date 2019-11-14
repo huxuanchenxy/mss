@@ -19,6 +19,7 @@ namespace MSS.API.Core.V1.Business
 {
     public interface ITroubleReportService
     {
+        Task<ApiResult> GetNoByStatus(AttandenceStatus attandenceStatus);
         Task<ApiResult> ListHistoryByTrouble(int id);
         Task<ApiResult> ListEqpByTrouble(int id,int topOrg, TroubleView troubleView);
         Task<ApiResult> AssignEqp(List<TroubleEqp> troubleEqp);
@@ -44,7 +45,22 @@ namespace MSS.API.Core.V1.Business
             _userID = authhelper.GetUserId();
             _consulServiceProvider = consulServiceProvider;
         }
-
+        #region 调度员/值班员接口 未接报、未处理、未修复、未完结、七十二小时外未修复的数量统计
+        public async Task<ApiResult> GetNoByStatus(AttandenceStatus attandenceStatus)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _troubleReportRepo.GetNoByStatus(attandenceStatus);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+        #endregion
 
         public async Task<ApiResult> ListHistoryByTrouble(int id)
         {

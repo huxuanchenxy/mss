@@ -130,9 +130,14 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = " update trouble_report " +
-                        " set status=@status,last_operation=@operation,updated_by=@userID,updated_time=@time where id in @ids ";
-                int ret = await c.ExecuteAsync(sql, 
-                    new { ids, userID, time = DateTime.Now,status,operation});
+                        " set status=@status,last_operation=@operation,updated_by=@userID,updated_time=@time ";
+                if (status==TroubleStatus.Processing && operation==TroubleOperation.Assign)
+                {
+                    sql += ",accepted_time=@time ";
+                }
+                sql += " where id in @ids";
+                int ret = await c.ExecuteAsync(sql,
+                    new { ids, userID, time = DateTime.Now, status, operation });
                 return ret;
             });
         }
@@ -257,7 +262,7 @@ namespace MSS.API.Dao.Implement
         }
         #endregion
 
-        #region get
+        #region get 辅助查询
         public async Task<string> GetLineCodeByID(int id)
         {
             return await WithConnection(async c =>
@@ -298,6 +303,35 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        #endregion
+
+        #region 调度员/值班员接口 未接报、未处理(目前没有这一过程)、未修复、未完结、七十二小时外未修复的数量统计
+        public async Task<int> GetNoByStatus(AttandenceStatus attandenceStatus)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select count(id) from trouble_report ";
+                switch (attandenceStatus)
+                {
+                    case AttandenceStatus.UnReported:
+                        sql += " where status="+(int)TroubleStatus.NewTrouble+
+                        " and last_operation!="+ TroubleOperation.RepairReject;
+                        break;
+                    case AttandenceStatus.UnRepaired:
+                        sql += " where status=" + (int)TroubleStatus.Processing;
+                        break;
+                    case AttandenceStatus.UnFinished:
+                        sql += " where status=" + (int)TroubleStatus.Repaired;
+                        break;
+                    case AttandenceStatus.UnRepaired72:
+                        sql += " where status=" + (int)TroubleStatus.Processing +
+                        " and timestampdiff(MINUTE,accepted_time,now())>4320";
+                        break;
+                }
+                int ret = await c.QueryFirstOrDefaultAsync<int>(sql);
+                return ret;
+            });
+        }
         #endregion
 
         #region trouble_eqp
