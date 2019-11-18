@@ -5,7 +5,7 @@ export default {
   getPage: parm => { return axios.get(`${api}/Wf/QueryReadyTasks`, {params: parm}).then(res => res.data) },
   getMyApplyPage: parm => { return axios.get(`${api}/Wf/GetPageMyApply`, {params: parm}).then(res => res.data) },
   getProcessHisPage: parm => { return axios.get(`${api}/Wf/GetPageActivityInstance`, {params: parm}).then(res => res.data) },
-
+  getMyFinprocess: parm => { return axios.get(`${api}/Wf/QueryFinishTasks`, {params: parm}).then(res => res.data) },
   getImportPage: parm => { return axios.get(`${api}/ConstructionPlanImport`, {params: parm}).then(res => res.data) },
   getCommonPage: parm => { return axios.get(`${api}/ConstructionPlanImport/ListPageCommon`, {params: parm}).then(res => res.data) },
 
@@ -24,5 +24,6 @@ export default {
   sendbackprocess: parm => { return axios.post(`${api}/Wf/SendBackProcess`, parm).then(res => res.data) },
   getprocesslist: id => { return axios.get(`${api}/Wf/GetProcessListSimple`).then(res => res.data) },
   getnextprocess: parm => { return axios.post(`${api}/Wf/GetNextStepRoleUserTree`, parm).then(res => res.data) },
+
   getcurrentprocess: parm => { return axios.post(`${api}/Wf/QueryReadyActivityInstance`, parm).then(res => res.data) }
 }

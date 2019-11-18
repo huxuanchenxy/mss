@@ -353,7 +353,7 @@ export default {
     if (this.$route.query.type !== 'Add') {
       this.loading = true
       this.getObjByID()
-      if (this.$route.query.type === 'Eidt') {
+      if (this.$route.query.type === 'Edit') {
         this.title = '| 修改施工计划'
       } else {
         this.title = '| 施工计划明细'
