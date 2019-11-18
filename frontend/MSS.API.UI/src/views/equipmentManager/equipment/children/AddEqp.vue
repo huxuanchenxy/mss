@@ -220,7 +220,7 @@
               <div class="inp-wrap">
                 <span class="text">使用期限</span>
                 <div class="inp">
-                  <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateNumber(life)"></el-input>
+                  <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateNumberNull(life)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ life.tips }}</p>
@@ -235,7 +235,7 @@
           <ul class="input-group">
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">中修频率</span>
+                <span class="text">中修频率<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-input placeholder="请输入中修频率" v-model="mediumRepair.text" @keyup.native="validateNumber(mediumRepair)"></el-input>
                 </div>
@@ -244,7 +244,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">大修频率</span>
+                <span class="text">大修频率<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-input placeholder="请输入大修频率" v-model="largeRepair.text" @keyup.native="validateNumber(largeRepair)"></el-input>
                 </div>
@@ -509,20 +509,20 @@ export default {
         OnlineAgain: this.timeAgain.text,
         FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
-      if (this.ratedVoltage.text !== '') {
-        eqp.RatedVoltage = this.ratedVoltage.text
-      }
-      if (this.ratedCurrent.text !== '') {
-        eqp.RatedCurrent = this.ratedCurrent.text
-      }
-      if (this.ratedPower.text !== '') {
-        eqp.RatedPower = this.ratedPower.text
-      }
+      // if (this.ratedVoltage.text !== '') {
+      //   eqp.RatedVoltage = this.ratedVoltage.text
+      // }
+      // if (this.ratedCurrent.text !== '') {
+      //   eqp.RatedCurrent = this.ratedCurrent.text
+      // }
+      // if (this.ratedPower.text !== '') {
+      //   eqp.RatedPower = this.ratedPower.text
+      // }
       // 新增了路线 为了和原来保持 再-1
-      let l = this.area.text.length - 1 - 1
+      let l = this.area.text.length - 1
       if (l > -1) {
         eqp.Location = this.area.text[l]
-        eqp.LocationBy = l
+        eqp.LocationBy = l - 1
         eqp.LocationPath = this.area.text.join(',')
       }
       if (this.isShow === 'add') {
@@ -591,9 +591,9 @@ export default {
         this.ratedPower.text = _res.ratedPower === null ? '' : _res.ratedPower
         this.area.text = strToIntArr(_res.locationPath)
         this.time.text = _res.online
-        this.life.text = _res.life
-        this.mediumRepair.text = _res.mediumRepair.toString()
-        this.largeRepair.text = _res.largeRepair.toString()
+        this.life.text = nullToEmpty(_res.life)
+        this.mediumRepair.text = _res.mediumRepair
+        this.largeRepair.text = _res.largeRepair
         this.timeAgain.text = nullToEmpty(_res.onlineAgain)
         this.fileIDs = _res.fileIDs
       }).catch(err => console.log(err))
@@ -637,8 +637,17 @@ export default {
       }
     },
 
+    validateNumberNull (val) {
+      return validateNumberCommon(val)
+    },
     validateNumber (val) {
-      validateNumberCommon(val)
+      val.tips = ''
+      if (val.text === '') {
+        val.tips = '此项必选'
+        return false
+      } else {
+        return validateNumberCommon(val)
+      }
     },
 
     validateAll () {
@@ -667,8 +676,8 @@ export default {
         return false
       }
       if (!validateNumberCommon(this.life)) return false
-      if (!validateNumberCommon(this.mediumRepair)) return false
-      if (!validateNumberCommon(this.largeRepair)) return false
+      if (!this.validateNumber(this.mediumRepair)) return false
+      if (!this.validateNumber(this.largeRepair)) return false
       return true
     }
   },

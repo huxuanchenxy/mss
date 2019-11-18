@@ -63,4 +63,39 @@ namespace MSS.API.Model.Data
         Finished=134,
         Canceled=135
     }
+
+    public enum TroubleOperation
+    {
+        NewTrouble = 141,
+        CancelTrouble = 142,
+        Assign = 143,
+        Delayed = 144,
+        Repost = 145,
+        RepairReject = 146,
+        Pass = 147,
+        Unpass = 148,
+        AssignReject = 149,
+        UpdateTrouble=150
+    }
+
+    /// <summary>
+    /// 故障界面对应显示的内容，内部使用
+    /// </summary>
+    public enum TroubleView
+    {
+        MyRepair = 1,
+        MyProcessing = 2,
+        MyCheck = 3
+    }
+    /// <summary>
+    /// 员工考勤依据所需的状态，目前只做接口
+    /// </summary>
+    public enum AttandenceStatus
+    {
+        UnReported = 152,
+        UnDeal = 153,
+        UnRepaired = 154,
+        UnFinished = 155,
+        UnRepaired72 = 156
+    }
 }

@@ -65,10 +65,6 @@ const routes = [
               path: 'detail',
               name: 'DetailWorkingApplication',
               component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/DetailWorkingApplication.vue')
-            }, {
-              path: 'detailTroubleReport',
-              name: 'DetailTroubleReport',
-              component: () => import(/* webpackChunkName: "EquipmentLifeCycle" */ '@/views/EquipmentLifeCycle/history/children/DetailTroubleReport.vue')
             }
           ]
         }

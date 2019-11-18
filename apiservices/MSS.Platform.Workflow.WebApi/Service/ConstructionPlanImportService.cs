@@ -185,7 +185,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                                     }
                                     string str = row.GetCell(0).ToString().Trim();
                                     if (str.Replace(" ", "").Contains("总计")) break;
-                                    string rowNo = (j + 4).ToString();
+                                    string rowNo = (j + 1).ToString();
                                     code = GetMergeCell(str, code, "代码(第" + rowNo + "行)", ref ret);
                                     if (ret.code != Code.Success) return ret;
                                     else dataRow[0] = code;
@@ -195,21 +195,21 @@ namespace MSS.Platform.Workflow.WebApi.Service
                                     eqpTypeName = GetMergeCell(name, eqpTypeName, "设备类型(第" + rowNo + "行)", ref ret);
                                     if (ret.code != Code.Success) return ret;
                                     else dataRow[2] = eqpTypeName;
-                                    qi = GetIDByName(allEqpTypes, eqpTypeName, "设备类型(第" + j + "行)", ref ret);
+                                    qi = GetIDByName(allEqpTypes, eqpTypeName, "设备类型(第" + rowNo + "行)", ref ret);
                                     if (ret.code != Code.Success) return ret;
                                     else dataRow[1] = qi.ID;
                                     //dataRow[1] = 0;//目前id和name没有保持一致，先把id默认0
                                     //处所
                                     name = row.GetCell(2).ToString().Trim();
                                     dataRow[5] = name;
-                                    qi = GetIDByName(allLocations, name, "处所(第" + j + "行)", ref ret);
+                                    qi = GetIDByName(allLocations, name, "处所(第" + rowNo + "行)", ref ret);
                                     if (ret.code != Code.Success) return ret;
                                     else dataRow[3] = qi.ID; dataRow[4] = qi.LocationBy;
                                     //dataRow[3] = 0; dataRow[4]=0;
                                     //班组
                                     name = row.GetCell(3).ToString().Trim();
                                     dataRow[7] = name;
-                                    qi = GetIDByName(allTeams, name, "班组(第" + j + "行)", ref ret);
+                                    qi = GetIDByName(allTeams, name, "班组(第" + rowNo + "行)", ref ret);
                                     if (ret.code != Code.Success) return ret;
                                     else dataRow[6] = qi.ID;
                                     //dataRow[6] = 0;
@@ -224,7 +224,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                                             if (i < 9)
                                             {
                                                 str = cellData.ToString().Trim();
-                                                if (ValidateCell(str, "第" + rowNo + "行第" + (i+4).ToString() + "列", ref ret)) return ret;
+                                                if (ValidateCell(str, "第" + rowNo + "行第" + (i+1).ToString() + "列", ref ret)) return ret;
                                                 dataRow[i + 4] = str;
                                             }
                                             else if (i > 10)

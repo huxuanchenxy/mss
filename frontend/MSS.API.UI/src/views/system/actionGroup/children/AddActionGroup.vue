@@ -53,7 +53,7 @@
         </li>
         <li class="list">
           <div class="inp-wrap">
-            <span class="text">权限组顺序</span>
+            <span class="text">权限组顺序<em class="validate-mark">*</em></span>
             <div class="inp">
               <el-input placeholder="请输入权限组顺序" v-model="groupOrder.text" @keyup.native="validateNumber()"></el-input>
             </div>

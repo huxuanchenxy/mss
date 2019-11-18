@@ -140,6 +140,7 @@ export default {
       },
       loading: false,
       title: '',
+      updateTitle: '',
       importCommon: {},
       type: '',
       activeName: '0',
@@ -180,19 +181,9 @@ export default {
   created () {
     this.importCommon = this.$route.params.item
     this.type = this.$route.params.type
-    this.title = ' | 月计划生成 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
+    this.title = ' | 月计划列表 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
+    this.updateTitle = ' | 月计划修改 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
     this.activeName = new Date().getMonth() + ''
-    if (this.type === 1) {
-      api.createMonthPlan(this.importCommon.id).then(res => {
-        this.monthList = res.data
-        this.type = 2
-      }).catch(err => console.log(err))
-    } else {
-      this.monthList = []
-      for (let i = 0; i < 12; i++) {
-        this.monthList[i] = []
-      }
-    }
     // 班组加载
     apiOrg.getOrgAll().then(res => {
       this.teamList = res.data
@@ -203,6 +194,20 @@ export default {
     }).catch(err => console.log(err))
   },
   activated () {
+    if (this.$route.params.type !== undefined) {
+      this.type = this.$route.params.type
+      if (this.type === 1) {
+        api.createMonthPlan(this.importCommon.id).then(res => {
+          this.monthList = res.data
+          this.type = 2
+        }).catch(err => console.log(err))
+      } else {
+        this.monthList = []
+        for (let i = 0; i < 12; i++) {
+          this.monthList[i] = []
+        }
+      }
+    }
     this.searchResult(1)
   },
   methods: {
@@ -246,7 +251,7 @@ export default {
         name: 'UpdateMonthPlan',
         params: {
           id: item.id,
-          title: this.title,
+          title: this.updateTitle,
           locationName: item.locationName
         }
       })
