@@ -125,6 +125,126 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
             return ret;
         }
 
+        [HttpPost("WithdrawProcess")]
+        public async Task<ActionResult<WfRet>> WithdrawProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.WithdrawProcess(parm);
 
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "撤销流程失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPost("SendBackProcess")]
+        public async Task<ActionResult<WfRet>> SendBackProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.SendBackProcess(parm);
+
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "退回流程失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpGet("GetProcessListSimple")]
+        public async Task<ActionResult<WfRet>> GetProcessListSimple()
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.GetProcessListSimple();
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "获取流程基本信息失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPost("ReverseProcess")]
+        public async Task<ActionResult<WfRet>> ReverseProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.ReverseProcess(parm);
+
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "返签流程失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPost("CancelProcess")]
+        public async Task<ActionResult<WfRet>> CancelProcess(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.CancelProcess(parm);
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "取消流程失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPost("QueryReadyActivityInstance")]
+        public async Task<ActionResult<WfRet>> QueryReadyActivityInstance(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.QueryReadyActivityInstance(parm);
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "获取当前流转到哪个节点失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPost("QueryCompletedTasks")]
+        public async Task<ActionResult<WfRet>> QueryCompletedTasks(WfReq parm)
+        {
+            WfRet ret = new WfRet { Status = 1 };
+            try
+            {
+                ret = await _service.QueryCompletedTasks(parm);
+            }
+            catch (System.Exception ex)
+            {
+                ret.Message = string.Format(
+                    "获取已办任务失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
     }
 }

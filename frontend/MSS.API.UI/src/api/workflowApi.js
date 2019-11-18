@@ -20,5 +20,9 @@ export default {
   getConstructionPlanByID: id => { return axios.get(`${api}/ConstructionPlan/${id}`).then(res => res.data) },
   startprocess: parm => { return axios.post(`${api}/Wf/StartProcess`, parm).then(res => res.data) },
   nextprocess: parm => { return axios.post(`${api}/Wf/NextProcess`, parm).then(res => res.data) },
-  getnextprocess: parm => { return axios.post(`${api}/Wf/GetNextStepRoleUserTree`, parm).then(res => res.data) }
+  withdrawprocess: parm => { return axios.post(`${api}/Wf/WithdrawProcess`, parm).then(res => res.data) },
+  sendbackprocess: parm => { return axios.post(`${api}/Wf/SendBackProcess`, parm).then(res => res.data) },
+  getprocesslist: id => { return axios.get(`${api}/Wf/GetProcessListSimple`).then(res => res.data) },
+  getnextprocess: parm => { return axios.post(`${api}/Wf/GetNextStepRoleUserTree`, parm).then(res => res.data) },
+  getcurrentprocess: parm => { return axios.post(`${api}/Wf/QueryReadyActivityInstance`, parm).then(res => res.data) }
 }
