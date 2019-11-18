@@ -34,6 +34,24 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
             return ret;
         }
 
+        [HttpGet("QueryFinishTasks")]
+        public async Task<ActionResult<ApiResult>> QueryFinishTasks([FromQuery] WorkTaskQueryParm parm)
+        {
+            ApiResult ret = new ApiResult { code = Code.Failure };
+            try
+            {
+                ret = await _service.GetFinishTasks(parm);
+
+            }
+            catch (System.Exception ex)
+            {
+                ret.msg = string.Format(
+                    "获取当前用户已办任务数据失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
 
         [HttpGet("GetPageMyApply")]
         public async Task<ActionResult<ApiResult>> GetPageMyApply([FromQuery] WorkTaskQueryParm parm)
@@ -230,21 +248,5 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
             return ret;
         }
 
-        [HttpPost("QueryCompletedTasks")]
-        public async Task<ActionResult<WfRet>> QueryCompletedTasks(WfReq parm)
-        {
-            WfRet ret = new WfRet { Status = 1 };
-            try
-            {
-                ret = await _service.QueryCompletedTasks(parm);
-            }
-            catch (System.Exception ex)
-            {
-                ret.Message = string.Format(
-                    "获取已办任务失败, 异常信息:{0}",
-                    ex.Message);
-            }
-            return ret;
-        }
     }
 }

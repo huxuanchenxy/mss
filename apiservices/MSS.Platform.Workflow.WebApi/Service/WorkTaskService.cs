@@ -50,6 +50,28 @@ namespace MSS.Platform.Workflow.WebApi.Service
             return ret;
         }
 
+        public async Task<ApiResult> GetFinishTasks(WorkTaskQueryParm parm)
+        {
+            ApiResult ret = new ApiResult();
+
+            try
+            {
+                parm.ActivityState = 4;
+                parm.AssignedToUserID = _authhelper.GetUserId();
+                //parm.AssignedToUserID = 40;
+                var data = await _repo.GetPageList(parm);
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
         /// <summary>
         /// 我的申请
         /// </summary>
@@ -340,6 +362,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
     public interface IWorkTaskService
     {
         Task<ApiResult> GetReadyTasks(WorkTaskQueryParm parm);
+        Task<ApiResult> GetFinishTasks(WorkTaskQueryParm parm);
         Task<ApiResult> GetPageMyApply(WorkTaskQueryParm parm);
         Task<ApiResult> GetPageActivityInstance(WorkQueryParm parm);
         Task<WfRet> StartProcess(WfReq parm);

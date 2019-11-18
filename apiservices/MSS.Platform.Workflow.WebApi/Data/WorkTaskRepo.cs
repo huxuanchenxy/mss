@@ -72,7 +72,15 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 whereSql.Append(" WHERE pi.ProcessState = '2' AND ( ai.ActivityType = '4' OR ai.WorkItemType = '1' ) AND t.TaskState <> '32' ");
                 if (parm.ActivityState != null)
                 {
-                    whereSql.Append(" and ai.ActivityState =" + parm.ActivityState);
+                    if (parm.ActivityState == 1)
+                    {
+                        whereSql.Append(" and ai.ActivityState != 4 ");
+                    }
+                    else
+                    {
+                        whereSql.Append(" and ai.ActivityState =" + parm.ActivityState);
+                    }
+                    
                 }
                 if (parm.AssignedToUserID != null)
                 {
