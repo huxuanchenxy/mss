@@ -298,6 +298,31 @@ namespace MSS.API.Core.V1.Business
                 return _findTopNode((int)node.ParentID, nodes);
             }
         }
+        /// <summary>
+        /// twg
+        /// 根据用户获得其上的所有组织架构节点
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <param name="nodes"></param>
+        /// <returns></returns>
+        public async Task<ApiResult> ListNodeByUser(int userid)
+        {
+            ApiResult ret = new ApiResult();
+            List<int> ots = new List<int>();
+            List<OrgTree> nodes_all = await _orgRepo.ListAllOrgNode();
+            OrgUser orguser = await _orgRepo.GetOrgUserByUserID(userid);
+            int? nodeid = orguser.NodeID;
+            while (true)
+            {
+                ots.Add((int)nodeid);
+                nodeid = nodes_all.Where(a => a.ID == nodeid).FirstOrDefault().ParentID;
+                if (nodeid == null)
+                {
+                    ret.data = ots;
+                    return ret;
+                }
+            }
+        }
 
         private object _parseOrgTree(OrgTree parentNode, List<OrgTree> nodes
             , List<OrgNodeType> nodeTypes)

@@ -134,7 +134,7 @@
 <script>
 import XButton from '@/components/button'
 import { btn } from '@/element/btn.js'
-import { transformDate } from '@/common/js/utils.js'
+import { transformDate, keyRole } from '@/common/js/utils.js'
 import api from '@/api/authApi'
 export default {
   name: 'Role',
@@ -244,6 +244,15 @@ export default {
     },
     // 删除角色
     remove () {
+      for (let i = 0; i < this.editRoleID.length; i++) {
+        if (keyRole.dispatcher === this.editRoleID[i]) {
+          this.$message({
+            message: '编号' + keyRole.dispatcher + '是关键角色，不可删除',
+            type: 'suwarningccess'
+          })
+          return
+        }
+      }
       if (!this.editRoleID.length) {
         this.$message({
           message: '请选择需要删除的角色',

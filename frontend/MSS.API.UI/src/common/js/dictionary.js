@@ -11,6 +11,19 @@ export const dictionary = {
   troubleLevel: 126
 }
 
+export const troubleOperation = {
+  newTrouble: 141,
+  canceleTrouble: 142,
+  assign: 143,
+  delayed: 144,
+  repost: 145,
+  repairReject: 146,
+  pass: 147,
+  unpass: 148,
+  assignReject: 149,
+  updateTrouble: 150
+}
+
 export const troubleStatus = {
   newTrouble: 48,
   processing: 49,

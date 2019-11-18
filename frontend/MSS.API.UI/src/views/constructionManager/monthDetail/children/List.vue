@@ -40,7 +40,6 @@
             <label for="name">公司</label>
             <div class="inp">
               <el-cascader clearable
-                expand-trigger="hover"
                 change-on-select
                 :props="defaultParams"
                 @change="company_change"
@@ -54,7 +53,6 @@
             <label for="name">部门</label>
             <div class="inp">
               <el-cascader clearable
-                expand-trigger="hover"
                 change-on-select
                 :props="defaultParams"
                 @change="dept_change"

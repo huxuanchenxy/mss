@@ -294,6 +294,7 @@ export default {
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.currentPage = val
+      this.searchResult(val)
     },
 
     // 上一页
@@ -304,7 +305,6 @@ export default {
     // 下一页
     nextPage (val) {
       this.currentPage = val
-      this.searchResult(val)
     }
   }
 }

@@ -61,6 +61,14 @@ namespace MSS.API.Common
         Cascader=1,
         List=2
     }
+
+    /// <summary>
+    /// 重要角色，不可删除，但可显示供用户配置
+    /// </summary>
+    public enum KeyRole
+    {
+        Dispatcher=24
+    }
     #endregion
 
     #region 字典

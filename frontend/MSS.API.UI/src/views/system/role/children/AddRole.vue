@@ -105,7 +105,7 @@ export default {
         return
       }
       this.$emit('reload', Math.random())
-      if (this.roleActionInfo === []) {
+      if (this.roleActionInfo.length === 0) {
         this.$message({
           message: '必须选择至少一个权限',
           type: 'error'
