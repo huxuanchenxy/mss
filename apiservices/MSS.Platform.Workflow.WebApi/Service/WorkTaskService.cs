@@ -1,4 +1,5 @@
-﻿using MSS.API.Common;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using MSS.API.Common;
 using MSS.API.Common.Utility;
 using MSS.Common.Consul;
 using MSS.Platform.Workflow.WebApi.Data;
@@ -6,6 +7,8 @@ using MSS.Platform.Workflow.WebApi.Model;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using MSS.API.Common.DistributedEx;
+using System.Collections.Generic;
 
 namespace MSS.Platform.Workflow.WebApi.Service
 {
@@ -15,12 +18,14 @@ namespace MSS.Platform.Workflow.WebApi.Service
         private readonly IAuthHelper _authhelper;
         private readonly IServiceDiscoveryProvider _consulclient;
         private readonly IWfprocessRepo<Wfprocess> _wfprocessRepo;
-        public WorkTaskService(IWorkTaskRepo<TaskViewModel> repo, IAuthHelper authhelper, IServiceDiscoveryProvider consulclient, IWfprocessRepo<Wfprocess> wfprocessRepo)
+        private readonly IDistributedCache _cache;
+        public WorkTaskService(IWorkTaskRepo<TaskViewModel> repo, IAuthHelper authhelper, IServiceDiscoveryProvider consulclient, IWfprocessRepo<Wfprocess> wfprocessRepo,IDistributedCache cache)
         {
             _repo = repo;
             _authhelper = authhelper;
             _consulclient = consulclient;
             _wfprocessRepo = wfprocessRepo;
+            _cache = cache;
         }
 
         /// <summary>
@@ -34,6 +39,16 @@ namespace MSS.Platform.Workflow.WebApi.Service
 
             try
             {
+                //List<dynamic> pa = new List<dynamic>();
+                //await _cache.HSetAsync("testhset", "testfield", "testvalue");
+                //await _cache.SetAsync("testset1", new ApiResult() { code = Code.Success, data = 1, msg = "1" },null);
+                //ApiResult pp = new ApiResult() { code = Code.Success, data = 2, msg = "2" };
+                //ApiResult pp1 = new ApiResult() { code = Code.Success, data = 3, msg = "3" };
+                //await _cache.HMSetAsync("testhmset",pp,pp1);
+
+                //await _cache.HSetAsync("testobjset4", new ApiResult() { code = Code.Success, data = 4, msg = "4" });
+
+                //var tmp = await _cache.HGetAsync<dynamic>("testobjset4","data");
                 parm.ActivityState = 1;
                 parm.AssignedToUserID = _authhelper.GetUserId();
                 //parm.AssignedToUserID = 40;
