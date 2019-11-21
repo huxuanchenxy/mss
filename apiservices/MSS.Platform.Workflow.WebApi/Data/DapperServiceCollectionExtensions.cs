@@ -21,6 +21,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
             services.AddTransient<IConstructionPlanImportRepo<ConstructionPlanYear>, ConstructionPlanImportRepo>();
             services.AddTransient<IConstructionPlanMonthDetailRepo<ConstructionPlanMonthDetail>, ConstructionPlanMonthDetailRepo>();
             services.AddTransient<IWorkTaskRepo<TaskViewModel>, WorkTaskRepo>();
+            services.AddTransient<IWfprocessRepo<Wfprocess>, WfprocessRepo>();
 
             //配置列名映射
             FluentMapper.Initialize(config =>
@@ -30,6 +31,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 config.AddMap(new ConstructionPlanMonthMap());
                 config.AddMap(new ConstructionPlanMonthDetailMap());
                 config.AddMap(new ConstructionPlanImportCommonMap());
+                config.AddMap(new WfprocessMap());
             });
             return services;
         }

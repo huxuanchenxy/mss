@@ -24,8 +24,7 @@
         </div>
       </div>
             <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="edit"><x-button>查看流程
-          </x-button></li>
+        <li class="list" @click="refreshpage"><x-button>操作</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -33,7 +32,7 @@
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
         <li class="list number c-pointer" @click="changeOrder('id')">
-          流程ID
+          任务ID
           <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
        </li>
         <li class="list name c-pointer" @click="changeOrder('appName')">
@@ -44,9 +43,9 @@
           业务ID
           <i :class="[{ 'el-icon-d-caret': headOrder.appInstanceID === 0 }, { 'el-icon-caret-top': headOrder.appInstanceID === 1 }, { 'el-icon-caret-bottom': headOrder.appInstanceID === 2 }]"></i>
        </li>
-        <li class="list name c-pointer" @click="changeOrder('processState')" >
-          当前状态
-          <i :class="[{ 'el-icon-d-caret': headOrder.processState === 0 }, { 'el-icon-caret-top': headOrder.processState === 1 }, { 'el-icon-caret-bottom': headOrder.processState === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('activityName')" >
+          步骤名称
+          <i :class="[{ 'el-icon-d-caret': headOrder.activityName === 0 }, { 'el-icon-caret-top': headOrder.activityName === 1 }, { 'el-icon-caret-bottom': headOrder.activityName === 2 }]"></i>
        </li>
         <li class="list name c-pointer" @click="changeOrder('createdDateTime')">创建日期
           <i :class="[{ 'el-icon-d-caret': headOrder.createdDateTime === 0 }, { 'el-icon-caret-top': headOrder.createdDateTime === 1 }, { 'el-icon-caret-bottom': headOrder.createdDateTime === 2 }]"></i>
@@ -60,7 +59,7 @@
             <li class="list" v-for="(item) in DataList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="IDS" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="lookOperlogID" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
                 <div class="name">{{ item.appName }}</div>
@@ -68,7 +67,7 @@
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.appInstanceID }}</router-link>
                 </div>-->
                 <div class="number" style="display:none;">{{ item.appInstanceID }}</div>
-                <div class="name">{{ item.processState }}</div>
+                <div class="name">{{ item.activityName }}</div>
                 <!-- <div class="name">{{ item.mac_add }}</div> -->
                 <div class="name">{{ item.createdDateTime }}</div>
                 <div class="number" style="display:none;">{{ item.processGUID }}</div>
@@ -98,13 +97,13 @@ import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
 export default {
-  name: 'SeeProcessMyApply',
+  name: 'SeeProcessMyFinishTask',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 我的申请',
+      title: ' | 我的已办任务',
       time: '',
       id: '',
       startTime: '',
@@ -112,7 +111,7 @@ export default {
       appName: '',
       roleList: [],
       DataList: [],
-      IDS: [],
+      lookOperlogID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -129,7 +128,7 @@ export default {
       },
       headOrder: {
         id: 0,
-        processState: 0,
+        activityName: 0,
         appName: 0,
         appInstanceID: 0,
         createdDateTime: 0
@@ -137,7 +136,7 @@ export default {
     }
   },
   created () {
-    this.$emit('title', '| 我的申请')
+    this.$emit('title', '| 我的已办任务')
     this.init()
   },
   activated () {
@@ -145,19 +144,20 @@ export default {
   },
   methods: {
     init () {
-      // this.bCheckAll = false  :disabled='item.processState'
+      // this.bCheckAll = false  :disabled='item.activityName'
       // this.checkAll()
       this.currentPage = 1
       this.searchResult(1)
-      this.listProcess()
     },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.id = 0
-        this.headOrder.processState = 0
+        this.headOrder.activityName = 0
         this.headOrder.appInstanceID = 0
         this.headOrder.appName = 0
+        this.headOrder.appName = 0
+        this.headOrder.servicePID = 0
         this.headOrder.createdDateTime = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
@@ -171,7 +171,7 @@ export default {
       this.currentSort.sort = sort
       // this.bCheckAll = false
       // this.checkAll()
-      this.searchResult(1)
+      this.searchResult(this.currentPage)
     },
     // 搜索
     searchResult (page) {
@@ -184,73 +184,31 @@ export default {
         page: page,
         AppName: this.appName
       }
-      api.getMyApplyPage(parm).then(res => {
+      api.getMyFinprocess(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
           item.createdDateTime = transformDate(item.createdDateTime)
-          if (item.processState === 0) {
-            item.processState = 'NotStart'
-          } else if (item.processState === 1) {
-            item.processState = 'Ready'
-          } else if (item.processState === 2) {
-            item.processState = 'Running'
-          } else if (item.processState === 4) {
-            item.processState = 'Completed'
-          } else if (item.processState === 5) {
-            item.processState = 'Suspended'
-          } else if (item.processState === 6) {
-            item.processState = 'Canceled'
-          } else if (item.processState === 7) {
-            item.processState = 'Discarded'
-          } else if (item.processState === 8) {
-            item.processState = 'Terminated'
-          }
         })
         this.DataList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
-    listProcess () {
-      api.getprocesslist().then(res => {
-        this.loading = false
-        console.log(res)
-      }).catch(err => console.log(err))
-    },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 我的申请')
+      this.$emit('title', '| 我的已办任务')
       this.loading = true
       this.init()
       this.searchResult(1)
     },
-    edit () {
-      if (!this.IDS.length) {
-        this.$message({
-          message: '请选择记录',
-          type: 'warning'
-        })
-      } else if (this.IDS.length > 1) {
-        this.$message({
-          message: '查看的记录不能超过1个',
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'SeeProcessHis',
-          params: {
-            ProcessInstanceID: this.IDS[0]
-          }
-        })
-      }
+    // 获取修改用户id
+    emitEditID () {
+      this.$emit('lookOperlogID', this.lookOperlogID)
     },
     // 全选
     // checkAll () {
     //   this.bCheckAll ? this.DataList.map(val => this.editUserID.push(val.id)) : this.editUserID = []
     //   this.emitEditID()
     // },
-    emitEditID () {
-      this.$emit('IDS', this.IDS)
-    },
     // 序号、指定页翻页
     handleCurrentChange (val) {
       this.bCheckAll = false
@@ -320,7 +278,7 @@ $con-height: $content-height - 145 - 56;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 13px 6px;
+      padding: 13px 16px;
       div{
         word-break: break-all;
       }

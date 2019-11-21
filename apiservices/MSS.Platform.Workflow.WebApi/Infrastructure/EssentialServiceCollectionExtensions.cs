@@ -19,6 +19,7 @@ namespace MSS.Platform.Workflow.WebApi.Infrastructure
             services.AddTransient<IConstructionPlanImportService, ConstructionPlanImportService>();
             services.AddTransient<IConstructionPlanMonthDetailService, ConstructionPlanMonthDetailService>();
             services.AddTransient<IWorkTaskService, WorkTaskService>();
+            services.AddTransient<IWfprocessService, WfprocessService>();
             return services;
         }
     }

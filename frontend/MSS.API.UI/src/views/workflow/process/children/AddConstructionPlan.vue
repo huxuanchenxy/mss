@@ -263,6 +263,9 @@
           <x-button class="close" @click.native="back">取消</x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
+        <div class="btn-group">
+          <workflow-module :AppInstanceID="ID"></workflow-module>
+        </div>
       </el-scrollbar>
     </div>
   </div>
@@ -277,12 +280,14 @@ import MyUploadPDF from '@/components/UploadPDF'
 import lineapi from '@/api/metroLineApi'
 import orgapi from '@/api/orgApi'
 import AreaDialog from '@/components/AreaDialog'
+import WorkflowModule from '@/components/WorkflowModule'
 export default {
   name: 'AddConstructionPlan',
   components: {
     XButton,
     'upload-pdf': MyUploadPDF,
-    'area-dialog': AreaDialog
+    'area-dialog': AreaDialog,
+    'workflow-module': WorkflowModule
   },
   data () {
     return {
@@ -348,7 +353,7 @@ export default {
     if (this.$route.query.type !== 'Add') {
       this.loading = true
       this.getObjByID()
-      if (this.$route.query.type === 'Eidt') {
+      if (this.$route.query.type === 'Edit') {
         this.title = '| 修改施工计划'
       } else {
         this.title = '| 施工计划明细'

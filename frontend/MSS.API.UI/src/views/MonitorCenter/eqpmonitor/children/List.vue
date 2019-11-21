@@ -201,8 +201,8 @@ export default {
       dataList: [],
       alarmList: [],
       totalEqp: 0,
-      troubleCount: 3,
-      otherCount: 5,
+      troubleCount: 0,
+      otherCount: 0,
       newMsg: null,
 
       bCheckAll: false,
@@ -450,15 +450,15 @@ export default {
       }
       eqpApi.getEqp(parm).then(res => {
         this.loading = false
-        res.data.rows.map((item, index) => {
-          if (index === 1) {
-            item.status = EqpStatus.normal
-          } else if (index === 2 || index === 5) {
-            item.status = EqpStatus.warning
-          } else if (index === 3 || index === 8) {
-            item.status = EqpStatus.fault
-          }
-        })
+        // res.data.rows.map((item, index) => {
+        //   if (index === 1) {
+        //     item.status = EqpStatus.normal
+        //   } else if (index === 2 || index === 5) {
+        //     item.status = EqpStatus.warning
+        //   } else if (index === 3 || index === 8) {
+        //     item.status = EqpStatus.fault
+        //   }
+        // })
         this.dataList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
