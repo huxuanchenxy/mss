@@ -27,7 +27,8 @@ export default {
   data () {
     return {
       NextActivityGUID: '',
-      NextActivityPerformers: {}
+      NextActivityPerformers: {},
+      NextUsers: []
     }
   },
   methods: {
@@ -63,7 +64,7 @@ export default {
         'Conditions': {'days': '6'},
         NextActivityPerformers: {}
       }
-      parm.NextActivityPerformers[this.NextActivityGUID] = [{UserID: '41', UserName: '组长A'}]
+      parm.NextActivityPerformers[this.NextActivityGUID] = this.NextUsers
       wfapi.nextprocess(parm).then(res => {
         if (res.status === 1) {
           this.$router.push({name: 'SeeConstructionPlan'})
@@ -94,7 +95,8 @@ export default {
           let nextobj = res.entity
           if (nextobj !== null) {
             this.NextActivityGUID = nextobj[0].ActivityGUID
-            console.log('nextactiveguid:' + this.NextActivityGUID)
+            // console.log('nextactiveguid:' + this.NextActivityGUID)
+            this.NextUsers = nextobj[0].Users
           }
         } else {
           this.$message({

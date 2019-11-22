@@ -43,8 +43,9 @@ namespace MSS.Platform.Workflow.WebApi.Service
             ApiResult ret = new ApiResult();
             try
             {
-                //parm.UserID = _userID;
+                parm.userId = _userID;
                 //parm.UserID = 40;
+                parm.processGUID = "c4c03c5e-63a3-47d6-913f-b8e08a51f5f8";
                 var data = await _repo.GetPageList(parm);
                 ret.code = Code.Success;
                 ret.data = data;

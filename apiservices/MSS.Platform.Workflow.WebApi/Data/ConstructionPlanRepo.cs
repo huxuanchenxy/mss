@@ -34,52 +34,56 @@ namespace MSS.Platform.Workflow.WebApi.Data
 
                 StringBuilder sql = new StringBuilder();
                 sql.Append($@"  SELECT 
-                id,
-                line_id,
-                area_id,
-                area_typename,
-                plan_name,
-                plan_type,
-                plan_number,
-                important_level,
-                plan_level,
-                apply_company_org_id,
-                construction_company_org_id,
-                start_time,
-                end_time,
-                register_station_id,
-                device_num,
-                trouble_num,
-                operation_address,
-                construction_content,
-                construction_detail,
-                coordination_request,
-                coordination_audit,
-                stop_electric,
-                traction_power,
-                traction_train_num,
-                traction_start_time,
-                traction_time,
-                use_laddercar,
-                electric_range,
-                traction_car_route,
-                effect_area,
-                effect_explain,
-                safe_measure,
-                force_unlock_key,
-                other_request,
-                memo,
-                created_time,
-                created_by,
-                updated_time,
-                updated_by,is_del FROM construction_plan
-                 ");
+                a.id,
+                a.line_id,
+                a.area_id,
+                a.area_typename,
+                a.plan_name,
+                a.plan_type,
+                a.plan_number,
+                a.important_level,
+                a.plan_level,
+                a.apply_company_org_id,
+                a.construction_company_org_id,
+                a.start_time,
+                a.end_time,
+                a.register_station_id,
+                a.device_num,
+                a.trouble_num,
+                a.operation_address,
+                a.construction_content,
+                a.construction_detail,
+                a.coordination_request,
+                a.coordination_audit,
+                a.stop_electric,
+                a.traction_power,
+                a.traction_train_num,
+                a.traction_start_time,
+                a.traction_time,
+                a.use_laddercar,
+                a.electric_range,
+                a.traction_car_route,
+                a.effect_area,
+                a.effect_explain,
+                a.safe_measure,
+                a.force_unlock_key,
+                a.other_request,
+                a.memo,
+                a.created_time,
+                a.created_by,
+                a.updated_time,
+                a.updated_by,a.is_del,b.processstate FROM construction_plan a
+                LEFT JOIN wfprocessinstance b ON a.id = b.AppInstanceID AND b.ProcessGUID = '" + parm.processGUID + "'");
                 StringBuilder whereSql = new StringBuilder();
-                whereSql.Append(" WHERE is_del = 0 ");
+                whereSql.Append(" WHERE a.is_del = 0 ");
 
                 if (parm.planName != null)
                 {
-                    whereSql.Append(" and plan_name like '%" + parm.planName.Trim() + "%'");
+                    whereSql.Append(" and a.plan_name like '%" + parm.planName.Trim() + "%'");
+                }
+                if (parm.userId != 0)
+                {
+                    whereSql.Append(" and a.created_by = '" + parm.userId + "' ");
                 }
 
                 sql.Append(whereSql);
@@ -112,7 +116,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 IDbTransaction trans = c.BeginTransaction();
                 try
                 {
-                    
+
                     string sql = $@" INSERT INTO `construction_plan`(
                     
                     line_id,
@@ -287,7 +291,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     updated_time=@UpdatedTime,
                     updated_by=@UpdatedBy,
                     is_del=@IsDel
-                 where id=@Id", obj,trans);
+                 where id=@Id", obj, trans);
                     if (!string.IsNullOrWhiteSpace(obj.FileIDs))
                     {
                         string delsql = $@" DELETE FROM upload_file_relation WHERE entity_id = '{obj.Id}' AND system_resource = '{(int)SystemResource.ConstructionPlan}' ";
