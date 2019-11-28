@@ -50,6 +50,10 @@
           重要程度
           <i :class="[{ 'el-icon-d-caret': headOrder.importantLevel === 0 }, { 'el-icon-caret-top': headOrder.importantLevel === 1 }, { 'el-icon-caret-bottom': headOrder.importantLevel === 2 }]"></i>
        </li>
+        <li class="list name c-pointer" @click="changeOrder('processState')">
+          流程状态
+          <i :class="[{ 'el-icon-d-caret': headOrder.processState === 0 }, { 'el-icon-caret-top': headOrder.processState === 1 }, { 'el-icon-caret-bottom': headOrder.processState === 2 }]"></i>
+       </li>
         <li class="list name c-pointer" @click="changeOrder('createdTime')">创建日期
           <i :class="[{ 'el-icon-d-caret': headOrder.createdTime === 0 }, { 'el-icon-caret-top': headOrder.createdTime === 1 }, { 'el-icon-caret-bottom': headOrder.createdTime === 2 }]"></i>
         </li>
@@ -68,6 +72,7 @@
                 <div class="name">{{ item.planName }}</div>
                 <div class="name">{{ item.registerStationId }}</div>
                 <div class="name">{{ item.importantLevel }}</div>
+                <div class="name">{{ item.processState }}</div>
                 <div class="name">{{ item.createdTime }}</div>
               </div>
             </li>
@@ -107,6 +112,7 @@
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
+import ConstrucionPlanEnum from './ConstrucionPlanEnum'
 export default {
   name: 'SeeConstructionPlan',
   components: {
@@ -198,23 +204,9 @@ export default {
         res.data.rows.map(item => {
           item.createdTime = transformDate(item.createdTime)
           var importlevel = ''
-          switch (item.importantLevel) {
-            case 1:
-              importlevel = '普通计划'
-              break
-            case 2:
-              importlevel = '核心计划'
-              break
-            case 3:
-              importlevel = '临时计划'
-              break
-            case 4:
-              importlevel = '抢修计划'
-              break
-            default:
-              importlevel = '普通计划'
-          }
+          importlevel = ConstrucionPlanEnum.importantLevel[item.importantLevel]
           item.importantLevel = importlevel
+          item.processState = ConstrucionPlanEnum.processState[item.processState]
         })
         this.DataList = res.data.rows
         this.total = res.data.total

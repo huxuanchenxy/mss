@@ -59,7 +59,7 @@
             <li class="list" v-for="(item) in DataList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="lookOperlogID" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="IDS" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
                 <div class="name">{{ item.appName }}</div>
@@ -111,7 +111,7 @@ export default {
       appName: '',
       roleList: [],
       DataList: [],
-      lookOperlogID: [],
+      IDS: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -202,7 +202,9 @@ export default {
     },
     // 获取修改用户id
     emitEditID () {
-      this.$emit('lookOperlogID', this.lookOperlogID)
+      // console.log(item.appInstanceID)
+      // this.$emit('IDS', item.appInstanceID)
+      console.log('this.appid:' + this.IDS)
     },
     // 全选
     // checkAll () {
@@ -233,10 +235,28 @@ export default {
       this.searchResult(val)
     },
     refreshpage () {
-      // this.$router.go(0)
-      this.currentPage = 1
-      this.loading = true
-      this.searchResult(1)
+      console.log(this.IDS)
+      if (!this.IDS.length) {
+        this.$message({
+          message: '请选择记录',
+          type: 'warning'
+        })
+      } else if (this.IDS.length > 1) {
+        this.$message({
+          message: '操作的记录不能超过1个',
+          type: 'warning'
+        })
+      } else {
+        let cur = this.DataList.filter(item => item.id === this.IDS[0])
+        // console.log(cur)
+        this.$router.push({
+          name: 'AddConstructionPlan',
+          params: {
+            id: cur[0].appInstanceID
+          },
+          query: { type: 'Detail', id: cur[0].appInstanceID, sourceName: 'SeeProcessTask' }
+        })
+      }
     }
   }
 }
