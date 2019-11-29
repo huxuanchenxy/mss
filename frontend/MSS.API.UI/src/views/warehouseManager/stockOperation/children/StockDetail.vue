@@ -65,6 +65,7 @@
         <li class="list name">物资ID</li>
         <li class="list name">接收日期</li>
         <li class="list name">仓库</li>
+        <li class="list name">库位</li>
         <li class="list name">接收数量</li>
         <li class="list name">库存数量</li>
         <li class="list name">故障件数量</li>
@@ -88,6 +89,7 @@
                 <div class="name">{{ item.entity}}</div>
                 <div class="name">{{ item.acceptDate.slice(0,10)}}</div>
                 <div class="name">{{ item.warehouseName }}</div>
+                <div class="name">{{ item.storageLocationName }}</div>
                 <div class="name">{{ item.acceptNo }}</div>
                 <div class="name">{{ item.stockNo }}</div>
                 <div class="name">{{ item.troubleNo }}</div>
@@ -113,6 +115,7 @@
 <script>
 // import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
+import { sparePartsOperationDetailType } from '@/common/js/dictionary.js'
 import api from '@/api/wmsApi'
 export default {
   name: 'DetailStockOperation',
@@ -168,7 +171,8 @@ export default {
       }).catch(err => console.log(err))
     },
     getStockDetail () {
-      api.getStockDetail(this.spareParts.id, this.warehouse).then(res => {
+      // reason默认给物资领用，表示批量的数据需要显示
+      api.getStockDetail(this.spareParts.id, this.warehouse, sparePartsOperationDetailType.distribution, 0).then(res => {
         if (res.code === 0) {
           this.stockDetailList = res.data
         } else this.loading = false

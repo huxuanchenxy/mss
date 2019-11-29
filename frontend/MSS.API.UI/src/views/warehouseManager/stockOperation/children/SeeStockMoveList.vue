@@ -116,8 +116,8 @@
                 </div>
                 <div class="name">{{ item.operationID }}</div>
                 <div class="name">{{ item.reasonName }}</div>
-                <div class="name word-break">{{ item.warehouseName }}</div>
                 <div class="name word-break">{{ item.toWarehouseName }}</div>
+                <div class="name word-break">{{ item.warehouseName }}</div>
                 <div class="last-update-time color-white word-break">{{ item.createdTime }}</div>
                 <div class="last-update-time word-break">{{ item.createdName }}</div>
               </div>

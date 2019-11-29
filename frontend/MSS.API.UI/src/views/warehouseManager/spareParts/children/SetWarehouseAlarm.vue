@@ -173,6 +173,7 @@ export default {
     if (this.$route.params.id !== undefined) {
       this.title = ' | ' + this.$route.params.name + '（' + this.$route.params.unit + '）'
       this.sparePartsID = this.$route.params.id
+      this.editwarehouseAlarmID = []
     }
     this.searchResult(this.currentPage)
   },
@@ -234,6 +235,7 @@ export default {
     },
     // 修改物资
     edit () {
+      console.log(this.editwarehouseAlarmID)
       if (!this.editwarehouseAlarmID.length) {
         this.$message({
           message: '请选择修改操作的物资',
@@ -325,7 +327,6 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
     },
 
     // 下一页
@@ -333,7 +334,6 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
     }
   }
 }

@@ -10,6 +10,7 @@ using MSS.API.Model.Data;
 using MSS.API.Model.DTO;
 using MSS.API.Common;
 using Newtonsoft.Json;
+using static MSS.API.Model.Data.Common;
 
 namespace MSS.API.Core.V1.Controllers
 {
@@ -49,15 +50,22 @@ namespace MSS.API.Core.V1.Controllers
         [HttpGet("ListByOperationForEdit/{operation}")]
         public ActionResult ListByOperationForEdit(int operation)
         {
-            var resp = _stockOperationService.GetByID(operation);
+            var resp = _stockOperationService.GetByID(operation,true);
             ApiResult ret = resp.Result;
             StockOperation so = (StockOperation)ret.data;
-            ret.data = new
+            if (so != null)
             {
-                so.WarehouseName,
-                so.Warehouse,
-                detailList = JsonConvert.DeserializeObject<List<StockOperationDetail>>(so.DetailList)
-            };
+                ret.data = new
+                {
+                    so.WarehouseName,
+                    so.Warehouse,
+                    detailList = JsonConvert.DeserializeObject<List<StockOperationDetail>>(so.DetailList)
+                };
+            }
+            else
+            {
+                ret.data = null;
+            }
             return Ok(ret);
         }
 
@@ -68,17 +76,17 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
-        [HttpGet("GetSparePartsByWH/{id}")]
-        public ActionResult ListByWH(int id)
+        [HttpGet("GetSparePartsByWH/{warehouse}")]
+        public ActionResult ListByWH(int warehouse)
         {
-            var resp = _stockOperationService.ListByWH(id);
+            var resp = _stockOperationService.ListByWH(warehouse);
             return Ok(resp.Result);
         }
 
-        [HttpGet("GetStockDetailAll")]
-        public ActionResult ListStockDetail()
+        [HttpGet("GetStockDetailByReason/{reason}")]
+        public ActionResult ListStockDetail(int reason)
         {
-            var resp = _stockOperationService.ListStockDetail();
+            var resp = _stockOperationService.ListStockDetail(reason);
             return Ok(resp.Result);
         }
         #endregion
@@ -107,10 +115,11 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
-        [HttpGet("ListStockDetail/{spareParts}/{warehouse}")]
-        public ActionResult ListStockDetailBySPs(int spareParts,int warehouse)
+        [HttpGet("ListStockDetail/{spareParts}/{warehouse}/{reason}/{storageLocation}")]
+        public ActionResult ListStockDetailBySPs(int spareParts,int warehouse, 
+            StockOptDetailType reason,int storageLocation)
         {
-            var resp = _stockOperationService.ListStockDetailBySPsAndWH(spareParts,warehouse);
+            var resp = _stockOperationService.ListStockDetailBySPsAndWH(spareParts,warehouse,reason, storageLocation);
             return Ok(resp.Result);
         }
         #endregion

@@ -23,14 +23,17 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<UserService> _logger;
         private readonly IWarehouseRepo<Warehouse> _warehouseRepo;
         private readonly IStockOperationRepo<StockOperation> _stockOperationRepo;
+        private readonly IStorageLocationRepo<StorageLocation> _storageLocationRepo;
 
         private readonly int userID;
         public WarehouseService(IWarehouseRepo<Warehouse> warehouseRepo, IAuthHelper auth,
-            IStockOperationRepo<StockOperation> stockOperationRepo)
+            IStockOperationRepo<StockOperation> stockOperationRepo,
+            IStorageLocationRepo<StorageLocation> storageLocationRepo)
         {
             //_logger = logger;
             _warehouseRepo = warehouseRepo;
             _stockOperationRepo = stockOperationRepo;
+            _storageLocationRepo = storageLocationRepo;
             userID = auth.GetUserId();
         }
 
@@ -94,6 +97,11 @@ namespace MSS.API.Core.V1.Business
                 {
                     ret.code = Code.DataIsExist;
                     ret.msg = "仓库中含有物资库存，不可删除";
+                }
+                else if (await _storageLocationRepo.HasByWarehouse(tmp))
+                {
+                    ret.code = Code.DataIsExist;
+                    ret.msg = "仓库中含有库位，不可删除";
                 }
                 else
                 {

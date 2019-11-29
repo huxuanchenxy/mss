@@ -11,6 +11,7 @@ using MSS.API.Common;
 using System.Data;
 using Newtonsoft.Json;
 using static MSS.API.Model.Data.Common;
+using System.Dynamic;
 
 namespace MSS.API.Dao.Implement
 {
@@ -25,7 +26,7 @@ namespace MSS.API.Dao.Implement
                 StockOperation stockOperation = parm.stockOperation;
                 List<StockOperationDetail> sods = parm.stockOperationDetails;
                 IDbTransaction trans = c.BeginTransaction();
-                int ret;
+                int ret=0;
                 string sql = " insert into stock_operation " +
                     " values (0,@OperationID,@Type,@Reason,@Warehouse, " +
                     " @FromStockOperation,@ToWarehouse,@Remark,@Picker,@Agreement, " +
@@ -41,12 +42,16 @@ namespace MSS.API.Dao.Implement
                         item.Operation = newid;
                         sql = " insert into stock_operation_detail " +
                             " values (0,@Entity,@SpareParts,@OrderNo,@CountNo,@UnitPrice, " +
-                            " @Amount,@Currency,@Invoice,@LifeDate,@Supplier,@WorkingOrder,@Purchase,@Repair,@SomeOrder, " +
+                            " @Amount,@Currency,@StorageLocation,@FromStorageLocation,@Invoice," +
+                            " @LifeDate,@Supplier,@WorkingOrder,@Purchase,@Repair,@SomeOrder, " +
                             " @Operation,@ExchangeRate,@TotalAmount,@Remark,@StockDetail,@FromStockOperationDetail," +
                             " @ReturnNo,@Status); ";
                         sql += "SELECT LAST_INSERT_ID()";
                         ret = await c.QueryFirstOrDefaultAsync<int>(sql, item, trans);
-                        parm.stockDetails[i].StockOperationDetail = ret;
+                        if (parm.stockDetails != null && parm.stockDetails.Count > 0)
+                        {
+                            parm.stockDetails[i].StockOperationDetail = ret;
+                        }
                         i++;
                     }
 
@@ -56,41 +61,45 @@ namespace MSS.API.Dao.Implement
                         ret = await c.ExecuteAsync(sql, parm.stockOperationDetailsUpdate, trans);
                     }
 
-                    if (parm.isAddStockDetails)
+                    if (parm.stockDetails != null && parm.stockDetails.Count > 0)
                     {
                         sql = " insert into stock_detail " +
                             " values (0,@Entity,@SpareParts,@StockOperationDetail,@StockNo,@TroubleNo,@InStockNo, " +
-                            " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Status) ";
+                            " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@StorageLocation,@IsBatch,@Status) ";
+                        ret = await c.ExecuteAsync(sql, parm.stockDetails, trans);
                     }
-                    else
+                    if (parm.stockDetailsUpdate != null && parm.stockDetailsUpdate.Count > 0)
                     {
                         sql = " update stock_detail set stock_no=@StockNo,inspection_no=@InspectionNo,repair_no=@RepairNo," +
                             " trouble_no=@TroubleNo,in_stock_no=@InStockNo,lent_no=@LentNo,scrap_no=@ScrapNo, " +
-                            " warehouse=@Warehouse,status=@Status where id = @id ";
+                            " warehouse=@Warehouse,storage_location=@StorageLocation,status=@Status where id = @id ";
+                        ret = await c.ExecuteAsync(sql, parm.stockDetailsUpdate, trans);
                     }
-                    ret = await c.ExecuteAsync(sql, parm.stockDetails, trans);
-                    //移库专用
-                    if (parm.stockDetailsAdd != null && parm.stockDetailsAdd.Count > 0)
-                    {
-                        sql = " insert into stock_detail " +
-                            " values (0,@Entity,@SpareParts,@StockOperationDetail,@StockNo,@TroubleNo,@InStockNo, " +
-                            " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Status) ";
-                        ret = await c.ExecuteAsync(sql, parm.stockDetailsAdd, trans);
-                    }
+                    
+                    ////移库专用
+                    //if (parm.stockDetailsAdd != null && parm.stockDetailsAdd.Count > 0)
+                    //{
+                    //    sql = " insert into stock_detail " +
+                    //        " values (0,@Entity,@SpareParts,@StockOperationDetail,@StockNo,@TroubleNo,@InStockNo, " +
+                    //        " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Status) ";
+                    //    ret = await c.ExecuteAsync(sql, parm.stockDetailsAdd, trans);
+                    //}
 
                     foreach (var item in parm.stocks)
                     {
-                        if (item.IsAdd)
+                        //入库时，可能第一次新增，后面更新这条在事务中本应新增的数据
+                        if (item.ID==0)
                         {
                             sql = " insert into stock " +
                                 " values (0,@SpareParts,@StockNo,@TroubleNo,@InStockNo, " +
-                                " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@Amount,@IsAlarm) ";
+                                " @InspectionNo,@RepairNo,@LentNo,@ScrapNo,@Warehouse,@StorageLocation,@Amount,@IsAlarm) ";
                         }
                         else
                         {
                             sql = " update stock set stock_no=@StockNo,inspection_no=@InspectionNo,repair_no=@RepairNo," +
                                 " trouble_no=@TroubleNo,in_stock_no=@InStockNo,lent_no=@LentNo,scrap_no=@ScrapNo, " +
-                                " warehouse=@Warehouse,amount=@Amount,is_alarm=@IsAlarm where id = @id ";
+                                " warehouse=@Warehouse,storage_location=@StorageLocation,amount=@Amount,is_alarm=@IsAlarm " +
+                                " where id = @id ";
                         }
                         ret = await c.ExecuteAsync(sql, item, trans);
                     }
@@ -227,7 +236,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 int result = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from stock_operation_detail where entity in @entity", new { entity });
+                    "select count(*) from stock_detail where entity in @entity", new { entity });
                 return result>0;
             });
         }
@@ -277,9 +286,10 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,sp.name as spname,a.stock_no as editNo ")
-                .Append(" FROM stock a ");
-                sql.Append(" left join spare_parts sp on a.spare_parts=sp.id where 1=1 ");
+                sql.Append("SELECT a.*,sp.name as spname,a.stock_no as editNo,sl.name as slname ")
+                .Append(" FROM stock a ")
+                .Append(" left join storage_location sl on sl.id=a.storage_location ")
+                .Append(" left join spare_parts sp on a.spare_parts=sp.id where a.stock_no!=0 ");
                 StringBuilder whereSql = new StringBuilder();
                 if (parm.SearchSpareParts != null)
                 {
@@ -340,15 +350,21 @@ namespace MSS.API.Dao.Implement
         #endregion
 
         #region Stock
-        public async Task<List<Stock>> ListBySPsAndWH(List<int> spareParts,int warehouse)
+        public async Task<List<Stock>> ListBySPsAndWH(List<int> spareParts,int warehouse,List<int> storageLocation=null)
         {
             return await WithConnection(async c =>
             {
                 string sql = "SELECT s.* FROM stock s " +
                 //" left join warehouse ss on s.warehouse=ss.id " +
                 "WHERE s.spare_parts in @spareParts and s.warehouse=@warehouse";
+                object o = new { spareParts, warehouse };
+                if (storageLocation!=null)
+                {
+                    sql += " and s.storage_location in @storageLocation";
+                    o = new { spareParts, warehouse, storageLocation };
+                }
                 var result = await c.QueryAsync<Stock>(
-                    sql, new { spareParts, warehouse });
+                    sql, o);
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
@@ -360,9 +376,10 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT s.*,ss.name FROM stock s" +
+                string sql = "SELECT s.*,ss.name,sl.name as slname FROM stock s" +
                 " left join warehouse ss on s.warehouse=ss.id " +
-                " WHERE spare_parts in @spareParts";
+                " left join storage_location sl on s.storage_location=sl.id " +
+                " WHERE spare_parts in @spareParts and s.stock_no!=0";
                 var result = await c.QueryAsync<Stock>(
                     sql, new { spareParts });
                 if (result != null && result.Count() > 0)
@@ -377,9 +394,9 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT s.spare_parts,sp.name as spname FROM stock s " +
+                string sql = "SELECT distinct s.spare_parts,sp.name as spname FROM stock s " +
                 " left join spare_parts sp on s.spare_parts=sp.id " +
-                " WHERE s.warehouse=@warehouse";
+                " WHERE s.warehouse=@warehouse ";
                 var result = await c.QueryAsync<object>(
                     sql, new { warehouse });
                 if (result != null && result.Count() > 0)
@@ -407,16 +424,25 @@ namespace MSS.API.Dao.Implement
         /// </summary>
         /// <param name="operation"></param>
         /// <returns></returns>
-        public async Task<List<StockOperationDetail>> ListByOperationIn(int operation)
+        public async Task<List<StockOperationDetail>> ListByOperationIn(int operation,bool hasStockNoZero = false)
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT sod.*,sp.name,sp.model,sp.unit,dt.name as cname,f.name as sname " +
+                string sql = "SELECT sod.*,sp.name,sp.model,sp.unit,dt.name as cname," +
+                " f.name as sname,sl.name as slname,sd.in_stock_no " +
                 " FROM stock_operation_detail sod" +
+                " LEFT JOIN stock_detail sd on sd.id = sod.stock_detail " +
                 " LEFT JOIN spare_parts sp on sp.id = sod.spare_parts " +
                 " LEFT JOIN stock_operation so on so.id = sod.operation " +
                 " LEFT JOIN firm f on f.id = sod.supplier " +
-                " LEFT JOIN dictionary_tree dt on dt.id = sod.currency WHERE sod.operation = @id";
+                " LEFT JOIN storage_location sl on sl.id = sod.storage_location " +
+                " LEFT JOIN dictionary_tree dt on dt.id = sod.currency " +
+                " WHERE sod.operation = @id ";
+                if (!hasStockNoZero)
+                {
+                    sql += " and sd.stock_no!=0 ";
+                }
+                sql+=" order by sod.entity";
                 var result = await c.QueryAsync<StockOperationDetail>(
                     sql, new { id = operation });
                 if (result != null && result.Count() > 0)
@@ -440,10 +466,11 @@ namespace MSS.API.Dao.Implement
             {
                 string sql = "SELECT sod.id, sod.entity, sod.spare_parts,sod.count_no,sod.order_no,sod.remark,sodInit.some_order,sodInit.working_order," +
                 " sodInit.unit_price,sodInit.invoice,sodInit.life_date,f.name as sname," +
-                " sp.name,sp.model,sp.unit,dt.name as cname " +
+                " sp.name,sp.model,sp.unit,dt.name as cname,sl.name as slname " +
                 " FROM stock_operation_detail sod" +
                 " LEFT JOIN stock_operation_detail sodInit on sodInit.id = sod.stock_operation_detail " +
                 " LEFT JOIN spare_parts sp on sp.id = sod.spare_parts " +
+                " LEFT JOIN storage_location sl on sl.id = sod.storage_location " +
                 " LEFT JOIN firm f on f.id = sodInit.supplier ";
                 sql += " LEFT JOIN dictionary_tree dt on dt.id = sodInit.currency WHERE sod.operation = @id";
                 var result = await c.QueryAsync<StockOperationDetail>(
@@ -457,28 +484,64 @@ namespace MSS.API.Dao.Implement
         }
 
         /// <summary>
-        /// 出库
-        /// 领料、借用、送修、送检
+        /// 除了采购接收和其他接收意外的操作
         /// </summary>
         /// <param name="operation"></param>
         /// <returns></returns>
-        public async Task<List<StockOperationDetail>> ListByOperationOut(int operation)
+        public async Task<List<StockOperationDetail>> ListByOperationOut(int operation, bool isEdit = false)
         {
             return await WithConnection(async c =>
             {
                 string sql = "SELECT sod.id,sod.entity,sod.spare_parts,sod.count_no,sod.order_no,sod.remark,sod.some_order,sod.working_order," +
                 " sodInit.unit_price,sodInit.invoice,sodInit.life_date,sodInit.exchange_rate,sod.stock_detail," +
-                " sp.name,sp.model,sp.unit,dt.name as cname,f.name as sname,sod.return_no,sod.status, " +
-                " sod.stock_operation_detail FROM stock_operation_detail sod" +
+                " sp.name,sp.model,sp.unit,dt.name as cname,f.name as sname,sod.return_no,sod.status,sd.is_batch, " +
+                " sodInit.currency,sodInit.supplier,sod.storage_location as from_storage_location,sd.in_stock_no, " +
+                " sod.storage_location,sl.name as slname,sod.stock_operation_detail,sdIn.entity as newentity, " +
+                " sod.from_storage_location,fsl.name as fslname" +
+                " FROM stock_operation_detail sod" +
                 " LEFT JOIN stock_detail sd on sd.id = sod.stock_detail " +
+                " LEFT JOIN stock_detail sdIn on sdIn.stock_operation_detail = sod.id " +
                 " LEFT JOIN stock_operation_detail sodInit on sodInit.id = sd.stock_operation_detail " +
                 //" LEFT JOIN stock_operation_detail sodReturn on sod.stock_operation_detail = sodReturn.id " +
                 " LEFT JOIN spare_parts sp on sp.id = sod.spare_parts " +
                 " LEFT JOIN stock_operation so on so.id = sodInit.operation " +
                 " LEFT JOIN firm f on f.id = sodInit.supplier " +
-                " LEFT JOIN dictionary_tree dt on dt.id = sodInit.currency WHERE sod.operation = @id";
+                " LEFT JOIN storage_location sl on sl.id = sod.storage_location " +
+                " LEFT JOIN storage_location fsl on fsl.id = sod.from_storage_location " +
+                " LEFT JOIN dictionary_tree dt on dt.id = sodInit.currency " +
+                " WHERE sod.operation = " + operation;
+                if (isEdit)
+                {
+                    sql+=" and sod.count_no!=sod.return_no ";
+                }
+                sql+=" order by sod.entity";
+                var result = await c.QueryAsync<StockOperationDetail>(sql);
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                return new List<StockOperationDetail>();
+            });
+        }
+
+        /// <summary>
+        /// 退料、故障件退库
+        /// 借用、送修、送检归还
+        /// 以上情况入库时，存入新库位专用
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public async Task<List<StockOperationDetail>> GetByOperationDetail(List<int> operationDetail)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT sod.id, sodInit.life_date,sodInit.currency,sodInit.supplier " +
+                " FROM stock_operation_detail sod" +
+                " LEFT JOIN stock_detail sd on sd.id = sod.stock_detail " +
+                " LEFT JOIN stock_operation_detail sodInit on sodInit.id = sd.stock_operation_detail " +
+                " WHERE sod.id in @id";
                 var result = await c.QueryAsync<StockOperationDetail>(
-                    sql, new { id = operation });
+                    sql, new { id = operationDetail });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
@@ -504,12 +567,14 @@ namespace MSS.API.Dao.Implement
         #endregion
 
         #region StockDetail
-        public async Task<List<StockDetail>> ListStockDetailBySPsAndWH(List<int> spareParts,int warehouse)
+        public async Task<List<StockDetail>> ListStockDetailBySPsAndWH(List<int> spareParts,
+            int warehouse,bool hasStockNoZero = false, 
+            StockOptDetailType reason = StockOptDetailType.Distribution,int storageLocation=0)
         {
             return await WithConnection(async c =>
             {
                 string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price,sod.exchange_rate," +
-                " sp.name as spname,w.name,f.name as sname,dt.name as cname,sod.remark, " +
+                " sp.name as spname,w.name,f.name as sname,dt.name as cname,sod.remark,sl.name as slname, " +
                 " sp.model,dt1.name as statusName FROM stock_detail sd" +
                 " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
                 " left join dictionary_tree dt on sod.currency=dt.id " +
@@ -517,16 +582,57 @@ namespace MSS.API.Dao.Implement
                 " left join stock_operation so on sod.operation=so.id " +
                 " left join warehouse w on sd.warehouse=w.id " +
                 " left join firm f on sod.supplier=f.id " +
+                " left join storage_location sl on sod.storage_location=sl.id " +
                 " left join spare_parts sp on sd.spare_parts=sp.id " +
-                " WHERE sd.spare_parts in @ids and sd.stock_no!=0";
-                object obj = new { ids = spareParts };
+                " WHERE 1=1 ";
+                dynamic obj=new ExpandoObject();
+                if (spareParts!=null && spareParts.Count()>0)
+                {
+                    sql += " and sd.spare_parts in @ids ";
+                    obj.ids = spareParts;
+                }
                 if (warehouse!=0)
                 {
                     sql += " and sd.warehouse=@warehouse";
-                    obj=new { ids = spareParts, warehouse };
+                    obj.warehouse= warehouse;
                 }
+                if (!hasStockNoZero)
+                {
+                    sql += " and sd.stock_no != @stockNo";
+                    obj.stockNo = 0;
+                }
+                if (storageLocation!=0)
+                {
+                    sql += " and sd.storage_location= @storageLocation";
+                    obj.storageLocation = storageLocation;
+                }
+                switch (reason)
+                {
+                    case StockOptDetailType.Inspection:
+                    case StockOptDetailType.InspectionReturn:
+                    case StockOptDetailType.lendReturn:
+                    case StockOptDetailType.MaterialLend:
+                    case StockOptDetailType.MaterialReturn:
+                    case StockOptDetailType.RepairReceive:
+                        sql += " and sd.is_batch=@isBacth and sd.status!=@status";
+                        obj.status = (int)StockStatus.Trouble;
+                        obj.isBacth = 0;
+                        break;
+                    case StockOptDetailType.TroubleRepair:
+                    case StockOptDetailType.TroubleReturn:
+                        sql += " and sd.is_batch=@isBacth and sd.status=@status";
+                        obj.status = (int)StockStatus.Trouble;
+                        obj.isBacth = 0;
+                        break;
+                    case StockOptDetailType.TroubleMoveTo:
+                    case StockOptDetailType.TroubleMoveLocation:
+                        sql += " and sd.status=@status";
+                        obj.status = (int)StockStatus.Trouble;
+                        break;
+                }
+                sql += " order by sd.entity";
                 var result = await c.QueryAsync<StockDetail>(
-                    sql, obj);
+                    sql, (object)obj);
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
@@ -548,7 +654,7 @@ namespace MSS.API.Dao.Implement
                 " left join warehouse w on so.warehouse=w.id " +
                 " left join firm f on sod.supplier=f.id " +
                 " left join spare_parts sp on sd.spare_parts=sp.id " +
-                " WHERE sd.id = @id";
+                " WHERE sd.id = @id and sd.stock_no!=0";
                 return await c.QueryFirstOrDefaultAsync<StockDetail>(
                     sql, new { id});
             });
@@ -638,11 +744,21 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<List<StockDetail>> ListStockDetail()
+        public async Task<List<StockDetail>> ListStockDetail(StockOptDetailType reason)
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT * FROM stock_detail ";
+                string sql = "SELECT * FROM stock_detail where stock_no!=0 ";
+                switch(reason)
+                {
+                    case StockOptDetailType.InStockScrap:
+                        sql += " and in_stock_no!=0";
+                        break;
+                    case StockOptDetailType.TroubleScrap:
+                        sql += " and trouble_no!=0";
+                        break;
+                }
+                sql += " order by entity";
                 var result = await c.QueryAsync<StockDetail>(
                     sql);
                 if (result != null && result.Count() > 0)
@@ -664,13 +780,14 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = "SELECT sd.*,so.created_time,sod.count_no,sod.life_date,sod.unit_price,sod.exchange_rate," +
-                " dt.name as cname,sp.name as spname,f.name as sname,sod.id as fsod,w.name FROM stock_detail sd" +
+                " sl.name as slname,dt.name as cname,sp.name as spname,f.name as sname,sod.id as fsod,w.name FROM stock_detail sd" +
                 " left join stock_operation_detail sod on sd.stock_operation_detail=sod.id " +
                 " left join firm f on sod.supplier=f.id " +
                 " left join spare_parts sp on sod.spare_parts=sp.id " +
                 " left join dictionary_tree dt on sod.currency=dt.id " +
                 " left join stock_operation so on sod.operation=so.id " +
                 " left join warehouse w on w.id=sd.warehouse " +
+                " left join storage_location sl on sl.id=sd.storage_location " +
                 " WHERE sod.operation=@id";
                 var result = await c.QueryAsync<StockDetail>(
                     sql, new { id = operation });
@@ -695,9 +812,12 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
+                //sod.count_no==1表示排除批量
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT id,operation_id ")
-                .Append(" FROM stock_operation where reason=@reason ");
+                sql.Append("SELECT DISTINCT so.id,so.operation_id ")
+                .Append(" FROM stock_operation so ")
+                .Append(" left join stock_operation_detail sod on sod.operation=so.id")
+                .Append(" where so.reason=@reason and sod.count_no=1 and sod.count_no!=sod.return_no");
                 StockOptDetailType r = (StockOptDetailType)reason;
                 //// 全部退回/归还，除去此记录
                 //if (r == StockOptDetailType.Distribution || r==StockOptDetailType.Inspection ||

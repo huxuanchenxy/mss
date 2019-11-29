@@ -40,7 +40,7 @@
             <div class="inp-wrap">
               <span class="text">物资ID<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select filterable placeholder="请输入物资ID" v-model="entity.text" ref="stockDetailID">
+                <el-select filterable allow-create placeholder="请输入物资ID" v-model="entity.text" ref="stockDetailID">
                   <el-option
                     v-for="item in entityList"
                     :key="item.key"
@@ -50,13 +50,13 @@
                 </el-select>
               </div>
             </div>
-            <p class="validate-tips">{{ entity.tips }}</p>
+            <p class="remark-tips">{{ entity.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">仓库<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="warehouse.text" clearable filterable placeholder="请选择仓库" @change="warehouseChange">
+                <el-select v-model="warehouse.text" filterable placeholder="请选择仓库" @change="warehouseChange">
                 <el-option
                   v-for="item in warehouseList"
                   :key="item.key"
@@ -67,6 +67,22 @@
               </div>
             </div>
             <p class="validate-tips">{{ warehouse.tips }}</p>
+          </li>
+          <li class="list" v-show="!isLoss">
+            <div class="inp-wrap">
+              <span class="text">库位<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-select v-model="storageLocation.text" placeholder="请选择库位" filterable>
+                  <el-option
+                    v-for="item in storageLocationList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ storageLocation.tips }}</p>
           </li>
           <li v-show="!isLoss" class="list">
             <div class="inp-wrap">
@@ -118,6 +134,7 @@
                   <!--<li class="list name">规格型号</li>
                   <li class="list name">保质期</li>
                   <li class="list name">供应商</li>-->
+                  <li class="list name">库位</li>
                   <li class="list name">库存数量</li>
                   <li class="list name">存货数量</li>
                   <li class="list name">操作</li>
@@ -131,6 +148,7 @@
                           <!--<div class="name">{{ item.model }}</div>
                           <div class="name">{{ item.lifeDate === null ? '' : item.lifeDate.slice(0,10) }}</div>
                           <div class="name">{{ item.supplierName }}</div>-->
+                          <div class="name">{{ item.storageLocationName }}</div>
                           <div class="name">{{ item.stockNo }}</div>
                           <div class="name">{{ item.inStockNo }}</div>
                           <div class="name">
@@ -222,11 +240,13 @@ export default {
       reason: {text: '', tips: ''},
       warehouseList: [],
       warehouse: {text: '', tips: ''},
+      storageLocationList: [],
+      storageLocation: {text: '', tips: ''},
       spareParts: {text: '', tips: ''},
       sparePartsList: '',
       remark: {text: '', tips: ''},
       profitNo: {text: '', tips: ''},
-      entity: {text: '', tips: ''},
+      entity: {text: '', tips: '注：只有手动输入的与下拉不一致才允许盘盈'},
       entityList: [],
       currentPage: 1,
       total: 0,
@@ -244,8 +264,8 @@ export default {
     api.getWarehouseAll().then(res => {
       this.warehouseList = res.data
     }).catch(err => console.log(err))
-    // 物资ID加载
-    api.getStockDetailAll().then(res => {
+    // 物资ID加载getStockDetailByReason
+    api.getStockDetailByReason(sparePartsOperationType.adjust).then(res => {
       this.entityList = res.data
     }).catch(err => console.log(err))
     // // 物资加载
@@ -258,7 +278,7 @@ export default {
       this.isLoss = this.reason.text === sparePartsOperationDetailType.inventoryLoss
     },
     inStockDetail (item) {
-      api.getStockDetail(item.spareParts, this.warehouse.text).then(res => {
+      api.getStockDetail(item.spareParts, this.warehouse.text, this.reason.text, item.storageLocation).then(res => {
         if (res.code === 0) {
           this.distributionList = res.data
           this.distributionList.map(val => {
@@ -284,6 +304,11 @@ export default {
         // 根据仓库找物资
         api.getSparePartsByWH(this.warehouse.text).then(res => {
           this.sparePartsList = res.data
+        }).catch(err => console.log(err))
+      } else {
+        // 根据仓库找库位
+        api.getStorageLocationByWarehouse(this.warehouse.text).then(res => {
+          this.storageLocationList = res.data === null ? [] : res.data
         }).catch(err => console.log(err))
       }
     },
@@ -376,12 +401,20 @@ export default {
       }).catch(err => console.log(err))
     },
     saveProfit () {
-      if (!this.validateSelect(this.entity) || !this.validateSelect(this.warehouse) || !this.validateNumber(this.profitNo)) return
+      if (!this.validateSelect(this.entity) || !this.validateSelect(this.warehouse) || !this.validateNumber(this.profitNo) || !this.validateSelect(this.storageLocation)) return
+      if (this.$refs.stockDetailID.selected.label !== undefined) {
+        this.$message({
+          message: '已存在的物资ID无需盘盈',
+          type: 'error'
+        })
+        return
+      }
       let arr = {
-        id: this.entity.text,
-        entity: this.$refs.stockDetailID.selected.label,
+        id: 0,
+        entity: this.entity.text,
         countNo: this.profitNo.text,
-        warehouse: this.warehouse.text
+        warehouse: this.warehouse.text,
+        storageLocation: this.storageLocation.text
       }
       let stockAdjust = {
         Type: sparePartsOperationType.adjust,
@@ -790,5 +823,12 @@ $con-height: $content-height - 145 - 56;
 .center .el-input__inner{
   text-align: center;
   width: 90%;
+}
+.remark-tips{
+  height: 18px;
+  margin-top: 3px;
+  font-size: 12px;
+  text-indent: 28%;
+  color: $color-white;
 }
 </style>

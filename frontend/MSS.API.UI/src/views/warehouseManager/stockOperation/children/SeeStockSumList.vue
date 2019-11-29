@@ -127,6 +127,7 @@
                 <li class="sub-con-list">
                   <div class="list">
                     <div class="name">仓库名</div>
+                    <div class="name">库位</div>
                     <div class="name">库存数量</div>
                     <div class="name">故障件数量</div>
                     <div class="name">存货数量</div>
@@ -141,6 +142,7 @@
                 <li class="sub-con-list" v-for="sub in item.stocks" :key="sub.key">
                   <div class="list">
                     <div class="name">{{ sub.warehouseName }}</div>
+                    <div class="name">{{ sub.storageLocationName }}</div>
                     <div class="name">{{ sub.stockNo }}</div>
                     <div class="name">{{ sub.troubleNo }}</div>
                     <div class="name">{{ sub.inStockNo }}</div>

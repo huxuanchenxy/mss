@@ -34,4 +34,11 @@ namespace MSS.API.Model.Data
         /// </summary>
         public string order { get; set; }
     }
+
+    public class ElementUICascader
+    {
+        public int value { get; set; }
+        public string label { get; set; }
+        public List<ElementUICascader> children { get; set; }
+    }
 }

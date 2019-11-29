@@ -147,7 +147,7 @@
         </div>
       </li>
     </ul>
-    <!-- 调整列表 -->
+    <!-- 移库列表 -->
     <ul v-show="curOperationType === operationType.move" class="con-padding-horizontal input-group">
       <li class="list">
         <div class="inp-wrap">
@@ -183,6 +183,7 @@
         <li class="list name">物资名称</li>
         <li class="list name">规格型号</li>
         <li class="list name">单位</li>
+        <li class="list name" v-show="isShow.newEntity">转移物资ID</li>
         <li class="list name">{{columnName.countNo}}</li>
         <li v-show="isShow.returnNo" class="list name">{{columnName.returnNo}}</li>
         <li class="list name">供应商</li>
@@ -192,6 +193,8 @@
         <li class="list name">币种</li>
         <li v-show="isShow.exchangeRate" class="list name">汇率</li>
         <li v-show="isShow.exchangeRate" class="list name">本币总金额</li>
+        <li class="list name" v-show="isShow.fromStorageLocation">出库库位</li>
+        <li class="list name">库位</li>
         <li class="list name">发票号</li>
         <li class="list name">备注</li>
       </ul>
@@ -204,15 +207,18 @@
                 <div class="name">{{ item.SparePartsName }}</div>
                 <div class="name">{{ item.SparePartsModel }}</div>
                 <div class="name">{{ item.SparePartsUnit }}</div>
+                <div class="name" v-show="isShow.newEntity">{{item.NewEntity}}</div>
                 <div class="name">{{ item.CountNo }}</div>
                 <div v-show="isShow.returnNo" class="name">{{ item.ReturnNo }}</div>
                 <div class="name word-break">{{ item.SupplierName }}</div>
                 <div class="name word-break">{{ item.LifeDate === null ? '' : item.LifeDate.slice(0,10) }}</div>
-                <div class="name">{{ item.UnitPrice }}</div>
+                <div class="name">{{ item.UnitPrice.toFixed(2) }}</div>
                 <div class="name word-break">{{ (item.CountNo * item.UnitPrice).toFixed(2) }}</div>
                 <div class="name word-break">{{ item.CurrencyName }}</div>
                 <div v-show="isShow.exchangeRate" class="name word-break">{{ item.ExchangeRate }}</div>
                 <div v-show="isShow.exchangeRate" class="name word-break">{{ item.TotalAmount }}</div>
+                <div class="name word-break" v-show="isShow.fromStorageLocation">{{ item.FromStorageLocationName }}</div>
+                <div class="name word-break">{{ item.StorageLocationName }}</div>
                 <div class="name word-break">{{ item.Invoice }}</div>
                 <div class="name word-break">{{ item.Remark }}</div>
               </div>
@@ -271,7 +277,9 @@ export default {
         operation: true,
         someOrder: true,
         workingOrder: true,
-        returnNo: false
+        returnNo: false,
+        fromStorageLocation: false,
+        newEntity: false
       },
       columnName: {
         countNo: '数量',
@@ -336,6 +344,7 @@ export default {
           switch (data.reason) {
             case sparePartsOperationDetailType.purchaseReceive:
             case sparePartsOperationDetailType.otherReceive:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = false
@@ -345,6 +354,7 @@ export default {
               // this.columnName.amount = '接收金额'
               break
             case sparePartsOperationDetailType.purchaseReturn:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = true
               this.columnName.operation = '采购接收流水号'
@@ -355,6 +365,7 @@ export default {
               // this.columnName.amount = '退货金额'
               break
             case sparePartsOperationDetailType.distribution:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = true
               this.columnName.returnNo = '已退回数量'
               this.isShow.operation = false
@@ -366,6 +377,7 @@ export default {
               break
             case sparePartsOperationDetailType.materialReturn:
             case sparePartsOperationDetailType.troubleReturn:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = true
               this.columnName.operation = '物资领用流水号'
@@ -376,6 +388,7 @@ export default {
               // this.columnName.amount = '退回金额'
               break
             case sparePartsOperationDetailType.troubleRepair:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = true
@@ -386,6 +399,7 @@ export default {
               // this.columnName.amount = '送修金额'
               break
             case sparePartsOperationDetailType.materialLend:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = true
               this.columnName.returnNo = '已归还数量'
               this.isShow.operation = false
@@ -396,6 +410,7 @@ export default {
               // this.columnName.amount = '借用金额'
               break
             case sparePartsOperationDetailType.lendReturn:
+              this.isShow.fromStorageLocation = true
               this.isShow.returnNo = false
               this.isShow.operation = true
               this.columnName.operation = '物资借用流水号'
@@ -407,6 +422,7 @@ export default {
               break
             case sparePartsOperationDetailType.inStockScrap:
             case sparePartsOperationDetailType.troubleScrap:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = false
@@ -416,6 +432,7 @@ export default {
               // this.columnName.amount = '报废金额'
               break
             case sparePartsOperationDetailType.repairReceive:
+              this.isShow.fromStorageLocation = true
               this.isShow.returnNo = false
               this.isShow.operation = true
               this.columnName.operation = '故障件送修流水号'
@@ -427,6 +444,7 @@ export default {
               // this.columnName.amount = '归还金额'
               break
             case sparePartsOperationDetailType.inspection:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = true
@@ -437,6 +455,7 @@ export default {
               // this.columnName.amount = '送检金额'
               break
             case sparePartsOperationDetailType.inspectionReturn:
+              this.isShow.fromStorageLocation = true
               this.isShow.returnNo = false
               this.isShow.operation = true
               this.columnName.operation = '正常件送检流水号'
@@ -448,6 +467,7 @@ export default {
               // this.columnName.amount = '归还金额'
               break
             case sparePartsOperationDetailType.inventoryLoss:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = false
@@ -456,6 +476,7 @@ export default {
               this.columnName.countNo = '盘亏数量'
               break
             case sparePartsOperationDetailType.inventoryProfit:
+              this.isShow.fromStorageLocation = false
               this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = false
@@ -465,6 +486,10 @@ export default {
               break
             case sparePartsOperationDetailType.moveTo:
             case sparePartsOperationDetailType.troubleMoveTo:
+            case sparePartsOperationDetailType.moveLocation:
+            case sparePartsOperationDetailType.troubleMoveLocation:
+              this.isShow.newEntity = true
+              this.isShow.fromStorageLocation = true
               this.isShow.returnNo = false
               this.isShow.operation = false
               this.isShow.someOrder = false
