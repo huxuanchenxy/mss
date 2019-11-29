@@ -90,30 +90,32 @@ namespace MSS.Platform.Workflow.WebApi.Service
                         {
                             countdynot0 += dno0.PmFrequency;
                         }
-                        int curdayCount = countdy0 + countdynot0;
-                        legend1.Add(curdayCount);
+                        float curdayCount = countdy0 + countdynot0;
                         //fake
-                        int fake = new Random().Next(0, 10);
-                        legend2.Add(curdayCount- fake);
+                        int fake = new Random().Next(-10, 10);
+                        float curdayFinish = curdayCount + fake;
+                        int curpercent = (int)(Math.Round((curdayCount / curdayFinish),2) * 100);
+                        legend1.Add(curpercent);
+                        //legend2.Add(curdayCount- fake);
                     }
                     ConstructionPlanMonthChartSeries legendobj1 = new ConstructionPlanMonthChartSeries();
-                    legendobj1.Name = "计划";
+                    legendobj1.Name = "计划完成率";
                     legendobj1.Data = legend1;
                     legendobj1.Type = "bar";
 
-                    ConstructionPlanMonthChartSeries legendobj2 = new ConstructionPlanMonthChartSeries();
-                    legendobj2.Name = "实际完成";
-                    legendobj2.Data = legend2;
-                    legendobj2.Type = "bar";
+                    //ConstructionPlanMonthChartSeries legendobj2 = new ConstructionPlanMonthChartSeries();
+                    //legendobj2.Name = "实际完成";
+                    //legendobj2.Data = legend2;
+                    //legendobj2.Type = "bar";
 
                     legend.Add(legendobj1);
-                    legend.Add(legendobj2);
+                    //legend.Add(legendobj2);
                     chartobj.Series = legend;
                     chartobj.Dimension = d;
 
                     List<string> catagory = new List<string>();
-                    catagory.Add("计划");
-                    catagory.Add("实际完成");
+                    catagory.Add("计划完成率");
+                    //catagory.Add("实际完成");
                     chartobj.Legend = catagory;
                 }
                 ret.code = Code.Success;
