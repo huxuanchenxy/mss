@@ -8,6 +8,7 @@ using System.Text;
 using MSS.API.Dao.Interface;
 using MSS.API.Dao.Implement;
 using Dapper.FluentMap;
+
 namespace MSS.API.Dao
 {
     public static class DapperServiceCollectionExtensions
@@ -21,7 +22,7 @@ namespace MSS.API.Dao
             optionsSection.Bind(options);
             services.AddSingleton<DapperOptions>(options);
             services.AddTransient<IStatisticsRepo, StatisticsRepo>();
-
+            services.AddTransient<IStockOperationDetailRepo<StockOperationDetail>, StockOperationDetailRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
