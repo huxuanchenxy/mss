@@ -2,6 +2,7 @@ import axios from './interceptors'
 // let api = 'http://127.0.0.1:3851/api/v1'
 let eqpApi = 'http://10.89.36.154:5801/eqpapi'
 let api = 'http://10.89.36.154:5801/orgapi'
+// let api = 'http://localhost:8082/api/v1'
 export default {
   getConfig: () => { return axios.get(`${api}/eventcenter/config`).then(res => res.data) },
   getAllWarning: () => { return axios.get(`${api}/eventcenter/warning`).then(res => res.data) },

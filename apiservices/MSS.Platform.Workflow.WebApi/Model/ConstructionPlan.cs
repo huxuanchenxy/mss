@@ -9,6 +9,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
     public class ConstructionPlanParm : BaseQueryParm
     {
         public string planName { get; set; }
+        public int userId { get; set; }
+        public string processGUID { get; set; }
     }
     public class ConstructionPlanPageView
     {
@@ -59,6 +61,7 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public int UpdatedBy { get; set; }
         public sbyte IsDel { get; set; }
         public string FileIDs { get; set; }
+        public int ProcessState { get; set; }
     }
 
     public class ConstructionPlanMap : EntityMap<ConstructionPlan>
@@ -105,6 +108,7 @@ namespace MSS.Platform.Workflow.WebApi.Model
             Map(o => o.UpdatedTime).ToColumn("updated_time");
             Map(o => o.UpdatedBy).ToColumn("updated_by");
             Map(o => o.IsDel).ToColumn("is_del");
+            Map(o => o.ProcessState).ToColumn("processstate");
         }
     }
 

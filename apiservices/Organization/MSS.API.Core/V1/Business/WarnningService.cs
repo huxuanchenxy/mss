@@ -71,7 +71,7 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
-
+        //由pid去找eqp
         public async Task<ApiResult> ListAlarmByOrg(int? orgID)
         {
             ApiResult ret = new ApiResult();

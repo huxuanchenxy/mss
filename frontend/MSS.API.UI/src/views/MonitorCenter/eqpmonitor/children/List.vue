@@ -199,10 +199,10 @@ export default {
       status: '',
 
       dataList: [],
-      alarmList: [],
+      alarmList: [], // 所有报警未确认的
       totalEqp: 0,
-      troubleCount: 3,
-      otherCount: 5,
+      troubleCount: 0, // 总故障数
+      otherCount: 0, // 总报警数
       newMsg: null,
 
       bCheckAll: false,
@@ -332,16 +332,17 @@ export default {
       this.otherCount = Object.values(this.alarmList).length - this.troubleCount
     },
     updateEqpStatus () {
-      for (let key in this.alarmList) {
-        for (let i = 0; i < this.dataList.length; ++i) {
-          let item = this.dataList[i]
-          if (+key === item.id) {
-            if (this.alarmList[key].isTrouble) {
-              item.status = EqpStatus.fault
-            } else {
-              item.status = EqpStatus.warning
-            }
+      for (let i = 0; i < this.dataList.length; ++i) {
+        let item = this.dataList[i]
+        let cur = this.alarmList[item.id]
+        if (cur !== undefined) {
+          if (cur.isTrouble) {
+            item.status = EqpStatus.fault
+          } else {
+            item.status = EqpStatus.warning
           }
+        } else {
+          item.status = EqpStatus.normal
         }
       }
     },
@@ -450,15 +451,15 @@ export default {
       }
       eqpApi.getEqp(parm).then(res => {
         this.loading = false
-        res.data.rows.map((item, index) => {
-          if (index === 1) {
-            item.status = EqpStatus.normal
-          } else if (index === 2 || index === 5) {
-            item.status = EqpStatus.warning
-          } else if (index === 3 || index === 8) {
-            item.status = EqpStatus.fault
-          }
-        })
+        // res.data.rows.map((item, index) => {
+        //   if (index === 1) {
+        //     item.status = EqpStatus.normal
+        //   } else if (index === 2 || index === 5) {
+        //     item.status = EqpStatus.warning
+        //   } else if (index === 3 || index === 8) {
+        //     item.status = EqpStatus.fault
+        //   }
+        // })
         this.dataList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))

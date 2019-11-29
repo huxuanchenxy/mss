@@ -110,7 +110,7 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
 
-        [HttpGet("alarm")]
+        [HttpGet("alarm")]//由pid去找eqp
         public async Task<ActionResult<ApiResult>> GetAlarm()
         {
             ApiResult ret = new ApiResult { code = Code.Failure };

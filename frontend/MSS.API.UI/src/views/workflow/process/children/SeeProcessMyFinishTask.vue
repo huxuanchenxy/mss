@@ -59,7 +59,7 @@
             <li class="list" v-for="(item) in DataList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="IDS" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="lookOperlogID" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.id }}</div>
                 <div class="name">{{ item.appName }}</div>
@@ -97,13 +97,13 @@ import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
 export default {
-  name: 'SeeProcessConsul',
+  name: 'SeeProcessMyFinishTask',
   components: {
     XButton
   },
   data () {
     return {
-      title: ' | 我的待办任务',
+      title: ' | 我的已办任务',
       time: '',
       id: '',
       startTime: '',
@@ -111,7 +111,7 @@ export default {
       appName: '',
       roleList: [],
       DataList: [],
-      IDS: [],
+      lookOperlogID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -136,7 +136,7 @@ export default {
     }
   },
   created () {
-    this.$emit('title', '| 我的待办任务')
+    this.$emit('title', '| 我的已办任务')
     this.init()
   },
   activated () {
@@ -184,7 +184,7 @@ export default {
         page: page,
         AppName: this.appName
       }
-      api.getPage(parm).then(res => {
+      api.getMyFinprocess(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
           item.createdDateTime = transformDate(item.createdDateTime)
@@ -195,16 +195,14 @@ export default {
     },
     // 搜索功能
     searchRes () {
-      this.$emit('title', '| 我的待办任务')
+      this.$emit('title', '| 我的已办任务')
       this.loading = true
       this.init()
       this.searchResult(1)
     },
     // 获取修改用户id
     emitEditID () {
-      // console.log(item.appInstanceID)
-      // this.$emit('IDS', item.appInstanceID)
-      console.log('this.appid:' + this.IDS)
+      this.$emit('lookOperlogID', this.lookOperlogID)
     },
     // 全选
     // checkAll () {
@@ -235,28 +233,10 @@ export default {
       this.searchResult(val)
     },
     refreshpage () {
-      console.log(this.IDS)
-      if (!this.IDS.length) {
-        this.$message({
-          message: '请选择记录',
-          type: 'warning'
-        })
-      } else if (this.IDS.length > 1) {
-        this.$message({
-          message: '操作的记录不能超过1个',
-          type: 'warning'
-        })
-      } else {
-        let cur = this.DataList.filter(item => item.id === this.IDS[0])
-        // console.log(cur)
-        this.$router.push({
-          name: 'AddConstructionPlan',
-          params: {
-            id: cur[0].appInstanceID
-          },
-          query: { type: 'Detail', id: cur[0].appInstanceID, sourceName: 'SeeProcessTask' }
-        })
-      }
+      // this.$router.go(0)
+      this.currentPage = 1
+      this.loading = true
+      this.searchResult(1)
     }
   }
 }

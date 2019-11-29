@@ -149,6 +149,7 @@ export default {
       // this.checkAll()
       this.currentPage = 1
       this.searchResult(1)
+      this.listProcess()
     },
     // 改变排序
     changeOrder (sort) {
@@ -207,6 +208,12 @@ export default {
         })
         this.DataList = res.data.rows
         this.total = res.data.total
+      }).catch(err => console.log(err))
+    },
+    listProcess () {
+      api.getprocesslist().then(res => {
+        this.loading = false
+        console.log(res)
       }).catch(err => console.log(err))
     },
     // 搜索功能
