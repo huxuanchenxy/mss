@@ -174,7 +174,7 @@ import eqpApi from '@/api/eqpApi'
 import apiEvent from '@/api/eventCenterApi'
 import areaApi from '@/api/AreaApi'
 export default {
-  name: 'SeeUserList',
+  name: 'monitorCenter',
   components: {
     XButton
   },
@@ -197,7 +197,7 @@ export default {
       ProtectArea: '',
       ProductionArea: '',
       status: '',
-
+      monitorCenter: '',
       dataList: [],
       alarmList: [], // 所有报警未确认的
       totalEqp: 0,
@@ -264,19 +264,19 @@ export default {
     },
     getAllAreaList () {
       // 车站
-      areaApi.GetSubWayStation(1).then(res => {
+      areaApi.GetSubWayStation(9).then(res => {
         this.StationList = res.data
       }).catch(err => console.log(err))
       // 正线轨行区
-      areaApi.GetSubWayStation(2).then(res => {
+      areaApi.GetSubWayStation(10).then(res => {
         this.RailLineAreaList = res.data
       }).catch(err => console.log(err))
       // 保护区
-      areaApi.GetSubWayStation(3).then(res => {
+      areaApi.GetSubWayStation(11).then(res => {
         this.ProtectAreaList = res.data
       }).catch(err => console.log(err))
       // 车场生产区
-      areaApi.GetSubWayStation(4).then(res => {
+      areaApi.GetSubWayStation(12).then(res => {
         this.ProductionAreaList = res.data
       }).catch(err => console.log(err))
     },

@@ -36,6 +36,19 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/trouble/children/Trouble.vue')
           }
         ]
+      }, {
+        path: 'planChart',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/PlanChart/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'planChart'
+          }, {
+            path: 'planChart',
+            name: 'PlanChart',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/PlanChart/children/PlanChart.vue')
+          }
+        ]
       }
     ]
   }
