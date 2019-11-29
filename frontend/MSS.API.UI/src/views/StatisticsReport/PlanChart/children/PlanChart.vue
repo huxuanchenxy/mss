@@ -12,6 +12,17 @@
       <div class="middle-content-wrap height-full" :class="{ active: searchHideMore }" :style="{ height: searchHideMoreHeight }">
         <div class="content con-padding-horizontal">
           <div class="top-input-group" ref="middleTopInput">
+            <div class="list" >
+              <span class="lable">公司</span>
+              <el-select v-model="company" multiple collapse-tags  clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in companyList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
             <div class="list">
               <span class="lable">负责班组</span>
                <el-cascader class="cascader_width" clearable
@@ -22,7 +33,7 @@
                     v-model="teamPath.text">
                   </el-cascader>
             </div>
-            <div class="list" >
+            <!-- <div class="list" >
               <span class="lable">设备类型</span>
               <el-select v-model="eqpType" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
@@ -32,7 +43,7 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-            </div>
+            </div> -->
             <div class="list">
               <span class="lable">时间</span>
               <el-date-picker
@@ -242,7 +253,9 @@ export default {
       shrinkText: '更多',
       bottomDesForAvg: '',
 
-      loading: false
+      loading: false,
+      company: [],
+      companyList: []
     }
   },
   created () {
@@ -340,8 +353,13 @@ export default {
       }).catch(err => console.log(err))
 
       // 班组加载
+      // apiOrg.getOrgAll().then(res => {
+      //   this.teamList = res.data
+      // }).catch(err => console.log(err))
+
+      // 公司加载
       apiOrg.getOrgAll().then(res => {
-        this.teamList = res.data
+        this.companyList = res.data
       }).catch(err => console.log(err))
 
       // 供应商/制造商加载
