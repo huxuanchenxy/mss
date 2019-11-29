@@ -19,7 +19,7 @@ const routes = [
             redirect: 'list'
           }, {
             path: 'list',
-            name: 'EqpMonitor',
+            name: 'monitorCenter',
             component: () => import(/* webpackChunkName: "system" */ '@/views/MonitorCenter/eqpmonitor/children/List.vue')
           }
         ]

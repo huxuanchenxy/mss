@@ -25,5 +25,6 @@ export default {
   getprocesslist: id => { return axios.get(`${api}/Wf/GetProcessListSimple`).then(res => res.data) },
   getnextprocess: parm => { return axios.post(`${api}/Wf/GetNextStepRoleUserTree`, parm).then(res => res.data) },
 
-  getcurrentprocess: parm => { return axios.post(`${api}/Wf/QueryReadyActivityInstance`, parm).then(res => res.data) }
+  getcurrentprocess: parm => { return axios.post(`${api}/Wf/QueryReadyActivityInstance`, parm).then(res => res.data) },
+  getMonthChart: parm => { return axios.get(`${api}/ConstructionPlanMonthChart/GetMonthChart`, {params: parm}).then(res => res.data) }
 }
