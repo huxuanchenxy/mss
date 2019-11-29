@@ -6,8 +6,10 @@ namespace MSS.API.Model.Data
 {
     public class DictionaryTree:BaseEntity
     {
-        public string parent_id { get; set; }
+        public int parent_id { get; set; }
+        public string code { get; set; }
         public string name { get; set; }
+        public string des { get; set; }
     }
     public class DictionaryRelation
     {

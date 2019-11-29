@@ -22,6 +22,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IWarehouseAlarmService, WarehouseAlarmService>();
             services.AddTransient<IStockOperationService, StockOperationService>();
             services.AddTransient<IWarehouseAlarmHistoryService, WarehouseAlarmHistoryService>();
+            services.AddTransient<IStorageLocationService, StorageLocationService>();
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();

@@ -45,11 +45,11 @@
             </div>
             <p class="validate-tips">{{ picker.tips }}</p>
           </li>
-          <li class="list">
+          <li class="list" v-show="isShow.toWarehouse">
             <div class="inp-wrap">
               <span class="text">移入仓库<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="toWarehouse.text" clearable filterable placeholder="请选择仓库">
+                <el-select v-model="toWarehouse.text" clearable filterable placeholder="请选择仓库" @change="toWarehouseChange">
                 <el-option
                   v-for="item in warehouseList"
                   :key="item.key"
@@ -61,6 +61,7 @@
             </div>
             <p class="validate-tips">{{ toWarehouse.tips }}</p>
           </li>
+          <li class="list" v-show="!isShow.toWarehouse"/>
           <li class="list list-block">
             <div class="inp-wrap">
               <span class="text span-block">备注</span>
@@ -70,7 +71,8 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">移出仓库<em class="validate-mark">*</em></span>
+              <span class="text" v-show="isShow.toWarehouse">移出仓库<em class="validate-mark">*</em></span>
+              <span class="text" v-show="!isShow.toWarehouse">仓库<em class="validate-mark">*</em></span>
               <div class="inp">
                 <el-select v-model="warehouse.text" clearable filterable placeholder="请选择仓库" :disabled="isDisabledWarehouse" @change="warehouseChange">
                 <el-option
@@ -120,6 +122,7 @@
                   <li class="list name">规格型号</li>
                   <li class="list name">保质期</li>
                   <li class="list name">供应商</li>
+                  <li class="list name">移出库位</li>
                   <li class="list name">库存数量</li>
                   <li class="list name">故障件数量</li>
                   <li class="list name">存货数量</li>
@@ -128,6 +131,7 @@
                   <li class="list name">借用数量</li>-->
                   <li class="list menuOrder">转移数量</li>
                   <li class="list menuOrder">转移物资ID(批量)</li>
+                  <li class="list menuOrder">移入库位</li>
                   <li class="list menuOrder">备注</li>
                 </ul>
                 <div class="scroll">
@@ -140,6 +144,7 @@
                           <div class="name">{{ item.model }}</div>
                           <div class="name">{{ item.lifeDate === null ? '' : item.lifeDate.slice(0,10) }}</div>
                           <div class="name">{{ item.supplierName }}</div>
+                          <div class="name">{{ item.storageLocationName }}</div>
                           <div class="name">{{ item.stockNo }}</div>
                           <div class="name">{{ item.troubleNo }}</div>
                           <div class="name">{{ item.inStockNo }}</div>
@@ -150,7 +155,17 @@
                             <el-input class="center" v-model="item.editNo" @keyup.native="validateAllEditNo(item, index)"></el-input>
                           </div>
                           <div class="menuOrder">
-                            <el-input class="center" :disabled="item.stockNo === 1" v-model="item.newEntity"></el-input>
+                            <el-input class="center" :disabled="item.inStockNo === 1 || item.stockNo + '' === item.editNo" v-model="item.newEntity"></el-input>
+                          </div>
+                          <div class="menuOrder">
+                            <el-select v-model="item.storageLocation" placeholder="请选择库位" filterable>
+                              <el-option
+                                v-for="item in storageLocationList"
+                                :key="item.key"
+                                :label="item.name"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
                           </div>
                           <div class="menuOrder word-break">
                             <el-input class="center" v-model="item.editRemark"></el-input>
@@ -173,8 +188,10 @@
                   <li class="list name">物资ID</li>
                   <li class="list name">物资名称</li>
                   <li class="list name">{{editNoCompareName}}</li>
+                  <li class="list name">移出库位</li>
                   <li class="list name">转移数量</li>
                   <li class="list name">转移物资ID(批量)</li>
+                  <li class="list name">移入库位</li>
                   <li class="list url">备注</li>
                   <li class="list name">操作</li>
                 </ul>
@@ -186,13 +203,24 @@
                           <div class="name">{{ item.entity }}</div>
                           <div class="name">{{ item.sparePartsName }}</div>
                           <div class="name">{{ item.inStockNo }}</div>
+                          <div class="name">{{ item.storageLocationName }}</div>
                           <div v-show="!item.isEdit" class="name word-break">{{ item.countNo }}</div>
                           <div v-show="item.isEdit" class="name word-break">
                             <el-input class="center" v-model="item.countNo" @keyup.native="validateEditNo(item.inStockNo, item.countNo, index)"></el-input>
                           </div>
                           <div v-show="!item.isEdit" class="name word-break">{{ item.newEntity }}</div>
-                          <div v-show="item.isEdit" class="menuOrder">
-                            <el-input class="center" :disabled="item.stock === 1" v-model="item.newEntity"></el-input>
+                          <div v-show="item.isEdit" class="name word-break">
+                            <el-input class="center" :disabled="item.inStockNo === 1 || item.stockNo + '' === item.countNo" v-model="item.newEntity"></el-input>
+                          </div>
+                          <div class="name word-break">
+                            <el-select v-model="item.storageLocation" placeholder="请选择库位" filterable :disabled="!item.isEdit">
+                              <el-option
+                                v-for="item in storageLocationList"
+                                :key="item.key"
+                                :label="item.name"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
                           </div>
                           <div v-show="!item.isEdit" class="url word-break">{{ item.remark }}</div>
                           <div v-show="item.isEdit" class="url word-break">
@@ -251,8 +279,12 @@ export default {
       remark: {text: '', tips: ''},
       detailList: [],
       distributionList: [],
+      storageLocationList: [],
       editNoCompareName: '存货数量',
-      isDisabledWarehouse: false
+      isDisabledWarehouse: false,
+      isShow: {
+        toWarehouse: false
+      }
     }
   },
   created () {
@@ -276,11 +308,21 @@ export default {
   methods: {
     reasonChange () {
       this.reason.tips = ''
-      if (this.reason.text === sparePartsOperationDetailType.moveTo) {
+      if (this.reason.text === sparePartsOperationDetailType.moveTo || this.reason.text === sparePartsOperationDetailType.moveLocation) {
         this.editNoCompareName = '存货数量'
       } else {
         this.editNoCompareName = '故障件数量'
       }
+      if (this.reason.text === sparePartsOperationDetailType.troubleMoveLocation || this.reason.text === sparePartsOperationDetailType.moveLocation) {
+        this.isShow.toWarehouse = false
+      } else {
+        this.isShow.toWarehouse = true
+      }
+      this.warehouse.text = ''
+      this.toWarehouse.text = ''
+      this.spareParts.text = ''
+      this.sparePartsList = []
+      this.storageLocationList = []
       this.detailList = []
       this.distributionList = []
       this.isDisabledWarehouse = false
@@ -293,14 +335,39 @@ export default {
       api.getSparePartsByWH(this.warehouse.text).then(res => {
         this.sparePartsList = res.data
       }).catch(err => console.log(err))
+      if (this.reason.text === sparePartsOperationDetailType.troubleMoveLocation || this.reason.text === sparePartsOperationDetailType.moveLocation) {
+        console.log(this.warehouse.text)
+        this.getStorageLocationByWarehouse(this.warehouse.text)
+      }
+    },
+    toWarehouseChange () {
+      this.getStorageLocationByWarehouse(this.toWarehouse.text)
+    },
+    getStorageLocationByWarehouse (warehouse) {
+      // 根据仓库找库位
+      api.getStorageLocationByWarehouse(warehouse).then(res => {
+        this.storageLocationList = res.data
+      }).catch(err => console.log(err))
     },
     getStockDetail () {
       if (!this.validateSelect(this.reason) || !this.validateSelect(this.spareParts) || !this.validateSelect(this.warehouse)) {
         return
       }
+      if (this.isShow.fromStorageLocation && !this.validateSelect(this.toWarehouse)) return
       // 库存明细
-      api.getStockDetail(this.spareParts.text, this.warehouse.text).then(res => {
+      api.getStockDetail(this.spareParts.text, this.warehouse.text, this.reason.text, 0).then(res => {
         this.detailList = res.data
+        if (this.detailList.length === 0) {
+          this.$message({
+            message: '没有找到相关可转移数据',
+            type: 'warning'
+          })
+        } else {
+          this.detailList.map(val => {
+            val.fromStorageLocation = val.storageLocation
+            val.storageLocation = ''
+          })
+        }
         this.activeName = 'stock'
       }).catch(err => console.log(err))
     },
@@ -312,7 +379,7 @@ export default {
             type: 'warning'
           })
           this.distributionList[index].countNo = 0
-        }
+        } else if (now === old + '') this.distributionList[index].newEntity = ''
       } else {
         this.$message({
           message: '请输入数字',
@@ -330,7 +397,7 @@ export default {
             type: 'warning'
           })
           this.detailList[index].editNo = 0
-        }
+        } else if (item.stockNo + '' === item.editNo) this.detailList[index].newEntity = ''
       } else {
         this.$message({
           message: '请输入数字',
@@ -347,10 +414,13 @@ export default {
             entity: this.detailList[i].entity,
             spareParts: this.detailList[i].spareParts,
             sparePartsName: this.detailList[i].sparePartsName,
+            fromStorageLocation: this.detailList[i].fromStorageLocation,
+            storageLocationName: this.detailList[i].storageLocationName,
             stockNo: this.detailList[i].stockNo,
             inStockNo: this.detailList[i].inStockNo,
             countNo: this.detailList[i].editNo,
             newEntity: this.detailList[i].newEntity === null ? '' : this.detailList[i].newEntity,
+            storageLocation: this.detailList[i].storageLocation,
             remark: this.detailList[i].editRemark,
             // stockDetail: this.detailList[i].id,
             // acceptUnitPrice: this.detailList[i].acceptUnitPrice,
@@ -367,6 +437,13 @@ export default {
           if (!vInput(this.detailList[i].newEntity)) {
             this.$message({
               message: this.detailList[i].entity + '的新物资ID含有非法字符',
+              type: 'error'
+            })
+            return
+          }
+          if (this.detailList[i].storageLocation === '') {
+            this.$message({
+              message: '请选择库位',
               type: 'error'
             })
             return
@@ -432,7 +509,8 @@ export default {
     },
     validateInputAll () {
       let ret = true
-      ret = this.validateSelect(this.picker) && this.validateSelect(this.toWarehouse)
+      ret = this.validateSelect(this.picker)
+      if (this.isShow.fromStorageLocation && !this.validateSelect(this.toWarehouse)) return false
       return ret
     },
     save () {
