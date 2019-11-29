@@ -82,14 +82,14 @@
             <div class="inp-wrap">
               <span class="text">仓库<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="warehouse.text" :disabled="isDisabledWarehouse" clearable filterable placeholder="请选择仓库" @change="warehouseChange">
-                <el-option
-                  v-for="item in warehouseList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                <el-select v-model="warehouse.text" filterable placeholder="请选择仓库" @change="warehouseChange">
+                  <el-option
+                    v-for="item in warehouseList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <p class="validate-tips">{{ warehouse.tips }}</p>
@@ -176,6 +176,7 @@
                   <li class="list name">保质期</li>
                   <li class="list name">供应商</li>
                   <li v-show="isShow.scrap" class="list name">仓库</li>
+                  <li class="list name">库位</li>
                   <li v-show="isShow.stockDetail && !isShow.scrap" class="list name">{{fromStockOperationName}}数量</li>
                   <li v-show="isShow.stockDetail && !isShow.scrap" class="list name">已{{editNoName}}</li>
                   <li v-show="!isShow.stockDetail" class="list name">库存数量</li>
@@ -184,6 +185,7 @@
                   <li v-show="!isShow.stockDetail" class="list name">已送检数量</li>
                   <li v-show="!isShow.stockDetail" class="list name">已送修数量</li>
                   <li v-show="!isShow.stockDetail" class="list name">已借用数量</li>
+                  <li class="list menuOrder" v-show="isShowNewEntity">新物资ID</li>
                   <li class="list menuOrder">{{editNoName}}</li>
                   <li class="list menuOrder">备注</li>
                 </ul>
@@ -197,7 +199,18 @@
                           <div class="name">{{ item.model }}</div>
                           <div class="name">{{ item.lifeDate === null ? '' : item.lifeDate.slice(0,10) }}</div>
                           <div class="name">{{ item.supplierName }}</div>
-                          <div v-show="isShow.scrap" class="name">{{ item.warehouseName }}</div>
+                          <div v-show="isShow.scrap" class="name">{{ item.warehouseName}}</div>
+                          <div v-show="!(isShow.stockDetail && !isShow.scrap && item.inStockNo===0)" class="name">{{ item.storageLocationName}}</div>
+                          <div class="name" v-show="isShow.stockDetail && !isShow.scrap && item.inStockNo===0">
+                            <el-select v-model="item.storageLocation" placeholder="请选择库位" filterable>
+                              <el-option
+                                v-for="item in storageLocationList"
+                                :key="item.key"
+                                :label="item.name"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
+                          </div>
                           <div v-show="isShow.stockDetail && !isShow.scrap" class="name">{{ item.countNo }}</div>
                           <div v-show="isShow.stockDetail && !isShow.scrap" class="name">{{ item.returnNo }}</div>
                           <div v-show="!isShow.stockDetail" class="name">{{ item.stockNo }}</div>
@@ -206,6 +219,9 @@
                           <div v-show="!isShow.stockDetail" class="name">{{ item.inspectionNo }}</div>
                           <div v-show="!isShow.stockDetail" class="name">{{ item.repairNo }}</div>
                           <div v-show="!isShow.stockDetail" class="name">{{ item.lentNo }}</div>
+                          <div class="menuOrder" v-show="isShow.stockDetail && !isShow.scrap && item.inStockNo===0 && item.isBacth===1">
+                            <el-input class="center" v-model="item.newEntity" @keyup.native="validateEntity(item.newEntity, detailList, index)"></el-input>
+                          </div>
                           <div class="menuOrder">
                             <el-input class="center" v-model="item.editNo" @keyup.native="validateAllEditNo(item, index)"></el-input>
                           </div>
@@ -229,8 +245,10 @@
                 <ul class="content-header">
                   <li class="list name">物资ID</li>
                   <li class="list name">物资名称</li>
+                  <li class="list name">库位</li>
                   <li class="list name">{{editNoCompareName}}</li>
                   <li class="list name">{{editNoName}}</li>
+                  <li class="list name" v-show="isShowNewEntity">新物资ID</li>
                   <li class="list url">备注</li>
                   <li class="list last-maintainer">操作</li>
                 </ul>
@@ -241,10 +259,27 @@
                         <div class="list-content">
                           <div class="name">{{ item.entity }}</div>
                           <div class="name">{{ item.sparePartsName }}</div>
+                          <div class="name" v-show="!(isShow.stockDetail && !isShow.scrap && item.inStockNoOld===0)">{{ item.storageLocationName }}</div>
+                          <div class="name" v-show="isShow.stockDetail && !isShow.scrap && item.inStockNoOld===0">
+                            <el-select v-model="item.storageLocation" placeholder="请选择库位" filterable :disabled="!item.isEdit">
+                              <el-option
+                                v-for="item in storageLocationList"
+                                :key="item.key"
+                                :label="item.name"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
+                          </div>
                           <div class="name">{{ item.inStockNo }}</div>
                           <div v-show="!item.isEdit" class="name word-break">{{ item.countNo }}</div>
                           <div v-show="item.isEdit" class="name word-break">
                             <el-input class="center" v-model="item.countNo" @keyup.native="validateEditNo(item.inStockNo, item.countNo, index, distributionList)"></el-input>
+                          </div>
+                          <div class="name word-break" v-show="isShow.stockDetail && !isShow.scrap && item.inStockNoOld===0 && item.isBacth===1 && !item.isEdit">
+                            {{item.newEntity}}
+                          </div>
+                          <div class="name word-break" v-show="isShow.stockDetail && !isShow.scrap && item.inStockNoOld===0 && item.isBacth===1 && item.isEdit">
+                            <el-input class="center" v-model="item.newEntity" @keyup.native="validateEntity(item.newEntity, distributionList, index)"></el-input>
                           </div>
                           <div v-show="!item.isEdit" class="url word-break">{{ item.remark }}</div>
                           <div v-show="item.isEdit" class="url word-break">
@@ -296,6 +331,7 @@ export default {
       activeName: 'stock',
       loading: false,
       title: '| 物资发放过账',
+      isShowNewEntity: false,
       bCheckAll: false,
       reasonList: [],
       reason: {text: '', tips: ''},
@@ -317,6 +353,7 @@ export default {
         someOrder: ''
       },
       someOrder: {text: '', tips: ''},
+      storageLocationList: [],
       detailList: [],
       distributionList: [],
       editID: [],
@@ -363,7 +400,7 @@ export default {
       if (this.reason.text === sparePartsOperationDetailType.inStockScrap || this.reason.text === sparePartsOperationDetailType.troubleScrap) {
         this.isShow.scrap = true
         // 物资ID加载
-        api.getStockDetailAll().then(res => {
+        api.getStockDetailByReason(this.reason.text).then(res => {
           this.entityList = res.data
         }).catch(err => console.log(err))
       } else this.isShow.scrap = false
@@ -500,9 +537,15 @@ export default {
       if (!this.validateSelect(this.reason) || !this.validateSelect(this.spareParts) || !this.validateSelect(this.warehouse)) {
         return
       }
-      // 库存明细
-      api.getStockDetail(this.spareParts.text, this.warehouse.text).then(res => {
+      // 库存明细 获取库存清单按钮
+      api.getStockDetail(this.spareParts.text, this.warehouse.text, this.reason.text, 0).then(res => {
         this.detailList = res.data
+        if (this.detailList.length === 0) {
+          this.$message({
+            message: '批量的物资不允许进行此事务原因的操作',
+            type: 'warning'
+          })
+        }
         this.activeName = 'stock'
       }).catch(err => console.log(err))
     },
@@ -510,7 +553,7 @@ export default {
       // if (!this.validateSelect(this.reason) || !this.validateSelect(this.stockDetail)) {
       //   return
       // }
-      // 存货明细
+      // 存货明细 报废时获取的数据
       api.getStockDetailByID(this.entity).then(res => {
         if (res.data !== null) {
           this.detailList = []
@@ -525,11 +568,25 @@ export default {
       }).catch(err => console.log(err))
     },
     getStockOperationDetail () {
-      // 流水号明细
+      // 流水号明细 归还时获取的数据
       api.getStockOperationDetailByIDForEdit(this.stockOperation).then(res => {
+        if (res.data === null) {
+          this.detailList = []
+          this.$message({
+            message: '此流水操作的物资都已归还',
+            type: 'success'
+          })
+          return
+        }
         this.detailList = res.data.detailList
+        this.isShowNewEntity = this.detailList.some(item => {
+          return item.inStockNo === 0 && item.isBacth === 1
+        })
         this.stockOperationShow.warehouse = res.data.warehouseName
         this.warehouseTmp = res.data.warehouse
+        api.getStorageLocationByWarehouse(this.warehouseTmp).then(res => {
+          this.storageLocationList = res.data
+        }).catch(err => console.log(err))
         if (this.isShow.workingOrder === 2) {
           this.stockOperationShow.someOrder = this.detailList[0].someOrder
         } else if (this.isShow.workingOrder === 1) {
@@ -621,15 +678,41 @@ export default {
         this.detailList[index].editNo = 0
       }
     },
+    validateEntity (entity, list, index) {
+      let arr = [].concat(list)
+      arr.splice(index, 1)
+      let ret = arr.some(item => {
+        return item.entity === entity
+      })
+      if (ret) {
+        this.$message({
+          message: '物资ID重复',
+          type: 'warning'
+        })
+      }
+    },
     insert () {
       if (!this.isShow.stockDetail) {
         if (this.isShow.workingOrder === 1) {
-          if (!this.validateSelect(this.workingOrder)) return
+          if (!this.validateSelect(this.workingOrder)) {
+            this.$message({
+              message: '验证失败，请查看提示信息',
+              type: 'warning'
+            })
+            return
+          }
         } else if (this.isShow.workingOrder === 2) {
-          if (!this.validateInput(this.someOrder)) return
+          if (!this.validateInput(this.someOrder)) {
+            this.$message({
+              message: '验证失败，请查看提示信息',
+              type: 'warning'
+            })
+            return
+          }
         }
       }
       let isInsert = false
+      let first = true
       for (let i = 0; i < this.detailList.length; i++) {
         if (this.detailList[i].editNo + '' !== '0') {
           if (this.isShow.scrap) {
@@ -645,14 +728,20 @@ export default {
           }
           let distribution = {
             entity: this.detailList[i].entity,
+            newEntity: this.detailList[i].newEntity,
             spareParts: this.detailList[i].spareParts,
             sparePartsName: this.detailList[i].sparePartsName,
-            // inStockNo: this.detailList[i].inStockNo,
+            // 目前只是为了判断是否可以改变库位，批量改变库位时需要定义物资ID（存货为0才行）
+            inStockNoOld: this.detailList[i].inStockNo,
+            isBacth: this.detailList[i].isBacth,
             countNo: this.detailList[i].editNo,
             remark: this.detailList[i].editRemark,
             // stockDetail: this.detailList[i].id,
             // acceptUnitPrice: this.detailList[i].acceptUnitPrice,
             exchangeRate: this.detailList[i].exchangeRate,
+            storageLocation: this.detailList[i].storageLocation,
+            storageLocationName: this.detailList[i].storageLocationName,
+            fromStorageLocation: this.detailList[i].fromStorageLocation === undefined ? this.detailList[i].storageLocation : this.detailList[i].fromStorageLocation,
             isEdit: false
           }
           if (this.isShow.workingOrder === 1) distribution.workingOrder = this.workingOrder.text
@@ -688,7 +777,10 @@ export default {
               distribution.unitPrice = this.detailList[i].unitPrice
               distribution.stockDetail = this.detailList[i].stockDetail
               this.activeName = 'send'
-              if (i === 0) this.distributionList = []
+              if (first) {
+                this.distributionList = []
+                first = false
+              }
               break
           }
           this.distributionList.push(distribution)
@@ -729,7 +821,7 @@ export default {
       }
     },
     validateSelect (val) {
-      if (val.text === '') {
+      if (val.text === '' || val.text.length === 0) {
         val.tips = '此项必选'
         return false
       } else {
@@ -763,21 +855,46 @@ export default {
       //   val.orderNo = index + 1
       // })
       for (let i = 0; i < this.distributionList.length; i++) {
-        if (this.distributionList[i].countNo + '' === '0') {
+        let item = this.distributionList[i]
+        if (this.isShow.stockDetail && !this.isShow.scrap && item.inStockNo === 0 && item.isBacth === 1) {
+          if (item.entity === '') {
+            this.$message({
+              message: '第' + i + '条记录的物资ID必填',
+              type: 'error'
+            })
+            return
+          }
+          if (!vInput(item.entity)) {
+            this.$message({
+              message: '第' + i + '条记录的物资ID中有非法字符串',
+              type: 'error'
+            })
+            return
+          }
+        }
+        if (!vInput(item.remark)) {
+          this.$message({
+            message: '第' + i + '条记录的备注中有非法字符串',
+            type: 'error'
+          })
+          return
+        }
+        if (item.countNo + '' === '0') {
           this.$message({
             message: this.editNoName + '不可为0',
             type: 'error'
           })
           return
         }
-        this.distributionList[i].unitPrice = this.distributionList[i].unitPrice
-        this.distributionList[i].amount = this.distributionList[i].countNo * this.distributionList[i].unitPrice * this.distributionList[i].exchangeRate
-        this.distributionList[i].orderNo = i + 1
+        item.unitPrice = item.unitPrice
+        item.amount = item.countNo * item.unitPrice * item.exchangeRate
+        item.orderNo = i + 1
       }
       let stockDelivery = {
         Type: sparePartsOperationType.delivery,
         Reason: this.reason.text,
         Warehouse: this.warehouse.text,
+        // StorageLocation: this.warehouse.text[1],
         Remark: this.remark.text,
         Picker: this.picker.text,
         DetailList: JSON.stringify(this.distributionList)

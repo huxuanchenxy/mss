@@ -29,6 +29,24 @@ const routes = [
           }
         ]
       }, {
+        path: 'storageLocation',
+        component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/storageLocation/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'storageLocation',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeStorageLocationList',
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/storageLocation/children/SeeStorageLocationList.vue')
+          }, {
+            path: 'add',
+            name: 'AddStorageLocation',
+            component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/storageLocation/children/AddStorageLocation.vue')
+          }
+        ]
+      }, {
         path: 'spareParts',
         component: () => import(/* webpackChunkName: "warehouseManager" */ '@/views/warehouseManager/spareParts/Index.vue'),
         children: [

@@ -121,7 +121,15 @@ namespace MSS.API.Model.Data
             /// <summary>
             /// 返修件接收入库
             /// </summary>
-            RepairReceive = 93
+            RepairReceive = 93,
+            /// <summary>
+            /// 存货移位
+            /// </summary>
+            MoveLocation = 171,
+            /// <summary>
+            /// 故障件移位
+            /// </summary>
+            TroubleMoveLocation =172
         }
         /// <summary>
         /// 库存操作改变

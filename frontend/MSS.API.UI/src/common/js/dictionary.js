@@ -74,7 +74,9 @@ export const sparePartsOperationDetailType = {
   troubleScrap: 87,
   inStockScrap: 88,
   lendReturn: 92,
-  repairReceive: 93
+  repairReceive: 93,
+  moveLocation: 171,
+  troubleMoveLocation: 172
 }
 
 export const orgType = {

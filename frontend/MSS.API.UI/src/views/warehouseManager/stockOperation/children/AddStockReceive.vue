@@ -65,7 +65,7 @@
             <div class="inp-wrap">
               <span class="text">仓库<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select :disabled="isShowPurchaseReturn" v-model="warehouse.text" filterable placeholder="请选择仓库" @change="validateSelect(warehouse)">
+                <el-select :disabled="isShowPurchaseReturn" v-model="warehouse.text" filterable placeholder="请选择仓库" @change="warehouseChange">
                 <el-option
                   v-for="item in warehouseList"
                   :key="item.key"
@@ -128,7 +128,7 @@
             <div class="inp-wrap">
               <span class="text">物资<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select ref="spareParts" v-model="spareParts.text" clearable filterable placeholder="请选择物资" @change="validateSelect(spareParts)">
+                <el-select ref="spareParts" v-model="spareParts.text" filterable placeholder="请选择物资" @change="validateSelect(spareParts)">
                 <el-option
                   v-for="item in sparePartsList"
                   :key="item.key"
@@ -160,18 +160,18 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">单价<em class="validate-mark">*</em></span>
+              <span class="text">金额<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input placeholder="请输入单价" v-model="unitPrice.text" @keyup.native="validateDouble2(unitPrice)"></el-input>
+                <el-input placeholder="请输入金额" v-model="amount.text" @keyup.native="validateDouble2(amount)"></el-input>
               </div>
             </div>
-            <p class="validate-tips">{{ unitPrice.tips }}</p>
+            <p class="validate-tips">{{ amount.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">币种<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select ref="currency" v-model="currency" placeholder="请选择币种">
+                <el-select ref="currency" v-model="currency" placeholder="请选择币种" filterable>
                   <el-option
                     v-for="item in currencyList"
                     :key="item.key"
@@ -190,6 +190,22 @@
               </div>
             </div>
             <p class="validate-tips">{{ exchangeRate.tips }}</p>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">库位<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-select ref="storageLocation" v-model="storageLocation.text" placeholder="请选择库位" filterable @change="validateSelect(storageLocation)">
+                  <el-option
+                    v-for="item in storageLocationList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ storageLocation.tips }}</p>
           </li>
           <li class="list">
             <div class="inp-wrap">
@@ -260,6 +276,7 @@
             <li class="list name">币种</li>
             <li class="list name">汇率</li>
             <li class="list name">本币总金额</li>
+            <li class="list name">库位</li>
             <li class="list name">发票号</li>
             <li class="list name">供应商</li>
             <li class="list name">保质期</li>
@@ -282,6 +299,7 @@
                     <div class="name word-break">{{ item.currencyName }}</div>
                     <div class="name word-break">{{ item.exchangeRate }}</div>
                     <div class="name word-break">{{ item.totalAmount }}</div>
+                    <div class="name word-break">{{ item.storageLocationName }}</div>
                     <div class="name word-break">{{ item.invoice }}</div>
                     <div class="name word-break">{{ item.supplierName }}</div>
                     <div class="name word-break">{{ item.lifeDate }}</div>
@@ -297,7 +315,7 @@
           <ul class="content-header">
             <li class="list name">物资ID</li>
             <li class="list name">接收物资</li>
-            <li class="list name">所在仓库</li>
+            <li class="list name">库位</li>
             <li class="list name">供应商</li>
             <li class="list name">接收数量</li>
             <li class="list name">存货数量</li>
@@ -315,7 +333,7 @@
                   <div class="list-content">
                     <div class="name">{{ item.entity}}</div>
                     <div class="name">{{ item.sparePartsName}}</div>
-                    <div class="name">{{ item.warehouseName}}</div>
+                    <div class="name word-break">{{ item.storageLocationName }}</div>
                     <div class="name">{{ item.supplierName}}</div>
                     <div class="name">{{ item.acceptNo }}</div>
                     <div class="name">{{ item.inStockNo }}</div>
@@ -381,6 +399,8 @@ export default {
       picker: {text: '', tips: ''},
       warehouseList: [],
       warehouse: {text: '', tips: ''},
+      storageLocationList: [],
+      storageLocation: {text: '', tips: ''},
       agreement: {text: '', tips: ''},
       deptList: [],
       deptPath: {text: [], tips: ''},
@@ -395,7 +415,7 @@ export default {
       sparePartsList: '',
       entity: {text: '', tips: ''},
       countNo: {text: '', tips: ''},
-      unitPrice: {text: '', tips: ''},
+      amount: {text: '', tips: ''},
       currency: {text: '', tips: ''},
       exchangeRate: {text: 1, tips: ''},
       invoice: {text: '', tips: ''},
@@ -437,6 +457,15 @@ export default {
     }).catch(err => console.log(err))
   },
   methods: {
+    warehouseChange () {
+      if (this.warehouse.text !== '') {
+        // 库位加载
+        api.getStorageLocationByWarehouse(this.warehouse.text).then(res => {
+          this.storageLocationList = res.data
+        }).catch(err => console.log(err))
+        this.detailList = []
+      }
+    },
     reasonChange () {
       this.reason.tips = ''
       if (this.reason.text === sparePartsOperationDetailType.purchaseReturn) {
@@ -453,7 +482,11 @@ export default {
         this.isShowPurchase = false
       }
       this.detailList = []
+      this.warehouse.text = ''
+      this.deptPath.text = []
       this.stockOperation = ''
+      this.budgetItems.text = ''
+      this.remark.text = ''
     },
     getStockOperationSelect () {
       // 采购接收流水号下拉
@@ -503,8 +536,9 @@ export default {
       }
     },
     insert () {
-      if (!this.validateSelect(this.spareParts) || !this.validateNumber(this.countNo) || !this.validateDouble2(this.unitPrice) ||
-        !this.validateDouble4(this.exchangeRate) || !this.validateInputNull(this.invoice) || !this.validateInputNull(this.remarkAdd)) {
+      if (!this.validateSelect(this.spareParts) || !this.validateNumber(this.countNo) || !this.validateDouble2(this.amount) ||
+        !this.validateDouble4(this.exchangeRate) || !this.validateSelect(this.storageLocation) || !this.validateInputNull(this.invoice) ||
+        !this.validateInputNull(this.remarkAdd)) {
         this.$message({
           message: '验证失败，请查看提示信息',
           type: 'error'
@@ -530,23 +564,24 @@ export default {
         })
         return
       }
-      let tmp = (this.countNo.text * this.unitPrice.text * 1).toFixed(2)
       let detail = {
         entity: this.entity.text,
         spareParts: this.spareParts.text,
         sparePartsName: this.$refs.spareParts.selected.label,
         countNo: this.countNo.text,
-        unitPrice: (this.unitPrice.text * 1).toFixed(2),
-        amount: tmp,
+        unitPrice: (this.amount.text / this.countNo.text * 1).toFixed(2),
+        amount: (this.amount.text * 1).toFixed(2),
         currency: this.currency,
         currencyName: this.$refs.currency.selected.label,
         exchangeRate: this.exchangeRate.text,
-        totalAmount: (this.exchangeRate.text * tmp).toFixed(2),
+        totalAmount: (this.exchangeRate.text * this.amount.text * 1).toFixed(2),
         invoice: this.invoice.text,
         lifeDate: this.lifeDate,
         supplier: this.supplier.text,
         supplierName: this.$refs.supplier.selected.label,
         remark: this.remarkAdd.text,
+        storageLocation: this.storageLocation.text,
+        storageLocationName: this.$refs.storageLocation.selected.label,
         // 以下两个字段在这里无用，只是为了不让采购退货中的toFixed(2)函数报错
         acceptUnitPrice: 1,
         inStockNo: 1
@@ -566,8 +601,15 @@ export default {
       this.title = '| 物资接收过账'
     },
     add () {
-      this.isAdd = true
-      this.title = '| 物资接收过账 | 添加物资明细'
+      if (this.warehouse.text !== '') {
+        this.isAdd = true
+        this.title = '| 物资接收过账 | 添加物资明细'
+      } else {
+        this.$message({
+          message: '请选择仓库',
+          type: 'warning'
+        })
+      }
     },
     remove () {
       this.editID.reverse().map(val => {
@@ -598,11 +640,14 @@ export default {
         this.entity.text = editObj.entity
         this.spareParts.text = editObj.spareParts
         this.countNo.text = editObj.countNo
-        this.unitPrice.text = editObj.unitPrice
+        this.amount.text = editObj.amount
         this.currency = editObj.currency
         this.exchangeRate.text = editObj.exchangeRate
+        this.storageLocation.text = editObj.storageLocation
         this.invoice.text = editObj.invoice
         this.remarkAdd.text = editObj.remark
+        this.supplier.text = editObj.supplier
+        this.lifeDate = editObj.lifeDate
       }
     },
     checkChange () {
@@ -704,7 +749,7 @@ export default {
       }
     },
     validateInputAll () {
-      if (!this.validateSelect(this.reason) || !this.validateSelect(this.warehouse) ||
+      if (!this.validateSelect(this.reason) || !this.validateSelect(this.picker) || !this.validateSelect(this.warehouse) ||
         !this.validateInputNull(this.agreement) || !this.validateInputNull(this.budgetItems) || !this.validateInputNull(this.remark)) {
         return false
       }
@@ -727,6 +772,12 @@ export default {
           })
           return
         }
+      } else if (!this.validateSelect(this.picker)) {
+        this.$message({
+          message: '验证失败，请查看提示信息',
+          type: 'error'
+        })
+        return
       }
       let stockReceive = {
         Type: sparePartsOperationType.receive,
@@ -753,10 +804,12 @@ export default {
               stockDetail: val.id,
               spareParts: val.spareParts,
               countNo: val.editNo,
-              unitPrice: val.acceptUnitPrice,
-              amount: (val.acceptUnitPrice * val.editNo * val.exchangeRate).toFixed(2),
+              unitPrice: (val.acceptUnitPrice).toFixed(2),
+              amount: (val.acceptUnitPrice * val.editNo).toFixed(2),
+              storageLocation: val.storageLocation,
               remark: val.remark,
-              fromStockOperationDetail: val.fromStockOperationDetail
+              fromStockOperationDetail: val.fromStockOperationDetail,
+              fromStorageLocation: val.storageLocation
             }
             tmp.push(obj)
           }

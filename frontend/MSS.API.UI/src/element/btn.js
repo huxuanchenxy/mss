@@ -123,5 +123,10 @@ export const btn = {
     save: 137,
     delete: 138,
     update: 139
+  },
+  storageLocation: {
+    save: 141,
+    delete: 142,
+    update: 143
   }
 }

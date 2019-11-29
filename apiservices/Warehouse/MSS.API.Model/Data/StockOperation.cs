@@ -98,12 +98,13 @@ namespace MSS.API.Model.Data
         public List<StockOperationDetail> stockOperationDetailsUpdate { get; set; }
         public List<Stock> stocks { get; set; }
         public List<StockDetail> stockDetails { get; set; }
-        public bool isAddStockDetails { get; set; }
+        public List<StockDetail> stockDetailsUpdate { get; set; }
+        //public bool isAddStockDetails { get; set; }
         public List<StockSum> stockSums { get; set; }
         /// <summary>
         /// 移库专用
         /// </summary>
-        public List<StockDetail> stockDetailsAdd { get; set; }
+        //public List<StockDetail> stockDetailsAdd { get; set; }
         /// <summary>
         /// 仓库预警历史
         /// </summary>
@@ -116,11 +117,16 @@ namespace MSS.API.Model.Data
     {
         public int ID { get; set; }
         public string Entity { get; set; }
+        public int InStockNo { get; set; }
         public int SpareParts { get; set; }
         public string SparePartsName { get; set; }
         public string SparePartsModel { get; set; }
         public string SparePartsUnit { get; set; }
         public int Warehouse { get; set; }
+        public int StorageLocation { get; set; }
+        public string StorageLocationName { get; set; }
+        public int? FromStorageLocation { get; set; }
+        public string FromStorageLocationName { get; set; }
         public int OrderNo { get; set; }
         public int CountNo { get; set; }
         public double UnitPrice { get; set; }
@@ -175,10 +181,15 @@ namespace MSS.API.Model.Data
         public StockOperationDetailMap()
         {
             Map(o => o.Entity).ToColumn("entity");
+            Map(o => o.InStockNo).ToColumn("in_stock_no");
             Map(o => o.SpareParts).ToColumn("spare_parts");
             Map(o => o.SparePartsName).ToColumn("name");
             Map(o => o.SparePartsModel).ToColumn("model");
             Map(o => o.SparePartsUnit).ToColumn("unit");
+            Map(o => o.StorageLocation).ToColumn("storage_location");
+            Map(o => o.StorageLocationName).ToColumn("slname");
+            Map(o => o.FromStorageLocation).ToColumn("from_storage_location");
+            Map(o => o.FromStorageLocationName).ToColumn("fslname");
 
             Map(o => o.OrderNo).ToColumn("order_no");
             Map(o => o.CountNo).ToColumn("count_no");
@@ -222,6 +233,8 @@ namespace MSS.API.Model.Data
         public double Amount { get; set; }
         public int Warehouse { get; set; }
         public string WarehouseName { get; set; }
+        public int StorageLocation { get; set; }
+        public string StorageLocationName { get; set; }
         public bool IsAdd { get; set; }
         public int IsAlarm { get; set; }
         public int EditNo { get; set; }
@@ -243,6 +256,8 @@ namespace MSS.API.Model.Data
             Map(o => o.Amount).ToColumn("amount");
             Map(o => o.Warehouse).ToColumn("warehouse");
             Map(o => o.WarehouseName).ToColumn("name");
+            Map(o => o.StorageLocation).ToColumn("storage_location");
+            Map(o => o.StorageLocationName).ToColumn("slname");
             Map(o => o.EditNo).ToColumn("editNo");
             Map(o => o.IsAlarm).ToColumn("is_alarm");
         }
@@ -254,6 +269,7 @@ namespace MSS.API.Model.Data
     {
         public int ID { get; set; }
         public string Entity { get; set; }
+        public int IsBatch { get; set; }
         public int SpareParts { get; set; }
         public string SparePartsName { get; set; }
         public string Model { get; set; }
@@ -270,6 +286,8 @@ namespace MSS.API.Model.Data
         public string StatusName { get; set; }
         public int Warehouse { get; set; }
         public string WarehouseName { get; set; }
+        public int StorageLocation { get; set; }
+        public string StorageLocationName { get; set; }
         /// <summary>
         /// 接收数量
         /// </summary>
@@ -325,6 +343,7 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.SpareParts).ToColumn("spare_parts");
             Map(o => o.SparePartsName).ToColumn("spname");
+            Map(o => o.IsBatch).ToColumn("is_batch");
             Map(o => o.Model).ToColumn("model");
             Map(o => o.StockOperationDetail).ToColumn("stock_operation_detail"); 
             Map(o => o.FromStockOperationDetail).ToColumn("fsod"); 
@@ -339,6 +358,8 @@ namespace MSS.API.Model.Data
             Map(o => o.StatusName).ToColumn("statusName");
             Map(o => o.Warehouse).ToColumn("warehouse");
             Map(o => o.WarehouseName).ToColumn("name");
+            Map(o => o.StorageLocation).ToColumn("storage_location");
+            Map(o => o.StorageLocationName).ToColumn("slname");
             Map(o => o.SupplierName).ToColumn("sname");
             Map(o => o.AcceptDate).ToColumn("created_time");
             Map(o => o.AcceptNo).ToColumn("count_no");
