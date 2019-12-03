@@ -108,16 +108,17 @@ export const btn = {
   },
   myRepair: {
     assign: 129,
-    wait: 130,
     reject: 132
   },
   myProcessing: {
     work: 134,
+    delayed: 130,
     reassign: 131,
     reject: 135
   },
   myCheck: {
-    pass: 136
+    pass: 136,
+    reject: 147
   },
   line: {
     save: 137,
@@ -128,5 +129,9 @@ export const btn = {
     save: 141,
     delete: 142,
     update: 143
+  },
+  myPreCheck: {
+    pass: 148,
+    reject: 149
   }
 }

@@ -784,6 +784,11 @@ namespace MSS.API.Core.V1.Business
                         if (orgs.ContainsKey(topNode.ID))
                         {
                             orgs[topNode.ID].UserIDs.Add(user.UserID);
+                            UserCombo uc = new UserCombo() {
+                                ID=user.UserID,
+                                UserName=user.UserName
+                            };
+                            orgs[topNode.ID].Users.Add(uc);
                         }
                         else
                         {
@@ -791,6 +796,13 @@ namespace MSS.API.Core.V1.Business
                             org.ID = topNode.ID;
                             org.UserIDs = new List<int>();
                             org.UserIDs.Add(user.UserID);
+                            org.Users = new List<UserCombo>();
+                            UserCombo uc = new UserCombo()
+                            {
+                                ID = user.UserID,
+                                UserName = user.UserName
+                            };
+                            org.Users.Add(uc);
                             orgs.Add(org.ID, org);
                         }
                     }

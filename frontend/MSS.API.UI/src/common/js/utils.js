@@ -210,6 +210,17 @@ export const getNowFormatDate = (date = new Date()) => {
   return currentdate
 }
 
+export const getNowFormatDateTime = (date = new Date()) => {
+  let year = date.getFullYear()
+  let month = String(date.getMonth() + 1).padStart(2, '0')
+  let strDate = String(date.getDate()).padStart(2, '0')
+  let hour = String(date.getHours()).padStart(2, '0')
+  let min = String(date.getMinutes()).padStart(2, '0')
+  let sec = String(date.getSeconds()).padStart(2, '0')
+  var currentdatetime = year + '-' + month + '-' + strDate + ' ' + hour + ':' + min + ':' + sec
+  return currentdatetime
+}
+
 export const getCascaderObj = (val, opt) => {
   for (let i = 0; i < opt.length; ++i) {
     let item = opt[i]
@@ -233,5 +244,6 @@ export const keyRole = {
 export const troubleMenu = {
   myRepair: 1,
   myProcessing: 2,
-  myCheck: 3
+  myPreCheck: 3,
+  myCheck: 4
 }

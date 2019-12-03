@@ -59,6 +59,7 @@ namespace MSS.API.Model.Data
         NewTrouble=48,
         Processing=49,
         Repaired=50,
+        PendingApproval = 89,
         Delayed=133,
         Finished=134,
         Canceled=135
@@ -75,7 +76,10 @@ namespace MSS.API.Model.Data
         Pass = 147,
         Unpass = 148,
         AssignReject = 149,
-        UpdateTrouble=150
+        UpdateTrouble=150,
+        Dealed=173,
+        PrePass=174,
+        UnPrePass=175
     }
 
     /// <summary>
@@ -85,7 +89,8 @@ namespace MSS.API.Model.Data
     {
         MyRepair = 1,
         MyProcessing = 2,
-        MyCheck = 3
+        MyPreCheck = 3,
+        MyCheck = 4
     }
     /// <summary>
     /// 员工考勤依据所需的状态，目前只做接口

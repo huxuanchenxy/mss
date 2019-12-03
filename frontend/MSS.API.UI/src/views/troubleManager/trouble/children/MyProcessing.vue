@@ -39,7 +39,8 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="operation('work')" :disabled="btn.work"><x-button>施工申请</x-button></li>
+        <li class="list" @click="operation('work')" :disabled="btn.add"><x-button>处理报告</x-button></li>
+        <li class="list" @click="operation('wait')" :disabled="btn.wait"><x-button>延迟处理</x-button></li>
         <li class="list" @click="operation('reassign')" :disabled="btn.reassign" v-show="false"><x-button>重新分配</x-button></li>
         <li class="list" @click="operation('detail')" ><x-button>查看明细</x-button></li>
         <li class="list" :disabled="btn.reject">
@@ -136,6 +137,7 @@ export default {
     return {
       btn: {
         work: false,
+        delayed: false,
         reassign: false,
         reject: false
       },
@@ -176,9 +178,12 @@ export default {
       this.btn.work = !actions.some((item, index) => {
         return item.actionID === btn.myProcessing.work
       })
-      this.btn.reassign = !actions.some((item, index) => {
-        return item.actionID === btn.myProcessing.reassign
+      this.btn.delayed = !actions.some((item, index) => {
+        return item.actionID === btn.myProcessing.delayed
       })
+      // this.btn.reassign = !actions.some((item, index) => {
+      //   return item.actionID === btn.myProcessing.reassign
+      // })
       this.btn.reject = !actions.some((item, index) => {
         return item.actionID === btn.myProcessing.reject
       })
@@ -200,21 +205,24 @@ export default {
         let content = 'null'
         let arr = this.editTroubleID.split(',')
         switch (type) {
-          case 'reassign':
-            this.$router.push({
-              name: 'AssignEqp',
-              params: {
-                id: arr[0],
-                code: arr[1],
-                repairCompany: this.topOrg,
-                sourceName: 'MyProcessing'
-              }
-            })
+          // case 'reassign':
+          //   this.$router.push({
+          //     name: 'AssignEqp',
+          //     params: {
+          //       id: arr[0],
+          //       code: arr[1],
+          //       repairCompany: this.topOrg,
+          //       sourceName: 'MyProcessing'
+          //     }
+          //   })
+          //   break
+          case 'wait':
+            operation = troubleOperation.delayed
             break
           case 'work':
             this.$router.push({
-              name: 'AddConstructionPlan',
-              query: {
+              name: 'DealTrouble',
+              params: {
                 type: 'Add',
                 troubleID: arr[0],
                 code: arr[1],

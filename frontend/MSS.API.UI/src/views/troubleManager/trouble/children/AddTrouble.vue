@@ -206,7 +206,7 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, getNowFormatDateTime } from '@/common/js/utils.js'
 import { systemResource, orgType, dictionary } from '@/common/js/dictionary.js'
 import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
@@ -266,7 +266,7 @@ export default {
       this.areaList = res.data.dicAreaList
       this.init()
     }).catch(err => console.log(err))
-    apiOrg.ListNodeByNodeType(orgType.company).then(res => {
+    apiOrg.listNodeByNodeType(orgType.company).then(res => {
       this.repairCompanyList = res.data
     }).catch(err => console.log(err))
     // apiAuth.getUserAll().then(res => {
@@ -284,7 +284,7 @@ export default {
   },
   methods: {
     report_change (val) {
-      apiOrg.ListUserByNode(val[val.length - 1]).then(res => {
+      apiOrg.listUserByNode(val[val.length - 1]).then(res => {
         this.reportByList = res.data
       }).catch(err => console.log(err))
     },
@@ -378,11 +378,14 @@ export default {
           this.areaEndList = res.data
         }).catch(err => console.log(err))
         this.areaStart.tips = ''
-        return true
+        // return true
+      }
+      if (this.repairCompany.text !== '') {
+        this.repair_change(this.repairCompany.text)
       }
     },
     init () {
-      this.happeningTime.text = new Date()
+      this.happeningTime.text = getNowFormatDateTime()
       this.reportedTime.text = this.happeningTime.text
       this.initCardList()
       if (this.$route.params.type !== 'Add') {
@@ -433,14 +436,13 @@ export default {
       }
     },
     validateInput () {
-      if (this.repairDesc.length > 500) {
+      if (this.repairDesc.text.length > 500) {
         this.repairDesc.text = '报修故障描述必须在500字以内'
         return false
       }
       return validateInputCommon(this.repairDesc)
     },
     validateInputAll () {
-      console.log(this.cardList)
       if (this.happeningTime.text === null) { this.msg('发生时间必选'); return false } else
       if (this.reportedTime.text === null) { this.msg('报修时间必选'); return false } else
       if (this.areaStart.text.length === 0) { this.msg('起点站区/区域必选'); return false } else
@@ -765,7 +767,7 @@ export default {
   text-indent: 9.5%
 }
 .datetime-width{
-  width: 93%;
+  width: 93%!important;
 }
 /deep/
 .el-tag--small{

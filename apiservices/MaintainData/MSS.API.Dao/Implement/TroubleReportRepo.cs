@@ -76,25 +76,33 @@ namespace MSS.API.Dao.Implement
                 }
                 else if (parm.MenuView==TroubleView.MyRepair)
                 {
-                    whereSql.Append(" and (tr.status = " + (int)TroubleStatus.NewTrouble)
-                        .Append(" or tr.status = " + (int)TroubleStatus.Delayed+")")
+                    whereSql.Append(" and tr.status = " + (int)TroubleStatus.NewTrouble)
+                        //.Append(" or tr.status = " + (int)TroubleStatus.Delayed+") ")
                         .Append(" and tr.last_operation != " + (int)TroubleOperation.RepairReject);
                 }
                 else if (parm.MenuView == TroubleView.MyProcessing)
                 {
-                    whereSql.Append(" and tr.status = " + (int)TroubleStatus.Processing );
+                    whereSql.Append(" and (tr.status = " + (int)TroubleStatus.Processing )
+                    .Append(" or tr.status = " + (int)TroubleStatus.Delayed + ") ");
                     if (parm.OrgNode >0)
                     {
-                        whereSql.Append(" and tr.id in (select trouble from trouble_eqp where org_node=" + parm.OrgNode + ")");
+                        whereSql.Append(" and tr.id in (select distinct trouble from trouble_eqp where org_node=" + parm.OrgNode + ") ");
                     }
+                }
+                else if (parm.MenuView == TroubleView.MyPreCheck)
+                {
+                    whereSql.Append(" and (tr.status = " + (int)TroubleStatus.Repaired)
+                    .Append(" or tr.status = " + (int)TroubleStatus.Delayed)
+                    .Append(" or (tr.status = " + (int)TroubleStatus.PendingApproval)
+                    .Append(" && tr.last_operation = " + (int)TroubleOperation.Unpass+")) ");
                 }
                 else if (parm.MenuView == TroubleView.MyCheck)
                 {
-                    whereSql.Append(" and tr.status = " + (int)TroubleStatus.Repaired);
+                    whereSql.Append(" and tr.status = " + (int)TroubleStatus.PendingApproval);
                 }
                 if (parm.RepairCompany>0 && parm.MenuView != TroubleView.MyProcessing)
                 {
-                    whereSql.Append(" and tr.id in (select trouble from trouble_eqp where org=" + parm.RepairCompany+")");
+                    whereSql.Append(" and tr.id in (select distinct trouble from trouble_eqp where org=" + parm.RepairCompany+") ");
                 }
                 ret.RepairCompany = parm.RepairCompany;
                 if (parm.StartTime != null)
@@ -106,7 +114,7 @@ namespace MSS.API.Dao.Implement
                     whereSql.Append(" and tr.happening_time <= '" + parm.EndTime + "' ");
                 }
                 sql.Append(whereSql).Append(" order by tr." + parm.sort + " " + parm.order)
-                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows); ;
+                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 var tmp = await c.QueryAsync<TroubleReport>(sql.ToString());
                 if (tmp.Count() > 0)
                 {
@@ -125,7 +133,7 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation)
+        public async Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation,string unpassReason="")
         {
             return await WithConnection(async c =>
             {
@@ -135,9 +143,17 @@ namespace MSS.API.Dao.Implement
                 {
                     sql += ",accepted_time=@time ";
                 }
+                if (status == TroubleStatus.PendingApproval && operation == TroubleOperation.Unpass)
+                {
+                    sql += ",is_sure=2,sure_by=@userID,sure_time=@time,unpass_reason=@reason ";
+                }
+                else if (status == TroubleStatus.Finished && operation == TroubleOperation.Pass)
+                {
+                    sql += ",is_sure=1,sure_by=@userID,sure_time=@time ";
+                }
                 sql += " where id in @ids";
                 int ret = await c.ExecuteAsync(sql,
-                    new { ids, userID, time = DateTime.Now, status, operation });
+                    new { ids, userID, time = DateTime.Now, status, operation,reason= unpassReason });
                 return ret;
             });
         }
@@ -238,17 +254,33 @@ namespace MSS.API.Dao.Implement
                         sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
                         ret = await c.ExecuteAsync(sql, objs, trans);
                     }
+
+                    sql = " insert into trouble_deal " +
+                        " values (0,@Trouble,@OrgTop,@DealBy,@ArrivedTime,@FinishedTime,@Process,@SparePartsReplace, " +
+                        " @RepairEvaluation,@RepairReason,@IsSure,@UnpassReason,@SureBy,@SureTime," +
+                        " @CreatedBy,@CreatedTime,@UpdateBy,@UpdateTime)";
+                    //以后需要改成子状态，显示的时候也多个子状态一起显示
+                    //TroubleDeal troubleDeal = new TroubleDeal();
+                    //foreach (var item in eqps.Select(a=>a.Org).Distinct())
+                    //{
+                    //    troubleDeal.Trouble = newid;
+                    //    troubleDeal.OrgTop = item;
+
+                    //}
+                    //await c.QueryFirstOrDefaultAsync<int>(sql, troubleDeal);
+
                     sql = "insert into trouble_history " +
-                    " values (0,@trouble,@operation,@content,@user,@time)";
+                    " values (0,@trouble,@OrgTop,@operation,@content,@user,@time)";
                     object myObj = new
                     {
                         trouble = newid,
+                        OrgTop=0,
                         operation = TroubleOperation.NewTrouble,
                         content = troubleReport.Code,
                         user = troubleReport.CreatedBy,
                         time=troubleReport.CreatedTime
                     };
-                    await c.QueryFirstOrDefaultAsync<int>(sql, myObj, trans);
+                    ret = await c.ExecuteAsync(sql, myObj, trans);
                     trans.Commit();
 
                     return troubleReport;
@@ -372,6 +404,52 @@ namespace MSS.API.Dao.Implement
                 return await c.ExecuteAsync(sql, troubleEqp);
             });
         }
+        /// <summary>
+        /// 故障报给了哪几个单位
+        /// </summary>
+        /// <param name="trouble"></param>
+        /// <returns></returns>
+        public async Task<List<int>> ListOrgTopByTrouble(int trouble)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select distinct a.org from trouble_eqp a " +
+                " where a.trouble=" + trouble;
+                var ret = await c.QueryAsync<int>(sql);
+                if (ret.Count() > 0)
+                {
+                    return ret.ToList();
+                }
+                else
+                {
+                    return new List<int>();
+                }
+            });
+        }
+        /// <summary>
+        /// 故障接报的这些单位最后的操作记录
+        /// </summary>
+        /// <param name="trouble"></param>
+        /// <returns></returns>
+        public async Task<List<TroubleHistory>> ListOperationByTroubles(IEnumerable<int> trouble)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select operation,org_top from trouble_history where org_top IN " +
+                "(select MAX(org_top) from trouble_history where org_top in @trouble " +
+                " GROUP BY org_top)";
+                var ret = await c.QueryAsync<TroubleHistory>(sql,new { trouble});
+                if (ret.Count() > 0)
+                {
+                    return ret.ToList();
+                }
+                else
+                {
+                    return new List<TroubleHistory>();
+                }
+            });
+        }
+
         #endregion
 
         #region history
@@ -380,7 +458,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = "insert into trouble_history " +
-                    " values (0,@Trouble,@Operation,@Content,@CreatedBy,@CreatedTime)";
+                    " values (0,@Trouble,@OrgTop,@Operation,@Content,@CreatedBy,@CreatedTime)";
                 return await c.ExecuteAsync(sql, troubleHistory);
             });
         }
@@ -390,7 +468,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = "insert into trouble_history " +
-                    " values (0,@Trouble,@Operation,@Content,@CreatedBy,@CreatedTime)";
+                    " values (0,@Trouble,@OrgTop,@Operation,@Content,@CreatedBy,@CreatedTime)";
                 return await c.ExecuteAsync(sql, troubleHistory);
             });
         }
@@ -398,9 +476,10 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "SELECT th.*,tr.code,dt.name,u.user_name from trouble_history th " +
+                string sql = "SELECT th.*,tr.code,dt.name,u.user_name,ot.name as otname from trouble_history th " +
                     " LEFT JOIN trouble_report tr on tr.id=th.trouble " +
                     " LEFT JOIN dictionary_tree dt on dt.id=th.operation " +
+                    " LEFT JOIN org_tree ot on ot.id=th.org_top " +
                     " LEFT JOIN user u on u.id = th.created_by where th.trouble=@id";
                 var tmp= await c.QueryAsync<TroubleHistory>(sql, new { id });
                 if (tmp.Count()>0)
@@ -413,6 +492,65 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
+        #endregion
+
+        #region trouble_deal
+        public async Task<TroubleDeal> SaveDeal(TroubleDeal troubleDeal)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " insert into trouble_deal " +
+                        " values (0,@Trouble,@OrgTop,@DealBy,@ArrivedTime,@FinishedTime,@Process,@SparePartsReplace, " +
+                        " @RepairEvaluation,@RepairReason,@IsSure,@UnpassReason,@SureBy,@SureTime," +
+                        " @CreatedBy,@CreatedTime,@UpdateBy,@UpdateTime); ";
+                sql += "SELECT LAST_INSERT_ID()";
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, troubleDeal);
+                troubleDeal.ID = newid;
+                return troubleDeal;
+            });
+        }
+
+        public async Task<int> UpdateDeal(TroubleDeal troubleDeal)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " update trouble_deal " +
+                        " set org_top=@OrgTop,deal_by=@DealBy,arrived_time=@ArrivedTime," +
+                        " finished_time=@FinishedTime,process=@Process,spareparts_replace=@SparePartsReplace, " +
+                        " repair_evaluation=@RepairEvaluation,repair_reason=@RepairReason," +
+                        " update_by=@UpdateBy,update_time=@UpdateTime ";
+                return await c.ExecuteAsync(sql, troubleDeal);
+            });
+        }
+
+        public async Task<List<TroubleDeal>> ListDealByTrouble(int trouble, int topOrg = 0)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select a.*,ot.name,u1.user_name,u2.user_name as dname,u3.user_name as uname, " +
+                " u4.user_name as sname from trouble_deal a " +
+                " left join org_tree ot on ot.id=a.org_top "+
+                " left join user u1 on u1.id=a.created_by " +
+                " left join user u2 on u2.id=a.deal_by " +
+                " left join user u3 on u2.id=a.update_by " +
+                " left join user u4 on u3.id=a.sure_by " +
+                " where a.trouble=" + trouble;
+                if (topOrg > 0)
+                {
+                    sql += " and a.org_top=" + topOrg;
+                }
+                var ret = await c.QueryAsync<TroubleDeal>(sql);
+                if (ret.Count() > 0)
+                {
+                    return ret.ToList();
+                }
+                else
+                {
+                    return new List<TroubleDeal>();
+                }
+            });
+        }
+
         #endregion
     }
 }         
