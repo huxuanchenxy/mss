@@ -66,7 +66,11 @@ namespace MSS.API.Core
                 });
                 // options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "API", Version = "v1" });
 
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -80,6 +84,13 @@ namespace MSS.API.Core
             app.UseAuthentication();
             // app.UseCors(AllowSpecificOrigins);
             app.RegisterConsul(lifetime, consulService);
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
+            });
             app.UseCors();
             app.UseMvc();
         }
