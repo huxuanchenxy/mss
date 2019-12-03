@@ -30,8 +30,8 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                parm.StockOperationType = 68;
-                parm.SparePartsType = 60;
+                parm.StockOperationType = 68;//物资接收
+                parm.SparePartsType = 60;//耗材
                 var data = await _repo.GetByParm(parm);
                 ret.code = Code.Success;
                 ret.data = data;

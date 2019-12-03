@@ -13,28 +13,18 @@
         <div class="content con-padding-horizontal">
           <div class="top-input-group" ref="middleTopInput">
             <div class="list" >
-              <span class="lable">公司</span>
-              <el-select v-model="company" multiple collapse-tags  clearable filterable placeholder="请选择">
+              <span class="lable">名称</span>
+              <el-select v-model="stockname" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
-                  v-for="item in companyList"
+                  v-for="item in stocknameList"
                   :key="item.id"
                   :label="item.label"
                   :value="item.id">
                 </el-option>
               </el-select>
             </div>
-            <div class="list">
-              <span class="lable">负责班组</span>
-               <el-cascader class="cascader_width" clearable
-                    :props="defaultParams"
-                    change-on-select
-                    :show-all-levels="true"
-                    :options="teamList"
-                    v-model="teamPath.text">
-                  </el-cascader>
-            </div>
-            <!-- <div class="list" >
-              <span class="lable">设备类型</span>
+            <div class="list" >
+              <span class="lable">适用设备类型</span>
               <el-select v-model="eqpType" multiple collapse-tags  clearable filterable placeholder="请选择">
                 <el-option
                   v-for="item in eqpTypeList"
@@ -43,7 +33,7 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-            </div> -->
+            </div>
             <div class="list">
               <span class="lable">时间</span>
               <el-date-picker
@@ -53,8 +43,8 @@
                 :unlink-panels="true"
                 value-format="yyyy-MM-dd"
                 range-separator="至"
-                start-placeholder="计划开始日期"
-                end-placeholder="计划结束日期">
+                start-placeholder="统计开始日期"
+                end-placeholder="统计结束日期">
               </el-date-picker>
             </div>
             <div class="list">
@@ -146,17 +136,16 @@ import XButton from '@/components/button'
 import { dictionary, firmType } from '@/common/js/dictionary.js'
 // import { getNowFormatDate, ApiRESULT } from '@/common/js/utils.js'
 import { ApiRESULT } from '@/common/js/utils.js'
-// import api from '@/api/statisticsApi'
 import mychart from './chart'
 import apiAuth from '@/api/authApi'
 import apiEqp from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
 import resize from 'vue-resize-directive'
 import apiOrg from '@/api/orgApi'
-import apiplan from '@/api/workflowApi'
+import apiRpt from '@/api/statisticsApi'
 
 export default {
-  name: 'PlanChart',
+  name: 'StockOper',
   components: {
     XButton
   },
@@ -165,9 +154,12 @@ export default {
   },
   data () {
     return {
-      title: '| 计划报表',
+      title: '| 物资报表',
       subSystem: [],
       subSystemList: [],
+      subSystemID: [],
+      stockname: [],
+      stocknameList: [],
       eqpType: [],
       time: {
         text: '',
@@ -377,20 +369,7 @@ export default {
           this.loading_count = true
         }
       })
-      // api.reportAlarm(param).then(res => {
-      //   // this.loading = false
-      //   callbacks.forEach(item => {
-      //     if (item === this.drawCountChart) {
-      //       this.loading_count = false
-      //     }
-      //   })
-      //   if (res.code === ApiRESULT.Success) {
-      //     for (let callback of callbacks) {
-      //       callback(param, res.data, true)
-      //     }
-      //   }
-      // }).catch(err => console.log(err))
-      apiplan.getMonthChart(param).then(res => {
+      apiRpt.getStockOperChart(param).then(res => {
         // this.loading = false
         callbacks.forEach(item => {
           if (item === this.drawCountChart) {

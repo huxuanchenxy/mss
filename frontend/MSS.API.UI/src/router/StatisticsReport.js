@@ -49,6 +49,19 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/PlanChart/children/PlanChart.vue')
           }
         ]
+      }, {
+        path: 'stockChart',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/StockChart/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'stockChart'
+          }, {
+            path: 'stockChart',
+            name: 'StockOper',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/StockChart/children/StockOper.vue')
+          }
+        ]
       }
     ]
   }
