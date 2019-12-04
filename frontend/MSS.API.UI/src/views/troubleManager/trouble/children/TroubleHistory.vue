@@ -15,6 +15,7 @@
         <li class="list last-update-time">操作时间</li>
         <li class="list name">操作步骤</li>
         <li class="list last-maintainer">操作描述/驳回原因</li>
+        <li class="list name">操作公司</li>
         <li class="list name">操作人</li>
       </ul>
       <div class="scroll">
@@ -35,6 +36,7 @@
                 </el-popover>
                 </div>
                 <div class="last-maintainer color-white" v-show="item.content.length <= 40">{{item.content}}</div>
+                <div class="name">{{ item.orgTopName }}</div>
                 <div class="name">{{ item.createdByName }}</div>
               </div>
             </li>
@@ -87,7 +89,10 @@ export default {
     },
     back () {
       this.$router.push({
-        name: this.sourceName
+        name: this.sourceName,
+        params: {
+          id: this.troubleID
+        }
       })
     },
     // 搜索

@@ -75,6 +75,7 @@ namespace MSS.API.Model.Data
         public string UploadFiles { get; set; }
         //前端显示格式的json字符串
         public string RepairCompany { get; set; }
+        public List<TroubleDeal> TroubleDeals { get; set; }
     }
 
     /// <summary>
@@ -167,6 +168,8 @@ namespace MSS.API.Model.Data
         public int ID { get; set; }
         public int Trouble { get; set; }
         public string Code { get; set; }
+        public int OrgTop { get; set; }
+        public string OrgTopName { get; set; }
         public TroubleOperation Operation { get; set; }
         public string OperationName { get; set; }
         public string Content { get; set; }
@@ -179,10 +182,67 @@ namespace MSS.API.Model.Data
     {
         public TroubleHistoryMap()
         {
+            Map(o => o.OrgTop).ToColumn("org_top");
+            Map(o => o.OrgTopName).ToColumn("otname");
             Map(o => o.OperationName).ToColumn("name");
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedByName).ToColumn("user_name");
             Map(o => o.CreatedTime).ToColumn("created_time");
         }
     }
+
+    public class TroubleDeal
+    {
+        public int ID { get; set; }
+        public int Trouble { get; set; }
+        public int OrgTop { get; set; }
+        public string OrgTopName { get; set; }
+        public string Code { get; set; }
+        public int? DealBy { get; set; }
+        public string DealByName { get; set; }
+        public DateTime? ArrivedTime { get; set; }
+        public DateTime? FinishedTime { get; set; }
+        public string Process { get; set; }
+        public string SparePartsReplace { get; set; }
+        public string RepairEvaluation { get; set; }
+        public string RepairReason { get; set; }
+        public int IsSure { get; set; }
+        public string UnpassReason { get; set; }
+        public int? SureBy { get; set; }
+        public string SureByName { get; set; }
+        public DateTime? SureTime { get; set; }
+        public int CreatedBy { get; set; }
+        public string CreatedByName { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public int UpdateBy { get; set; }
+        public string UpdateByName { get; set; }
+        public DateTime UpdateTime { get; set; }
+    }
+
+    public class TroubleDealMap : EntityMap<TroubleDeal>
+    {
+        public TroubleDealMap()
+        {
+            Map(o => o.ArrivedTime).ToColumn("arrived_time");
+            Map(o => o.FinishedTime).ToColumn("finished_time");
+            Map(o => o.OrgTop).ToColumn("org_top");
+            Map(o => o.OrgTopName).ToColumn("name");
+            Map(o => o.DealBy).ToColumn("deal_by");
+            Map(o => o.DealByName).ToColumn("dname");
+            Map(o => o.SparePartsReplace).ToColumn("spareparts_replace");
+            Map(o => o.RepairEvaluation).ToColumn("repair_evaluation");
+            Map(o => o.RepairReason).ToColumn("repair_reason");
+            Map(o => o.IsSure).ToColumn("is_sure");
+            Map(o => o.UnpassReason).ToColumn("unpass_reason");
+            Map(o => o.SureBy).ToColumn("sure_by");
+            Map(o => o.SureByName).ToColumn("sname");
+            Map(o => o.CreatedBy).ToColumn("created_by");
+            Map(o => o.CreatedByName).ToColumn("user_name");
+            Map(o => o.CreatedTime).ToColumn("created_time");
+            Map(o => o.UpdateBy).ToColumn("update_by");
+            Map(o => o.UpdateByName).ToColumn("uname");
+            Map(o => o.UpdateTime).ToColumn("update_time");
+        }
+    }
+
 }

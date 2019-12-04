@@ -193,7 +193,6 @@ export default {
         switch (type) {
           case 'pass':
             operation = troubleOperation.pass
-            content = this.content
             break
           case 'detail':
             this.$router.push({

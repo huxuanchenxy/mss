@@ -39,17 +39,17 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="operation('assign')" :disabled="btn.assign"><x-button>调度分配</x-button></li>
+        <li class="list" @click="operation('pass')" :disabled="btn.pass"><x-button>审核通过</x-button></li>
         <li class="list" @click="operation('detail')" ><x-button>查看明细</x-button></li>
-        <li class="list" :disabled="btn.reject">
+        <li class="list" :disabled="btn.pass">
         <el-popover
             popper-class="my-pop"
             placement="bottom"
             width="260"
             v-model="popVisiable">
-            <el-input type="textarea" :rows="4" v-model="content" placeholder="请输入驳回原因(限100字以内且必填)"></el-input>
+            <el-input type="textarea" :rows="4" v-model="content" placeholder="请输入不驳回(限100字以内且必填)"></el-input>
             <div style="text-align: right;">
-                <el-button size="mini" type="text" @click="operation('reject')">驳回</el-button>
+                <el-button size="mini" type="text" @click="operation('unPass')">驳回</el-button>
             </div>
             <el-button class="btn1" slot="reference">驳回</el-button>
         </el-popover>
@@ -127,17 +127,16 @@ import { troubleOperation } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
 export default {
-  name: 'MyRepair',
+  name: 'MyPreCheck',
   components: {
     XButton
   },
   data () {
     return {
       btn: {
-        assign: false,
-        reject: false
+        pass: false
       },
-      title: ' | 我的接修',
+      title: ' | 我的预审核',
       popVisiable: false,
       desc: '',
       content: '',
@@ -171,11 +170,8 @@ export default {
     let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
-      this.btn.assign = !actions.some((item, index) => {
-        return item.actionID === btn.myRepair.assign
-      })
-      this.btn.reject = !actions.some((item, index) => {
-        return item.actionID === btn.myRepair.reject
+      this.btn.pass = !actions.some((item, index) => {
+        return item.actionID === btn.myPreCheck.pass
       })
     }
     this.init()
@@ -187,7 +183,7 @@ export default {
     operation (type) {
       if (this.editTroubleID === '') {
         this.$message({
-          message: '请选择需要操作的接修故障',
+          message: '请选择需要操作的报修故障',
           type: 'warning'
         })
       } else {
@@ -195,29 +191,21 @@ export default {
         let content = 'null'
         let arr = this.editTroubleID.split(',')
         switch (type) {
-          case 'assign':
-            this.$router.push({
-              name: 'AssignEqp',
-              params: {
-                id: arr[0],
-                code: arr[1],
-                repairCompany: this.topOrg,
-                sourceName: 'MyRepair'
-              }
-            })
+          case 'pass':
+            operation = troubleOperation.prepass
             break
           case 'detail':
             this.$router.push({
               name: 'DetailTroubleReport',
               params: {
                 id: arr[0],
-                sourceName: 'MyRepair'
+                sourceName: 'MyPreCheck'
               }
             })
             break
-          case 'reject':
+          case 'unPass':
             if (this.validateInput()) {
-              operation = troubleOperation.repairReject
+              operation = troubleOperation.unprepass
               content = this.content
               break
             } else {
@@ -229,12 +217,13 @@ export default {
               params: {
                 id: arr[0],
                 code: arr[1],
-                sourceName: 'MyRepair'
+                sourceName: 'MyPreCheck'
               }
             })
             break
         }
         if (operation !== '') {
+          console.log(content)
           api.Operation(arr[0], operation, content).then(res => {
             if (res.code === 0) {
               this.$message({
@@ -242,7 +231,6 @@ export default {
                 type: 'success'
               })
               this.popVisiable = false
-              this.editTroubleID = ''
               this.currentPage = 1
               this.searchResult(1)
             } else {
@@ -295,7 +283,7 @@ export default {
         TroubleReportDesc: this.desc,
         StartTime: st,
         EndTime: et,
-        MenuView: troubleMenu.myRepair
+        MenuView: troubleMenu.myPreCheck
       }
       api.getTroubleReportPage(parm).then(res => {
         this.loading = false

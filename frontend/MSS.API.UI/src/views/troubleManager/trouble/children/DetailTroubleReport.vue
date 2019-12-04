@@ -97,6 +97,102 @@
         <div class="con-padding-horizontal upload-list">
           <upload-pdf :systemResource="systemResource" :fileIDs="troubleReport.fileIDs" :readOnly="true"></upload-pdf>
         </div>
+        <div v-show="isShowDeals">
+        <div class="con-padding-horizontal header"/>
+        <big><center>故障处理结果</center></big>
+        <div  class="content-wrap">
+          <el-tabs class="tab-height" >
+            <el-tab-pane class="pane-height pane-notification" :label="tab.orgTopName" :name="index+''" v-for="(tab, index) in troubleReport.troubleDeals" :key="tab.key">
+              <!-- 内容 -->
+              <ul class="con-padding-horizontal input-group">
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">处理人</span>
+                    <div class="inp">{{tab.dealByName}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">到达现场时间</span>
+                    <div class="inp">{{tab.arrivedTime}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">处理完成时间</span>
+                    <div class="inp">{{tab.finishedTime}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">报修情况评价</span>
+                    <div class="inp">{{tab.repairEvaluation}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">引起原因</span>
+                    <div class="inp word-break">{{tab.repairReason}}</div>
+                  </div>
+                </li>
+                <li class="list"/>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">处理经过</span>
+                    <div class="inp word-break">{{tab.process}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">备件更换情况</span>
+                    <div class="inp word-break">{{tab.sparepartsreplace}}</div>
+                  </div>
+                </li>
+                <li class="list"/>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">填表人</span>
+                    <div class="inp">{{tab.createdByName}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">填表时间</span>
+                    <div class="inp">{{tab.createdTime}}</div>
+                  </div>
+                </li>
+                <li class="list"/>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">是否确认</span>
+                    <div class="inp">{{tab.isSure==1?'是':'否'}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">未通过原因</span>
+                    <div class="inp">{{tab.unpassReason}}</div>
+                  </div>
+                </li>
+                <li class="list"/>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">确认人</span>
+                    <div class="inp">{{tab.sureByName}}</div>
+                  </div>
+                </li>
+                <li class="list">
+                  <div class="inp-wrap">
+                    <span class="text">确认时间</span>
+                    <div class="inp">{{tab.sureTime}}</div>
+                  </div>
+                </li>
+                <li class="list"/>
+              </ul>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+        </div>
       </el-scrollbar>
     </div>
   </div>
@@ -117,6 +213,7 @@ export default {
     return {
       systemResource: systemResource.troubleReport,
       loading: false,
+      isShowDeals: false,
       title: '| 故障报告单明细',
       cardList: [],
       troubleReport: {
@@ -131,12 +228,17 @@ export default {
   },
   created () {
     this.sourceName = this.$route.params.sourceName
+    this.troubleReport.id = this.$route.params.id
+  },
+  activated () {
+    if (this.$route.params.sourceName !== undefined) {
+      this.sourceName = this.$route.params.sourceName
+      this.troubleReport.id = this.$route.params.id
+    }
     if (this.sourceName === 'SeeHistory') {
       this.eqpLifeHistory.eqpSelected = this.$route.params.eqpSelected
       this.eqpLifeHistory.eqpType = this.$route.params.eqpType
     }
-  },
-  activated () {
     this.getTroubleReport()
   },
   methods: {
@@ -168,6 +270,7 @@ export default {
     },
     getTroubleReport () {
       this.loading = true
+      this.isShowDeals = false
       api.getTroubleReportByID(this.troubleReport.id).then(res => {
         this.loading = false
         let _res = res.data
@@ -187,6 +290,16 @@ export default {
         this.cardList = JSON.parse(_res.repairCompany)
         this.troubleReport.levelName = _res.levelName === null ? '无' : _res.levelName
         this.troubleReport.fileIDs = _res.uploadFiles
+        this.troubleReport.troubleDeals = _res.troubleDeals
+        if (this.troubleReport.troubleDeals.length > 0) {
+          this.troubleReport.troubleDeals.map(val => {
+            val.createdTime = transformDate(val.createdTime)
+            val.arrivedTime = transformDate(val.arrivedTime)
+            val.finishedTime = transformDate(val.finishedTime)
+            val.sureTime = val.sureTime === null ? '' : transformDate(val.sureTime)
+          })
+          this.isShowDeals = true
+        }
       }).catch(err => console.log(err))
     }
   }
@@ -427,5 +540,130 @@ export default {
 }
 .right{
   margin-right: 1em;
+}
+
+// 内容区
+$con-height: $content-height - 53;
+.content-wrap{
+  overflow: hidden;
+  height: percent($con-height, $content-height)!important;
+  // height: 90%!important;
+  text-align: center;
+  .content-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
+    padding: 0 PXtoEm(24);
+    background: rgba(36,128,198,.5);
+
+    .last-update-time{
+      color: $color-white;
+    }
+  }
+  .tab-height{
+    height: percent($con-height, $con-height);
+  }
+  /deep/ .el-tabs__header{
+    margin-left: 10px!important;
+    height: percent(30, $con-height)
+  }
+  /deep/ .el-tabs__content{
+    height: percent($con-height - 50, $con-height)
+  }
+  .pane-height{
+    height: 100%
+  }
+  .pane-notification{
+    .content-header{
+      height: percent(25, $con-height)
+    }
+  }
+  .scroll{
+    height: percent($con-height - 50, $con-height)
+  }
+
+  .list-wrap{
+    .list{
+      &:nth-of-type(even){
+        .list-content{
+          background: rgba(186,186,186,.5);
+        }
+      }
+    }
+
+    .list-content{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: PXtoEm(15) PXtoEm(24);
+    }
+
+    .left-title{
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    // 隐藏内容
+    .sub-content{
+      overflow: hidden;
+      height: 0;
+      font-size: $font-size-small;
+      text-align: left;
+      color: $color-content-text;
+
+      &.active{
+        overflow: inherit;
+        height: auto;
+        transition: .7s .2s;
+      }
+    }
+
+    .sub-con-list{
+      display: flex;
+      padding: PXtoEm(15) PXtoEm(24);
+      border-top: 1px solid $color-main-background;
+      background: rgba(0,0,0,.2);
+
+      .right-wrap{
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .list{
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .number{
+    width: 30px;
+  }
+
+  .name,
+  .btn-wrap{
+    width: 8%;
+  }
+
+  .last-update-time{
+    width: 15%;
+    color: $color-white;
+  }
+
+  .last-maintainer{
+    width: 10%;
+  }
+
+  .upload-cascader{
+    width: 13%;
+  }
+
+  .url{
+    width: 15%;
+  }
+
+  .menuOrder{
+    width: 10%;
+  }
 }
 </style>

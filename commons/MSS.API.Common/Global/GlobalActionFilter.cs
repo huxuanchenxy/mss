@@ -41,7 +41,7 @@ namespace MSS.API.Common.Global
                 List<User> users = JsonConvert.DeserializeObject<List<User>>(_cache.GetString(REDIS_AUTH_KEY_USER));
                 User user = users.Where(a => a.id == userid).FirstOrDefault();
                 //List<ActionInfo> white = new List<ActionInfo>();
-                List<ActionInfo> black = new List<ActionInfo>();
+                //List<ActionInfo> black = new List<ActionInfo>();
                 if (!user.is_super)
                 {
                     List<RoleAction> ras = JsonConvert.DeserializeObject<List<RoleAction>>(_cache.GetString(REDIS_AUTH_KEY_ROLEACTION));
@@ -50,18 +50,18 @@ namespace MSS.API.Common.Global
                     {
                         List<int> actionIds = tmp.Select(a => a.action_id).ToList();
                         List<ActionInfo> actions = JsonConvert.DeserializeObject<List<ActionInfo>>(_cache.GetString(REDIS_AUTH_KEY_ACTIONINFO));
-                        foreach (ActionInfo item in actions)
-                        {
-                            if (actionIds.Where(a => a == item.id).Count() == 0)
-                            //{
-                            //    white.Add(item);
-                            //}
-                            //else
-                            {
-                                black.Add(item);
-                            }
-                        }
-                        if (black.Where(a => (a.request_url).ToLower() == url).Count() == 0)
+                        //foreach (ActionInfo item in actions)
+                        //{
+                        //    if (actionIds.Where(a => a == item.id).Count() == 0)
+                        //    //{
+                        //    //    white.Add(item);
+                        //    //}
+                        //    //else
+                        //    {
+                        //        black.Add(item);
+                        //    }
+                        //}
+                        if (actions.Where(a => (a.request_url).ToLower() == url).Count() > 0 || methodname=="GET")
                         {
                             return;
                         }
