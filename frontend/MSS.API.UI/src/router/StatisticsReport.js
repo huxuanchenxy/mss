@@ -24,6 +24,19 @@ const routes = [
           }
         ]
       }, {
+        path: 'alarmReport1',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/alarm/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'alarmCount1'
+          }, {
+            path: 'alarmCount1',
+            name: 'AlarmCount1',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/alarm/children/Count1.vue')
+          }
+        ]
+      }, {
         path: 'troubleReport',
         component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/trouble/Index.vue'),
         children: [
@@ -34,6 +47,19 @@ const routes = [
             path: 'trouble',
             name: 'Trouble',
             component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/trouble/children/Trouble.vue')
+          }
+        ]
+      }, {
+        path: 'troubleReport1',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/trouble/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'trouble1'
+          }, {
+            path: 'trouble1',
+            name: 'Trouble1',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/StatisticsReport/trouble/children/Trouble1.vue')
           }
         ]
       }, {

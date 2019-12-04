@@ -1199,28 +1199,28 @@ export default {
     }
   }
 }
-#avgTimeChart {
+#countChart {
   display: none;
 }
-#avgTimeChartByEqpType {
+#countChartByEqpType {
   display: none;
 }
-#avgTimeChartBySupplier {
+#countChartBySupplier {
   display: none;
 }
-#avgTimeChartByManufacturer {
+#countChartByManufacturer {
   display: none;
 }
-#avgTimeChartBySubSystem {
+#countChartBySubSystem {
   display: none;
 }
-#avgTimeChartByLocation {
+#countChartByLocation {
   display: none;
 }
-#avgTimeChartByOrg {
+#countChartByOrg {
   display: none;
 }
-#avgTimeChartByTroubleType {
+#countChartByTroubleType {
   display: none;
 }
 .el-col-12 {
