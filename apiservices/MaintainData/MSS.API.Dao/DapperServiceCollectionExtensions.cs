@@ -41,6 +41,7 @@ namespace MSS.API.Dao
                 config.AddMap(new EmergencyPlanMap());
                 config.AddMap(new TroubleEqpMap());
                 config.AddMap(new TroubleHistoryMap());
+                config.AddMap(new TroubleDealMap());
             });
             return services;
         }

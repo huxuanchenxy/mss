@@ -50,6 +50,14 @@ const routes = [
             path: 'assignEqp',
             name: 'AssignEqp',
             component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/AssignEqp.vue')
+          }, {
+            path: 'dealTrouble',
+            name: 'DealTrouble',
+            component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/DealTrouble.vue')
+          }, {
+            path: 'myPreCheck',
+            name: 'MyPreCheck',
+            component: () => import(/* webpackChunkName: "troubleManager" */ '@/views/troubleManager/trouble/children/MyPreCheck.vue')
           }
         ]
       }

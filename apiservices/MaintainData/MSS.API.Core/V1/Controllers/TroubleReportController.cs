@@ -77,5 +77,20 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _troubleReportService.Update(troubleReport);
             return Ok(resp.Result);
         }
+
+        #region deal
+        [HttpPost("SaveDeal")]
+        public ActionResult SaveDeal(TroubleDeal troubleDeal)
+        {
+            var ret = _troubleReportService.SaveDeal(troubleDeal);
+            return Ok(ret.Result);
+        }
+        [HttpGet("GetDealByID/{id}/{orgTop}")]
+        public ActionResult GetDealByID(int id,int orgTop)
+        {
+            var resp = _troubleReportService.GetDealByID(id,orgTop);
+            return Ok(resp.Result);
+        }
+        #endregion
     }
 }

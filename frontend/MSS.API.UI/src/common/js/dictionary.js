@@ -21,7 +21,9 @@ export const troubleOperation = {
   pass: 147,
   unpass: 148,
   assignReject: 149,
-  updateTrouble: 150
+  updateTrouble: 150,
+  prepass: 174,
+  unprepass: 175
 }
 
 export const troubleStatus = {
