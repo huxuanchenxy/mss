@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <i @click="back"><x-button class="active">返回</x-button></i>
+      <i @click="$router.back(-1)"><x-button class="active">返回</x-button></i>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -263,9 +263,9 @@
           <x-button class="close" @click.native="back">取消</x-button>
           <x-button class="active" @click.native="save">保存</x-button>
         </div>
-        <div class="btn-group">
+        <!-- <div class="btn-group">
           <workflow-module :AppInstanceID="ID"></workflow-module>
-        </div>
+        </div> -->
       </el-scrollbar>
     </div>
   </div>
@@ -288,6 +288,12 @@ export default {
     'upload-pdf': MyUploadPDF,
     'area-dialog': AreaDialog,
     'workflow-module': WorkflowModule
+  },
+  watch: {
+    '$route.path': function () {
+      console.log('changeto:' + this.$route.path)
+      this.InitTitle()
+    }
   },
   data () {
     return {
@@ -350,26 +356,40 @@ export default {
     this.InitPage()
   },
   mounted () {
-    if (this.$route.query.type !== 'Add') {
-      this.loading = true
-      this.getObjByID()
-      if (this.$route.query.type === 'Edit') {
-        this.title = '| 修改施工计划'
-      } else {
-        this.title = '| 施工计划明细'
-        this.isDisabled = true
-      }
-    } else if (this.$route.query.code !== undefined) {
-      this.troubleNum.text = this.$route.query.code
-      this.troubleID = this.$route.query.troubleID
-    }
-    this.sourceName = this.$route.query.sourceName
+    this.InitTitle()
   },
   methods: {
     back () {
-      this.$router.push({
-        name: this.sourceName
-      })
+      // this.$router.push({
+      //   name: this.sourceName
+      // })
+      this.$router.back(-1)
+    },
+    InitTitle () {
+      let sourceId = this.$route.query.sourceId
+      // console.log('sourceId:' + sourceId)
+      let r = this.$router.navList[this.$route.matched[0].path]
+      // console.log('add1:' + this.$route.matched[1].path)
+      // console.log('add2:' + this.$route.path)
+      let rc = r.children
+      let tmptitle = ' | ' + rc.filter(item => item.id === sourceId)[0].name
+      if (this.$route.query.type !== 'Add') {
+        this.loading = true
+        this.getObjByID()
+        if (this.$route.query.type === 'Edit') {
+          this.title = '| 修改 ' + tmptitle
+        } else {
+          this.title = '| 明细 ' + tmptitle
+          this.isDisabled = true
+        }
+      } else if (this.$route.query.code !== undefined) {
+        this.troubleNum.text = this.$route.query.code
+        this.troubleID = this.$route.query.troubleID
+      }
+      if (this.$route.query.type === 'Add') {
+        this.title = '| 添加 ' + tmptitle
+      }
+      this.sourceName = this.$route.query.sourceName
     },
     changeShow () {
       this.show = !this.show

@@ -9,19 +9,94 @@ const routes = [
     children: [
       {
         path: '/',
-        redirect: 'ConstructionPlan'
+        redirect: 'ConstructionPlan/115'
       }, 
       {
-        path: 'ConstructionPlan',
+        path: 'ConstructionPlan/115',
         component: () => import( '@/views/workflow/process/index.vue'),
         children: [
           {
             path: '/',
-            name: 'ConstructionPlan',
-            redirect: 'list'
+            name: 'SeeConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeConstructionPlan.vue')
           }, 
           {
-            path: 'list',
+            path: 'add',
+            name: 'AddConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/AddConstructionPlan.vue')
+          }
+        ]
+      }, 
+      {
+        path: 'ConstructionPlan/153',
+        component: () => import( '@/views/workflow/process/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'SeeConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeConstructionPlan.vue')
+          }, 
+          {
+            path: 'add',
+            name: 'AddConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/AddConstructionPlan.vue')
+          }
+        ]
+      }, 
+      {
+        path: 'ConstructionPlan/154',
+        component: () => import( '@/views/workflow/process/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'SeeConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeConstructionPlan.vue')
+          }, 
+          {
+            path: 'add',
+            name: 'AddConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/AddConstructionPlan.vue')
+          }
+        ]
+      }, 
+      {
+        path: 'ConstructionPlan/155',
+        component: () => import( '@/views/workflow/process/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'SeeConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeConstructionPlan.vue')
+          }, 
+          {
+            path: 'add',
+            name: 'AddConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/AddConstructionPlan.vue')
+          }
+        ]
+      }, 
+      {
+        path: 'ConstructionPlan/156',
+        component: () => import( '@/views/workflow/process/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'SeeConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeConstructionPlan.vue')
+          }, 
+          {
+            path: 'add',
+            name: 'AddConstructionPlan',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/AddConstructionPlan.vue')
+          }
+        ]
+      }, 
+      {
+        path: 'ConstructionPlan/157',
+        component: () => import( '@/views/workflow/process/index.vue'),
+        children: [
+          {
+            path: '/',
             name: 'SeeConstructionPlan',
             component: () => import(/* webpackChunkName: "system" */ '@/views/workflow/process/children/SeeConstructionPlan.vue')
           }, 

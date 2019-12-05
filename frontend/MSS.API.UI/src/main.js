@@ -47,7 +47,7 @@ Vue.prototype.$echarts = echarts
 // window.axios = Axios
 
 /* eslint-disable no-new */
-new Vue({
+window.Vue = new Vue({
   el: '#app',
   router,
   components: { App },
