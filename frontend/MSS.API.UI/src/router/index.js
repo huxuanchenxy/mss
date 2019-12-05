@@ -34,6 +34,7 @@ import MonitorCenter from './MonitorCenter'
 import WarehouseManager from './warehouseManager'
 import Statistics from './StatisticsReport'
 import ConstructionManager from './constructionManager'
+import ConstructionManager1 from './constructionManager1'
 import TroubleManager from './troubleManager'
 
 routes = routes.concat(system)
@@ -53,6 +54,7 @@ routes = routes.concat(WarehouseManager)
 routes = routes.concat(Statistics)
 // 施工管理
 routes = routes.concat(ConstructionManager)
+routes = routes.concat(ConstructionManager1)
 // 故障管理
 routes = routes.concat(TroubleManager)
 // 网络监控

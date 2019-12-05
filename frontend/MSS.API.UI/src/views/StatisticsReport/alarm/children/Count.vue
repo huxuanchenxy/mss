@@ -1122,6 +1122,30 @@ export default {
     }
   }
 }
+#avgTimeChart {
+  display: none;
+}
+#avgTimeChartByEqpType {
+  display: none;
+}
+#avgTimeChartBySupplier {
+  display: none;
+}
+#avgTimeChartByManufacturer {
+  display: none;
+}
+#avgTimeChartBySubSystem {
+  display: none;
+}
+#avgTimeChartByLocation {
+  display: none;
+}
+#avgTimeChartByOrg {
+  display: none;
+}
+.el-col-12 {
+  width:100%;
+}
 </style>
 <style>
 /* .el-select {

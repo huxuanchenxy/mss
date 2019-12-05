@@ -13,9 +13,9 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">施工计划名称</label>
+            <label for="name">计划名称</label>
             <div class="inp">
-              <el-input v-model.trim="planName" placeholder="请输入施工计划名称" clearable></el-input>
+              <el-input v-model.trim="planName" placeholder="请输入计划名称" clearable></el-input>
             </div>
           </div>
         </div>
@@ -50,10 +50,10 @@
           重要程度
           <i :class="[{ 'el-icon-d-caret': headOrder.importantLevel === 0 }, { 'el-icon-caret-top': headOrder.importantLevel === 1 }, { 'el-icon-caret-bottom': headOrder.importantLevel === 2 }]"></i>
        </li>
-        <li class="list name c-pointer" @click="changeOrder('processState')">
+        <!-- <li class="list name c-pointer" @click="changeOrder('processState')" style="display:none;">
           流程状态
           <i :class="[{ 'el-icon-d-caret': headOrder.processState === 0 }, { 'el-icon-caret-top': headOrder.processState === 1 }, { 'el-icon-caret-bottom': headOrder.processState === 2 }]"></i>
-       </li>
+       </li> -->
         <li class="list name c-pointer" @click="changeOrder('createdTime')">创建日期
           <i :class="[{ 'el-icon-d-caret': headOrder.createdTime === 0 }, { 'el-icon-caret-top': headOrder.createdTime === 1 }, { 'el-icon-caret-bottom': headOrder.createdTime === 2 }]"></i>
         </li>
@@ -72,7 +72,7 @@
                 <div class="name">{{ item.planName }}</div>
                 <div class="name">{{ item.registerStationId }}</div>
                 <div class="name">{{ item.importantLevel }}</div>
-                <div class="name">{{ item.processState }}</div>
+                <!-- <div class="name" style="display:none;">{{ item.processState }}</div> -->
                 <div class="name">{{ item.createdTime }}</div>
               </div>
             </li>
@@ -118,11 +118,18 @@ export default {
   components: {
     XButton
   },
+  watch: {
+    '$route.path': function () {
+      // console.log('changeto:' + this.$route.path)
+      this.InitTitle()
+    }
+  },
   data () {
     return {
       title: ' | 施工计划',
       time: '',
       id: '',
+      sourceId: 0,
       startTime: '',
       endTime: '',
       planName: '',
@@ -152,12 +159,20 @@ export default {
       }
     }
   },
+  // beforeCreate () {
+  //   this.InitTitle()
+  // },
   created () {
-    this.$emit('title', '| 我的申请')
+    // this.$emit('title', '| 我的申请')
+    this.InitTitle()
     this.init()
   },
   activated () {
     this.searchResult(this.currentPage)
+    // this.InitTitle()
+  },
+  mounted () {
+    // this.InitTitle()
   },
   methods: {
     init () {
@@ -165,6 +180,14 @@ export default {
       // this.checkAll()
       this.currentPage = 1
       this.searchResult(1)
+    },
+    InitTitle () {
+      let r = this.$router.navList[this.$route.matched[0].path]
+      // console.log(this.$route.matched[1].path)
+      // console.log(this.$route.path)
+      let rc = r.children
+      this.title = ' | ' + rc.filter(item => item.path === this.$route.matched[1].path)[0].name
+      this.sourceId = rc.filter(item => item.path === this.$route.matched[1].path)[0].id
     },
     // 改变排序
     changeOrder (sort) {
@@ -220,7 +243,10 @@ export default {
       this.searchResult(1)
     },
     add () {
-      this.$router.push({name: 'AddConstructionPlan', query: { type: 'Add', sourceName: 'SeeConstructionPlan' }})
+      // let r = this.$router.navList[this.$route.matched[0].path]
+      // let rc = r.children
+      // let sourceId = this.$router.navList[this.$route.matched[0].path].children.filter(item => item.path === this.$route.matched[1].path)[0].id
+      this.$router.push({name: 'AddConstructionPlan', query: { type: 'Add', sourceName: 'SeeConstructionPlan', sourceId: this.sourceId }})
     },
     edit (type) {
       if (!this.IDS.length) {
@@ -239,7 +265,7 @@ export default {
           params: {
             id: this.IDS[0]
           },
-          query: { type: type, id: this.IDS[0], sourceName: 'SeeConstructionPlan' }
+          query: { type: type, id: this.IDS[0], sourceName: 'SeeConstructionPlan', sourceId: this.sourceId }
         })
       }
     },
