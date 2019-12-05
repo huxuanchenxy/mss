@@ -28,7 +28,10 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public int Line { get; set; }
         public string LineName { get; set; }
         public DateTime CreatedTime { get; set; }
-        public int EqpType { get; set; }
+        /// <summary>
+        /// plan_code
+        /// </summary>
+        public string EqpType { get; set; }
         public string EqpTypeName { get; set; }
         public int Location { get; set; }
         public int LocationBy { get; set; }
@@ -37,7 +40,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public string TeamName { get; set; }
         public int PMType { get; set; }
         public string PMTypeName { get; set; }
-        public string PMFrequency { get; set; }
+        public string PMCycle { get; set; }
+        public int PMFrequency { get; set; }
         public string Unit { get; set; }
         public int PlanQuantity { get; set; }
         public string PlanDate { get; set; }
@@ -59,14 +63,15 @@ namespace MSS.Platform.Workflow.WebApi.Model
             Map(o => o.WorkTypeName).ToColumn("name");
             Map(o => o.DepartmentName).ToColumn("department_name");
             Map(o => o.LineName).ToColumn("line_name");
-            Map(o => o.EqpType).ToColumn("eqp_type");
-            Map(o => o.EqpTypeName).ToColumn("type_name");
+            Map(o => o.EqpType).ToColumn("plan_code");
+            Map(o => o.EqpTypeName).ToColumn("plan_module_name");
             Map(o => o.LocationBy).ToColumn("location_by");
             Map(o => o.LocationName).ToColumn("location_name");
             Map(o => o.TeamName).ToColumn("team_name");
             Map(o => o.PMType).ToColumn("pm_type");
             Map(o => o.PMTypeName).ToColumn("pm_type_name");
             Map(o => o.PMFrequency).ToColumn("pm_frequency");
+            Map(o => o.PMCycle).ToColumn("pm_cycle");
             Map(o => o.CreatedTime).ToColumn("created_time");
 
             Map(o => o.PlanQuantity).ToColumn("plan_quantity");

@@ -32,9 +32,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
             return await WithConnection(async c =>
             {
                 ConstructionPlanMonthDetails ret = new ConstructionPlanMonthDetails();
-                string sql = "SELECT c.*,et.type_name,ot.name as team_name,d.name,dt.name as pm_type_name " +
+                string sql = "SELECT c.*,ot.name as team_name,d.name,dt.name as pm_type_name " +
                 " FROM construction_plan_month_detail c " +
-                " left join equipment_type et on et.id=c.eqp_type " +
                 " left join org_tree ot on ot.id=c.team " +
                 " left join dictionary_tree d on d.id=c.work_type " +
                 " left join dictionary_tree dt on dt.id=c.pm_type ";
@@ -76,9 +75,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
             return await WithConnection(async c =>
             {
                 ConstructionPlanMonthDetails ret = new ConstructionPlanMonthDetails();
-                string sql = "SELECT *,et.type_name,ot.name as team_name,d.name,dt.name as pm_type_name " +
+                string sql = "SELECT *,ot.name as team_name,d.name,dt.name as pm_type_name " +
                 " FROM construction_plan_month_detail c " +
-                " left join equipment_type et on et.id=c.eqp_type " +
                 " left join org_tree ot on ot.id=c.team " +
                 " left join dictionary_tree d on d.id=c.work_type " +
                 " left join dictionary_tree dt on dt.id=c.pm_type where c.id=@id";

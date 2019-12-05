@@ -6,7 +6,7 @@ export const dictionary = {
   currency: 94,
   troubleType: 51,
   workType: 111,
-  pmType: 116,
+  pmType: 119,
   troubleStatus: 47,
   troubleLevel: 126
 }

@@ -20,7 +20,6 @@
             <label for="name">班组</label>
             <div class="inp">
               <el-cascader clearable
-                expand-trigger="hover"
                 change-on-select
                 :props="defaultParams"
                 @change="cascader_change"
@@ -34,7 +33,6 @@
             <label for="name">地点</label>
             <div class="inp">
               <el-cascader clearable
-                expand-trigger="hover"
                 change-on-select
                 @change="position_change"
                 :props="areaParams"
@@ -66,7 +64,7 @@
           <!-- 内容 -->
             <ul class="content-header">
               <li class="list name">工作类型</li>
-              <li class="list name">设备名称</li>
+              <li class="list name">设施设备</li>
               <li class="list name">设备地点</li>
               <li class="list name">管辖班组</li>
               <li class="list name">维护类型</li>
@@ -199,6 +197,7 @@ export default {
       if (this.type === 1) {
         api.createMonthPlan(this.importCommon.id).then(res => {
           this.monthList = res.data
+          console.log(this.monthList)
           this.type = 2
         }).catch(err => console.log(err))
       } else {
