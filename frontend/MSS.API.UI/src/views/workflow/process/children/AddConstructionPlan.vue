@@ -281,6 +281,7 @@ import lineapi from '@/api/metroLineApi'
 import orgapi from '@/api/orgApi'
 import AreaDialog from '@/components/AreaDialog'
 import WorkflowModule from '@/components/WorkflowModule'
+import ConstrucionPlanEnum from './ConstrucionPlanEnum'
 export default {
   name: 'AddConstructionPlan',
   components: {
@@ -304,7 +305,7 @@ export default {
       systemResource: systemResource.construction,
       loading: false,
       title: '| 添加施工计划',
-      ID: this.$route.params.id,
+      ID: this.$route.query.id,
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
@@ -349,7 +350,9 @@ export default {
       tractionPowerList: [],
       useLaddercar: {text: '', tips: ''},
       useLaddercarList: [],
-      tractionTrainNum: {text: '', tips: ''}
+      tractionTrainNum: {text: '', tips: ''},
+      conPlanType: 0,
+      sourceId: 0
     }
   },
   created () {
@@ -390,6 +393,8 @@ export default {
         this.title = '| 添加 ' + tmptitle
       }
       this.sourceName = this.$route.query.sourceName
+      this.conPlanType = ConstrucionPlanEnum.conPlanTypeMenu[sourceId]
+      this.sourceId = sourceId
     },
     changeShow () {
       this.show = !this.show
@@ -430,6 +435,7 @@ export default {
           this.effectExplain.text = data.effectExplain
           this.safeMeasure.text = data.safeMeasure
           this.fileIDs = data.fileIDs
+          this.conPlanType = data.conPlanType
         }
         this.loading = false
       }).catch(err => console.log(err))
@@ -545,12 +551,14 @@ export default {
         effectArea: this.effectArea.text,
         effectExplain: this.effectExplain.text,
         safeMeasure: this.safeMeasure.text,
-        FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+        FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit),
+        ConPlanType: this.conPlanType
       }
       if (this.$route.query.type === 'Add') {
         constructionapi.addConstructionPlan(dataObj).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeConstructionPlan'})
+            // this.$router.push({name: 'SeeConstructionPlan'})
+            this.$router.push({path: '/constructionManager1/ConstructionPlan/' + this.sourceId})
             this.$message({
               message: '添加成功',
               type: 'success'
@@ -566,7 +574,7 @@ export default {
         dataObj.ID = this.ID
         constructionapi.updateConstructionPlan(dataObj).then(res => {
           if (res.code === 0) {
-            this.$router.push({name: 'SeeConstructionPlan'})
+            this.$router.push({path: '/constructionManager1/ConstructionPlan/' + this.sourceId})
             this.$message({
               message: '修改成功',
               type: 'success'
