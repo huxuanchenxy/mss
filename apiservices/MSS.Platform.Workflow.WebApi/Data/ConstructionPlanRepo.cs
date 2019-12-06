@@ -72,7 +72,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 a.created_time,
                 a.created_by,
                 a.updated_time,
-                a.updated_by,a.is_del,b.processstate FROM construction_plan a
+                a.updated_by,a.is_del,b.processstate,a.con_plan_type FROM construction_plan a
                 LEFT JOIN wfprocessinstance b ON a.id = b.AppInstanceID AND b.ProcessGUID = '" + parm.processGUID + "'");
                 StringBuilder whereSql = new StringBuilder();
                 whereSql.Append(" WHERE a.is_del = 0 ");
@@ -84,6 +84,10 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 if (parm.userId != 0)
                 {
                     whereSql.Append(" and a.created_by = '" + parm.userId + "' ");
+                }
+                if (parm.conplantype != 0)
+                {
+                    whereSql.Append(" and a.con_plan_type = '" + parm.conplantype + "' ");
                 }
 
                 sql.Append(whereSql);
@@ -157,7 +161,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     created_by,
                     updated_time,
                     updated_by,
-                    is_del
+                    is_del,
+                    con_plan_type
                 ) VALUES 
                 (
                     @LineId,
@@ -198,7 +203,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     @CreatedBy,
                     @UpdatedTime,
                     @UpdatedBy,
-                    @IsDel
+                    @IsDel,
+                    @ConPlanType
                     );
                     ";
                     sql += "SELECT LAST_INSERT_ID() ";
@@ -290,7 +296,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     memo=@Memo,
                     updated_time=@UpdatedTime,
                     updated_by=@UpdatedBy,
-                    is_del=@IsDel
+                    is_del=@IsDel,
+                    con_plan_type=@ConPlanType
                  where id=@Id", obj, trans);
                     if (!string.IsNullOrWhiteSpace(obj.FileIDs))
                     {
