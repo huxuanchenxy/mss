@@ -31,13 +31,16 @@ namespace MSS.Platform.Workflow.WebApi.Service
     {
         private readonly IConstructionPlanMonthDetailRepo<ConstructionPlanMonthDetail> _repo;
         private readonly IConstructionPlanImportRepo<ConstructionPlanYear> _importRepo;
+        private readonly IMaintenanceRepo<MaintenanceItem> _mRepo;
         private readonly IAuthHelper _authhelper;
         private readonly int _userID;
 
         public ConstructionPlanMonthDetailService(IConstructionPlanMonthDetailRepo<ConstructionPlanMonthDetail> repo,
-            IConstructionPlanImportRepo<ConstructionPlanYear> importRepo,IAuthHelper authhelper)
+            IConstructionPlanImportRepo<ConstructionPlanYear> importRepo,
+            IMaintenanceRepo<MaintenanceItem> mRepo, IAuthHelper authhelper)
         {
             _repo = repo;
+            _mRepo = mRepo;
             _importRepo = importRepo;
             _authhelper = authhelper;
             _userID = _authhelper.GetUserId();
@@ -119,7 +122,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 List<ConstructionPlanYear> cpys = await _importRepo.ListYearByQuery(query);
                 ConstructionPlanImportCommon cpic = await _importRepo.GetByID(query);
                 AllQuery all = new AllQuery();
-                all.eqpTypes = await _importRepo.ListAllEqpTypes();
+                //all.eqpTypes = await _importRepo.ListAllEqpTypes();
                 all.locations = await _importRepo.ListAllLocations();
                 all.team = await _importRepo.ListAllOrgByType(OrgType.Team);
                 all.workType = await _importRepo.ListDictionarysByParent(MSS.Platform.Workflow.WebApi.Model.Common.WORK_TYPE);
@@ -134,12 +137,12 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     foreach (var item in cpms)
                     {
                         string m = "." + i.ToString("D2");
-                        if (item.Frequency == 31 || item.Frequency%31==0)
+                        if (item.Frequency% 31 == 0)
                         {
                             string d = "." + MSS.Platform.Workflow.WebApi.Model.Common.GetLastDay(i, year);
                             ConstructionPlanMonthDetail c = GetCommonProperty(item,i, cpic,all,dtNow, ref dt);
                             c.PlanDate = year + m+".01-" + year + m+d;
-                            dt.Rows[j+index][12] = c.PlanDate;
+                            dt.Rows[j+index][14] = c.PlanDate;
                             month.Add(c);
                         }
                         else
@@ -150,7 +153,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                             {
                                 ConstructionPlanMonthDetail c = GetCommonProperty(item,i,cpic,all,dtNow,ref dt);
                                 c.PlanDate = year + m + "."+date.ToString("D2");
-                                dt.Rows[j+index][12] = c.PlanDate;
+                                dt.Rows[j+index][14] = c.PlanDate;
                                 month.Add(c);
                             }
                         }
@@ -170,12 +173,14 @@ namespace MSS.Platform.Workflow.WebApi.Service
                         int day = dayMinInMonth[m-1].IndexOf(min);
                         dayMinInMonth[m - 1][day] += item.Once;
                         c.PlanDate = year + "."+ m.ToString("D2") + "." + (day+1).ToString("D2");
-                        dt.Rows[index+j][12] = c.PlanDate;
+                        dt.Rows[index+j][14] = c.PlanDate;
                         month.Add(c);
                         j++;
                     }
                     index+=j;
                 }
+                //自动创建检修表单
+                //List<MaintenanceList> mls = GetMLists(month, cpic.Year, dtNow);
                 // 创建的数据存入数据,按时间排序？
                 using (TransactionScope scope = new TransactionScope())
                 {
@@ -205,6 +210,54 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 ret.code = Code.Failure;
                 ret.msg = ex.Message;
             }
+            return ret;
+        }
+        //自动生成检修单，此逻辑未完成，暂时不做
+        private List<MaintenanceList> GetMLists(List<ConstructionPlanMonthDetail> month,int year,DateTime dt)
+        {
+            List<MaintenanceList> ret = new List<MaintenanceList>();
+            IEnumerable<IGrouping<int, ConstructionPlanMonthDetail>> groupList = month.GroupBy(a => a.Team);
+            foreach (IGrouping<int, ConstructionPlanMonthDetail> group in groupList)
+            {
+                //需要拼凑的，目前只限于日检
+                List<ConstructionPlanMonthDetail> days = group.Where(a => a.PMType == (int)PMTYPE.Day).ToList();
+                MaintenanceList day = GetMList(days[0], dt);
+                ret.AddRange(GetDayMLists(day, year));
+                //非日检的，一个module就是一张检修表
+                List<ConstructionPlanMonthDetail> notDays = group.Where(a => a.PMType != (int)PMTYPE.Day).ToList();
+                foreach (var item in notDays)
+                {
+                    MaintenanceList notDay = GetMList(item, dt);
+                    notDay.PlanDate = item.PlanDate;
+                    ret.Add(notDay);
+                }
+            }
+            return ret;
+        }
+        private List<MaintenanceList> GetDayMLists(MaintenanceList ml,int year)
+        {
+            List<MaintenanceList> ret = new List<MaintenanceList>();
+            for (int i = 0; i < 12; i++)
+            {
+                int day = Convert.ToInt32(Model.Common.GetLastDay(i, year));
+                for (int j = 0; j < day; i++)
+                {
+                    string tmp = year + "-" + i.ToString("D2") + "-" + j.ToString("D2");
+                    ml.PlanDate = tmp;
+                    ret.Add(ml);
+                }
+            }
+            return ret;
+        }
+        private MaintenanceList GetMList(ConstructionPlanMonthDetail detail,DateTime dt)
+        {
+            MaintenanceList ret = new MaintenanceList();
+            ret.CreatedBy = _userID;
+            ret.CreatedTime = dt;
+            ret.Status = (int)PMStatus.Init;
+            ret.Team = detail.Team;
+            ret.UpdatedBy = _userID;
+            ret.UpdatedTime = dt;
             return ret;
         }
         private List<int> GetDay(ConstructionPlanMonth c,ref List<int> dayMin)
@@ -269,17 +322,18 @@ namespace MSS.Platform.Workflow.WebApi.Service
             c.Month = month;
             c.WorkType = 112;//默认委外维护
             c.WorkTypeName = all.workType.Where(a => a.ID == c.WorkType).FirstOrDefault().Name;
-            c.EqpType = item.EqpType;
-            c.EqpTypeName= all.eqpTypes.Where(a => a.ID == c.EqpType).FirstOrDefault().Name;
+            c.EqpType = item.Code;
+            c.EqpTypeName= item.EqpTypeName;
             c.Location = item.Location;
             c.LocationBy = item.LocationBy;
             c.LocationName= all.locations.Where(a => a.LocationBy == c.LocationBy && a.ID==c.Location).FirstOrDefault().Name;
             c.Department = cpic.Department;
             c.Team = item.Team;
             c.TeamName= all.team.Where(a => a.ID == c.Team).FirstOrDefault().Name;
-            c.PMType = 117;//默认巡检
+            c.PMType = (int)GetPMTypeByFrequency(item.Frequency, false);
             c.PMTypeName= all.pmType.Where(a => a.ID == c.PMType).FirstOrDefault().Name;
-            c.PMFrequency = item.Cycle;
+            c.PMCycle = item.Cycle;
+            c.PMFrequency = item.Frequency;
             c.Unit = item.Unit;
             c.PlanQuantity = item.Quantity;
             c.RealQuantity = item.Quantity;
@@ -300,17 +354,18 @@ namespace MSS.Platform.Workflow.WebApi.Service
             c.Month = month;
             c.WorkType = 112;//默认委外维护
             c.WorkTypeName = all.workType.Where(a => a.ID == c.WorkType).FirstOrDefault().Name;
-            c.EqpType = item.EqpType;
-            c.EqpTypeName = all.eqpTypes.Where(a => a.ID == c.EqpType).FirstOrDefault().Name;
+            c.EqpType = item.Code;
+            c.EqpTypeName = item.EqpTypeName;
             c.Location = item.Location;
             c.LocationBy = item.LocationBy;
             c.LocationName = all.locations.Where(a => a.LocationBy == c.LocationBy && a.ID == c.Location).FirstOrDefault().Name;
             c.Department = cpic.Department;
             c.Team = item.Team;
             c.TeamName = all.team.Where(a => a.ID == c.Team).FirstOrDefault().Name;
-            c.PMType = 117;//默认巡检
+            c.PMType = (int)GetPMTypeByFrequency(item.Frequency, true);
             c.PMTypeName = all.pmType.Where(a => a.ID == c.PMType).FirstOrDefault().Name;
-            c.PMFrequency = item.Cycle;
+            c.PMCycle= item.Cycle;
+            c.PMFrequency = item.Frequency*12;
             c.Unit = item.Unit;
             c.PlanQuantity = item.Quantity;
             c.RealQuantity = item.Quantity;
@@ -321,6 +376,27 @@ namespace MSS.Platform.Workflow.WebApi.Service
             InsertRow(ref dt, c);
             #endregion
             return c;
+        }
+        private PMTYPE GetPMTypeByFrequency(int frequency,bool isMonth)
+        {
+            if (isMonth)
+            {
+                switch (frequency)
+                {
+                    case 1: return PMTYPE.Month;
+                    case 2: return PMTYPE.HalfMonth;
+                    case 4: return PMTYPE.Week;
+                    default: return PMTYPE.Day;
+                }
+            }
+            else
+            {
+                switch (frequency)
+                {
+                    case 4: return PMTYPE.Quarter;
+                    default: return PMTYPE.Year;
+                }
+            }
         }
         private class AllQuery
         {
@@ -336,12 +412,14 @@ namespace MSS.Platform.Workflow.WebApi.Service
             dt.Columns.Add(new DataColumn("month"));
             dt.Columns.Add(new DataColumn("line"));
             dt.Columns.Add(new DataColumn("work_type"));
-            dt.Columns.Add(new DataColumn("eqp_type"));
+            dt.Columns.Add(new DataColumn("plan_code"));
+            dt.Columns.Add(new DataColumn("plan_module_name"));
             dt.Columns.Add(new DataColumn("location"));
             dt.Columns.Add(new DataColumn("location_by"));
             dt.Columns.Add(new DataColumn("department"));
             dt.Columns.Add(new DataColumn("team"));
             dt.Columns.Add(new DataColumn("pm_type"));
+            dt.Columns.Add(new DataColumn("pm_cycle"));
             dt.Columns.Add(new DataColumn("pm_frequency"));
             dt.Columns.Add(new DataColumn("unit"));
             dt.Columns.Add(new DataColumn("plan_quantity"));
@@ -364,23 +442,25 @@ namespace MSS.Platform.Workflow.WebApi.Service
             dr[1] = c.Line;
             dr[2] = c.WorkType;
             dr[3] = c.EqpType;
-            dr[4] = c.Location;
-            dr[5] = c.LocationBy;
-            dr[6] = c.Department;
-            dr[7] = c.Team;
-            dr[8] = c.PMType;
-            dr[9] = c.PMFrequency;
-            dr[10] = c.Unit;
-            dr[11] = c.PlanQuantity;
-            dr[12] = c.PlanDate;
-            dr[13] = c.RealQuantity;
-            dr[14] = c.RealDate;
-            dr[15] = c.WorkingOrder;
-            dr[16] = c.OrderStatus;
-            dr[17] = c.Remark;
-            dr[18] = c.Query;
-            dr[19] = c.UpdateTime;
-            dr[20] = c.UpdateBy;
+            dr[4] = c.EqpTypeName;
+            dr[5] = c.Location;
+            dr[6] = c.LocationBy;
+            dr[7] = c.Department;
+            dr[8] = c.Team;
+            dr[9] = c.PMType;
+            dr[10] = c.PMCycle;
+            dr[11] = c.PMFrequency;
+            dr[12] = c.Unit;
+            dr[13] = c.PlanQuantity;
+            dr[14] = c.PlanDate;
+            dr[15] = c.RealQuantity;
+            dr[16] = c.RealDate;
+            dr[17] = c.WorkingOrder;
+            dr[18] = c.OrderStatus;
+            dr[19] = c.Remark;
+            dr[20] = c.Query;
+            dr[21] = c.UpdateTime;
+            dr[22] = c.UpdateBy;
             dt.Rows.Add(dr);
         }
 

@@ -95,7 +95,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 List<QueryItem> allLines = await _repo.ListAllLines();
                 List<QueryItem> allDepartments = await _repo.ListAllOrgByType(OrgType.Department);
                 List<QueryItem> allTeams = await _repo.ListAllOrgByType(OrgType.Team);
-                List<QueryItem> allEqpTypes = await _repo.ListAllEqpTypes();
+                //List<QueryItem> allEqpTypes = await _repo.ListAllEqpTypes();
                 List<QueryItem> allLocations = await _repo.ListAllLocations();
                 if (file.Length > 0)
                 {
@@ -189,15 +189,16 @@ namespace MSS.Platform.Workflow.WebApi.Service
                                     code = GetMergeCell(str, code, "代码(第" + rowNo + "行)", ref ret);
                                     if (ret.code != Code.Success) return ret;
                                     else dataRow[0] = code;
-                                    #region 设备类型、处所、班组匹配name
-                                    //设备类型
+                                    #region 处所、班组匹配name
+                                    //设备设施
                                     string name = row.GetCell(1).ToString().Trim();
-                                    eqpTypeName = GetMergeCell(name, eqpTypeName, "设备类型(第" + rowNo + "行)", ref ret);
+                                    eqpTypeName = GetMergeCell(name, eqpTypeName, "设备设施(第" + rowNo + "行)", ref ret);
                                     if (ret.code != Code.Success) return ret;
                                     else dataRow[2] = eqpTypeName;
-                                    qi = GetIDByName(allEqpTypes, eqpTypeName, "设备类型(第" + rowNo + "行)", ref ret);
-                                    if (ret.code != Code.Success) return ret;
-                                    else dataRow[1] = qi.ID;
+                                    dataRow[1] = 0;//此字段已弃用，为了不修改相关代码，默认写0
+                                    //qi = GetIDByName(allEqpTypes, eqpTypeName, "设备设施(第" + rowNo + "行)", ref ret);
+                                    //if (ret.code != Code.Success) return ret;
+                                    //else dataRow[1] = qi.ID;
                                     //dataRow[1] = 0;//目前id和name没有保持一致，先把id默认0
                                     //处所
                                     name = row.GetCell(2).ToString().Trim();

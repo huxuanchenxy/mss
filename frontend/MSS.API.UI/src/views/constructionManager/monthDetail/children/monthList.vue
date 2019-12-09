@@ -12,7 +12,7 @@
         <router-link :to="{name: 'CommonList'}">返回</router-link>
       </x-button>
     </div>
-    <div class="box1">
+    <div class="box">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
@@ -20,7 +20,6 @@
             <label for="name">班组</label>
             <div class="inp">
               <el-cascader clearable
-                expand-trigger="hover"
                 change-on-select
                 :props="defaultParams"
                 @change="cascader_change"
@@ -34,7 +33,6 @@
             <label for="name">地点</label>
             <div class="inp">
               <el-cascader clearable
-                expand-trigger="hover"
                 change-on-select
                 @change="position_change"
                 :props="areaParams"
@@ -59,14 +57,28 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
+      <ul class="con-padding-horizontal btn-group">
+        <el-popover
+            popper-class="my-pop"
+            placement="bottom"
+            width="260"
+            v-model="popVisiable">
+            <el-input v-model="pmTitle" placeholder="请输入检修单抬头"></el-input>
+            <div style="text-align: right;">
+                <el-button size="mini" type="text" @click="add">创建</el-button>
+            </div>
+            <el-button class="btn1" slot="reference">创建检修单</el-button>
+        </el-popover>
+      </ul>
     </div>
     <div  class="content-wrap">
       <el-tabs class="tab-height" v-model="activeName" @tab-click="searchResult(1)">
         <el-tab-pane class="pane-height pane-notification" :label="(index+1)+'月'" :name="index+''" v-for="(tab, index) in monthList" :key="tab.key">
           <!-- 内容 -->
             <ul class="content-header">
+              <li class="list"></li>
               <li class="list name">工作类型</li>
-              <li class="list name">设备名称</li>
+              <li class="list name">设施设备</li>
               <li class="list name">设备地点</li>
               <li class="list name">管辖班组</li>
               <li class="list name">维护类型</li>
@@ -81,6 +93,9 @@
                 <ul class="list-wrap">
                   <li class="list" v-for="item in tab.rows" :key="item.key">
                     <div class="list-content">
+                      <div class="checkbox">
+                        <input type="checkbox" v-model="editObj" :value="item">
+                      </div>
                       <div class="name">{{ item.workTypeName }}</div>
                       <div class="name">{{ item.eqpTypeName }}</div>
                       <div class="name">{{ item.locationName }}</div>
@@ -128,6 +143,12 @@ export default {
   },
   data () {
     return {
+      btn: {
+        save: false
+      },
+      popVisiable: false,
+      editObj: [],
+      title: '',
       areaParams: {
         label: 'areaName',
         value: 'id',
@@ -139,7 +160,7 @@ export default {
         children: 'children'
       },
       loading: false,
-      title: '',
+      pmTitle: '',
       updateTitle: '',
       importCommon: {},
       type: '',
@@ -211,6 +232,65 @@ export default {
     this.searchResult(1)
   },
   methods: {
+    add () {
+      if (this.editObj.length === 0) {
+        this.$message({
+          message: '请选择所要创建检修单的计划',
+          type: 'warning'
+        })
+        return
+      }
+      let arr = []
+      let before = {
+        team: this.editObj[0].team,
+        location: this.editObj[0].location,
+        locationBy: this.editObj[0].locationBy,
+        planDate: this.editObj[0].planDate
+      }
+      for (let i = 0; i < this.editObj.length; i++) {
+        let item = this.editObj[i]
+        if (item.team === before.team && item.location === before.location && item.locationBy === before.locationBy && (item.planDate === before.planDate || item.planDate.indexOf('-') !== -1 || before.planDate.indexOf('-') !== -1)) {
+          arr.push({
+            detail: item.id,
+            count: item.planQuantity,
+            planCode: item.eqpType,
+            pmType: item.pmType
+          })
+        } else {
+          this.$message({
+            message: '所选计划的班组、地点、时间必须保持一致',
+            type: 'warning'
+          })
+        }
+      }
+      let mList = {
+        title: this.pmTitle,
+        team: before.team,
+        location: before.location,
+        locationBy: before.locationBy,
+        planDate: before.planDate,
+        details: arr
+      }
+      api.saveMList(mList).then(res => {
+        if (res.code === 0) {
+          this.$message({
+            message: '创建成功',
+            type: 'success'
+            // onClose: () => {
+            //   this.$router.push({
+            //     name: 'MaintenanceList'
+            //   })
+            // }
+          })
+          this.popVisiable = false
+        } else {
+          this.$message({
+            message: res.msg === '' ? '创建失败' : res.msg,
+            type: 'error'
+          })
+        }
+      }).catch(err => console.log(err))
+    },
     position_change (val) {
       if (val.length === 0) {
         this.area = ''
@@ -281,7 +361,9 @@ export default {
         PlanDate: this.planDate
       }).then(res => {
         this.loading = false
-        this.$set(this.monthList, month, res.data)
+        let tmp = res.data
+        if (tmp === null) tmp = []
+        this.$set(this.monthList, month, tmp)
         // this.monthList[month] = res.data
       }).catch(err => console.log(err))
     },
@@ -306,7 +388,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$con-height: $content-height - 53;
+$con-height: $content-height - 106;
 // 内容区
 .content-wrap{
   overflow: hidden;
@@ -493,6 +575,20 @@ $con-height: $content-height - 53;
   text-align: center;
   width: 90%;
 }
+/deep/
+.btn1{
+  background: none;
+  width: 260px;
+  border: 1px solid $color-main-btn-border;
+  border-radius: $border-radius;
+  color: $color-white;
+  cursor: pointer;
+  &.active,
+  &:hover{
+    border-color: $color-main-btn!important;
+    background: $color-main-btn!important;
+  }
+}
 /deep/ .box1{
     // height: percent(145, $content-height);
     height: 60px;
@@ -527,4 +623,16 @@ $con-height: $content-height - 53;
       }
     }
   }
+.el-button--text:hover{
+  color: #4998d4;
+  border-color: transparent;
+  background-color: transparent;
+  border: none;
+}
+</style>
+<style>
+.my-pop{
+  background: #29282E!important;
+  border-color: #29282E!important;
+}
 </style>

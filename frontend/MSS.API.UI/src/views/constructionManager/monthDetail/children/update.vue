@@ -182,7 +182,6 @@ export default {
         this.monthDetail.planDate = _res.planDate
         this.workType = _res.workType
         this.pmType = _res.pmType
-        console.log(this.monthDetail)
       }).catch(err => console.log(err))
     }
   }

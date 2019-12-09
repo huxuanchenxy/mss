@@ -33,7 +33,6 @@
             <div class="inp">
               <el-cascader clearable
                 class="cascader-width"
-                expand-trigger="hover"
                 change-on-select
                 :props="defaultParams"
                 @change="cascader_change"

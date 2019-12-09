@@ -6,9 +6,10 @@ export const dictionary = {
   currency: 94,
   troubleType: 51,
   workType: 111,
-  pmType: 116,
+  pmType: 119,
   troubleStatus: 47,
-  troubleLevel: 126
+  troubleLevel: 126,
+  pmStatus: 176
 }
 
 export const troubleOperation = {
@@ -85,4 +86,10 @@ export const orgType = {
   company: 1,
   department: 2,
   team: 3
+}
+
+export const pmStatus = {
+  init: 177,
+  editing: 178,
+  finished: 179
 }

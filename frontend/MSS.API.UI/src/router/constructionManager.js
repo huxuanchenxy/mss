@@ -50,6 +50,24 @@ const routes = [
             component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/monthDetail/children/update.vue')
           }
         ]
+      }, {
+        path: 'maintenance',
+        component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'maintenance',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'MaintenanceList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/children/List.vue')
+          }, {
+            path: 'update',
+            name: 'UpdateMaintenanceList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/children/update.vue')
+          }
+        ]
       }
     ]
   }

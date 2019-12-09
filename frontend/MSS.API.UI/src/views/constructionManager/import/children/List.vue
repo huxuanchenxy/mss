@@ -28,7 +28,6 @@
             <div class="inp">
               <el-cascader clearable
                 placeholder="请选择公司"
-                expand-trigger="hover"
                 change-on-select
                 :props="defaultParams"
                 @change="cascader_change"
@@ -324,9 +323,14 @@ export default {
         IsYear: this.isYearTmp === '1'
       }).then(res => {
         this.loading = false
-        this.total = res.data.total
-        this.importList = res.data.rows
-        this.isYear = this.isYearTmp
+        if (res.data === null) {
+          this.total = 0
+          this.importList = []
+        } else {
+          this.total = res.data.total
+          this.importList = res.data.rows
+          this.isYear = this.isYearTmp
+        }
       }).catch(err => console.log(err))
     },
     // 序号、指定页翻页

@@ -8,19 +8,31 @@ using MSS.Platform.Workflow.WebApi.Service;
 using MSS.API.Common;
 using MSS.Platform.Workflow.WebApi.Infrastructure;
 using MSS.Common.Consul;
+using static MSS.API.Common.Const;
 using Microsoft.Extensions.Options;
 
 namespace MSS.Platform.Workflow.WebApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        //public Startup(IConfiguration configuration)
+        //{
+        //    Configuration = configuration;
+
+        //    //PollingEngine.Configure(t => HostingEnvironment.QueueBackgroundWorkItem(aa => t()));
+        //    InitConst();
+
+        //}
+
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
-
-            //PollingEngine.Configure(t => HostingEnvironment.QueueBackgroundWorkItem(aa => t()));
-            
-
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
+            InitConst();
         }
 
         public IConfiguration Configuration { get; }
@@ -96,6 +108,11 @@ builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.RegisterConsul(lifetime, consulService);
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        private void InitConst()
+        {
+            FilePath.CSVPATH = Configuration["InitConst:Csv"];
         }
     }
 }
