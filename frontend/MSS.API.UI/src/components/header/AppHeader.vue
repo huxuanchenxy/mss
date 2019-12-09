@@ -28,7 +28,7 @@
           <p class="inline-block vertical-middle">
             <span class="block title">{{userName}}</span>
             <router-link class="sub-title" :to="{ name: 'Password' }">修改密码</router-link> |
-            <router-link class="sub-title" :to="{ name: 'Login' }" @click="window.sessionStorage.removeItem('UserID')">退出</router-link>
+            <a @click="logout" class="sub-title">退出</a>
           </p>
         </div>
       </li>
@@ -64,6 +64,12 @@ export default {
           window.sessionStorage.setItem('UserAction', JSON.stringify(res.data))
         }
       })
+    },
+    logout () {
+      window.sessionStorage.removeItem('token')
+      this.$router.push({
+        name: 'Login'
+      })
     }
   },
   created () {
@@ -84,7 +90,6 @@ export default {
   .sub-title{
     font-size: $font-size-small;
     color: $color-sub-text;
-
     &:hover{
       color: $color-highlight-text;
     }
@@ -209,5 +214,8 @@ export default {
       }
     }
   }
+}
+a {
+  cursor: pointer;
 }
 </style>

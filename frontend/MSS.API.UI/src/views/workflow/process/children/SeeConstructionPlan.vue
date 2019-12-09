@@ -46,9 +46,9 @@
           登记车站
           <i :class="[{ 'el-icon-d-caret': headOrder.registerStationId === 0 }, { 'el-icon-caret-top': headOrder.registerStationId === 1 }, { 'el-icon-caret-bottom': headOrder.registerStationId === 2 }]"></i>
        </li>
-       <li class="list name c-pointer" @click="changeOrder('importantLevel')">
-          重要程度
-          <i :class="[{ 'el-icon-d-caret': headOrder.importantLevel === 0 }, { 'el-icon-caret-top': headOrder.importantLevel === 1 }, { 'el-icon-caret-bottom': headOrder.importantLevel === 2 }]"></i>
+       <li class="list name c-pointer" @click="changeOrder('conplantype')">
+          计划类型
+          <i :class="[{ 'el-icon-d-caret': headOrder.conplantype === 0 }, { 'el-icon-caret-top': headOrder.conplantype === 1 }, { 'el-icon-caret-bottom': headOrder.conplantype === 2 }]"></i>
        </li>
         <!-- <li class="list name c-pointer" @click="changeOrder('processState')" style="display:none;">
           流程状态
@@ -71,7 +71,7 @@
                 <div class="number">{{ item.planNumber }}</div>
                 <div class="name">{{ item.planName }}</div>
                 <div class="name">{{ item.registerStationId }}</div>
-                <div class="name">{{ item.importantLevel }}</div>
+                <div class="name">{{ item.conPlanType }}</div>
                 <!-- <div class="name" style="display:none;">{{ item.processState }}</div> -->
                 <div class="name">{{ item.createdTime }}</div>
               </div>
@@ -122,6 +122,8 @@ export default {
     '$route.path': function () {
       // console.log('changeto:' + this.$route.path)
       this.InitTitle()
+      this.init()
+      this.emitEditID()
     }
   },
   data () {
@@ -155,7 +157,8 @@ export default {
         processState: 0,
         planName: 0,
         appInstanceID: 0,
-        createdTime: 0
+        createdTime: 0,
+        conplantype: 0
       }
     }
   },
@@ -183,8 +186,8 @@ export default {
     },
     InitTitle () {
       let r = this.$router.navList[this.$route.matched[0].path]
-      // console.log(this.$route.matched[1].path)
-      // console.log(this.$route.path)
+      // console.log('matched[1]:' + this.$route.matched[1].path)
+      // console.log('route.path:' + this.$route.path)
       let rc = r.children
       this.title = ' | ' + rc.filter(item => item.path === this.$route.matched[1].path)[0].name
       this.sourceId = rc.filter(item => item.path === this.$route.matched[1].path)[0].id
@@ -220,7 +223,8 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        planName: this.planName
+        planName: this.planName,
+        conPlanType: ConstrucionPlanEnum.conPlanTypeMenu[this.sourceId]
       }
       api.getConstructionPlanPage(parm).then(res => {
         this.loading = false
@@ -230,6 +234,7 @@ export default {
           importlevel = ConstrucionPlanEnum.importantLevel[item.importantLevel]
           item.importantLevel = importlevel
           item.processState = ConstrucionPlanEnum.processState[item.processState]
+          item.conPlanType = ConstrucionPlanEnum.conPlanType[item.conPlanType]
         })
         this.DataList = res.data.rows
         this.total = res.data.total
@@ -246,9 +251,14 @@ export default {
       // let r = this.$router.navList[this.$route.matched[0].path]
       // let rc = r.children
       // let sourceId = this.$router.navList[this.$route.matched[0].path].children.filter(item => item.path === this.$route.matched[1].path)[0].id
-      this.$router.push({name: 'AddConstructionPlan', query: { type: 'Add', sourceName: 'SeeConstructionPlan', sourceId: this.sourceId }})
+      this.$router.push({
+        // name: 'AddConstructionPlan',
+        path: '/constructionManager1/ConstructionPlan/' + this.sourceId + '/add',
+        query: { type: 'Add', sourceName: 'SeeConstructionPlan', sourceId: this.sourceId }
+      })
     },
     edit (type) {
+      // console.log('this.IDS:' + this.IDS[0])
       if (!this.IDS.length) {
         this.$message({
           message: '请选择记录',
@@ -261,7 +271,8 @@ export default {
         })
       } else {
         this.$router.push({
-          name: 'AddConstructionPlan',
+          // name: 'AddConstructionPlan',
+          path: '/constructionManager1/ConstructionPlan/' + this.sourceId + '/add',
           params: {
             id: this.IDS[0]
           },

@@ -111,7 +111,7 @@ export default {
           this.userName.isShowIcon = 'success'
           this.userPassword.isShowIcon = 'success'
           window.sessionStorage.setItem('token', res.access_token)
-          this.$router.push('/')
+          this.$router.push('/Index')
         } else {
           this.$message.error('登录失败')
         }
