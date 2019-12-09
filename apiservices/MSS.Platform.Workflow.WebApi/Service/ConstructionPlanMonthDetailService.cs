@@ -212,6 +212,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             }
             return ret;
         }
+        //自动生成检修单，此逻辑未完成，暂时不做
         private List<MaintenanceList> GetMLists(List<ConstructionPlanMonthDetail> month,int year,DateTime dt)
         {
             List<MaintenanceList> ret = new List<MaintenanceList>();
@@ -227,7 +228,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 foreach (var item in notDays)
                 {
                     MaintenanceList notDay = GetMList(item, dt);
-                    notDay.PlanDate = Convert.ToDateTime(item.PlanDate);
+                    notDay.PlanDate = item.PlanDate;
                     ret.Add(notDay);
                 }
             }
@@ -242,7 +243,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 for (int j = 0; j < day; i++)
                 {
                     string tmp = year + "-" + i.ToString("D2") + "-" + j.ToString("D2");
-                    ml.PlanDate = Convert.ToDateTime(tmp);
+                    ml.PlanDate = tmp;
                     ret.Add(ml);
                 }
             }
@@ -253,7 +254,6 @@ namespace MSS.Platform.Workflow.WebApi.Service
             MaintenanceList ret = new MaintenanceList();
             ret.CreatedBy = _userID;
             ret.CreatedTime = dt;
-            ret.PMType = detail.PMType;
             ret.Status = (int)PMStatus.Init;
             ret.Team = detail.Team;
             ret.UpdatedBy = _userID;

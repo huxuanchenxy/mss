@@ -44,7 +44,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 }
                 if (parm.Location!=null && parm.LocationBy!=null)
                 {
-                    sqlwhere += " and c.location=" + parm.Location + " and c.locatin_by=" + parm.LocationBy;
+                    sqlwhere += " and c.location=" + parm.Location + " and c.location_by=" + parm.LocationBy;
                 }
                 if (!string.IsNullOrWhiteSpace(parm.PlanDate))
                 {

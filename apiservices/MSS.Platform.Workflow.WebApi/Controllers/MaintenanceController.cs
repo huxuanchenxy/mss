@@ -40,9 +40,9 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
 
         #region MaintenanceModuleItemValue
         [HttpPost("SaveMMoudleItemValue")]
-        public ActionResult SaveMMoudleItemValue(List<MaintenanceModuleItemValue> maintenanceModuleItemValue)
+        public ActionResult SaveMMoudleItemValue(MaintenanceModuleItemValueParm parm)
         {
-            var ret = _service.SaveMMoudleItemValue(maintenanceModuleItemValue);
+            var ret = _service.SaveMMoudleItemValue(parm);
             return Ok(ret.Result);
         }
         #endregion
@@ -54,7 +54,29 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
             var ret = _service.SaveMModule(maintenanceModule);
             return Ok(ret.Result);
         }
+        [HttpGet("ListMModule/{id}/{isInit}")]
+        public ActionResult ListMModule(int id,bool isInit)
+        {
+            var ret = _service.ListMModule(id,isInit);
+            return Ok(ret.Result);
+        }
         #endregion
+
+        #region MaintenanceList
+        [HttpPost("SaveMList")]
+        public ActionResult SaveMList(MaintenanceList maintenanceList)
+        {
+            var ret = _service.SaveMList(maintenanceList);
+            return Ok(ret.Result);
+        }
+        [HttpGet]
+        public ActionResult ListPage([FromQuery] MaintenanceListParm parm)
+        {
+            var ret = _service.ListPage(parm);
+            return Ok(ret.Result);
+        }
+        #endregion
+
 
     }
 }
