@@ -55,7 +55,7 @@
 <style>
     .bottomBar{
         position:fixed;
-        height:5rem;
+        /* height:5rem; */
         width:100%;
         bottom:0;
         left:0;

@@ -232,14 +232,18 @@
     }
     .scroll {
         /* width:400px; */
-        position:relative;
+        position:absolute;
         height:100%;
+        overflow: scroll;
     }
-    .wrapper {
-        /* width:400px; */
-        touch-action:none !important;
-        touch-action:pan-y !important;
+    .scroll::-webkit-scrollbar {
+        display: none;
     }
+    // .wrapper {
+    //     /* width:400px; */
+    //     touch-action:none !important;
+    //     touch-action:pan-y !important;
+    // }
     body {
         background:unset !important;
     }
@@ -249,7 +253,7 @@
         height: 100%;
     }
     .upload-list {
-        overflow: scroll;
+        // overflow: scroll;
         height:100%;
     }
 </style>
