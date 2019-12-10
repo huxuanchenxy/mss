@@ -13,7 +13,7 @@
         <div class="input-group">
             <label for="name">设备类型</label>
             <div class="inp">
-            <el-select v-model="eqpTypeOnly" filterable placeholder="请选择" @change="eqpTypeOnlyChange" clearable >
+            <el-select v-model="eqpTypeOnly" filterable placeholder="请选择" @change="eqpTypeOnlyChange">
                 <el-option
                 v-for="item in eqpTypeList"
                 :key="item.key"
@@ -232,8 +232,6 @@
     }
     .scroll {
         /* width:400px; */
-        position:relative;
-        height:100%;
     }
     .wrapper {
         /* width:400px; */
@@ -247,9 +245,5 @@
         position: relative;
         width: 100%;
         height: 100%;
-    }
-    .upload-list {
-        overflow: scroll;
-        height:100%;
     }
 </style>

@@ -3,25 +3,25 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import MuseUI from 'muse-ui';
-import { Swipe, SwipeItem } from 'vue-swipe';
+import MuseUI from 'muse-ui'
+import { Swipe, SwipeItem } from 'vue-swipe'
 import 'muse-ui/dist/muse-ui.css'
 import 'muse-ui/dist/theme-teal.css'
-import scroll from 'vue-infinite-scroll';
-import BaiduMap from 'vue-baidu-map';
-import silder from "./components/commom/slide.vue";
+import scroll from 'vue-infinite-scroll'
+import BaiduMap from 'vue-baidu-map'
+import silder from "./components/commom/slide.vue"
 import ElementUI from 'element-ui'
 import './common/scss/global.scss'
 import '../theme/index.css'
-import VueEmoji from "vue-emoji";
-Vue.use(ElementUI)
-Vue.use(VueEmoji)
+import VueEmoji from "vue-emoji"
 // Vue.use(silder)
 //引用拖拽插件
-import VueDND from 'awe-dnd';
-Vue.use(VueDND);
-Vue.use(MuseUI);
-Vue.use(scroll);
+import VueDND from 'awe-dnd'
+Vue.use(ElementUI)
+Vue.use(VueEmoji)
+Vue.use(VueDND)
+Vue.use(MuseUI)
+Vue.use(scroll)
 
 Vue.use(BaiduMap, {
   // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */

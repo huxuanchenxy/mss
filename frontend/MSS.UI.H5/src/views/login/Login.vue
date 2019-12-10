@@ -4,7 +4,7 @@
     <div class="content">
       <div class="text-wrap">
         <!-- <p class="con-sub-title">上海电气自动化设计研究所有限公司</p> -->
-        <h2 class="con-title">上海轨道交通18号线智能运维系统</h2>
+        <h2 class="con-title">上海18号线智能运维系统</h2>
         <div class="en-title">Intelligent  Maintenance  Support System of Shanghai Metro Line 18</div>
       </div>
       <!-- 登录框 -->
@@ -99,7 +99,7 @@ export default {
           this.userName.isShowIcon = 'success'
           this.userPassword.isShowIcon = 'success'
           window.sessionStorage.setItem('token', res.access_token)
-          this.$router.push('/')
+          this.$router.push('/home')
         } else {
           this.$message.error('登录失败')
         }
@@ -152,7 +152,7 @@ export default {
     width: 100%;
     height: percent(550 - 70, 550);
     margin: 0 auto;
-    padding: 0 110px
+    padding: 0 52px
   }
 
   .con-sub-title{
@@ -179,7 +179,7 @@ export default {
     top: 40%;
     left: 50px;
     margin: 0 0 45px;
-    font-size: 11px;
+    font-size: 17px;
     // text-shadow: 0 0 40px #2480C6;
     font-weight: bold;
   }
@@ -273,7 +273,7 @@ export default {
   .copyright{
     position: fixed;
     bottom: 45px;
-    left: 110px;
+    padding: 0 52px;
   }
 }
 </style>

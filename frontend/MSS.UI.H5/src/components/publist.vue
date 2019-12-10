@@ -30,7 +30,7 @@
         },
         data() {
             return {
-                msg: 'Welcome to Your Vue.js App',
+                msg: 'Welcome to Your 上海18号线智能运维系统 App',
                 pages:[
           {
             title: 'slide1',

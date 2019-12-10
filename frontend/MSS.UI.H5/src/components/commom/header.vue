@@ -1,22 +1,22 @@
 <template>
     <div class="hello">
-        <mu-appbar class="title" title="Vue.js 中文社区" >
+        <mu-appbar class="title" title="上海18号线智能运维系统" >
             <!--// <mu-icon-button slot="left">
             //     <img class="logo" :src="src"
             // </mu-icon-button>-->
             <mu-icon-button icon="menu" slot="left" @click="toggle()"/>
             <mu-icon-menu slot="right" icon="more_vert" :value="theme" @change="changeTheme">
-                <mu-menu-item title="LIGHT" value="light" />
+                <!-- <mu-menu-item title="LIGHT" value="light" />
                 <mu-menu-item title="CARBON" value="carbon" />
-                <mu-menu-item title="TEAL" value="teal" />
+                <mu-menu-item title="TEAL" value="teal" /> -->
             </mu-icon-menu>
         </mu-appbar>
         <mu-drawer :open="open" :docked="docked" @close="toggle()" style="width:40%;">
             <mu-list @itemClick="docked ? '' : toggle()">
-                <mu-list-item title="Menu Item 1"/>
+                <!-- <mu-list-item title="Menu Item 1"/>
                 <mu-list-item title="Menu Item 2"/>
-                <mu-list-item title="Menu Item 3"/>
-                <mu-list-item v-if="docked" @click.native="open = false" title="退出"/>
+                <mu-list-item title="Menu Item 3"/> -->
+                <mu-list-item v-if="docked" @click.native="open = false" title="返回"/>
             </mu-list>
         </mu-drawer>
     </div>
@@ -30,16 +30,19 @@
         name: 'hello',
         data() {
             return {
-                theme: 'teal',
+                theme: 'carbon',
                 src:"http://www.vue-js.com/public/images/vue.png",
                 themes: {
-                    light,
-                    carbon,
-                    teal
+                    carbon
+                    // light,
+                    // teal
                 },
                 open: false,
                 docked: true
             }
+        },
+        created () {
+            this.changeTheme('carbon')
         },
         methods: {
             changeTheme(theme) {

@@ -1,7 +1,7 @@
 {
   "name": "VueCommunity",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "A 上海18号线智能运维系统 project",
   "author": "GaoHongwei <gaohongwei931011@sina.com>",
   "private": true,
   "scripts": {
