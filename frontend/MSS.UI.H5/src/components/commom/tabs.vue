@@ -165,8 +165,8 @@
     }
 
     .tab .tabs {
-        margin-top: 5rem;
-        height: 4rem;
+        margin-top: 4rem;
+        height: 3rem;
         position: fixed;
         top: 0;
         left: 0;

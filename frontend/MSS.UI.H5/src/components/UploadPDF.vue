@@ -251,7 +251,8 @@ export default {
           this.previewUrl = PDF_BLOB_VIEW_URL + item.url
         }
         this.isVedio = false
-        this.centerDialogVisible = true
+        // this.centerDialogVisible = true
+        this.centerDialogVisible = false
       } else if (extTmp === 'mp4' || extTmp === 'avi' || extTmp === 'flv' || extTmp === 'rmvb' || extTmp === 'ogg') {
         this.previewUrl = FILE_SERVER_PATH + item.url
         this.isVedio = true
@@ -259,6 +260,7 @@ export default {
       } else if (this.canDown) {
         downloadFile(item.id, item.name)
       }
+      window.open(this.previewUrl, '_blank')
     },
     getFile () {
       let allFileIds = []

@@ -74,7 +74,7 @@
 <style scoped>
     .title {
         text-align: center;
-        height: 5rem;
+        height: 4rem;
     }
     .mu-icon-button {
         padding: 0.4rem;
