@@ -33,17 +33,24 @@
         <div class="type-title">{{item.typeName}}</div>
       </el-upload>
     </div>
-    <el-dialog
+    <!-- <el-dialog
       :visible.sync="centerDialogVisible"
       :modal-append-to-body="false"
       custom-class="show-list-wrap"
       center>
       <iframe :src="previewUrl" width="100%" height="100%" frameborder="0" v-show="!isVedio"></iframe>
-      <video :src="previewUrl"
-        v-show="isVedio"
-        controls
-        autoplay
-        height="99%"></video>
+    </el-dialog> -->
+    <el-dialog
+      :visible.sync="centerDialogVisible"
+      :modal-append-to-body="false"
+      custom-class="show-list-wrap"
+      center>
+      <!-- <div style="overflow: auto; -webkit-overflow-scrolling: touch; width: 200; height: 200px; margin: 100px auto; border: 1px solid red;">
+          <iframe name="myiframe" scrolling="yes" frameborder="0" height="500" id="myiframe" style="min-width: 100%; width: 100%;" :src="previewUrl">
+          </iframe>
+      </div> -->
+      <pdf :src="previewUrl" >
+      </pdf>
     </el-dialog>
   </div>
 </template>
@@ -54,10 +61,12 @@ import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
 import { downloadFile } from '@/common/js/UpDownloadFileHelper.js'
 import { systemResource } from '@/common/js/dictionary.js'
+import pdf from 'vue-pdf'
 export default {
   name: 'UploadPDF',
   components: {
-    XButton
+    XButton,
+    pdf
   },
   props: {
     // label: String,
@@ -84,8 +93,8 @@ export default {
       uploadHeaders: {Authorization: ''},
       fileList: [],
       retFileList: [],
-      previewUrl: '',
-      centerDialogVisible: false,
+      previewUrl: '/File/25/29/7d948fb7-aad5-42ed-aa3e-1648bec4902a.pdf',
+      centerDialogVisible: true,
       ext: {},
       currentExt: '',
       isVedio: false
@@ -99,6 +108,7 @@ export default {
       })
     }).catch(err => console.log(err))
     this.label = this.readOnly ? '已上传文件列表：' : '附件类型'
+    this.previewUrl = pdf.createLoadingTask(this.previewUrl)
   },
   watch: {
     fileIDs () {
