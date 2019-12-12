@@ -25,16 +25,24 @@
         </div>
         <div class="scroll">
             <!-- <el-scrollbar> -->
-                <upload-pdf class="upload-list"
+                <!-- <upload-pdf class="upload-list"
                 :readOnly="readOnly"
                 :systemResource="systemResource"
                 :fileIDs="eqpTypeFileIDs"
                 :unSelectedEntity="unSelectedEqpType"
                 @getFileIDs="getFileIDs">
-                </upload-pdf>
+                </upload-pdf> -->
             <!-- </el-scrollbar> -->
         </div>
-        <!-- <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore" /> -->
+        <div class="pdf-box">
+            <pdf
+            v-for="i in numPages"
+            :key="i"
+            :src="pdfSrc"
+            :page="i">
+            </pdf>
+        </div>
+        <!-- <pdf-preview :url="pdfurl"></pdf-preview> -->
     </div>
 </template>
 <script>
@@ -44,9 +52,20 @@
     import { systemResource } from '@/common/js/dictionary.js'
     import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
     import MyUploadPDF from '@/components/UploadPDF'
+    
+// import PdfPreview from "@/components/commom/PdfPreview"
+import pdfPreview from '@/components/PdfPreview.vue'
+import pdf from 'vue-pdf'
     export default {
+        metaInfo: {
+            meta: [
+            { name: 'viewport', content: 'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=2,user-scalable=yes' }
+            ]
+        },
         components: {
-            'upload-pdf': MyUploadPDF
+            'upload-pdf': MyUploadPDF,
+            pdf,
+            pdfPreview,
         },
         data() {
             return {
@@ -67,7 +86,15 @@
                 unSelectedEqpType: systemResource.eqpType,
                 systemResource: systemResource.eqpType,
                 eqpTypeFileIDs: '',
-                readOnly: false
+                readOnly: false,
+                // src: '/File/25/29/a9c4aa8b-c566-4ad9-8316-19f4c1c31afe.pdf' http://10.89.36.103:8090/File/25/29/5a237af3-45af-413b-a333-019bec6033b8.pdf
+                // pdfSrc: '/File/25/29/411ea423-ada4-4ae9-85ff-5b374ee48de3.PDF', // pdf文件地址
+                pdfSrc: '/File/25/29/a9c4aa8b-c566-4ad9-8316-19f4c1c31afe.pdf', // pdf文件地址
+                
+
+                // pdfSrc: '/File/25/29/baidu.pdf', // pdf文件地址
+                numPages: undefined,
+                pdfurl: '/File/25/29/baidu.pdf'
             }
         },
         created() {
@@ -76,6 +103,11 @@
         },
         mounted() {
             this.scroller = this.$el
+            // 有时PDF文件地址会出现跨域的情况,这里最好处理一下
+        　　this.pdfSrc = pdf.createLoadingTask(this.pdfSrc)
+            this.pdfSrc.then(pdf => {
+            this.numPages = pdf.numPages
+            })
         },
         filters: {
             timeago(val) {
@@ -84,7 +116,10 @@
                 return thistime.format(time, 'zh_CN') //将UTC时间转换格式---> 几天前,几小时前...
             }
         },
-        methods: {    
+        methods: {   
+            handlePreviewFile() {
+                this.$refs.pdfSearch.handleOpen();
+            }, 
             getFileIDs (ids) {
                 if (this.activeName === 'eqp') {
                     this.fileIDsEdit = ids
@@ -255,5 +290,25 @@
     .upload-list {
         // overflow: scroll;
         height:100%;
+    }
+ .pdf-box {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    max-width: 1024px;
+    width: 100%;
+    margin: 0 auto;
+    overflow-x: hidden;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: .28rem;
+    span {
+      width: 100%;
+    }
+  }
+</style>
+<style>
+    .v-modal{
+        z-index: -2 !important;
     }
 </style>

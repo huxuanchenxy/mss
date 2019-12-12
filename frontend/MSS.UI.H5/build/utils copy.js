@@ -1,38 +1,28 @@
-'use strict'
-const path = require('path')
-const config = require('../config')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const packageConfig = require('../package.json')
+var path = require('path')
+var config = require('../config')
+var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-exports.assetsPath = function(_path) {
-  const assetsSubDirectory = process.env.NODE_ENV === 'production' ?
-    config.build.assetsSubDirectory :
-    config.dev.assetsSubDirectory
-
+exports.assetsPath = function (_path) {
+  var assetsSubDirectory = process.env.NODE_ENV === 'production'
+    ? config.build.assetsSubDirectory
+    : config.dev.assetsSubDirectory
   return path.posix.join(assetsSubDirectory, _path)
 }
 
-exports.cssLoaders = function(options) {
+exports.cssLoaders = function (options) {
   options = options || {}
 
-  const cssLoader = {
+  var cssLoader = {
     loader: 'css-loader',
     options: {
-      sourceMap: options.sourceMap
-    }
-  }
-
-  const postcssLoader = {
-    loader: 'postcss-loader',
-    options: {
+      minimize: process.env.NODE_ENV === 'production',
       sourceMap: options.sourceMap
     }
   }
 
   // generate loader string to be used with extract text plugin
-  function generateLoaders(loader, loaderOptions) {
-    const loaders = options.usePostCSS ? [cssLoader, postcssLoader] : [cssLoader]
-
+  function generateLoaders (loader, loaderOptions) {
+    var loaders = [cssLoader]
     if (loader) {
       loaders.push({
         loader: loader + '-loader',
@@ -54,39 +44,42 @@ exports.cssLoaders = function(options) {
     }
   }
 
-  // 引入全局scss变量
-  function resolveResouce(name) {
-    return path.resolve(__dirname, '../src/common/scss/' + name);
-  }
+ // 引入全局scss变量
+ function resolveResouce(name) {
+  return path.resolve(__dirname, '../src/common/scss/' + name);
+}
 
-  function generateSassResourceLoader() {
-    var loaders = [
-      cssLoader,
-      'sass-loader',
-      {
-        loader: 'sass-resources-loader',
-        options: {
-          // it need a absolute path
-          resources: [resolveResouce('variable.scss')]
-        }
+function generateSassResourceLoader() {
+  var loaders = [
+    cssLoader,
+    'sass-loader',
+    {
+      loader: 'sass-resources-loader',
+      options: {
+        // it need a absolute path
+        resources: [resolveResouce('variable.scss')]
       }
-    ]
-    if (options.extract) {
-      return ExtractTextPlugin.extract({
-        use: loaders,
-        fallback: 'vue-style-loader',
-        publicPath:'../../'
-      })
-    } else {
-      return ['vue-style-loader'].concat(loaders)
     }
+  ]
+  if (options.extract) {
+    return ExtractTextPlugin.extract({
+      use: loaders,
+      fallback: 'vue-style-loader',
+      publicPath:'../../'
+    })
+  } else {
+    return ['vue-style-loader'].concat(loaders)
   }
+}
+
 
   // https://vue-loader.vuejs.org/en/configurations/extract-css.html
   return {
     css: generateLoaders(),
     postcss: generateLoaders(),
     less: generateLoaders('less'),
+    // sass: generateLoaders('sass', { indentedSyntax: true }),
+    // scss: generateLoaders('sass'),
     sass: generateSassResourceLoader(),
     scss: generateSassResourceLoader(),
     stylus: generateLoaders('stylus'),
@@ -95,21 +88,18 @@ exports.cssLoaders = function(options) {
 }
 
 // Generate loaders for standalone style files (outside of .vue)
-exports.styleLoaders = function(options) {
-  const output = []
-  const loaders = exports.cssLoaders(options)
-
-  for (const extension in loaders) {
-    const loader = loaders[extension]
+exports.styleLoaders = function (options) {
+  var output = []
+  var loaders = exports.cssLoaders(options)
+  for (var extension in loaders) {
+    var loader = loaders[extension]
     output.push({
       test: new RegExp('\\.' + extension + '$'),
       use: loader
     })
   }
-
   return output
 }
-
 exports.createNotifierCallback = () => {
   const notifier = require('node-notifier')
 

@@ -23,7 +23,7 @@
       </el-select>
       <el-button size="small" type="primary" class="btn" v-show="!readOnly" :loading="loading">点击上传</el-button>
     </el-upload> -->
-    <div v-for="(item) in fileList" :key="item.key">
+    <!-- <div v-for="(item) in fileList" :key="item.key">
       <el-upload
         action="http://10.89.36.154:5801/eqpapi/Upload"
         :disabled="isDisabled"
@@ -32,7 +32,7 @@
         :on-preview="preview">
         <div class="type-title">{{item.typeName}}</div>
       </el-upload>
-    </div>
+    </div> -->
     <!-- <el-dialog
       :visible.sync="centerDialogVisible"
       :modal-append-to-body="false"
@@ -40,33 +40,32 @@
       center>
       <iframe :src="previewUrl" width="100%" height="100%" frameborder="0" v-show="!isVedio"></iframe>
     </el-dialog> -->
-    <el-dialog
+    <!-- <el-dialog
       :visible.sync="centerDialogVisible"
       :modal-append-to-body="false"
       custom-class="show-list-wrap"
       center>
-      <!-- <div style="overflow: auto; -webkit-overflow-scrolling: touch; width: 200; height: 200px; margin: 100px auto; border: 1px solid red;">
+      <div style="overflow: auto; -webkit-overflow-scrolling: touch; width: 200; height: 200px; margin: 100px auto; border: 1px solid red;">
           <iframe name="myiframe" scrolling="yes" frameborder="0" height="500" id="myiframe" style="min-width: 100%; width: 100%;" :src="previewUrl">
           </iframe>
-      </div> -->
+      </div>
       <pdf :src="previewUrl" >
       </pdf>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 <script>
-import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, FILE_SERVER_PATH } from '@/common/js/utils.js'
+// import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, FILE_SERVER_PATH } from '@/common/js/utils.js'
 import api from '@/api/eqpApi'
 import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
 import { downloadFile } from '@/common/js/UpDownloadFileHelper.js'
 import { systemResource } from '@/common/js/dictionary.js'
-import pdf from 'vue-pdf'
+// import pdf from 'vue-pdf'
 export default {
   name: 'UploadPDF',
   components: {
-    XButton,
-    pdf
+    XButton
   },
   props: {
     // label: String,
@@ -108,7 +107,7 @@ export default {
       })
     }).catch(err => console.log(err))
     this.label = this.readOnly ? '已上传文件列表：' : '附件类型'
-    this.previewUrl = pdf.createLoadingTask(this.previewUrl)
+    // this.previewUrl = pdf.createLoadingTask(this.previewUrl)
   },
   watch: {
     fileIDs () {
@@ -248,29 +247,29 @@ export default {
       this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
-      let arr = item.name.split('.')
-      let extTmp = arr[arr.length - 1]
-      if (arr[arr.length - 1] === 'pdf') {
-        if (item.status === 'success') {
-          if (item.url.indexOf('blob:') !== -1) {
-            this.previewUrl = PDF_BLOB_VIEW_URL + item.url
-          } else {
-            this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
-          }
-        } else {
-          this.previewUrl = PDF_BLOB_VIEW_URL + item.url
-        }
-        this.isVedio = false
-        // this.centerDialogVisible = true
-        this.centerDialogVisible = false
-      } else if (extTmp === 'mp4' || extTmp === 'avi' || extTmp === 'flv' || extTmp === 'rmvb' || extTmp === 'ogg') {
-        this.previewUrl = FILE_SERVER_PATH + item.url
-        this.isVedio = true
-        this.centerDialogVisible = true
-      } else if (this.canDown) {
-        downloadFile(item.id, item.name)
-      }
-      window.open(this.previewUrl, '_blank')
+      // let arr = item.name.split('.')
+      // let extTmp = arr[arr.length - 1]
+      // if (arr[arr.length - 1] === 'pdf') {
+      //   if (item.status === 'success') {
+      //     if (item.url.indexOf('blob:') !== -1) {
+      //       this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+      //     } else {
+      //       this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+      //     }
+      //   } else {
+      //     this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+      //   }
+      //   this.isVedio = false
+      //   // this.centerDialogVisible = true
+      //   this.centerDialogVisible = false
+      // } else if (extTmp === 'mp4' || extTmp === 'avi' || extTmp === 'flv' || extTmp === 'rmvb' || extTmp === 'ogg') {
+      //   this.previewUrl = FILE_SERVER_PATH + item.url
+      //   this.isVedio = true
+      //   this.centerDialogVisible = true
+      // } else if (this.canDown) {
+      //   downloadFile(item.id, item.name)
+      // }
+      // window.open(this.previewUrl, '_blank')
     },
     getFile () {
       let allFileIds = []
