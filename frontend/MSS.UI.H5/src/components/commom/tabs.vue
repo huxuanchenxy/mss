@@ -52,7 +52,7 @@
     import { systemResource } from '@/common/js/dictionary.js'
     import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
     import MyUploadPDF from '@/components/UploadPDF'
-    
+    import CMapReaderFactory from 'vue-pdf/src/CMapReaderFactory.js'
 // import PdfPreview from "@/components/commom/PdfPreview"
 import pdfPreview from '@/components/PdfPreview.vue'
 import pdf from 'vue-pdf'
@@ -104,7 +104,8 @@ import pdf from 'vue-pdf'
         mounted() {
             this.scroller = this.$el
             // 有时PDF文件地址会出现跨域的情况,这里最好处理一下
-        　　this.pdfSrc = pdf.createLoadingTask(this.pdfSrc)
+        // 　　this.pdfSrc = pdf.createLoadingTask(this.pdfSrc)
+            this.pdfSrc = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
             this.pdfSrc.then(pdf => {
             this.numPages = pdf.numPages
             })
