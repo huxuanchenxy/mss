@@ -39,7 +39,6 @@
                     </pdf>
                 </div> -->
         </div>
-
     </div>
 </template>
 <script>
@@ -93,7 +92,7 @@
         },
         mounted() {
             this.scroller = this.$el
-                        // 有时PDF文件地址会出现跨域的情况,这里最好处理一下
+            // 有时PDF文件地址会出现跨域的情况,这里最好处理一下
         // 　　this.pdfSrc = pdf.createLoadingTask(this.pdfSrc)
             this.pdfSrc = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
             this.pdfSrc.then(pdf => {
@@ -107,7 +106,10 @@
                 return thistime.format(time, 'zh_CN') //将UTC时间转换格式---> 几天前,几小时前...
             }
         },
-        methods: {    
+        methods: {   
+            handlePreviewFile() {
+                this.$refs.pdfSearch.handleOpen();
+            }, 
             getFileIDs (ids) {
                 if (this.activeName === 'eqp') {
                     this.fileIDsEdit = ids
