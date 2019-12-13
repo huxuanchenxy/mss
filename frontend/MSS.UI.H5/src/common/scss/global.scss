@@ -15,7 +15,9 @@ body{
 }
 
 body {
+  position:fixed;
   overflow: hidden;
+  // background-attachment: fixed;
   background: url(../images/bg-1.png) no-repeat 0 0/100% 100%;
   font: $font-size-base "PingFangSC-Regular",Microsoft Yahei;
   color: $color-white;

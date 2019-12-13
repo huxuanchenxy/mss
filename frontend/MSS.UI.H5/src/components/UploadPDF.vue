@@ -28,7 +28,6 @@
         action="http://10.89.36.154:5801/eqpapi/Upload"
         :disabled="isDisabled"
         :file-list="item.list"
-        :on-remove="onRemove"
         :on-preview="preview">
         <div class="type-title">{{item.typeName}}</div>
       </el-upload>
@@ -40,18 +39,7 @@
       center>
       <iframe :src="previewUrl" width="100%" height="100%" frameborder="0" v-show="!isVedio"></iframe>
     </el-dialog> -->
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <!-- <div style="overflow: auto; -webkit-overflow-scrolling: touch; width: 200; height: 200px; margin: 100px auto; border: 1px solid red;">
-          <iframe name="myiframe" scrolling="yes" frameborder="0" height="500" id="myiframe" style="min-width: 100%; width: 100%;" :src="previewUrl">
-          </iframe>
-      </div> -->
-      <pdf :src="previewUrl" >
-      </pdf>
-    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -468,5 +456,14 @@ export default {
     .el-carousel__arrow i{
       font-size: 20px;
     }
+  }
+
+</style>
+<style>
+  .el-icon-close{
+    display:none !important;
+  }
+  .el-icon-upload-success{
+    display:none !important;
   }
 </style>
