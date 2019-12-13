@@ -34,7 +34,7 @@
     }
     .tab {
         flex: 1;
-        margin: 9rem 0 5rem 0;
+        margin: 9rem 0 4rem 0;
     }
     .header {
         position: fixed;

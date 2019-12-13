@@ -47,7 +47,7 @@
         methods: {
             changeTheme(theme) {
                 this.theme = theme;
-                console.log(this.theme)
+                // console.log(this.theme)
                 const styleEl = this.getThemeStyle()
                 styleEl.innerHTML = this.themes[theme] || ''
             },

@@ -30,14 +30,7 @@
                 @getFileIDs="getFileIDs">
                 </upload-pdf>
             <!-- </el-scrollbar> -->
-                <!-- <div class="pdf-box">
-                    <pdf
-                    v-for="i in numPages"
-                    :key="i"
-                    :src="pdfSrc"
-                    :page="i">
-                    </pdf>
-                </div> -->
+
         </div>
     </div>
 </template>
@@ -48,17 +41,13 @@
     import { systemResource } from '@/common/js/dictionary.js'
     import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
     import MyUploadPDF from '@/components/UploadPDF'
-    import CMapReaderFactory from 'vue-pdf/src/CMapReaderFactory.js'
-    import pdf from 'vue-pdf'
+    // import CMapReaderFactory from 'vue-pdf/src/CMapReaderFactory.js'
+    // import pdf from 'vue-pdf'
     export default {
-        metaInfo: {
-            meta: [
-            { name: 'viewport', content: 'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=2,user-scalable=yes' }
-            ]
-        },
+        
         components: {
             'upload-pdf': MyUploadPDF,
-            pdf
+            
         },
         data() {
             return {
@@ -80,10 +69,10 @@
                 systemResource: systemResource.eqpType,
                 eqpTypeFileIDs: '',
                 readOnly: false,
-                numPages: undefined,
-                // pdfSrc: '/File/25/29/411ea423-ada4-4ae9-85ff-5b374ee48de3.PDF', // pdf文件地址
-                pdfSrc: '/File/25/29/a9c4aa8b-c566-4ad9-8316-19f4c1c31afe.pdf', // pdf文件地址
-                // pdfSrc: '/File/25/29/baidu.pdf', // pdf文件地址
+                // numPages: undefined,
+                // // pdfSrc: '/File/25/29/411ea423-ada4-4ae9-85ff-5b374ee48de3.PDF', // pdf文件地址
+                // pdfSrc: '/File/25/29/a9c4aa8b-c566-4ad9-8316-19f4c1c31afe.pdf', // pdf文件地址
+                // // pdfSrc: '/File/25/29/baidu.pdf', // pdf文件地址
             }
         },
         created() {
@@ -94,10 +83,10 @@
             this.scroller = this.$el
             // 有时PDF文件地址会出现跨域的情况,这里最好处理一下
         // 　　this.pdfSrc = pdf.createLoadingTask(this.pdfSrc)
-            this.pdfSrc = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
-            this.pdfSrc.then(pdf => {
-            this.numPages = pdf.numPages
-            })
+            // this.pdfSrc = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
+            // this.pdfSrc.then(pdf => {
+            // this.numPages = pdf.numPages
+            // })
         },
         filters: {
             timeago(val) {
@@ -257,13 +246,15 @@
     }
     .scroll {
         /* width:400px; */
-        position: absolute;;
+        position: absolute;
         height:100%;
         overflow: scroll;
         overflow-y: scroll;
+        overflow-x: scroll;
         -webkit-overflow-scrolling: touch;
         top:10px;
         z-index: 100;
+        width: 100%;
     }
     .scroll::-webkit-scrollbar {
         display: none;

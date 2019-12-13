@@ -1,28 +1,5 @@
 <template>
   <div>
-    <!-- <el-upload
-      action="http://10.89.36.154:5801/eqpapi/Upload"
-      :disabled="isDisabled"
-      :headers="uploadHeaders"
-      :multiple="true"
-      :data="myData"
-      :accept="currentExt"
-      :file-list="currentFileList"
-      :show-file-list="false"
-      list-type="text"
-      :before-upload="beforeUpload"
-      :on-success="onSuccess">
-      <span>{{label}}</span>
-      <el-select v-show="!readOnly" ref="mySelect" v-model="myData.type" clearable filterable placeholder="请选择上传附件类型" class="upload-btn" @change="onChange">
-        <el-option
-          v-for="item in fileTypeList"
-          :key="item.key"
-          :label="item.name"
-          :value="item.business_type">
-        </el-option>
-      </el-select>
-      <el-button size="small" type="primary" class="btn" v-show="!readOnly" :loading="loading">点击上传</el-button>
-    </el-upload> -->
     <div v-for="(item) in fileList" :key="item.key">
       <el-upload
         action="http://10.89.36.154:5801/eqpapi/Upload"
@@ -32,26 +9,17 @@
         <div class="type-title">{{item.typeName}}</div>
       </el-upload>
     </div>
-    <!-- <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0" v-show="!isVedio"></iframe>
-    </el-dialog> -->
-    <!-- <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <div style="overflow: auto; -webkit-overflow-scrolling: touch; width: 200; height: 200px; margin: 100px auto; border: 1px solid red;">
-          <iframe name="myiframe" scrolling="yes" frameborder="0" height="500" id="myiframe" style="min-width: 100%; width: 100%;" :src="previewUrl">
-          </iframe>
-      </div>
-      <pdf :src="previewUrl" >
-      </pdf>
-    </el-dialog> -->
+        <div class="pdf-box" v-if="showPDF">
+      <svg t="1576214238668" @click="closepdf" class="closeicon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1885"><path d="M511.998977 961.610044c-248.306272 0-449.607998-201.307865-449.607998-449.614138S263.692704 62.389956 511.998977 62.389956c248.364601 0 449.610044 201.299679 449.610044 449.606974S760.363577 961.610044 511.998977 961.610044L511.998977 961.610044zM718.186989 380.921639c8.457626-8.462742 8.457626-22.202675 0-30.658254l-45.927005-45.871747c-8.459672-8.459672-22.138206-8.459672-30.599925 0L511.603981 434.44874 381.546879 304.391638c-8.459672-8.459672-22.1423-8.459672-30.599925 0l-45.927005 45.871747c-8.457626 8.455579-8.457626 22.195511 0 30.658254l130.057101 130.053008L305.019948 641.031748c-8.457626 8.455579-8.457626 22.140253 0 30.599925L350.946954 717.555609c8.457626 8.404414 22.140253 8.404414 30.599925 0l130.057101-130.057101L641.661082 717.555609c8.461719 8.404414 22.140253 8.404414 30.599925 0l45.927005-45.922912c8.457626-8.459672 8.457626-22.144346 0-30.599925L588.129888 510.97567 718.186989 380.921639 718.186989 380.921639z" p-id="1886"></path></svg>
+        <pdf
+        v-for="i in numPages"
+        :key="i"
+        :src="pdfSrc"
+        :page="i">
+        </pdf>
+    </div>
   </div>
+  
 </template>
 <script>
 // import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, FILE_SERVER_PATH } from '@/common/js/utils.js'
@@ -60,11 +28,18 @@ import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
 import { downloadFile } from '@/common/js/UpDownloadFileHelper.js'
 import { systemResource } from '@/common/js/dictionary.js'
-// import pdf from 'vue-pdf'
+import pdf from 'vue-pdf'
+import CMapReaderFactory from 'vue-pdf/src/CMapReaderFactory.js'
 export default {
   name: 'UploadPDF',
+  metaInfo: {
+      meta: [
+      { name: 'viewport', content: 'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=2,user-scalable=yes' }
+      ]
+  },
   components: {
-    XButton
+    XButton,
+    pdf
   },
   props: {
     // label: String,
@@ -78,6 +53,7 @@ export default {
   },
   data () {
     return {
+      showPDF: false,
       isDisabled: this.readOnly,
       loading: false,
       label: '',
@@ -95,7 +71,11 @@ export default {
       centerDialogVisible: true,
       ext: {},
       currentExt: '',
-      isVedio: false
+      isVedio: false,
+      numPages: undefined,
+      // pdfSrc: '/File/25/29/411ea423-ada4-4ae9-85ff-5b374ee48de3.PDF', // pdf文件地址
+      pdfSrc: '/File/25/29/a9c4aa8b-c566-4ad9-8316-19f4c1c31afe.pdf', // pdf文件地址
+      // pdfSrc: '/File/25/29/baidu.pdf', // pdf文件地址
     }
   },
   created () {
@@ -126,8 +106,16 @@ export default {
     if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
       this.uploadHeaders.Authorization = `Bearer ${token}`
     }
+    this.pdfSrc = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
+    this.pdfSrc.then(pdf => {
+    this.numPages = pdf.numPages
+    })
   },
   methods: {
+    closepdf () {
+      this.showPDF = false
+      this.pdfSrc = undefined
+    },
     onChange () {
       if (this.fileList.length !== 0 && !this.uploadIsFinished(this.fileList[this.fileList.length - 1].list)) {
         this.$message({
@@ -246,6 +234,7 @@ export default {
       this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
+      console.log(item)
       // let arr = item.name.split('.')
       // let extTmp = arr[arr.length - 1]
       // if (arr[arr.length - 1] === 'pdf') {
@@ -269,6 +258,19 @@ export default {
       //   downloadFile(item.id, item.name)
       // }
       // window.open(this.previewUrl, '_blank')
+      let _this = this
+      this.pdfSrc = item.url
+      this.showPDF = true
+      let lodingTask = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
+      this.pdfSrc = lodingTask
+      console.log('this.pdfsrc:' + JSON.stringify(this.pdfSrc))
+      this.pdfSrc.then(pdf => {
+        this.numPages = pdf.numPages
+
+      }).catch(function(err){
+        console.log(err)
+        _this.showPDF = false
+      })
     },
     getFile () {
       let allFileIds = []
@@ -467,7 +469,20 @@ export default {
       font-size: 20px;
     }
   }
-
+.closeicon{
+    width: 20px;
+    position: fixed;
+    z-index: 10;
+    right: 0;
+    top: 10rem;
+}
+.pdf-box{
+    position: absolute;
+    top: 0px;
+    // bottom: 1px;
+    z-index: 3000;
+    -webkit-overflow-scrolling: touch;
+}
 </style>
 <style>
   .el-icon-close{
