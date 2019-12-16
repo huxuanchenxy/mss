@@ -1,10 +1,6 @@
 <template>
   <div class="wrap">
-    <div class="con-padding-horizontal header">
-      <h2 class="title">
-          <img class="icon" src="./images/icon-password.svg" alt=""> 修改密码
-        </h2>
-    </div>
+    <isheader class="header"></isheader>
     <div class="content-wrap">
       <h2 class="con-title">修改密码</h2>
       <div class="inp-wrap" :class="{ active: currentPassword.active }">
@@ -33,14 +29,20 @@
       <div class="btn-wrap">
         <el-button native-type="submit" @click="check">确认</el-button>
         <el-button native-type="submit">
-          <router-link class="color-white" :to="{ name: 'Index' }">取消</router-link>
+          <router-link class="color-white" :to="{ name: 'home' }">取消</router-link>
         </el-button>
       </div>
     </div>
   </div>
 </template>
 <script>
+import isheader from '../../components/commom/header.vue'
+import BottomNavigation from '../../components/commom/bottom.vue'
 export default {
+  components: {
+    isheader,
+    BottomNavigation
+  },
   name: 'Password',
   data () {
     return {

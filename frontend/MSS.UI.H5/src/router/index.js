@@ -14,10 +14,6 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: home
-    },{
       path: '/home',
       name: 'home',
       component: home
@@ -63,6 +59,12 @@ export default new Router({
       name: 'Login',
       meta: { login: true },
       component: () => import(/* webpackChunkName: "login" */ '@/views/login/Login.vue')
+    },
+    {
+      path: '/Password',
+      name: 'Password',
+      meta: { login: true },
+      component: () => import(/* webpackChunkName: "login" */ '@/views/login/Password.vue')
     }
   //   {
   //     path: '/vuecommunitytest/personal',

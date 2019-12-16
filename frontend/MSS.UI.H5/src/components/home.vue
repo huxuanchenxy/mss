@@ -11,6 +11,7 @@
     import tabs from './commom/tabs.vue'
     import axios from 'axios'
     export default {
+        name: 'home',
         components: {
             isheader,
             tabs,

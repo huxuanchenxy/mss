@@ -13,11 +13,11 @@
         </mu-appbar>
         <mu-drawer :open="open" :docked="docked" @close="toggle()" style="width:40%;">
             <mu-list @itemClick="docked ? '' : toggle()">
-                <mu-list-item title="技术资料"/>
-                <mu-list-item title="我的工单"/>
-                <mu-list-item title="我的故障报告"/>
-                <mu-list-item title="账户设定"/>
-                <mu-list-item title="关于"/> 
+                <mu-list-item title="技术资料" @click="JumpTo(1)"/>
+                <mu-list-item title="我的工单" @click="JumpTo(2)"/>
+                <mu-list-item title="我的故障报告" @click="JumpTo(3)"/>
+                <mu-list-item title="账户设定" @click="JumpTo(4)"/>
+                <mu-list-item title="关于" @click="JumpTo(5)"/> 
                 <mu-list-item v-if="docked" @click.native="open = false" title="收回"/>
             </mu-list>
         </mu-drawer>
@@ -68,6 +68,20 @@
                 this.open = !this.open
                 this.docked = !flag
                 console.log(event)
+            },
+            JumpTo (v) {
+                console.log('v:' +  v)
+                if(v === 4){
+                    this.$router.push({
+                        name: 'Password'
+                    })
+                }
+                if(v === 1){
+                    this.$router.push({
+                        name: 'home'
+                    })
+                }
+
             }
         }
     }
