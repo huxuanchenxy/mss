@@ -13,9 +13,27 @@ module.exports = {
     proxyTable: {
       // 远程地址：http://124.74.132.218:8091
       // 局域网地址：http://10.89.34.198:8091
+      '/api': {
+        target: 'http://10.89.36.198:8091',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      },
       '/File': {
         target: 'http://10.89.36.103:8090',
         changeOrigin: true
+      },
+      '/Main': {
+        target: 'http://10.89.36.198:8091',
+        changeOrigin: true
+      },
+      '/MetroSh': {
+        target: 'http://m.shmetro.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/MetroSh': ''
+        }
       }
     },
 
@@ -57,7 +75,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps
