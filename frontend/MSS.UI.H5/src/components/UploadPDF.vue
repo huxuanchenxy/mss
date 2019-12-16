@@ -234,7 +234,7 @@ export default {
       this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
-      console.log(item)
+      // console.log(item)
       // let arr = item.name.split('.')
       // let extTmp = arr[arr.length - 1]
       // if (arr[arr.length - 1] === 'pdf') {
@@ -257,20 +257,20 @@ export default {
       // } else if (this.canDown) {
       //   downloadFile(item.id, item.name)
       // }
-      // window.open(this.previewUrl, '_blank')
-      let _this = this
-      this.pdfSrc = item.url
-      this.showPDF = true
-      let lodingTask = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
-      this.pdfSrc = lodingTask
-      console.log('this.pdfsrc:' + JSON.stringify(this.pdfSrc))
-      this.pdfSrc.then(pdf => {
-        this.numPages = pdf.numPages
+      window.open(item.url, '_blank')
+      // let _this = this
+      // this.pdfSrc = item.url
+      // this.showPDF = true
+      // let lodingTask = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
+      // this.pdfSrc = lodingTask
+      // console.log('this.pdfsrc:' + JSON.stringify(this.pdfSrc))
+      // this.pdfSrc.then(pdf => {
+      //   this.numPages = pdf.numPages
 
-      }).catch(function(err){
-        console.log(err)
-        _this.showPDF = false
-      })
+      // }).catch(function(err){
+      //   console.log(err)
+      //   _this.showPDF = false
+      // })
     },
     getFile () {
       let allFileIds = []

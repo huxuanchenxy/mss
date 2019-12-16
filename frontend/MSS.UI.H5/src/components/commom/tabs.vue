@@ -253,7 +253,7 @@
         overflow-x: scroll;
         -webkit-overflow-scrolling: touch;
         top:10px;
-        z-index: 100;
+        // z-index: 100;
         width: 100%;
     }
     .scroll::-webkit-scrollbar {

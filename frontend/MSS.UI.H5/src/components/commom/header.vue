@@ -13,10 +13,12 @@
         </mu-appbar>
         <mu-drawer :open="open" :docked="docked" @close="toggle()" style="width:40%;">
             <mu-list @itemClick="docked ? '' : toggle()">
-                <!-- <mu-list-item title="Menu Item 1"/>
-                <mu-list-item title="Menu Item 2"/>
-                <mu-list-item title="Menu Item 3"/> -->
-                <mu-list-item v-if="docked" @click.native="open = false" title="返回"/>
+                <mu-list-item title="技术资料"/>
+                <mu-list-item title="我的工单"/>
+                <mu-list-item title="我的故障报告"/>
+                <mu-list-item title="账户设定"/>
+                <mu-list-item title="关于"/> 
+                <mu-list-item v-if="docked" @click.native="open = false" title="收回"/>
             </mu-list>
         </mu-drawer>
     </div>

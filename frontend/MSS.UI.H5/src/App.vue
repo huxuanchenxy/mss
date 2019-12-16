@@ -13,6 +13,7 @@ export default {
 </script>
 
 <style>
+@import url('https://code.aliyun.com/wudianchatou/mss.h5/raw/b68cc52eab664d94922993544e961ca189bab921/frontend/MSS.UI.H5/src/css/material-icons.css');
 html{
   font-size: 16px;
 }
