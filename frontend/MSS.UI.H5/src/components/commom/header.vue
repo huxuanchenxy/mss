@@ -5,11 +5,13 @@
             //     <img class="logo" :src="src"
             // </mu-icon-button>-->
             <mu-icon-button icon="menu" slot="left" @click="toggle()"/>
-            <mu-icon-menu slot="right" icon="more_vert" :value="theme" @change="changeTheme">
+            <mu-icon-button icon="more_vert" slot="right" @click="toggle1()"/>
+            <!-- <mu-icon-menu slot="right" icon="more_vert" :value="theme" @change="changeTheme">
                 <!-- <mu-menu-item title="LIGHT" value="light" />
                 <mu-menu-item title="CARBON" value="carbon" />
-                <mu-menu-item title="TEAL" value="teal" /> -->
-            </mu-icon-menu>
+                <mu-menu-item title="TEAL" value="teal" /> 
+                <mu-menu-item title="CARBON" value="logout" />
+            </mu-icon-menu> -->
         </mu-appbar>
         <mu-drawer :open="open" :docked="docked" @close="toggle()" style="width:40%;">
             <mu-list @itemClick="docked ? '' : toggle()">
@@ -19,6 +21,12 @@
                 <mu-list-item title="账户设定" @click="JumpTo(4)"/>
                 <mu-list-item title="关于" @click="JumpTo(5)"/> 
                 <mu-list-item v-if="docked" @click.native="open = false" title="收回"/>
+            </mu-list>
+        </mu-drawer>
+        <mu-drawer :open="open1" :docked="docked1" @close="toggle1()" style="width:18%;" :right="right1">
+            <mu-list @itemClick="docked1 ? '' : toggle1()">
+                <mu-list-item title="退出" @click="Logout()"/>
+                <mu-list-item v-if="docked1" @click.native="open1 = false" title="收回"/>
             </mu-list>
         </mu-drawer>
     </div>
@@ -40,7 +48,10 @@
                     // teal
                 },
                 open: false,
-                docked: true
+                docked: true,
+                open1: false,
+                docked1: true,
+                right1:true
             }
         },
         created () {
@@ -67,10 +78,15 @@
             toggle (flag) {
                 this.open = !this.open
                 this.docked = !flag
-                console.log(event)
+                // console.log(event)
+            },
+            toggle1 (flag1) {
+                this.open1 = !this.open1
+                this.docked1 = !flag1
+                // console.log(event)
             },
             JumpTo (v) {
-                console.log('v:' +  v)
+                // console.log('v:' +  v)
                 if(v === 4){
                     this.$router.push({
                         name: 'Password'
@@ -82,6 +98,12 @@
                     })
                 }
 
+            },
+            Logout(){
+                window.sessionStorage.removeItem('token')
+                this.$router.push({
+                    name: 'Login'
+                })
             }
         }
     }
