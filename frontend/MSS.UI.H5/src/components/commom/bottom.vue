@@ -1,10 +1,10 @@
 <template>
     <mu-paper class="bottomBar">
         <mu-bottom-nav :value="bottomNav" @change="handleChange">
-            <mu-bottom-nav-item to="/home" value="主页" title="主页" icon="restore"/>
-            <mu-bottom-nav-item to="/home/publish" value="发布" title="发布" icon="favorite"/>
-            <mu-bottom-nav-item to="/home/news" value="消息" title="消息" icon="location_on"/>
-            <mu-bottom-nav-item to="/home/mine" value="我的" title="我的" icon="location_on"/>
+            <mu-bottom-nav-item to="/home" value="维护资料" title="维护资料" icon="book"/>
+            <mu-bottom-nav-item to="/trouble" value="故障接修" title="故障接修" icon="pan_tool"/>
+            <mu-bottom-nav-item to="/home/news" value="消息" title="消息" icon="warning"/>
+            <mu-bottom-nav-item to="/home/mine" value="我的" title="我的" icon="account_circle"/>
         </mu-bottom-nav>
     </mu-paper>
 </template>
@@ -12,7 +12,7 @@
     export default{
         data(){
             return {
-                bottomNav: '主页'
+                bottomNav: '维护资料'
             }
         },
         created:function(){
@@ -37,10 +37,10 @@
                 //     this.person_path = '/home/login'
                 // }
                 if (this.$route.path === '/home') {
-                    this.bottomNav = '主页'
+                    this.bottomNav = '维护资料'
                 }
-                if (this.$route.path === '/home/publish') {
-                    this.bottomNav = '发布'
+                if (this.$route.path === '/trouble') {
+                    this.bottomNav = '故障接修'
                 }
                 if (this.$route.path === '/home/news') {
                     this.bottomNav = '消息'

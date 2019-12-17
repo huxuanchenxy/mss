@@ -2,9 +2,10 @@
     <div class="wrap">
         <!-- tabs -->
         <mu-tabs class="tabs" :value="activeTab" @change="handleTabChange">
-            <mu-tab value="all" title="技术资料" />
-            <!-- <mu-tab value="good" title="精华" />
-            <mu-tab value="weex" title="weex" />
+            <mu-tab value="techbook" title="技术资料"/>
+             <mu-tab value="planb" title="应急预案"/>
+             <mu-tab value="rule" title="规章制度"/>
+            <!--<mu-tab value="weex" title="weex" />
             <mu-tab value="share" title="分享" />
             <mu-tab value="ask" title="问答" />
             <mu-tab value="job" title="招聘" /> -->
@@ -41,6 +42,7 @@
     import { systemResource } from '@/common/js/dictionary.js'
     import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
     import MyUploadPDF from '@/components/UploadPDF'
+    import Bus from '../commom/Bus'
     // import CMapReaderFactory from 'vue-pdf/src/CMapReaderFactory.js'
     // import pdf from 'vue-pdf'
     export default {
@@ -54,7 +56,7 @@
                 loading: false,
                 scroller: null,
                 nomore: false,
-                activeTab: 'all', //当前选中tab项
+                activeTab: 'techbook', //当前选中tab项
                 items: [],
                 styleObj: {
                     backgroundColor: '#999'
@@ -81,6 +83,7 @@
         },
         mounted() {
             this.scroller = this.$el
+            this.emitattr('techbook')
             // 有时PDF文件地址会出现跨域的情况,这里最好处理一下
         // 　　this.pdfSrc = pdf.createLoadingTask(this.pdfSrc)
             // this.pdfSrc = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })
@@ -95,7 +98,11 @@
                 return thistime.format(time, 'zh_CN') //将UTC时间转换格式---> 几天前,几小时前...
             }
         },
-        methods: {   
+        methods: {
+            emitattr(attr){
+                // console.log('emit:' + attr)
+                Bus.$emit('addattr', attr)
+            },
             handlePreviewFile() {
                 this.$refs.pdfSearch.handleOpen();
             }, 
@@ -132,8 +139,7 @@
                 this.page = 1 //切换tab，页数重置为第一页
                 this.nomore = false //切换tab，重置
                 this.activeTab = val
-                this.url = 'http://www.vue-js.com/api/v1/topics?tab=' + val
-                this.getData()
+                this.emitattr(val)
             },
             getData() {
                 let that = this

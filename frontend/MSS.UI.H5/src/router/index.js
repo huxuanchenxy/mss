@@ -8,15 +8,25 @@ import publish from "../components/publist.vue";
 import homepage from "../components/homepage.vue"
 import content from "../components/content.vue"
 import user from "../components/user.vue"
+import trouble from "../components/trouble.vue"
 Vue.use(Router)
 
 export default new Router({
   mode: 'hash',
   routes: [
     {
+      path: '/',
+      redirect: 'home'
+    },
+    {
       path: '/home',
       name: 'home',
       component: home
+    },
+    {
+      path: '/trouble',
+      name: 'trouble',
+      component: trouble
     },
     {
       path: '/home/mine',

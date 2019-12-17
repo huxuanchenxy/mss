@@ -5,4 +5,4 @@
 /src/router/*.js
 /src/screenMangement/*.js
 /src/screenMangement/_SetScreen.vue
- 
+/*.vue
