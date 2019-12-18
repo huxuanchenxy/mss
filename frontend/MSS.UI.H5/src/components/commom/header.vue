@@ -5,7 +5,7 @@
             //     <img class="logo" :src="src"
             // </mu-icon-button>-->
             <mu-icon-button icon="menu" slot="left" @click="toggle()"/>
-            <mu-icon-button icon="more_vert" slot="right" @click="toggle1()"/>
+            <mu-icon-button icon="add" slot="right" @click="toggle1()"/>
             <!-- <mu-icon-menu slot="right" icon="more_vert" :value="theme" @change="changeTheme">
                 <!-- <mu-menu-item title="LIGHT" value="light" />
                 <mu-menu-item title="CARBON" value="carbon" />
@@ -48,7 +48,7 @@ export default {
         // teal
       },
       open: false,
-      docked: true,
+      docked: false,
       open1: false,
       docked1: true,
       right1: true,
@@ -87,16 +87,15 @@ export default {
     },
     toggle (flag) {
       this.open = !this.open
-      // this.docked = !flag
-      this.open1 = false
+      this.docked = false
+      // this.open1 = false
       // this.docked1 = false
-      this.hoverShow = true
       // console.log(event)
     },
     toggle1 (flag1) {
-      this.open1 = !this.open1
-      // this.docked1 = !flag1
-      this.open = false
+      // this.open1 = !this.open1
+      // // this.docked1 = !flag1
+      // this.open = false
       // this.docked = false
       Bus.$on('addattr',(val)=>{
         console.log('val:' + val)

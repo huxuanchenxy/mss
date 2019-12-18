@@ -87,8 +87,8 @@ export default {
     },
     toggle (flag) {
       this.open = !this.open
-      // this.docked = !flag
-      this.open1 = false
+      this.docked = false
+      // this.open1 = false
       // this.docked1 = false
       this.hoverShow = true
       // console.log(event)

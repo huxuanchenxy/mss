@@ -1,10 +1,10 @@
 <template>
-    <div class="hello">
+    <div class="header3">
         <mu-appbar class="title" title="上海18号线智能运维系统" >
             <!--// <mu-icon-button slot="left">
             //     <img class="logo" :src="src"
             // </mu-icon-button>-->
-            <mu-icon-button icon="face" slot="left"/>
+            <!-- <mu-icon-button icon="face" slot="left"/> -->
             <mu-icon-button icon="keyboard_backspace" slot="right" @click="toggle1()"/>
             <!-- <mu-icon-menu slot="right" icon="more_vert" :value="theme" @change="changeTheme">
                 <!-- <mu-menu-item title="LIGHT" value="light" />
@@ -164,5 +164,15 @@ export default {
     opacity: .4;
     z-index: 6;
     width: 62%;
+}
+.header3 .mu-appbar-title{
+  position: absolute;
+    width: 250px;
+    height: 50px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 7%;
+    bottom: 0;
 }
 </style>
