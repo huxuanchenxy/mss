@@ -3,8 +3,8 @@
         <mu-bottom-nav :value="bottomNav" @change="handleChange">
             <mu-bottom-nav-item to="/home" value="维护资料" title="维护资料" icon="book"/>
             <mu-bottom-nav-item to="/trouble" value="故障接修" title="故障接修" icon="pan_tool"/>
-            <mu-bottom-nav-item to="/home/news" value="消息" title="消息" icon="warning"/>
-            <mu-bottom-nav-item to="/home/mine" value="我的" title="我的" icon="account_circle"/>
+            <mu-bottom-nav-item to="/warning" value="消息" title="消息" icon="warning"/>
+            <mu-bottom-nav-item to="/my" value="我的" title="我的" icon="account_circle"/>
         </mu-bottom-nav>
     </mu-paper>
 </template>
@@ -42,10 +42,10 @@
                 if (this.$route.path === '/trouble') {
                     this.bottomNav = '故障接修'
                 }
-                if (this.$route.path === '/home/news') {
+                if (this.$route.path === '/warning') {
                     this.bottomNav = '消息'
                 }
-                if (this.$route.path === '/home/mine') {
+                if (this.$route.path === '/my') {
                     this.bottomNav = '我的'
                 }
             }

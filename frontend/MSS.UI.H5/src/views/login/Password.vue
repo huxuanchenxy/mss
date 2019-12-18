@@ -27,16 +27,13 @@
       </div>
 
       <div class="btn-wrap">
-        <el-button native-type="submit" @click="check">确认</el-button>
-        <el-button native-type="submit">
-          <router-link class="color-white" :to="{ name: 'home' }">取消</router-link>
-        </el-button>
+        <el-button type="primary" @click="check" class="logoutbutton" >提交修改</el-button>
       </div>
     </div>
   </div>
 </template>
 <script>
-import isheader from '../../components/commom/header.vue'
+import isheader from '../../components/commom/header3.vue'
 import BottomNavigation from '../../components/commom/bottom.vue'
 export default {
   components: {

@@ -3,12 +3,10 @@ import Router from 'vue-router'
 
 import home from "../components/home.vue"
 import mine from "../components/mine.vue";
-import news from "../components/news.vue";
-import publish from "../components/publist.vue";
-import homepage from "../components/homepage.vue"
-import content from "../components/content.vue"
-import user from "../components/user.vue"
 import trouble from "../components/trouble.vue"
+import warning from "../components/warning.vue"
+import my from "../components/my.vue"
+import mysetting from "../components/mysetting.vue"
 Vue.use(Router)
 
 export default new Router({
@@ -29,40 +27,21 @@ export default new Router({
       component: trouble
     },
     {
-      path: '/home/mine',
-      name: 'mine',
-      component: mine
-    },
+      path: '/warning',
+      name: 'warning',
+      component: warning
+    },    
     {
-      path: '/home/news',
-      name: 'news',
-      component: news
-    },
-    {
-      path: '/home/publish',
-      name: 'publish',
-      component: publish
-    },
-    {
-      path: '/home',
-      name: 'homepage',
-      component: homepage
-    },{
-      path:"/home/content",
-      name:"content",
-      component:content
-    },
-    {
-      path:"/home/user",
-      name:"user",
-      component:user
+      path: '/my',
+      name: 'my',
+      component: my
     }
-    //     ,
-    // {
-    //   path: '/login',
-    //   name: 'Login',
-    //   component: login
-    // }
+        ,
+    {
+      path: '/mysetting',
+      name: 'mysetting',
+      component: mysetting
+    }
     ,
     {
       path: '/login',

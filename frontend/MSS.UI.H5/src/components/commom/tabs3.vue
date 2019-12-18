@@ -2,39 +2,13 @@
     <div class="wrap">
         <!-- tabs -->
         <mu-tabs class="tabs" :value="activeTab" @change="handleTabChange">
-            <mu-tab value="all" title="技术资料" />
-            <!-- <mu-tab value="good" title="精华" />
-            <mu-tab value="weex" title="weex" />
-            <mu-tab value="share" title="分享" />
+            <mu-tab value="notification" title="通知" />
+            <mu-tab value="alarm" title="报警" />
+            <mu-tab value="prealarm" title="预警" />
+            <!-- <mu-tab value="share" title="分享" />
             <mu-tab value="ask" title="问答" />
             <mu-tab value="job" title="招聘" /> -->
         </mu-tabs>
-        
-        <div class="input-group">
-            <label for="name">设备类型</label>
-            <div class="inp">
-            <el-select v-model="eqpTypeOnly" filterable placeholder="请选择" @change="eqpTypeOnlyChange">
-                <el-option
-                v-for="item in eqpTypeList"
-                :key="item.key"
-                :label="item.tName"
-                :value="item.id">
-                </el-option>
-            </el-select>
-            </div>
-        </div>
-        <div class="scroll">
-            <!-- <el-scrollbar> -->
-                <upload-pdf class="upload-list"
-                :readOnly="readOnly"
-                :systemResource="systemResource"
-                :fileIDs="eqpTypeFileIDs"
-                :unSelectedEntity="unSelectedEqpType"
-                @getFileIDs="getFileIDs">
-                </upload-pdf>
-            <!-- </el-scrollbar> -->
-        </div>
-        <!-- <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore" /> -->
     </div>
 </template>
 <script>
@@ -42,18 +16,16 @@
     import timeago from 'timeago.js'
     import api from '@/api/eqpApi'
     import { systemResource } from '@/common/js/dictionary.js'
-    import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
-    import MyUploadPDF from '@/components/UploadPDF'
     export default {
         components: {
-            'upload-pdf': MyUploadPDF
+            
         },
         data() {
             return {
                 loading: false,
                 scroller: null,
                 nomore: false,
-                activeTab: 'all', //当前选中tab项
+                activeTab: 'notification', //当前选中tab项
                 items: [],
                 styleObj: {
                     backgroundColor: '#999'
@@ -72,7 +44,7 @@
         },
         created() {
             // this.getData()
-            this.InitSelect()
+            // this.InitSelect()
         },
         mounted() {
             this.scroller = this.$el
@@ -84,42 +56,13 @@
                 return thistime.format(time, 'zh_CN') //将UTC时间转换格式---> 几天前,几小时前...
             }
         },
-        methods: {    
-            getFileIDs (ids) {
-                if (this.activeName === 'eqp') {
-                    this.fileIDsEdit = ids
-                } else {
-                    this.eqpTypeFileIDsEdit = ids
-                }
-            },
-            loadMore() {
-                if (!this.nomore) {
-                    this.loading = true
-                    this.page +=1
-                    let url = this.url + '&page=' + this.page
-                    let arr = []
-                    setTimeout(() => {
-                        let that = this
-                        axios.get(url).then(function(response) {
-                            arr = response.data.data
-                            if (arr.length === 0) {
-                                that.loading = false
-                                that.nomore = true
-                                return
-                            }
-                            that.items = [...that.items, ...arr]
-                            arr = []
-                        })
-                        this.loading = false
-                    }, 1000)
-                }
-            },
+        methods: {
             handleTabChange(val) {
                 this.page = 1 //切换tab，页数重置为第一页
                 this.nomore = false //切换tab，重置
                 this.activeTab = val
                 this.url = 'http://www.vue-js.com/api/v1/topics?tab=' + val
-                this.getData()
+                
             },
             getData() {
                 let that = this
@@ -129,29 +72,6 @@
                     that.items = response.data.data
                         // console.log(that.items)
                 })
-            },
-            eqpTypeOnlyChange () {
-                this.loading = true
-                api.getEqpTypeByID(this.eqpTypeOnly).then(res => {
-                    this.loading = false
-                    let _res = res.data
-                    if (_res !== null) {
-                    this.eqpTypeFileIDs = _res.uploadFiles
-                    } else {
-                    this.eqpTypeFileIDs = ''
-                    }
-                    this.unSelectedEqpType = 0
-                }).catch(err => console.log(err))
-            },
-            InitSelect () {
-                api.getEqpTypeAll().then(res => {
-                    this.eqpTypeList = res.data
-                    // this.eqpType = this.eqpTypeList[0].id
-                    // 设备加载
-                    // apiMainTain.GetEqpByTypeAndLine(this.eqpType).then(res => {
-                    // this.eqpList = res.data
-                    // }).catch(err => console.log(err))
-                }).catch(err => console.log(err))
             }
         }
     }
@@ -165,8 +85,8 @@
     }
 
     .tab .tabs {
-        margin-top: 5rem;
-        height: 4rem;
+        margin-top: 4rem;
+        height: 3rem;
         position: fixed;
         top: 0;
         left: 0;
