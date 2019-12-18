@@ -1,11 +1,11 @@
 <template>
-    <div class="hello">
+    <div class="header1hello">
         <mu-appbar class="title" title="上海18号线智能运维系统" >
             <!--// <mu-icon-button slot="left">
             //     <img class="logo" :src="src"
             // </mu-icon-button>-->
             <mu-icon-button icon="menu" slot="left" @click="toggle()"/>
-            <mu-icon-button icon="add" slot="right" @click="toggle1()"/>
+            <mu-icon-button icon="add" slot="right" @click="toggle1()" class="iconright"/>
             <!-- <mu-icon-menu slot="right" icon="more_vert" :value="theme" @change="changeTheme">
                 <!-- <mu-menu-item title="LIGHT" value="light" />
                 <mu-menu-item title="CARBON" value="carbon" />
@@ -129,7 +129,7 @@ export default {
 <style scoped lang="scss">
     .title {
         text-align: center;
-        height: 4rem;
+        height: 5rem;
     }
     .mu-icon-button {
         padding: 0.4rem;
@@ -153,6 +153,14 @@ export default {
     .navright{
         width:18%;
     }
+    .header1hello .left{
+      position:absolute;
+      left:0;
+    }
+        .header1hello .iconright{
+      position:absolute;
+      right:0;
+    }
 </style>
 <style>
 .navleft .mu-item-title-row{
@@ -171,5 +179,16 @@ export default {
     opacity: .4;
     z-index: 6;
     width: 62%;
+}
+
+.header1hello .mu-appbar-title{
+  position: absolute;
+    width: 250px;
+    height: 50px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
 </style>

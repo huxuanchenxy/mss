@@ -130,7 +130,7 @@ export default {
 <style scoped lang="scss">
     .title {
         text-align: center;
-        height: 4rem;
+        height: 5rem;
     }
     .mu-icon-button {
         padding: 0.4rem;
@@ -180,7 +180,7 @@ export default {
     margin: 0 auto;
     left: 0;
     right: 0;
-    top: 7%;
+    top: 0;
     bottom: 0;
 }
 </style>

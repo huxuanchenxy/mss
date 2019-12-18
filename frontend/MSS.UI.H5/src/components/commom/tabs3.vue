@@ -85,8 +85,8 @@
     }
 
     .tab .tabs {
-        margin-top: 4rem;
-        height: 3rem;
+        margin-top: 5rem;
+        height: 4rem;
         position: fixed;
         top: 0;
         left: 0;

@@ -185,8 +185,8 @@
     }
 
     .tab .tabs {
-        margin-top: 4rem;
-        height: 3rem;
+        margin-top: 5rem;
+        height: 4rem;
         position: fixed;
         top: 0;
         left: 0;
@@ -253,14 +253,15 @@
     .scroll {
         /* width:400px; */
         position: absolute;
-        height:100%;
+        // height:100%;
         overflow: scroll;
         overflow-y: scroll;
         overflow-x: scroll;
         -webkit-overflow-scrolling: touch;
-        top:10px;
+        top:42px;
         // z-index: 100;
         width: 100%;
+        bottom:3%;
     }
     .scroll::-webkit-scrollbar {
         display: none;
@@ -290,7 +291,7 @@
         // width: 200px;
         height: 40px;
         // border: 1px solid;
-        top: -30px;
+        top: 0;
         position: relative;
     }
 </style>
