@@ -11,6 +11,9 @@ import '../theme/index.css'
 import LightTimeline from 'vue-light-timeline'
 // import Charts from '@/components/charts/index'
 
+// excel在线编辑插件handsontable
+import 'handsontable/dist/handsontable.full.css'
+
 // 引入 ECharts 主模块
 import echarts from 'echarts/lib/echarts'
 

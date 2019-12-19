@@ -101,7 +101,7 @@
                       <div class="name">{{ item.locationName }}</div>
                       <div class="name">{{ item.teamName }}</div>
                       <div class="name">{{ item.pmTypeName }}</div>
-                      <div class="name">{{ item.pmFrequency }}</div>
+                      <div class="name">{{ item.pmCycle }}</div>
                       <div class="name">{{ item.planQuantity }}</div>
                       <div class="name">{{ item.unit }}</div>
                       <div class="last-update-time">{{ item.planDate }}</div>
@@ -357,7 +357,7 @@ export default {
         Month: month + 1,
         Team: this.team,
         Location: this.area,
-        LocationBy: this.areaPath.length - 2,
+        LocationBy: this.areaPath.length === 0 ? '' : this.areaPath.length - 2,
         PlanDate: this.planDate
       }).then(res => {
         this.loading = false

@@ -61,11 +61,31 @@ const routes = [
           }, {
             path: 'list',
             name: 'MaintenanceList',
-            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/children/List.vue')
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/List.vue')
           }, {
             path: 'update',
             name: 'UpdateMaintenanceList',
-            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/children/update.vue')
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/update.vue')
+          }, {
+            path: 'detail',
+            name: 'DetailMaintenanceList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/detail.vue')
+          }, {
+            path: 'import',
+            name: 'ImportPM',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/import.vue')
+          }, {
+            path: 'entityList',
+            name: 'EntityList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/entityCreate/list.vue')
+          }, {
+            path: 'create',
+            name: 'CreateEntity',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/entityCreate/create.vue')
+          }, {
+            path: 'detailEntity',
+            name: 'DetailEntity',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/entityCreate/detail.vue')
           }
         ]
       }

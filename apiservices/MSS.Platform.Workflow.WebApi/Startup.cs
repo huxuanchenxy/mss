@@ -113,6 +113,7 @@ builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         private void InitConst()
         {
             FilePath.CSVPATH = Configuration["InitConst:Csv"];
+            FilePath.PMPATH = Configuration["InitConst:PMUploadFile"];
         }
     }
 }

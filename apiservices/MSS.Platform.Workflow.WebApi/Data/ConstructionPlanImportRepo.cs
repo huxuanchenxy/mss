@@ -31,7 +31,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
         Task<List<QueryItem>> ListAllLines();
         Task<List<QueryItem>> ListAllOrgByType(OrgType orgType);
         Task<List<QueryItem>> ListAllEqpTypes();
-        Task<List<QueryItem>> ListAllLocations();
+        Task<List<QueryItem>> ListAllLocations(int? location = null, int? locationBy = null);
         Task<List<QueryItem>> ListDictionarysByParent(int parent);
     }
 
@@ -307,16 +307,25 @@ namespace MSS.Platform.Workflow.WebApi.Data
             });
         }
 
-        public async Task<List<QueryItem>> ListAllLocations()
+        public async Task<List<QueryItem>> ListAllLocations(int? location = null, int? locationBy = null)
         {
             return await WithConnection(async c =>
             {
+                IEnumerable<QueryItem> ret = null;
                 string sql = "select AreaName as name,id,1 as LocationBy from tb_config_bigarea UNION " +
                 "select AreaName as name,id,2 as LocationBy from tb_config_midarea";
-                var result = await c.QueryAsync<QueryItem>(sql);
-                if (result != null && result.Count() > 0)
+                if (location!=null && locationBy!=null)
                 {
-                    return result.ToList();
+                    sql = "select * from (" + sql + ") a where a.id=@location and a.locationBy=@locationBy";
+                    ret = await c.QueryAsync<QueryItem>(sql,new { location, locationBy });
+                }
+                else
+                {
+                    ret = await c.QueryAsync<QueryItem>(sql);
+                }
+                if (ret != null && ret.Count() > 0)
+                {
+                    return ret.ToList();
                 }
                 else
                 {

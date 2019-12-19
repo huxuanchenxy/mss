@@ -55,6 +55,7 @@ namespace MSS.API.Common
         public static string BASEFILE = "D:/bin/eqp/";
         public static string SHAREFILE = "File/";
         public static string CSVPATH = @"\\10.89.36.152\uploads\";
+        public static string PMPATH = "D:/services/uploadFile/PM/";
     }
 
     public enum UploadShowType

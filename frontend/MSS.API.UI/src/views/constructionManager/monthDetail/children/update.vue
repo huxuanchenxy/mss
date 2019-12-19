@@ -176,7 +176,7 @@ export default {
         this.monthDetail.eqpTypeName = _res.eqpTypeName
         // this.monthDetail.locationName = _res.locationName
         this.monthDetail.teamName = _res.teamName
-        this.monthDetail.pmFrequency = _res.pmFrequency
+        this.monthDetail.pmFrequency = _res.pmCycle
         this.monthDetail.planQuantity = _res.planQuantity
         this.monthDetail.unit = _res.unit
         this.monthDetail.planDate = _res.planDate

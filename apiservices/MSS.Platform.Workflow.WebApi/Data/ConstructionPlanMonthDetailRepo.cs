@@ -18,6 +18,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
     {
         Task<ConstructionPlanMonthDetails> ListPage(ConstructionPlanMonthDetailParm parm);
         Task<ConstructionPlanMonthDetail> GetByID(int id);
+        Task<List<ConstructionPlanMonthDetail>> GetByIDs(List<int> ids);
         Task<int> Update(ConstructionPlanMonthDetail obj);
     }
 
@@ -37,7 +38,19 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 " left join org_tree ot on ot.id=c.team " +
                 " left join dictionary_tree d on d.id=c.work_type " +
                 " left join dictionary_tree dt on dt.id=c.pm_type ";
-                string sqlwhere=" where c.query=" + parm.Query+" and c.month=" + parm.Month;
+                string sqlwhere="";
+                if (parm.Query != null)
+                {
+                    sqlwhere = " where c.query=" + parm.Query + " and c.month=" + parm.Month;
+                }
+                else if (parm.Year!=null && parm.Line!=null && parm.Company!=null && parm.Department!=null)
+                {
+                    string tmpSql = "(select id from construction_plan_import_common where year="+parm.Year
+                    + " and department="+parm.Department
+                    + " and company=" + parm.Company
+                    + " and line=" + parm.Line + ")";
+                    sqlwhere = " where c.query=" + tmpSql + " and c.month=" + parm.Month +" and c.is_assigned=0 ";
+                }
                 if (parm.Team!=null)
                 {
                     sqlwhere += " and c.team=" + parm.Team;
@@ -81,6 +94,20 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 " left join dictionary_tree d on d.id=c.work_type " +
                 " left join dictionary_tree dt on dt.id=c.pm_type where c.id=@id";
                 return await c.QueryFirstOrDefaultAsync<ConstructionPlanMonthDetail>(sql,new { id});
+            });
+        }
+
+        public async Task<List<ConstructionPlanMonthDetail>> GetByIDs(List<int> ids)
+        {
+            return await WithConnection(async c =>
+            {
+                ConstructionPlanMonthDetails ret = new ConstructionPlanMonthDetails();
+                string sql = "SELECT *,ot.name as team_name,d.name,dt.name as pm_type_name " +
+                " FROM construction_plan_month_detail c " +
+                " left join org_tree ot on ot.id=c.team " +
+                " left join dictionary_tree d on d.id=c.work_type " +
+                " left join dictionary_tree dt on dt.id=c.pm_type where c.id in @ids";
+                return (await c.QueryAsync<ConstructionPlanMonthDetail>(sql, new { ids })).ToList();
             });
         }
         public async Task<int> Update(ConstructionPlanMonthDetail obj)
