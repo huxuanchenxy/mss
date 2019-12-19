@@ -5,17 +5,21 @@
     <div class="troublescroll">
       <ul>
         <li class="itemli">
-          <div class="itemlabel"><span>发生时间:</span></div>
+          <div class="itemlabel">
+            <span>发生时间:</span>
+          </div>
           <div class="itemvalue">
-            <el-date-picker
-              v-model="happeningTime.text"
-              type="datetime"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :clearable="false"
-              class="datetime-width"
-              placeholder="请选择发生时间"
-            >
-            </el-date-picker>
+            <div class="input" placeholder="请输入文字" @click="selectYear">{{year}}</div>
+            <mt-datetime-picker
+              v-model="dateValue"
+              type="date"
+              ref="datePicker"
+              year-format="{value} 年"
+              month-format="{value} 月"
+              date-format="{value} 日"
+              :endDate="new Date()"
+              @confirm="handleConfirm"
+            ></mt-datetime-picker>
           </div>
         </li>
       </ul>
@@ -37,8 +41,26 @@ export default {
   },
   data() {
     return {
-      happeningTime: { text: "", tips: "" }
+      happeningTime: "",
+      year: "",
+      dateValue: "",
+      isClicked: false
     };
+  },
+  methods: {
+    openPicker() {
+      this.$refs.refhappeningTime.open();
+    },
+    selectYear() {
+      this.$refs.datePicker.open();
+    },
+    handleConfirm(value) {
+      console.log(value);
+      this.year = value.getFullYear();
+      this.month = value.getMonth() + 1;
+      this.date = value.getDate();
+      this.isClicked = true;
+    }
   }
 };
 </script>
@@ -64,6 +86,47 @@ export default {
 }
 .troublescroll {
   position: absolute;
-  top: 17%;
+  top: 115px;
+  width:100%;
 }
+
+.input {
+  width: 200px;
+  height: 24px;
+  line-height: 12px;
+  font-size: 14px;
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+.input:empty::before {
+  content: attr(placeholder);
+}
+.itemlabel{
+    display:inline-block;
+    width: 30%;
+    position:absolute;
+    height: 30px;
+}
+.itemlabel span{
+    top: 10%;
+    position: absolute;
+    color:#fff;
+}
+.itemvalue{
+    display:inline-block;
+    width: 70%;
+    position: absolute;
+    left: 30%;
+}
+.troublescroll ul {
+        position: absolute;
+    margin: 0 auto;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 90%;
+}
+
 </style>

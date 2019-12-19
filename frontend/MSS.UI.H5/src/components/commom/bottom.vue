@@ -2,7 +2,7 @@
     <mu-paper class="bottomBar">
         <mu-bottom-nav :value="bottomNav" @change="handleChange">
             <mu-bottom-nav-item to="/home" value="维护资料" title="维护资料" icon="book"/>
-            <mu-bottom-nav-item to="/trouble" value="故障接修" title="故障接修" icon="pan_tool"/>
+            <mu-bottom-nav-item to="/troublelist" value="故障接修" title="故障接修" icon="pan_tool"/>
             <mu-bottom-nav-item to="/warning" value="消息" title="消息" icon="warning"/>
             <mu-bottom-nav-item to="/my" value="我的" title="我的" icon="account_circle"/>
         </mu-bottom-nav>
@@ -39,7 +39,7 @@
                 if (this.$route.path === '/home') {
                     this.bottomNav = '维护资料'
                 }
-                if (this.$route.path === '/trouble') {
+                if (this.$route.path === '/troublelist') {
                     this.bottomNav = '故障接修'
                 }
                 if (this.$route.path === '/warning') {

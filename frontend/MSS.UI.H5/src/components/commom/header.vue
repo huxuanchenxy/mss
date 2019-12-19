@@ -18,7 +18,7 @@
                 <mu-list-item title="技术资料" @click="JumpTo(1)"><mu-icon value="business_center" class="navlefticon"></mu-icon></mu-list-item>
                 <mu-list-item title="我的工单" @click="JumpTo(2)"><mu-icon value="mail" class="navlefticon"></mu-icon></mu-list-item>
                 <mu-list-item title="我的故障报告" @click="JumpTo(3)"><mu-icon value="report" class="navlefticon"></mu-icon></mu-list-item>
-                <mu-list-item title="账户设定" @click="JumpTo(4)"><mu-icon value="person" class="navlefticon"></mu-icon></mu-list-item>
+                <mu-list-item title="修改密码" @click="JumpTo(4)"><mu-icon value="person" class="navlefticon"></mu-icon></mu-list-item>
                 <mu-list-item @click.native="open = false" title="收回"><mu-icon value="chevron_left" class="navlefticon"></mu-icon></mu-list-item>
             </mu-list>
         </mu-drawer>
@@ -129,7 +129,7 @@ export default {
 <style scoped lang="scss">
     .title {
         text-align: center;
-        height: 5rem;
+        height: 58px;
     }
     .mu-icon-button {
         padding: 0.4rem;

@@ -28,7 +28,10 @@ Vue.use(BaiduMap, {
   ak: 'ZZunCHGz66gcNItI8ILT6j2AI6EjTBhK'
 })
 Vue.config.productionTip = false
+import MintUI from 'mint-ui'
+import 'mint-ui/lib/style.css'
 
+Vue.use(MintUI)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -72,7 +72,7 @@ export default {
   z-index: 1;
 }
 .warningmylist {
-  top: 16%;
+  top: 115px;
 padding: 8px 0;
     width: 100%;
     height: 74%;

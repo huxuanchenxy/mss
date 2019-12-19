@@ -7,6 +7,7 @@ import trouble from "../components/trouble.vue"
 import warning from "../components/warning.vue"
 import my from "../components/my.vue"
 import mysetting from "../components/mysetting.vue"
+import troublelist from "../components/troublelist.vue"
 Vue.use(Router)
 
 export default new Router({
@@ -25,6 +26,11 @@ export default new Router({
       path: '/trouble',
       name: 'trouble',
       component: trouble
+    },
+    {
+      path: '/troublelist',
+      name: 'troublelist',
+      component: troublelist
     },
     {
       path: '/warning',

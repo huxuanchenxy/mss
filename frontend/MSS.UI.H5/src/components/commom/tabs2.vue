@@ -162,8 +162,8 @@ export default {
     }
 
     .tab .tabs {
-        margin-top: 5rem;
-        height: 4rem;
+        margin-top: 58px;
+        height: 52px;
         position: fixed;
         top: 0;
         left: 0;
