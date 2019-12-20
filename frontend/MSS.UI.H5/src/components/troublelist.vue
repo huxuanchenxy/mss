@@ -2,38 +2,72 @@
   <div class="wrapper">
     <isheader class="header"></isheader>
     <tabs class="tab"></tabs>
-    <el-collapse class="filtercollapse" v-model="activeName" accordion>
-      <el-collapse-item title="筛选" name="1">
-        <div class="troublefilter1">
-          <!-- <el-input v-model.trim="desc" placeholder="输入关键字筛选"></el-input> -->
-          <el-select
-            v-model="troubleStatus"
-            clearable
-            filterable
-            placeholder="按故障状态筛选"
-          >
-            <el-option
-              v-for="item in troubleStatusList"
-              :key="item.key"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-          <el-date-picker
-            v-model="searchDate"
-            type="daterange"
-            prefix-icon="el-icon-date"
-            :unlink-panels="true"
-            value-format="yyyy-MM-dd"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          >
-          </el-date-picker>
-          <el-button type="primary">筛选</el-button>
-        </div>
-      </el-collapse-item>
-    </el-collapse>
+    <div>
+      <span class="spanfilter">筛选</span>
+      <el-collapse class="filtercollapse" v-model="activeName" accordion>
+        <el-collapse-item title="" name="1">
+          <div class="troublefilter">
+            <li>
+              <div class="troublefilterleft">
+                <span>关键字:</span>
+              </div>
+              <div class="troublefilterright">
+                <el-input class="troublerightele" v-model.trim="desc" placeholder="这里输入关键字"></el-input>
+              </div>
+            </li>
+            <li>
+              <div class="troublefilterleft">
+                <span>故障状态:</span>
+              </div>
+              <div class="troublefilterright">
+                <el-select class="troublerightele" v-model="troubleStatus" clearable filterable placeholder="按故障状态筛选">
+                  <el-option
+                    v-for="item in troubleStatusList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </div>
+            </li>
+            <li>
+              <div class="troublefilterleft">
+                <span>发生日期:</span>
+              </div>
+              <div class="troublefilterright">
+                <span class="dateinput" placeholder="开始日期" @click="selectYear" v-model="startDate">{{date1}}</span>
+                <span class="dateinput2" placeholder="结束日期" @click="selectYear2" v-model="endDate">{{date2}}</span>
+              <mt-datetime-picker
+                v-model="dateValue"
+                type="date"
+                ref="datePicker"
+                year-format="{value} 年"
+                month-format="{value} 月"
+                date-format="{value} 日"
+                :endDate="new Date()"
+                @confirm="handleConfirm"
+              ></mt-datetime-picker>
+                          <mt-datetime-picker
+                v-model="dateValue"
+                type="date"
+                ref="datePicker2"
+                year-format="{value} 年"
+                month-format="{value} 月"
+                date-format="{value} 日"
+                :endDate="new Date()"
+                @confirm="handleConfirm2"
+              ></mt-datetime-picker>
+              </div>
+            </li>
+            <li>
+              <div class="troublefilterright">
+                <el-button type="primary" @click="filterclick()">确定</el-button>
+              </div>
+            </li>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
     <div class="troublelistscroll">
       <mu-list class="troublemylist">
         <li class="liitem" v-for="item in troubleList" :key="item.key">
@@ -41,18 +75,12 @@
             <mu-icon value="label" class="muicon"></mu-icon>
             <span class="itemcode">{{ item.code }}</span>
             <span class="itemlineName">{{ item.lineName }}</span>
-            <span class="itemstartLocationName">
-              {{ item.startLocationName }}
-            </span>
+            <span class="itemstartLocationName">{{ item.startLocationName }}</span>
             <span class="itemdesc">{{ item.desc }}</span>
-            <span class="itemreportedCompanyName">
-              {{ item.reportedCompanyName }}
-            </span>
+            <span class="itemreportedCompanyName">{{ item.reportedCompanyName }}</span>
             <span class="itemreportedByName">{{ item.reportedByName }}</span>
             <span class="itemstatusName">({{ item.statusName }})</span>
-            <span class="itemlastOperationName"
-              >最新操作: {{ item.lastOperationName }}</span
-            >
+            <span class="itemlastOperationName">最新操作: {{ item.lastOperationName }}</span>
             <span class="itemhappeningTime">{{ item.happeningTime }}</span>
           </mu-list-item>
           <mu-divider class="mudivider"></mu-divider>
@@ -69,7 +97,7 @@ import tabs from "./commom/tabs2.vue";
 import axios from "axios";
 import api from "@/api/DeviceMaintainRegApi.js";
 import apiAuth from "@/api/authApi";
-import { transformDate } from "@/common/js/utils.js";
+import { transformDate,dateFtt } from "@/common/js/utils.js";
 import {
   troubleOperation,
   dictionary,
@@ -103,22 +131,41 @@ export default {
       searchDate: [],
       troubleStatus: "",
       troubleStatusList: [],
-      activeName: '1',
+      activeName: "0",
+      desc: "",
+      date1:'',
+      date2:'',
+      startDate:'',
+      endDate:'',
     };
   },
   methods: {
+    filterclick(){
+      this.searchResult(1)
+      this.activeName = '0'
+    },
     openPicker() {
       this.$refs.refhappeningTime.open();
     },
     selectYear() {
       this.$refs.datePicker.open();
     },
+    selectYear2() {
+      this.$refs.datePicker2.open();
+    },
     handleConfirm(value) {
-      console.log(value);
-      this.year = value.getFullYear();
-      this.month = value.getMonth() + 1;
-      this.date = value.getDate();
+      // console.log('date1:' + value);
+      // this.year = value.getFullYear();
+      // this.month = value.getMonth() + 1;
+      // this.date1 = value.getDate();
+      this.date1 = dateFtt(value,'yyyy-MM-dd')
+      this.startDate = this.date1
       this.isClicked = true;
+    },
+    handleConfirm2(value) {
+      // console.log('date2:' + value);
+      this.date2 = dateFtt(value,'yyyy-MM-dd')
+      this.endDate = this.date2
     },
     InitSelect() {
       // 故障状态列表
@@ -132,9 +179,10 @@ export default {
     searchResult(page) {
       this.currentPage = page;
       let st, et;
-      if (this.searchDate != null && this.searchDate.length !== 0) {
-        st = this.searchDate[0] + " 00:00:00";
-        et = this.searchDate[1] + " 23:59:59";
+      console.log('this.date1:' + this.date1)
+      if (this.startDate !== '' && this.endDate !== '') {
+        st = this.startDate + " 00:00:00";
+        et = this.endDate + " 23:59:59";
       }
       let parm = {
         order: this.currentSort.order,
@@ -191,7 +239,7 @@ export default {
   overflow-y: scroll;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
-  position: absolute !important;
+  position: fixed !important;
 }
 .troublemylist .mu-divider {
   background-color: #fff;
@@ -218,10 +266,11 @@ export default {
 }
 .troublelistscroll {
   overflow: scroll;
+  overflow-y: hidden;
   position: absolute;
   height: 100%;
   width: 100%;
-  top: 33%;
+  top: 145px;
 }
 .itemcode {
   position: absolute;
@@ -301,25 +350,115 @@ export default {
 }
 .troublefilter {
   position: absolute;
-  top: 118px;
+  top: 10px;
+  width: 94%;
+  height:90%;
 }
-.filtercollapse{
+.troublefilter li {
+  padding: 10px;
+}
+.troublefilter .troublefilterleft {
+  display: inline-block;
+}
+.troublefilter .troublefilterright {
+  display: inline-block;
+}
+.filtercollapse {
   position: absolute;
-    top: 115px;
-        width: 100%;
+  top: 115px;
+  width: 100%;
 }
-.filtercollapse .el-collapse-item__wrap{
-    z-index: 1000;
-    background-color: #474a4f !important;
-    position: fixed;
-    left: 0;
-    top: 180px;
-    bottom: -8%;
-    width: 100%;
-    height: 32%;
-    background:none !important;
+.filtercollapse .el-collapse-item__wrap {
+  z-index: 300;
+  background-color: #474a4f !important;
+  position: fixed;
+  left: 0;
+  top: 156px;
+  bottom: 0;
+  width: 100%;
+      height: 35%;
+  padding-left: 0.5em !important;
+  padding-right: 0.5em !important;
+  /* background:none !important; */
 }
-.filtercollapse .el-collapse{
-    background:none !important;
+.filtercollapse .el-collapse {
+  background: none !important;
+}
+.filtercollapse .el-collapse-item__header {
+  height: 40px;
+  line-height: 40px;
+}
+.filtercollapse .el-icon-arrow-right {
+  line-height: 40px;
+}
+.troublefilterright {
+  right: 0;
+  position: absolute;
+      width: 57%;
+}
+
+.dateinput {
+  width: 200px;
+  height: 24px;
+  line-height: 12px;
+  font-size: 14px;
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color:#8e9092;
+}
+.dateinput:empty::before {
+  content: attr(placeholder);
+}
+
+.dateinput2 {
+  width: 200px;
+  height: 24px;
+  line-height: 12px;
+  font-size: 14px;
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color:#8e9092;
+}
+.dateinput2:empty::before {
+  content: attr(placeholder);
+}
+.troublefilterright .v-modal{
+  z-index: 3000;
+  position: fixed !important;
+    left: 0!important;
+    top: 0!important;
+    width: 100%!important;
+    height: 100%!important;
+    opacity: 0.5!important;
+}
+.troublefilterright .mint-popup{
+  position: fixed !important;
+}
+.troublefilterright .mint-popup-bottom{
+top:156px;
+}
+.troublefilterright .dateinput{
+width: 47%;
+    position: absolute;
+    right: 53%;
+}
+.troublefilterright .dateinput2{
+  width: 47%;
+    position: absolute;
+    right: 0;
+}
+.troublefilterright .troublerightele{
+      position: absolute;
+    right: 0;
+    width:100%;
+}
+.spanfilter{
+  position: absolute;
+    top: 123px;
+    right: 16%;
+    font-size: 16px;
+    color: #fff;
 }
 </style>
