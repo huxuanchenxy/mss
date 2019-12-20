@@ -342,7 +342,14 @@ export default {
           tableClassName: ['table01', 'htCenter'],
           width: '100%',
           height: 320,
-          mergeCells: data.mergeCells
+          mergeCells: data.mergeCells,
+          cells: function (row, col) {
+            var cellProperties = {}
+            if (col === 0) {
+              cellProperties.width = 50
+            }
+            return cellProperties
+          }
         }
         this.isShowHotTable = true
         this.$message({

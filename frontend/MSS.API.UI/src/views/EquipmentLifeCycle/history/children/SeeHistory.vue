@@ -119,7 +119,6 @@ export default {
     }
   },
   created () {
-    console.log(this.$route.params)
     // this.loading = true
     if ('eqpSelected' in this.$route.params) {
       // 设备类型加载
