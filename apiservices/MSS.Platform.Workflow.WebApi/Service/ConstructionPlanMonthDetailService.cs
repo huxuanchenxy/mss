@@ -29,6 +29,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
 
     public class ConstructionPlanMonthDetailService : IConstructionPlanMonthDetailService
     {
+        private readonly IConstructionPlanMonthChartRepo<ConstructionPlanMonthChart> _chartRepo;
         private readonly IConstructionPlanMonthDetailRepo<ConstructionPlanMonthDetail> _repo;
         private readonly IConstructionPlanImportRepo<ConstructionPlanYear> _importRepo;
         private readonly IMaintenanceRepo<MaintenanceItem> _mRepo;
@@ -37,10 +38,12 @@ namespace MSS.Platform.Workflow.WebApi.Service
 
         public ConstructionPlanMonthDetailService(IConstructionPlanMonthDetailRepo<ConstructionPlanMonthDetail> repo,
             IConstructionPlanImportRepo<ConstructionPlanYear> importRepo,
-            IMaintenanceRepo<MaintenanceItem> mRepo, IAuthHelper authhelper)
+            IMaintenanceRepo<MaintenanceItem> mRepo,
+            IConstructionPlanMonthChartRepo<ConstructionPlanMonthChart> chartRepo,IAuthHelper authhelper)
         {
             _repo = repo;
             _mRepo = mRepo;
+            _chartRepo = chartRepo;
             _importRepo = importRepo;
             _authhelper = authhelper;
             _userID = _authhelper.GetUserId();
@@ -103,7 +106,8 @@ namespace MSS.Platform.Workflow.WebApi.Service
         {
             ApiResult ret = new ApiResult();
             List<ConstructionPlanMonthDetail> month = new List<ConstructionPlanMonthDetail>();
-            DataTable dt = GetColumnName();
+            DataTable dt = GetColumnName(false);
+            DataTable dtChart = GetColumnName(true);
             DateTime dtNow = DateTime.Now;
             // 每天工作时间统计，年表中的任务分配给时间做少的一天
             List<List<int>> dayMinInMonth = new List<List<int>>();
@@ -140,7 +144,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                         if (item.Frequency% 31 == 0)
                         {
                             string d = "." + MSS.Platform.Workflow.WebApi.Model.Common.GetLastDay(i, year);
-                            ConstructionPlanMonthDetail c = GetCommonProperty(item,i, cpic,all,dtNow, ref dt);
+                            ConstructionPlanMonthDetail c = GetCommonProperty(item,i, cpic,all,dtNow, ref dt,ref dtChart);
                             c.PlanDate = year + m+".01-" + year + m+d;
                             dt.Rows[j+index][14] = c.PlanDate;
                             month.Add(c);
@@ -151,7 +155,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                             List<int> allDate = GetDay(item,ref day);
                             foreach (var date in allDate)
                             {
-                                ConstructionPlanMonthDetail c = GetCommonProperty(item,i,cpic,all,dtNow,ref dt);
+                                ConstructionPlanMonthDetail c = GetCommonProperty(item,i,cpic,all,dtNow,ref dt,ref dtChart);
                                 c.PlanDate = year + m + "."+date.ToString("D2");
                                 dt.Rows[j+index][14] = c.PlanDate;
                                 month.Add(c);
@@ -168,7 +172,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     List<int> allMonth = GetMonth(item);
                     foreach (var m in allMonth)
                     {
-                        ConstructionPlanMonthDetail c = GetCommonProperty(item,m,cpic,all,dtNow,ref dt);
+                        ConstructionPlanMonthDetail c = GetCommonProperty(item,m,cpic,all,dtNow,ref dt,ref dtChart);
                         int min=dayMinInMonth[m-1].Min();
                         int day = dayMinInMonth[m-1].IndexOf(min);
                         dayMinInMonth[m - 1][day] += item.Once;
@@ -185,6 +189,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 using (TransactionScope scope = new TransactionScope())
                 {
                     _importRepo.BulkLoad(dt);
+                    _importRepo.BulkLoad(dtChart);
                     await _importRepo.UpdateCommonStatus(query,_userID);
                     scope.Complete();
                 }
@@ -314,7 +319,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             return ret;
         }
         private ConstructionPlanMonthDetail GetCommonProperty (ConstructionPlanYear item,int month, 
-            ConstructionPlanImportCommon cpic,AllQuery all,DateTime dtNow,ref DataTable dt)
+            ConstructionPlanImportCommon cpic,AllQuery all,DateTime dtNow,ref DataTable dt,ref DataTable dtChart)
         {
             ConstructionPlanMonthDetail c = new ConstructionPlanMonthDetail();
             #region 通用属性
@@ -342,11 +347,12 @@ namespace MSS.Platform.Workflow.WebApi.Service
             c.UpdateBy = _userID;
 
             InsertRow(ref dt,c);
+            InsertRow(ref dtChart, c, cpic.Year);
             #endregion
             return c;
         }
         private ConstructionPlanMonthDetail GetCommonProperty(ConstructionPlanMonth item, int month,
-            ConstructionPlanImportCommon cpic, AllQuery all, DateTime dtNow, ref DataTable dt)
+            ConstructionPlanImportCommon cpic, AllQuery all, DateTime dtNow, ref DataTable dt, ref DataTable dtChart)
         {
             ConstructionPlanMonthDetail c = new ConstructionPlanMonthDetail();
             #region 通用属性
@@ -374,6 +380,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             c.UpdateBy = _userID;
 
             InsertRow(ref dt, c);
+            InsertRow(ref dtChart, c, cpic.Year);
             #endregion
             return c;
         }
@@ -406,7 +413,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             public List<QueryItem> workType { get; set; }
             public List<QueryItem> pmType { get; set; }
         }
-        private DataTable GetColumnName()
+        private DataTable GetColumnName(bool isChart)
         {
             DataTable dt = new DataTable();
             dt.Columns.Add(new DataColumn("month"));
@@ -432,10 +439,20 @@ namespace MSS.Platform.Workflow.WebApi.Service
             dt.Columns.Add(new DataColumn("query"));
             dt.Columns.Add(new DataColumn("update_time"));
             dt.Columns.Add(new DataColumn("update_by"));
-            dt.TableName = "construction_plan_month_detail";
+            if (isChart)
+            {
+                dt.Columns.Add(new DataColumn("year"));
+                dt.Columns.Add(new DataColumn("day"));
+                dt.TableName = "construction_plan_month_chart";
+            }
+            else
+            {
+                dt.Columns.Add(new DataColumn("is_assigned"));
+                dt.TableName = "construction_plan_month_detail";
+            }
             return dt;
         }
-        private void InsertRow(ref DataTable dt, ConstructionPlanMonthDetail c)
+        private void InsertRow(ref DataTable dt,ConstructionPlanMonthDetail c,int year=0)
         {
             DataRow dr = dt.NewRow();
             dr[0] = c.Month;
@@ -461,6 +478,25 @@ namespace MSS.Platform.Workflow.WebApi.Service
             dr[20] = c.Query;
             dr[21] = c.UpdateTime;
             dr[22] = c.UpdateBy;
+            if (year!=0)
+            {
+                dr[23] = year;
+                if (c.PlanDate.IndexOf('-') > -1)
+                {
+                    dr[24] = 0;
+                    dr[11] = 31;
+                }
+                else
+                {
+                    
+                    dr[24] = c.PlanDate.Substring(7);
+                    dr[11] = 1;
+                }
+            }
+            else
+            {
+                dr[23] = c.IsAssigned;
+            }
             dt.Rows.Add(dr);
         }
 

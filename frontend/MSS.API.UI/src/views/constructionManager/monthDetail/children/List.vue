@@ -137,7 +137,7 @@ export default {
         children: 'children'
       },
       title: ' | 月计划生成',
-      year: '2019',
+      year: '',
       btn: {
         create: false,
         update: false
@@ -191,6 +191,7 @@ export default {
     apiOrg.getOrgAll().then(res => {
       this.companyList = res.data
     }).catch(err => console.log(err))
+    this.year = new Date().getFullYear() + ''
     // this.init()
   },
   activated () {

@@ -16,6 +16,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
 {
     public interface IMaintenanceRepo<T>
     {
+        #region 已弃用
         Task<int> SaveMItem(MaintenanceItem maintenanceItem);
 
         Task<int> SaveMMoudleItem(List<MaintenanceModuleItem> maintenanceModuleItem);
@@ -32,6 +33,24 @@ namespace MSS.Platform.Workflow.WebApi.Data
 
         Task<List<MaintenanceModuleItemAll>> ListItems(int id);
         Task<List<MaintenanceModuleItemAll>> ListValues(int id);
+        #endregion
+
+        Task<int> SavePMModule(PMModule pmModule);
+        Task<object> ListModulePage(PMModuleParm parm);
+        Task<PMModule> GetModuleByID(int id);
+        Task<PMModule> GetModuleByIDEasy(int id);
+        Task<int> SavePMEntity(PMEntity pmEntity);
+        Task<PMEntityView> ListEntityPage(PMEntityParm parm);
+        Task<int> DelPMEntity(string[] ids);
+        Task<PMEntity> GetEntityByID(int id);
+        Task<PMEntity> GetEntityDetailByID(int id);
+        Task<List<PMEntity>> GetEntityByIDs(string[] ids);
+
+        Task<int> SavePMEntityMonthDetail(List<PMEntityMonthDetail> pmEntityMonthDetails);
+        Task<int> UpdatePMEntity(PMEntity pmEntity);
+        Task<int> UpdatePMEntityStatus(int id, int status, int userID);
+        Task<int> DelPMEntityMonthDetail(string[] ids);
+        Task<List<int>> ListMonthDetail(int id);
     }
 
     public class MaintenanceRepo : BaseRepo, IMaintenanceRepo<MaintenanceItem>
@@ -39,6 +58,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
         public MaintenanceRepo(DapperOptions options) : base(options)
         {
         }
+        #region 已弃用
         #region MaintenanceItem
         public async Task<int> SaveMItem(MaintenanceItem maintenanceItem)
         {
@@ -224,10 +244,13 @@ namespace MSS.Platform.Workflow.WebApi.Data
             return await WithConnection(async c =>
             {
                 string sql = "SELECT DISTINCT mm.id,mm.name,mmiv.item,mi.item_name,mi.item_type, " +
-                " mpd.count,mmiv.eqp,mmiv.item_value from maintenance_module_item_value mmiv " +
+                " mpd.count,mmiv.eqp,mmiv.item_value,ml.updated_time,u.user_name " +
+                " from maintenance_module_item_value mmiv " +
                 " left join maintenance_module mm on mm.id=mmiv.module " +
                 " LEFT JOIN maintenance_item mi on mi.id=mmiv.item " +
                 " right JOIN maintenance_plan_detail mpd on mpd.plan_code=mm.plan_code " +
+                " left join maintenance_list ml on ml.id=mmiv.list " +
+                " left join user u on u.id=ml.updated_by " +
                 " where mmiv.list=@id ";
                 var tmp = await c.QueryAsync<MaintenanceModuleItemAll>(sql, new { id });
                 if (tmp.Count() > 0)
@@ -241,6 +264,234 @@ namespace MSS.Platform.Workflow.WebApi.Data
             });
         }
 
+        #endregion
+        #endregion
+
+        #region PMModule
+        public async Task<int> SavePMModule(PMModule pmModule)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " insert into pm_module " +
+                        " values (0,@Code,@Name,@FileName,@FilePath,@Major,@Line,@Location,@LocationBy," +
+                        " @LocationPath,@DeviceName,@KeyWord,@Department,@DeathYear,@Level,@CreatedBy,@CreatedTime); ";
+                sql += "SELECT LAST_INSERT_ID() ";
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, pmModule);
+                return newid;
+            });
+        }
+
+        public async Task<object> ListModulePage(PMModuleParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                object ret= new { total = 0, row = new List<PMModule>() };
+                string sql = "SELECT m.*,d.name as levelname,u1.user_name " +
+                " FROM pm_module m " +
+                " left join dictionary_tree d on d.id=m.level " +
+                " left join user u1 on u1.id=m.created_by " +
+                " where 1=1 ";
+                string sqlwhere = "";
+                if (!string.IsNullOrWhiteSpace(parm.ModuleName))
+                {
+                    sqlwhere += " and m.name like '%" + parm.ModuleName + "%' ";
+                }
+                if (!string.IsNullOrWhiteSpace(parm.FileName))
+                {
+                    sqlwhere += " and m.file_name like '%" + parm.FileName + "%' ";
+                }
+                if (!string.IsNullOrWhiteSpace(parm.DeviceName))
+                {
+                    sqlwhere += " and m.device_name like '%" + parm.DeviceName + "%' ";
+                }
+                if (!string.IsNullOrWhiteSpace(parm.KeyWord))
+                {
+                    sqlwhere += " and m.key_word like '%" + parm.KeyWord + "%' ";
+                }
+                sql = sql + sqlwhere + " order by " + parm.sort + " " + parm.order
+                + " limit " + (parm.page - 1) * parm.rows + "," + parm.rows;
+                var tmp = await c.QueryAsync<PMModule>(sql);
+                if (tmp.Count() > 0)
+                {
+                    sql = "select count(*) FROM pm_module m " + sqlwhere;
+                    ret= new { total = await c.QueryFirstOrDefaultAsync<int>(sql), rows = tmp.ToList() };
+                }
+                return ret;
+            });
+        }
+
+        public async Task<PMModule> GetModuleByID(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT m.*,d.name as levelname,u1.user_name,ml.line_name, " +
+                " dt.name as mname FROM pm_module m " +
+                " left join metro_line ml on ml.id=m.line " +
+                " left join dictionary_tree d on d.id=m.level " +
+                " left join dictionary_tree dt on dt.id=m.major " +
+                " left join user u1 on u1.id=m.created_by " +
+                " where m.id=@id ";
+                return await c.QueryFirstOrDefaultAsync<PMModule>(sql,new { id});
+            });
+        }
+        public async Task<PMModule> GetModuleByIDEasy(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM pm_module m where m.id=@id ";
+                return await c.QueryFirstOrDefaultAsync<PMModule>(sql, new { id });
+            });
+        }
+
+        #endregion
+
+        #region PMEntity
+        public async Task<int> SavePMEntity(PMEntity pmEntity)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " insert into pm_entity " +
+                        " values (0,@Title,@Team,@PlanDate,@Location,@LocationBy," +
+                        " @Status,@Remark,@Module,@FilePath,@CreatedBy,@CreatedTime,@UpdatedBy,@UpdatedTime); ";
+                sql += "SELECT LAST_INSERT_ID() ";
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, pmEntity);
+                return newid;
+            });
+        }
+        public async Task<int> UpdatePMEntity(PMEntity pmEntity)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " update pm_entity " +
+                        " set title=@Title,team=@Team,plan_date=@PlanDate,location=@Location,location_by=@LocationBy," +
+                        " status=@Status,remark=@Remark,module=@Module,file_path=@FilePath," +
+                        " updated_by=@UpdatedBy,updated_time=@UpdatedTime where id=@id ";
+                return await c.ExecuteAsync(sql, pmEntity);
+            });
+        }
+        public async Task<int> UpdatePMEntityStatus(int id,int status,int userID)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " update pm_entity " +
+                        " set status=@status,updated_by=@userID,updated_time=@UpdatedTime where id=@id ";
+                return await c.ExecuteAsync(sql, new { id, status, userID, UpdatedTime=DateTime.Now });
+            });
+        }
+
+        public async Task<PMEntityView> ListEntityPage(PMEntityParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                PMEntityView ret = new PMEntityView();
+                ret.total = 0;
+                ret.rows = new List<PMEntity>();
+                string sql = "SELECT m.*,d.name,u1.user_name,o.name as tname " +
+                " FROM pm_entity m " +
+                " left join dictionary_tree d on d.id=m.status " +
+                " left join org_tree o on o.id=m.team " +
+                " left join user u1 on u1.id=m.updated_by " +
+                " where 1=1 ";
+                string sqlwhere = "";
+                if (!string.IsNullOrWhiteSpace(parm.Title))
+                {
+                    sqlwhere += " and m.title like '%" + parm.Title + "%' ";
+                }
+                if (parm.Status!=null)
+                {
+                    sqlwhere += " and m.status = " + parm.Status;
+                }
+                if (parm.Start != null)
+                {
+                    sqlwhere += " and m.updated_time >= '" + parm.Start+"' ";
+                }
+                if (parm.End != null)
+                {
+                    sqlwhere += " and m.updated_time <= '" + parm.End + "' ";
+                }
+                sql = sql + sqlwhere + " order by " + parm.sort + " " + parm.order
+                + " limit " + (parm.page - 1) * parm.rows + "," + parm.rows;
+                var tmp = await c.QueryAsync<PMEntity>(sql);
+                if (tmp.Count() > 0)
+                {
+                    sql = "select count(*) FROM pm_Entity m where 1=1 " + sqlwhere;
+                    ret.total = await c.QueryFirstOrDefaultAsync<int>(sql);
+                    ret.rows = tmp.ToList();
+                }
+                return ret;
+            });
+        }
+        public async Task<int> DelPMEntity(string[] ids)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " delete from pm_entity " +
+                        " where id in @ids ";
+                return await c.ExecuteAsync(sql, new { ids });
+            });
+        }
+
+        public async Task<PMEntity> GetEntityByID(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM pm_entity where id=@id ";
+                return await c.QueryFirstOrDefaultAsync<PMEntity>(sql, new { id });
+            });
+        }
+        public async Task<List<PMEntity>> GetEntityByIDs(string[] ids)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT * FROM pm_entity where id in @ids ";
+                return (await c.QueryAsync<PMEntity>(sql, new { ids })).ToList();
+            });
+        }
+        public async Task<PMEntity> GetEntityDetailByID(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "SELECT m.*,d.name,u1.user_name,o.name as tname " +
+                " FROM pm_entity m " +
+                " left join dictionary_tree d on d.id=m.status " +
+                " left join org_tree o on o.id=m.team " +
+                " left join user u1 on u1.id=m.updated_by " +
+                " where m.id=@id ";
+                return await c.QueryFirstOrDefaultAsync<PMEntity>(sql, new { id });
+            });
+        }
+
+        #endregion
+
+        #region PMEntityMonthDetail
+        public async Task<int> SavePMEntityMonthDetail(List<PMEntityMonthDetail> pmEntityMonthDetails)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " insert into pm_entity_month_detail " +
+                        " values (0,@PMEntity,@MonthDetail); ";
+                return await c.ExecuteAsync(sql, pmEntityMonthDetails);
+            });
+        }
+        public async Task<int> DelPMEntityMonthDetail(string[] ids)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " delete from pm_entity_month_detail " +
+                        " where pm_entity in @ids ";
+                return await c.ExecuteAsync(sql,new { ids });
+            });
+        }
+        public async Task<List<int>> ListMonthDetail(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select month_detail from pm_entity_month_detail " +
+                        " where pm_entity=@id ";
+                var tmp = await c.QueryAsync<int>(sql, new { id });
+                return tmp.ToList();
+            });
+        }
         #endregion
 
     }

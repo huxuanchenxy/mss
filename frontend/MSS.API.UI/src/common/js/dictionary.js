@@ -9,7 +9,9 @@ export const dictionary = {
   pmType: 119,
   troubleStatus: 47,
   troubleLevel: 126,
-  pmStatus: 176
+  pmStatus: 176,
+  pmMajor: 180,
+  pmLevel: 185
 }
 
 export const troubleOperation = {

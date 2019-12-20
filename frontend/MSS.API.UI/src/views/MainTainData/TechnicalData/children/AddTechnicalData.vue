@@ -69,9 +69,8 @@
                 <div class="input-group">
                   <label for="name">设备</label>
                   <div class="inp">
-                    <el-cascader class="cascader_width"
+                    <el-cascader class="cascader_width" filterable
                       placeholder="请先选择设备类型"
-                      expand-trigger="hover"
                       :props="defaultParams"
                       :show-all-levels="false"
                       :options="eqpList"

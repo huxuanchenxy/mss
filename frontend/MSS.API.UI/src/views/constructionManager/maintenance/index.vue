@@ -1,7 +1,7 @@
 <template>
   <div class="wrap height-full">
     <div class="content">
-      <keep-alive include="MaintenanceList">
+      <keep-alive include="MaintenanceList,EntityList">
         <router-view @title="getTitle"/>
       </keep-alive>
     </div>
@@ -153,4 +153,32 @@ export default {
 .el-range__close-icon{
   padding-bottom: 10px!important;
 }
+/deep/
+  .handsontableInput{
+    color: #fff;
+    background-color: #212028
+  }
+  /deep/
+  .handsontable table.htCore{
+    text-align: center
+  }
+  // /deep/
+  // .handsontable .htDimmed{
+  //   // color: #FFF;
+  //   // background-color: #212028
+  //   white-space: nowrap;
+  // }
+  /deep/
+  .handsontable td{
+    color: #FFF;
+    background-color: #212028
+  }
+  /deep/
+  .htContextMenu{
+    background-color: #212028
+  }
+  /deep/
+  .htContextMenu table tbody tr td.htDisabled{
+    background-color: #212028
+  }
 </style>

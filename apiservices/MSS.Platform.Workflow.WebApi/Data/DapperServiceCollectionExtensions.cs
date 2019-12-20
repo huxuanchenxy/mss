@@ -44,6 +44,10 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 config.AddMap(new MaintenanceListMap());
                 config.AddMap(new MaintenancePlanDetailMap());
                 config.AddMap(new MaintenanceModuleItemAllMap());
+
+                config.AddMap(new PMModuleMap());
+                config.AddMap(new PMEntityMap()); 
+                config.AddMap(new PMEntityMonthDetailMap());
             });
             return services;
         }
