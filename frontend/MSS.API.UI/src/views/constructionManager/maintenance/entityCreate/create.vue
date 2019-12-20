@@ -13,6 +13,7 @@
       </x-button>
     </div>
     <div class="con-padding-horizontal operation scroll">
+      <el-scrollbar>
       <el-collapse v-model="activeName" accordion @change="handleChange">
         <el-collapse-item title="模板选择" name="1" style="margin-top:10px;padding:0px;">
           <div class="box1">
@@ -129,7 +130,7 @@
           </div>
         </el-collapse-item>
         <el-collapse-item title="月生产计划选择" name="2" style="margin-top:10px;padding:0px;">
-          <div class="box1">
+          <div class="box2">
             <!-- 搜索框 -->
             <div class="con-padding-horizontal search-wrap">
               <div class="wrap">
@@ -138,7 +139,7 @@
                   <div class="inp">
                     <el-date-picker
                       v-model="month.year"
-                      style="width:130px"
+                      style="width:200px!important"
                       type="year"
                       value-format="yyyy"
                       placeholder="选择年">
@@ -171,6 +172,13 @@
                     </el-cascader>
                   </div>
                 </div>
+                <div class="input-group">
+                  <label for="name"></label>
+                  <div class="inp"></div>
+                </div>
+              </div>
+              <div style="justify-content: space-between;display: flex;">
+              <div class="wrap">
                 <div class="input-group">
                   <label for="name">部门<em class="validate-mark">*</em></label>
                   <div class="inp">
@@ -223,6 +231,7 @@
               </div>
               <div class="search-btn" @click="searchResult(1)">
                 <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
+              </div>
               </div>
             </div>
           </div>
@@ -327,6 +336,7 @@
         <x-button class="active" @click.native="enter(false)">保存(可修改)</x-button>
         <x-button class="active" @click.native="sure()">提交(不可修改)</x-button>
       </div>
+      </el-scrollbar>
     </div>
     <!-- dialog对话框 -->
     <el-dialog
@@ -497,7 +507,7 @@ export default {
 
         this.settings = {
           data: _data.showData,
-          tableClassName: ['table01', 'htCenter'],
+          tableClassName: ['htMiddle', 'htCenter'],
           width: '100%',
           height: 400,
           mergeCells: _data.showMerge
@@ -597,7 +607,7 @@ export default {
       }
     },
     handleChange () {
-      if (this.activeName === '3' && this.editModuleID === '') {
+      if ((this.activeName === '3' || this.activeName === '') && this.editModuleID === '') {
         this.activeName = '1'
       }
     },
@@ -755,11 +765,16 @@ export default {
       }
       api.getModuleList(parm).then(res => {
         this.loading = false
-        res.data.rows.map(item => {
-          item.createdTime = transformDate(item.createdTime)
-        })
-        this.mList = res.data.rows
-        this.totalModule = res.data.total
+        if (res.data.total > 0) {
+          res.data.rows.map(item => {
+            item.createdTime = transformDate(item.createdTime)
+          })
+          this.mList = res.data.rows
+          this.totalModule = res.data.total
+        } else {
+          this.mList = []
+          this.total = 0
+        }
       }).catch(err => console.log(err))
     },
     // 改变排序
@@ -819,7 +834,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$con-height: $content-height - 146 - 56 - 800;
+$con-height: $content-height + 146;
 .box1{
     // height: percent(145, $content-height);
     height: 60px;
@@ -854,6 +869,43 @@ $con-height: $content-height - 146 - 56 - 800;
       }
     }
   }
+  // 两行查询条件
+.box2{
+    // height: percent(145, $content-height);
+    height: 90px;
+    // 搜索组
+    .search-wrap{
+      // display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      // height: percent(80, 145);
+      background: rgba(128, 128, 128, 0.1);
+      color: $color-white;
+
+      .wrap{
+        display: flex;
+      }
+
+      .input-group{
+        margin-top: 10px;
+        display: inherit;
+        align-items: center;
+        margin-right: PXtoEm(24);
+      }
+
+      .inp{
+        width: PXtoEm(160);
+        margin-left: PXtoEm(14);
+      }
+
+      .btn{
+        margin-top: 10px;
+        border: 0;
+        background: $color-main-btn;
+      }
+    }
+  }
 // 内容区
 .content-wrap{
   overflow: hidden;
@@ -871,11 +923,6 @@ $con-height: $content-height - 146 - 56 - 800;
     .last-update-time{
       color: $color-white;
     }
-  }
-
-  .scroll{
-    height: percent(400 - 50, 400);
-    // height: 50%
   }
 
   .list-wrap{
@@ -961,6 +1008,11 @@ $con-height: $content-height - 146 - 56 - 800;
   .state{
     width: 5%;
   }
+}
+
+.scroll{
+  height: percent($con-height - 50, $con-height);
+  // height: 50%
 }
 // 功能区
 .operation{

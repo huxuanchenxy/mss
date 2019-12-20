@@ -164,8 +164,9 @@ export default {
   }
   // /deep/
   // .handsontable .htDimmed{
-  //   color: #FFF;
-  //   background-color: #212028
+  //   // color: #FFF;
+  //   // background-color: #212028
+  //   white-space: nowrap;
   // }
   /deep/
   .handsontable td{

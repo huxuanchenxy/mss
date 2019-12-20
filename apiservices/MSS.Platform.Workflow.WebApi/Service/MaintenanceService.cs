@@ -41,6 +41,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
         Task<ApiResult> GetModuleByID(int id);
         Task<ApiResult> SavePMEntity(PMEntity pmEntity);
         Task<ApiResult> UpdatePMEntity(PMEntity pmEntity);
+        Task<ApiResult> UpdatePMEntityStatus(int id, int status);
         Task<ApiResult> DelPMEntity(string[] ids);
         Task<ApiResult> ListEntityPage(PMEntityParm parm);
         Task<ApiResult> GetEntityByID(int id,bool isUpdate);
@@ -560,6 +561,20 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 ret.msg = ex.Message;
                 return ret;
             }
+        }
+        public async Task<ApiResult> UpdatePMEntityStatus(int id,int status)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _repo.UpdatePMEntityStatus(id,status,_userID);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
         }
         private void SaveExcelEntity(string entityPath,string fileType,PMEntity pmEntity)
         {

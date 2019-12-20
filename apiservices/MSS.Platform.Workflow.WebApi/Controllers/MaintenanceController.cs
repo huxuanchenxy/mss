@@ -116,6 +116,13 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
             return Ok(ret.Result);
             //return Ok("");
         }
+        [HttpPut("UpdatePMEntityStatus/{id}/{status}")]
+        public ActionResult UpdatePMEntityStatus(int id,int status)
+        {
+            var ret = _service.UpdatePMEntityStatus(id,status);
+            return Ok(ret.Result);
+            //return Ok("");
+        }
         [HttpGet("ListEntityPage")]
         public ActionResult ListEntityPage([FromQuery] PMEntityParm parm)
         {

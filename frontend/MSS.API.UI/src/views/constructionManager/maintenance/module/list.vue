@@ -224,11 +224,16 @@ export default {
       }
       api.getModuleList(parm).then(res => {
         this.loading = false
-        res.data.rows.map(item => {
-          item.createdTime = transformDate(item.createdTime)
-        })
-        this.mList = res.data.rows
-        this.total = res.data.total
+        if (res.data.total > 0) {
+          res.data.rows.map(item => {
+            item.createdTime = transformDate(item.createdTime)
+          })
+          this.mList = res.data.rows
+          this.total = res.data.total
+        } else {
+          this.mList = []
+          this.total = 0
+        }
       }).catch(err => console.log(err))
     },
     add () {

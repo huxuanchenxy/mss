@@ -48,6 +48,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
 
         Task<int> SavePMEntityMonthDetail(List<PMEntityMonthDetail> pmEntityMonthDetails);
         Task<int> UpdatePMEntity(PMEntity pmEntity);
+        Task<int> UpdatePMEntityStatus(int id, int status, int userID);
         Task<int> DelPMEntityMonthDetail(string[] ids);
         Task<List<int>> ListMonthDetail(int id);
     }
@@ -293,7 +294,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 string sqlwhere = "";
                 if (!string.IsNullOrWhiteSpace(parm.ModuleName))
                 {
-                    sqlwhere += " and m.module_name like '%" + parm.ModuleName + "%' ";
+                    sqlwhere += " and m.name like '%" + parm.ModuleName + "%' ";
                 }
                 if (!string.IsNullOrWhiteSpace(parm.FileName))
                 {
@@ -364,8 +365,17 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 string sql = " update pm_entity " +
                         " set title=@Title,team=@Team,plan_date=@PlanDate,location=@Location,location_by=@LocationBy," +
                         " status=@Status,remark=@Remark,module=@Module,file_path=@FilePath," +
-                        " updated_by=@UpdatedBy,updated_time=@UpdatedTime; ";
+                        " updated_by=@UpdatedBy,updated_time=@UpdatedTime where id=@id ";
                 return await c.ExecuteAsync(sql, pmEntity);
+            });
+        }
+        public async Task<int> UpdatePMEntityStatus(int id,int status,int userID)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " update pm_entity " +
+                        " set status=@status,updated_by=@userID,updated_time=@UpdatedTime where id=@id ";
+                return await c.ExecuteAsync(sql, new { id, status, userID, UpdatedTime=DateTime.Now });
             });
         }
 
@@ -393,11 +403,11 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 }
                 if (parm.Start != null)
                 {
-                    sqlwhere += " and m.updated_time >= " + parm.Start;
+                    sqlwhere += " and m.updated_time >= '" + parm.Start+"' ";
                 }
                 if (parm.End != null)
                 {
-                    sqlwhere += " and m.updated_time <= " + parm.End;
+                    sqlwhere += " and m.updated_time <= '" + parm.End + "' ";
                 }
                 sql = sql + sqlwhere + " order by " + parm.sort + " " + parm.order
                 + " limit " + (parm.page - 1) * parm.rows + "," + parm.rows;

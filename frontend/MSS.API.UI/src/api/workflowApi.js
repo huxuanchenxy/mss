@@ -40,5 +40,6 @@ export default {
   getEntityList: parm => { return axios.get(`${api}/Maintenance/ListEntityPage`, {params: parm}).then(res => res.data) },
   delEntity: ids => { return axios.delete(`${api}/Maintenance/${ids}`).then(res => res.data) },
   getEntityByID: (id, isUpdate) => { return axios.get(`${api}/Maintenance/GetEntityByID/${id}/${isUpdate}`).then(res => res.data) },
-  updatePMEntity: parm => { return axios.put(`${api}/Maintenance/UpdatePMEntity`, parm).then(res => res.data) }
+  updatePMEntity: parm => { return axios.put(`${api}/Maintenance/UpdatePMEntity`, parm).then(res => res.data) },
+  updatePMEntityStatus: (id, status) => { return axios.put(`${api}/Maintenance/UpdatePMEntityStatus/${id}/${status}`).then(res => res.data) }
 }

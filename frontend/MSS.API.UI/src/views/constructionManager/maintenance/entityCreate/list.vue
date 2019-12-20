@@ -55,6 +55,7 @@
         <li class="list" @click="add"><x-button :disabled="btn.save">创建</x-button></li>
         <li class="list" @click="detail('edit')"><x-button :disabled="btn.update">修改</x-button></li>
         <li class="list" @click="del"><x-button :disabled="btn.delete">删除</x-button></li>
+        <li class="list" @click="detail('reject')"><x-button :disabled="btn.reject">打回</x-button></li>
         <li class="list" @click="detail"><x-button >查看明细</x-button></li>
       </ul>
     </div>
@@ -134,10 +135,11 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import { pmStatus } from '@/common/js/dictionary.js'
+import { pmStatus, dictionary } from '@/common/js/dictionary.js'
 // import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
+import apiAuth from '@/api/authApi'
 export default {
   name: 'EntityList',
   components: {
@@ -148,7 +150,8 @@ export default {
       btn: {
         save: false,
         update: false,
-        delete: false
+        delete: false,
+        reject: false
       },
       title: ' | 检修单',
       dialogVisible: {
@@ -193,6 +196,10 @@ export default {
     //   })
     // }
     // this.init()
+    // 检修单状态加载
+    apiAuth.getSubCode(dictionary.pmStatus).then(res => {
+      this.entityStatusList = res.data
+    }).catch(err => console.log(err))
   },
   activated () {
     this.searchResult(1)
@@ -237,11 +244,16 @@ export default {
       }
       api.getEntityList(parm).then(res => {
         this.loading = false
-        res.data.rows.map(item => {
-          item.updatedTime = transformDate(item.updatedTime)
-        })
-        this.mList = res.data.rows
-        this.total = res.data.total
+        if (res.data.total > 0) {
+          res.data.rows.map(item => {
+            item.updatedTime = transformDate(item.updatedTime)
+          })
+          this.mList = res.data.rows
+          this.total = res.data.total
+        } else {
+          this.mList = []
+          this.total = 0
+        }
       }).catch(err => console.log(err))
     },
     add () {
@@ -250,10 +262,9 @@ export default {
       })
     },
     detail (type) {
-      let msg = type === 'edit' ? '修改' : '查看'
       if (this.editEntity.length > 1) {
         this.$message({
-          message: '所要' + msg + '检修单不能超过1个',
+          message: '所要操作的检修单不能超过1个',
           type: 'warning'
         })
         return
@@ -273,6 +284,22 @@ export default {
             type: 'edit'
           }
         })
+      } else if (type === 'reject') {
+        // 状态改回编辑
+        api.updatePMEntityStatus(this.editEntity[0].id, pmStatus.editing).then(res => {
+          if (res.code === 0) {
+            this.searchResult(1)
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            })
+          } else {
+            this.$message({
+              message: res.msg,
+              type: 'error'
+            })
+          }
+        }).catch(err => console.log(err))
       } else {
         this.$router.push({
           name: 'DetailEntity',

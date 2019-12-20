@@ -93,10 +93,17 @@ export default {
         this.settings = {
           readOnly: true,
           data: res.data.showData,
-          tableClassName: ['table01', 'htCenter'],
+          tableClassName: ['htMiddle', 'htCenter'],
           width: '100%',
           height: 500,
-          mergeCells: res.data.showMerge
+          mergeCells: res.data.showMerge,
+          cells: function (row, col) {
+            var cellProperties = {}
+            if (col === 0) {
+              cellProperties.width = 50
+            }
+            return cellProperties
+          }
         }
         let _data = res.data.entity
         this.entity = {
