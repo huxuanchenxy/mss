@@ -164,7 +164,7 @@ import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
 import api from '@/api/eqpApi'
 export default {
-  name: 'AddEqp',
+  name: 'DetailEqp',
   components: {
     XButton,
     'upload-pdf': MyUploadPDF
