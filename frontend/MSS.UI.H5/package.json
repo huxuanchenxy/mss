@@ -20,6 +20,7 @@
     "countup.js": "^2.0.4",
     "echarts": "^4.1.0",
     "element-ui": "^2.3.7",
+    "jquery": "^3.4.1",
     "keycode": "^2.1.8",
     "marked": "^0.3.6",
     "mint-ui": "^2.2.13",
