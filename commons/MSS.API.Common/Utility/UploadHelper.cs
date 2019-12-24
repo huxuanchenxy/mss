@@ -65,7 +65,12 @@ namespace MSS.API.Common.Utility
         public void SavePDF(IFormFile file,string path)
         {
             string filePath = (BASEFILE + path).Replace('/', '\\');
-            using (FileStream fs = File.Create(filePath))
+            SaveFile(file, filePath);
+        }
+
+        public void SaveFile(IFormFile file, string path)
+        {
+            using (FileStream fs = File.Create(path))
             {
                 file.CopyTo(fs);
                 fs.Flush();

@@ -229,6 +229,7 @@ export default {
       api.getEqpDetailByID(this.eqp.id).then(res => {
         this.loading = false
         let _res = res.data
+        this.eqpType = _res.type
         this.eqp.eqpCode = _res.code
         this.eqp.eqpName = _res.name
         this.eqp.eqpType = _res.tName

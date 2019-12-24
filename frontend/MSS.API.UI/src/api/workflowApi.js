@@ -1,5 +1,6 @@
 import axios from './interceptors'
 // let api = 'http://localhost:8443/api/v1'
+// let api = 'http://localhost:3851/api/v1'
 let api = 'http://10.89.36.154:5801/workflowapi'
 export default {
   getPage: parm => { return axios.get(`${api}/Wf/QueryReadyTasks`, {params: parm}).then(res => res.data) },
@@ -26,5 +27,19 @@ export default {
   getnextprocess: parm => { return axios.post(`${api}/Wf/GetNextStepRoleUserTree`, parm).then(res => res.data) },
 
   getcurrentprocess: parm => { return axios.post(`${api}/Wf/QueryReadyActivityInstance`, parm).then(res => res.data) },
-  getMonthChart: parm => { return axios.get(`${api}/ConstructionPlanMonthChart/GetMonthChart`, {params: parm}).then(res => res.data) }
+  getMonthChart: parm => { return axios.get(`${api}/ConstructionPlanMonthChart/GetMonthChart`, {params: parm}).then(res => res.data) },
+
+  saveMList: parm => { return axios.post(`${api}/Maintenance/SaveMList`, parm).then(res => res.data) },
+  saveMMoudleItemValue: parm => { return axios.post(`${api}/Maintenance/SaveMMoudleItemValue`, parm).then(res => res.data) },
+  getMList: parm => { return axios.get(`${api}/Maintenance`, {params: parm}).then(res => res.data) },
+  listMModuleByID: (id, isInit) => { return axios.get(`${api}/Maintenance/ListMModule/${id}/${isInit}`).then(res => res.data) },
+  getModuleList: parm => { return axios.get(`${api}/Maintenance/ListModulePage`, {params: parm}).then(res => res.data) },
+  getModuleByID: id => { return axios.get(`${api}/Maintenance/GetModuleByID/${id}`).then(res => res.data) },
+
+  savePMEntity: parm => { return axios.post(`${api}/Maintenance/SavePMEntity`, parm).then(res => res.data) },
+  getEntityList: parm => { return axios.get(`${api}/Maintenance/ListEntityPage`, {params: parm}).then(res => res.data) },
+  delEntity: ids => { return axios.delete(`${api}/Maintenance/${ids}`).then(res => res.data) },
+  getEntityByID: (id, isUpdate) => { return axios.get(`${api}/Maintenance/GetEntityByID/${id}/${isUpdate}`).then(res => res.data) },
+  updatePMEntity: parm => { return axios.put(`${api}/Maintenance/UpdatePMEntity`, parm).then(res => res.data) },
+  updatePMEntityStatus: (id, status) => { return axios.put(`${api}/Maintenance/UpdatePMEntityStatus/${id}/${status}`).then(res => res.data) }
 }

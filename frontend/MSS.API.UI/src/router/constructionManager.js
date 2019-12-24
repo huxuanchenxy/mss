@@ -50,6 +50,44 @@ const routes = [
             component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/monthDetail/children/update.vue')
           }
         ]
+      }, {
+        path: 'maintenance',
+        component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'maintenance',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'MaintenanceList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/List.vue')
+          }, {
+            path: 'update',
+            name: 'UpdateMaintenanceList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/update.vue')
+          }, {
+            path: 'detail',
+            name: 'DetailMaintenanceList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/detail.vue')
+          }, {
+            path: 'import',
+            name: 'ImportPM',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/module/import.vue')
+          }, {
+            path: 'entityList',
+            name: 'EntityList',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/entityCreate/list.vue')
+          }, {
+            path: 'create',
+            name: 'CreateEntity',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/entityCreate/create.vue')
+          }, {
+            path: 'detailEntity',
+            name: 'DetailEntity',
+            component: () => import(/* webpackChunkName: "constructionManager" */ '@/views/constructionManager/maintenance/entityCreate/detail.vue')
+          }
+        ]
       }
     ]
   }

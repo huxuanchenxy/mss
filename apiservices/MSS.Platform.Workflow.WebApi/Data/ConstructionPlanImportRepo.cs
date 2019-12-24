@@ -31,7 +31,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
         Task<List<QueryItem>> ListAllLines();
         Task<List<QueryItem>> ListAllOrgByType(OrgType orgType);
         Task<List<QueryItem>> ListAllEqpTypes();
-        Task<List<QueryItem>> ListAllLocations();
+        Task<List<QueryItem>> ListAllLocations(int? location = null, int? locationBy = null);
         Task<List<QueryItem>> ListDictionarysByParent(int parent);
     }
 
@@ -147,8 +147,11 @@ namespace MSS.Platform.Workflow.WebApi.Data
             };
             bulk.Columns.AddRange(columns);
             int ret= bulk.Load();
-            //删除临时的csv文件
-            File.Delete(@"\\10.89.36.63\uploads\"+ table.TableName + ".csv");
+            using (ShareFolderHelper helper = new ShareFolderHelper("test", "yfzx.2019", FilePath.CSVPATH + table.TableName + ".csv"))
+            {
+                //删除临时的csv文件
+                File.Delete(FilePath.CSVPATH + table.TableName + ".csv");
+            }
             return ret;
         }
 
@@ -158,7 +161,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
             {
                 string sql = " insert into construction_plan_import_common " +
                         " values (0,@Year,@Department,@DepartmentName,@Line,@LineName, " +
-                        " @Company,@IsCreatedMonth,@CreatedTime,@CreatedBy,@ImportTime,@ImportBy); ";
+                        " @Company,@IsCreatedMonth,@CreatedTime,@CreatedBy,@ImportedTime,@ImportedBy); ";
                 sql += "SELECT LAST_INSERT_ID() ";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, obj);
                 return newid;
@@ -292,7 +295,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<QueryItem>(
-                    "SELECT id,type_name as name FROM equipment_type where is_del=@IsDel", new { IsDel = IsDeleted.no });
+                    "SELECT plan_code as id,name FROM maintenance_module");
                 if (result.Count() > 0)
                 {
                     return result.ToList();
@@ -304,16 +307,25 @@ namespace MSS.Platform.Workflow.WebApi.Data
             });
         }
 
-        public async Task<List<QueryItem>> ListAllLocations()
+        public async Task<List<QueryItem>> ListAllLocations(int? location = null, int? locationBy = null)
         {
             return await WithConnection(async c =>
             {
+                IEnumerable<QueryItem> ret = null;
                 string sql = "select AreaName as name,id,1 as LocationBy from tb_config_bigarea UNION " +
                 "select AreaName as name,id,2 as LocationBy from tb_config_midarea";
-                var result = await c.QueryAsync<QueryItem>(sql);
-                if (result != null && result.Count() > 0)
+                if (location!=null && locationBy!=null)
                 {
-                    return result.ToList();
+                    sql = "select * from (" + sql + ") a where a.id=@location and a.locationBy=@locationBy";
+                    ret = await c.QueryAsync<QueryItem>(sql,new { location, locationBy });
+                }
+                else
+                {
+                    ret = await c.QueryAsync<QueryItem>(sql);
+                }
+                if (ret != null && ret.Count() > 0)
+                {
+                    return ret.ToList();
                 }
                 else
                 {
@@ -359,9 +371,9 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 }
                 sb.AppendLine();
             }
-            using (ShareFolderHelper helper = new ShareFolderHelper("test", "yfzx.2019", @"10.89.36.63\uploads\" + table.TableName + ".csv"))
+            using (ShareFolderHelper helper = new ShareFolderHelper("test", "yfzx.2019", FilePath.CSVPATH + table.TableName + ".csv"))
             {
-                File.WriteAllText(@"\\10.89.36.63\uploads\" + table.TableName + ".csv", sb.ToString());
+                File.WriteAllText(FilePath.CSVPATH + table.TableName + ".csv", sb.ToString());
             }
         }
     }

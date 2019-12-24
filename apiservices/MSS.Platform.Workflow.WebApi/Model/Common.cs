@@ -11,7 +11,7 @@ namespace MSS.Platform.Workflow.WebApi.Model
     public static class Common
     {
         public const int WORK_TYPE = 111;
-        public const int PM_TYPE = 116;
+        public const int PM_TYPE = 119;
 
         public static string GetLastDay(int month, int year)
         {
@@ -32,4 +32,26 @@ namespace MSS.Platform.Workflow.WebApi.Model
 
     }
 
+    public enum ItemType
+    {
+        IsStr=0,
+        IsBool = 1
+    }
+
+    public enum PMTYPE
+    {
+        Day = 120,
+        Month = 121,
+        Quarter=122,
+        Week=123,
+        HalfMonth=124,
+        Year=125
+    }
+
+    public enum PMStatus
+    {
+        Init=177,
+        Editing=178,
+        Finished=179
+    }
 }

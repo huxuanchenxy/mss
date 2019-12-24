@@ -344,14 +344,12 @@ export default {
     prevPage (val) {
       this.bCheckAll = false
       this.checkAll()
-      this.currentPage = val
     },
 
     // 下一页
     nextPage (val) {
       this.bCheckAll = false
       this.checkAll()
-      this.currentPage = val
     }
   }
 }

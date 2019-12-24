@@ -41,7 +41,7 @@
                  :label="item.deviceName">
                  </el-option>
               </el-select> -->
-               <el-cascader clearable
+               <el-cascader clearable filterable
                              :props="defaultParams1"
                              change-on-select
                              :show-all-levels="true"
@@ -340,7 +340,7 @@ export default {
         this.devicelist = []
         this.deviceType.text = ''
       }
-      api.GetDeviceListByTypeId(val).then(res => {
+      api.GetEqpByTypeAndLine(val).then(res => {
         if (res.data.length > 0) {
           this.devicelist = res.data
           this.deviceType.id = ''
