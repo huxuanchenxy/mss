@@ -51,6 +51,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
         Task<int> UpdatePMEntityStatus(int id, int status, int userID);
         Task<int> DelPMEntityMonthDetail(string[] ids);
         Task<List<int>> ListMonthDetail(int id);
+
+        Task<int> SaveEqpHistory(EqpHistory eqp);
     }
 
     public class MaintenanceRepo : BaseRepo, IMaintenanceRepo<MaintenanceItem>
@@ -351,7 +353,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
             return await WithConnection(async c =>
             {
                 string sql = " insert into pm_entity " +
-                        " values (0,@Title,@Team,@PlanDate,@Location,@LocationBy," +
+                        " values (0,@Title,@Team,@PlanDate,@Location,@LocationBy,@Eqp," +
                         " @Status,@Remark,@Module,@FilePath,@CreatedBy,@CreatedTime,@UpdatedBy,@UpdatedTime); ";
                 sql += "SELECT LAST_INSERT_ID() ";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, pmEntity);
@@ -364,7 +366,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
             {
                 string sql = " update pm_entity " +
                         " set title=@Title,team=@Team,plan_date=@PlanDate,location=@Location,location_by=@LocationBy," +
-                        " status=@Status,remark=@Remark,module=@Module,file_path=@FilePath," +
+                        " eqp=@Eqp,status=@Status,remark=@Remark,module=@Module,file_path=@FilePath," +
                         " updated_by=@UpdatedBy,updated_time=@UpdatedTime where id=@id ";
                 return await c.ExecuteAsync(sql, pmEntity);
             });
@@ -386,9 +388,10 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 PMEntityView ret = new PMEntityView();
                 ret.total = 0;
                 ret.rows = new List<PMEntity>();
-                string sql = "SELECT m.*,d.name,u1.user_name,o.name as tname " +
+                string sql = "SELECT m.*,d.name,u1.user_name,o.name as tname,e.eqp_name " +
                 " FROM pm_entity m " +
                 " left join dictionary_tree d on d.id=m.status " +
+                " left join equipment e on e.id=m.eqp " +
                 " left join org_tree o on o.id=m.team " +
                 " left join user u1 on u1.id=m.updated_by " +
                 " where 1=1 ";
@@ -490,6 +493,18 @@ namespace MSS.Platform.Workflow.WebApi.Data
                         " where pm_entity=@id ";
                 var tmp = await c.QueryAsync<int>(sql, new { id });
                 return tmp.ToList();
+            });
+        }
+        #endregion
+
+        #region EqpHistory
+        public async Task<int> SaveEqpHistory(EqpHistory eqp)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " insert into equipment_history " +
+                        " values (0,@EqpID,@Type,@WorkingOrder,@ShowName,@CreatedTime,@CreatedBy); ";
+                return await c.ExecuteAsync(sql, eqp);
             });
         }
         #endregion

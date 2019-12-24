@@ -278,6 +278,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public int Locationby { get; set; }
         public int Status { get; set; }
         public string StatusName { get; set; }
+        public int? Eqp { get; set; }
+        public string EqpName { get; set; }
         public string Remark { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedByName { get; set; }
@@ -298,6 +300,7 @@ namespace MSS.Platform.Workflow.WebApi.Model
         {
             Map(o => o.TeamName).ToColumn("tname");
             Map(o => o.StatusName).ToColumn("name");
+            Map(o => o.EqpName).ToColumn("eqp_name");
             Map(o => o.PlanDate).ToColumn("plan_date");
             Map(o => o.Locationby).ToColumn("location_by");
             Map(o => o.FilePath).ToColumn("file_path");
@@ -328,4 +331,33 @@ namespace MSS.Platform.Workflow.WebApi.Model
     }
     #endregion
 
+    #region 设备历史记录EqpHistory
+    public class EqpHistory
+    {
+        public int ID { get; set; }
+        public int EqpID { get; set; }
+        public int Type { get; set; }
+        public int WorkingOrder { get; set; }
+        public string ShowName { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public int CreatedBy { get; set; }
+    }
+
+    /// <summary>
+    /// model
+    /// </summary>
+    public class EqpHistoryMap : EntityMap<EqpHistory>
+    {
+        public EqpHistoryMap()
+        {
+            Map(o => o.ID).ToColumn("id");
+            Map(o => o.EqpID).ToColumn("eqp");
+            Map(o => o.Type).ToColumn("type");
+            Map(o => o.WorkingOrder).ToColumn("working_order");
+            Map(o => o.ShowName).ToColumn("show_name");
+            Map(o => o.CreatedBy).ToColumn("created_by");
+            Map(o => o.CreatedTime).ToColumn("created_time");
+        }
+    }
+    #endregion
 }

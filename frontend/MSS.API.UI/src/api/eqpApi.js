@@ -19,6 +19,7 @@ export default {
   delEqp: ids => { return axios.delete(`${api}/Equipment/${ids}`).then(res => res.data) },
   getEqpByTopOrg: (topOrg, line, location, locationBy) => { return axios.get(`${api}/Equipment/ListByTopOrg/${topOrg}/${line}/${location}/${locationBy}`).then(res => res.data) },
   getEqpByEqpType: ids => { return axios.get(`${api}/Equipment/GetByEqpType/${ids}`).then(res => res.data) },
+  getEqpByTeam: id => { return axios.get(`${api}/Equipment/GetByTeam/${id}`).then(res => res.data) },
   getEqpAll: () => { return axios.get(`${api}/Equipment/All`).then(res => res.data) },
 
   getFirm: parm => { return axios.get(`${api}/Firm`, {params: parm}).then(res => res.data) },

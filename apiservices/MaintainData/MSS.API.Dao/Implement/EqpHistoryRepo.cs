@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using System.Linq;
 using Dapper.FastCrud;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Implement
 {
@@ -16,14 +17,19 @@ namespace MSS.API.Dao.Implement
             {
             } 
 
-        public async Task<List<EqpHistory>> ListByEqp(int id)
+        public async Task<List<EqpHistory>> ListByEqp(int id,bool isHide)
         {
             return await WithConnection(async c =>
             {
-                var result = await c.QueryAsync<EqpHistory>(
-                    "SELECT *,dt.name,date_format(created_time,'%Y-%m-%d') as created_date FROM equipment_history eh " +
+                string sql = "SELECT *,dt.name,date_format(created_time,'%Y-%m-%d') as created_date FROM equipment_history eh " +
                     "left join dictionary_tree dt on dt.id=eh.type " +
-                    "WHERE eqp = @id", new { id = id });
+                    "WHERE eqp = @id ";
+                if (isHide)
+                {
+                    sql += " and type!=" + (int)EqpHistoryType.Maintenance;
+                }
+                sql += " order by created_time";
+                var result = await c.QueryAsync<EqpHistory>(sql,new { id = id });
                 if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
@@ -70,6 +76,15 @@ namespace MSS.API.Dao.Implement
                 {
                     return null;
                 }
+            });
+        }
+        public async Task<int> SaveEqpHistory(List<EqpHistory> eqps)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " insert into equipment_history " +
+                        " values (0,@EqpID,@Type,@WorkingOrder,@ShowName,@CreatedTime,@CreatedBy); ";
+                return await c.ExecuteAsync(sql, eqps);
             });
         }
     }

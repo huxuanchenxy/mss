@@ -95,3 +95,14 @@ export const pmStatus = {
   editing: 178,
   finished: 179
 }
+
+export const eqpHistoryType = {
+  initall: 39,
+  mediumPM: 40,
+  majorPM: 41,
+  troublePM: 46,
+  firstWork: 43,
+  secondWork: 44,
+  change: 157,
+  maintenance: 189
+}

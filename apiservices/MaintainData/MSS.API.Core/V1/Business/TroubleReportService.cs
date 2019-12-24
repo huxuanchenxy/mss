@@ -14,6 +14,7 @@ using MSS.API.Core.Common;
 using MSS.API.Common.Utility;
 using Microsoft.Extensions.Caching.Distributed;
 using MSS.Common.Consul;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -175,6 +176,7 @@ namespace MSS.API.Core.V1.Business
         public async Task<ApiResult> Operation(string ids,TroubleOperation operation,string content)
         {
             ApiResult ret = new ApiResult();
+            List<EqpHistory> eqps = new List<EqpHistory>();
             DateTime dt = DateTime.Now;
             int topOrg= await getTopOrgByUser();
             TroubleStatus status=TroubleStatus.NewTrouble;
@@ -220,6 +222,20 @@ namespace MSS.API.Core.V1.Business
                     break;
                 case TroubleOperation.Pass:
                     status = TroubleStatus.Finished;
+                    //记录设备历史
+                    List<TroubleEqp> tes = await _troubleReportRepo.ListEqpByTrouble(thTmp.Trouble);
+                    TroubleReport tr = await _troubleReportRepo.GetByID(thTmp.Trouble);
+                    foreach (var item in tes)
+                    {
+                        EqpHistory eqp = new EqpHistory();
+                        eqp.CreatedBy = tr.ReportedBy;//报修人
+                        eqp.CreatedTime = tr.HappeningTime;//故障发生时间
+                        eqp.EqpID = item.Eqp;
+                        eqp.ShowName = tr.Code;
+                        eqp.Type = (int)EqpHistoryType.TroublePM;
+                        eqp.WorkingOrder = tr.ID;
+                        eqps.Add(eqp);
+                    }
                     break;
                 case TroubleOperation.RepairReject:
                 case TroubleOperation.AssignReject:
@@ -237,8 +253,13 @@ namespace MSS.API.Core.V1.Business
                     else
                     {
                         await _troubleReportRepo.SaveHistory(thTmp);
+                        if (operation == TroubleOperation.Pass)
+                        {
+                            await _eqpHistoryRepo.SaveEqpHistory(eqps);
+                        }
                     }
-                    ret.data = await _troubleReportRepo.UpdateStatus(ids.Split(), _userID, status, operation,content);
+                    await _troubleReportRepo.UpdateDealResult(thTmp.Trouble, _userID, status, operation,content);
+                    ret.data = await _troubleReportRepo.UpdateStatus(ids.Split(), _userID, status, operation);
                     scope.Complete();
                 }
             }

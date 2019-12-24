@@ -86,6 +86,14 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
+        [HttpGet("GetByTeam/{id}")]
+        public ActionResult ListByTeam(int id)
+        {
+            var resp = _eqpService.ListByTeam(id);
+            return Ok(resp.Result);
+        }
+
+
         [HttpGet("All")]
         public ActionResult GetAll()
         {

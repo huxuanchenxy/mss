@@ -137,19 +137,19 @@
                 <div class="input-group">
                   <label for="name">年份<em class="validate-mark">*</em></label>
                   <div class="inp">
-                    <el-date-picker
+                    <el-date-picker filterable
                       v-model="month.year"
                       style="width:200px!important"
                       type="year"
                       value-format="yyyy"
-                      placeholder="选择年">
+                      placeholder="请选择">
                     </el-date-picker>
                   </div>
                 </div>
                 <div class="input-group">
                   <label for="name">线路<em class="validate-mark">*</em></label>
                   <div class="inp">
-                    <el-select v-model="month.LineID" placeholder="请选择线路">
+                    <el-select v-model="month.LineID" placeholder="请选择" filterable>
                       <el-option
                       v-for="item in month.MetroLineList"
                       :key="item.key"
@@ -162,7 +162,7 @@
                 <div class="input-group">
                   <label for="name">公司<em class="validate-mark">*</em></label>
                   <div class="inp">
-                    <el-cascader clearable
+                    <el-cascader filterable
                       change-on-select
                       :props="month.defaultParams"
                       @change="company_change"
@@ -182,7 +182,7 @@
                 <div class="input-group">
                   <label for="name">部门<em class="validate-mark">*</em></label>
                   <div class="inp">
-                    <el-cascader clearable
+                    <el-cascader filterable
                       change-on-select
                       :props="month.defaultParams"
                       @change="dept_change"
@@ -195,7 +195,7 @@
                 <div class="input-group">
                   <label for="name">班组<em class="validate-mark">*</em></label>
                   <div class="inp">
-                    <el-cascader clearable
+                    <el-cascader filterable
                       change-on-select
                       :props="month.defaultParams"
                       @change="cascader_change"
@@ -208,7 +208,7 @@
                 <div class="input-group">
                   <label for="name">地点<em class="validate-mark">*</em></label>
                   <div class="inp">
-                    <el-cascader clearable
+                    <el-cascader filterable
                       change-on-select
                       @change="position_change"
                       :props="month.areaParams"
@@ -326,7 +326,27 @@
           </div>
         </el-collapse-item>
         <el-collapse-item title="检修单填写" name="3" style="margin-top:10px;padding:0px;">
-          <HotTable :settings="settings" licenseKey="non-commercial-and-evaluation"/>
+          <div class="con-padding-horizontal operation">
+            <ul class="input-group">
+              <li class="list">
+                <div class="inp-wrap">
+                  <span class="text">设备</span>
+                  <div class="inp">
+                    <el-select v-model="eqpID" placeholder="请选择" filterable>
+                      <el-option
+                      v-for="item in eqpList"
+                      :key="item.key"
+                      :value="item.id"
+                      :label="item.name">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </div>
+                <p>注：若是针对设备的检修单，请务必选择，否则将不会记录进该设备的履历中</p>
+              </li>
+            </ul>
+          </div>
+          <HotTable :settings="settings" licenseKey="non-commercial-and-evaluation" style="margin-top: 20px"/>
         </el-collapse-item>
       </el-collapse>
       <div class="btn-enter">
@@ -359,10 +379,11 @@ import { transformDate, getCascaderObj } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
 import apiOrg from '@/api/orgApi'
+import apiEqp from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
 import lineApi from '@/api/metroLineApi'
 import { HotTable } from '@handsontable/vue'
-import Handsontable from 'handsontable'
+// import Handsontable from 'handsontable'
 export default {
   name: 'CreateEntity',
   components: {
@@ -371,9 +392,10 @@ export default {
   },
   data () {
     return {
-      settings: {
-        data: Handsontable.helper.createSpreadsheetData(500, 50)
-      },
+      // settings: {
+      //   data: Handsontable.helper.createSpreadsheetData(500, 50)
+      // },
+      settings: {},
       isEdit: false,
       editID: '',
       activeName: '1',
@@ -383,6 +405,8 @@ export default {
         btn: true
       },
       editModuleID: '',
+      eqpID: '',
+      eqpList: [],
       mList: [],
       totalModule: 0,
       pmModule: {
@@ -489,6 +513,7 @@ export default {
     }
     this.month.isChanged = false
     if (this.$route.params.type === 'edit') {
+      this.month.year = ''
       this.isEdit = true
       this.editID = this.$route.params.id
       this.title = ' | 修改检修单'
@@ -498,10 +523,13 @@ export default {
         // this.loading = false
         this.totalModule = 1
         this.mList = []
+        _data.module.createdTime = transformDate(_data.module.createdTime)
         this.mList.push(_data.module)
         this.editModuleID = _data.module.id
 
         this.selectList = _data.cpmd
+        this.loadEqpList(_data.cpmd[0].team)
+        this.eqpID = _data.eqp === null ? '' : _data.eqp
         this.editMonth = _data.cpmd
         this.isShowList = true
 
@@ -559,6 +587,7 @@ export default {
         locationBy: items[0].locationBy,
         module: this.editModuleID,
         contents: this.settings.data,
+        eqp: this.eqpID,
         isFinished: isFinished,
         PMMonthDetails: ids
       }
@@ -681,6 +710,7 @@ export default {
       let obj = getCascaderObj(selectedTeam, this.month.teamList)
       if (obj.node_type === 3) {
         this.month.team = selectedTeam
+        this.loadEqpList(selectedTeam)
       } else {
         this.month.team = ''
         this.month.teamPath = []
@@ -689,6 +719,12 @@ export default {
           type: 'warning'
         })
       }
+    },
+    // 根据班组加载设备
+    loadEqpList (team) {
+      apiEqp.getEqpByTeam(team).then(res => {
+        this.eqpList = res.data
+      }).catch(err => console.log(err))
     },
     searchResult (page) {
       if (this.month.year === '' || this.month.LineID === '' || this.month.companyPath.length === 0 || this.month.deptPath.length === 0 ||
