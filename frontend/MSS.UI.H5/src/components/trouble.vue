@@ -88,15 +88,10 @@
           </div>
           <div class="itemvalue">
             <div class="input">
-              <el-cascader
-                filterable
-                change-on-select
-                @change="position_change"
-                :props="areaParams"
-                :show-all-levels="true"
-                :options="areaList"
-                v-model="areaStart"
-              ></el-cascader>
+                    <mt-cell title="" :value="areaString" is-link @click.native="handlerArea"></mt-cell>
+                    <mt-popup v-model="areaVisible" class="area-class" position="bottom">
+                      <mt-picker :slots="slots" @change="onValuesChange"></mt-picker>
+                    </mt-popup>
             </div>
           </div>
         </li>
@@ -121,6 +116,26 @@ import apiArea from "@/api/AreaApi.js";
 import apiOrg from "@/api/orgApi";
 import apiEqp from "@/api/eqpApi";
 import apiAuth from "@/api/authApi";
+import data from '../assets/data/data.json'
+let index = 0
+let index2 = 0
+let index3 = 0
+// 初始化省
+let province = data.map(res => {
+  return res.name
+})
+// 初始化市
+let city = data[index].childs.map(res => {
+  return res.name
+})
+// 初始化区
+let area = data[index].childs[index2].childs.map(res => {
+  return res.name
+})
+// 初始化街
+let street = data[index].childs[index2].childs[index3].childs.map(res => {
+  return res.name
+})
 export default {
   name: "trouble",
   components: {
@@ -136,15 +151,42 @@ export default {
       dateValue: "",
       level: "",
       levelList: [],
-      areaStart: { text: [], tips: "" },
-      areaList: [],
-      areaEnd: { text: "", tips: "" },
-      areaEndList: [],
-      areaParams: {
-        label: 'areaName',
-        value: 'id',
-        children: 'children'
-      },
+      //四级联动
+      areaVisible: false,
+      streetVisible: false,
+      areaString: '请选择',
+      streetString: '请选择',
+      slots: [{
+        flex: 1,
+        values: province,
+        className: 'slot1',
+        textAlign: 'left'
+      }, {
+        divider: true,
+        content: '-',
+        className: 'slot2'
+      }, {
+        flex: 1,
+        values: city,
+        className: 'slot3',
+        textAlign: 'left'
+      }, {
+        divider: true,
+        content: '-',
+        className: 'slot4'
+      }, {
+        flex: 1,
+        values: area,
+        className: 'slot5',
+        textAlign: 'left'
+      }],
+      slotstree: [{
+        flex: 1,
+        values: street,
+        className: 'slot1',
+        textAlign: 'center'
+      }]
+      //四级联动
     };
   },
   created() {
@@ -182,25 +224,6 @@ export default {
           this.areaList = res.data.dicAreaList;
         })
         .catch(err => console.log(err));
-    },
-    position_change () {
-      this.repairCompany.text = ''
-      this.eqpList = []
-      // 起始位置的线路和结束位置的线路必须一致
-      if (this.areaStart.text.length < 3) {
-        this.areaStart.tips = '起始线路必须是站点或区域'
-        this.areaStart.text = []
-        return false
-      } else {
-        apiArea.ListBigAreaByLine(this.areaStart.text[0]).then(res => {
-          this.areaEndList = res.data
-        }).catch(err => console.log(err))
-        this.areaStart.tips = ''
-        // return true
-      }
-      if (this.repairCompany.text !== '') {
-        this.repair_change(this.repairCompany.text)
-      }
     },
     selectYear() {
       if (this.happeningTime) {
@@ -240,7 +263,44 @@ export default {
       } else {
         this.openTouch();
       }
-    }
+    },
+    onValuesChange(picker, values) {
+      let one = values[0]
+      let two = values[1]
+      let three = values[2]
+      index = province.indexOf(one)
+      if (index >= 0 && province.length > 0) {
+        city = data[index].childs.map(res => {
+          return res.name
+        })
+        picker.setSlotValues(1, city)
+        two = values[1]
+      }
+
+      index2 = city.indexOf(two)
+      if (index2 >= 0 && city.length > 0) {
+        area = data[index].childs[index2].childs.map(res => {
+          return res.name
+        })
+        picker.setSlotValues(2, area)
+        three = values[2]
+      }
+      index3 = area.indexOf(three)
+      if (index >= 0 && index2 >= 0 && index3 >= 0) {
+        street = data[index].childs[index2].childs[index3].childs.map(res => {
+          return res.name
+        })
+        this.slotstree[0].values = street
+      }
+
+      if (index2 === -1 || index3 === -1) {
+        this.streetString = '无可选街道'
+      }
+      this.areaString = values.join(',')
+    },    
+    handlerArea() {
+      this.areaVisible = true
+    },
   }
 };
 </script>
