@@ -88,10 +88,13 @@
           </div>
           <div class="itemvalue">
             <div class="input">
-                    <mt-cell title="" :value="areaString" is-link @click.native="handlerArea"></mt-cell>
-                    <mt-popup v-model="areaVisible" class="area-class" position="bottom">
-                      <mt-picker :slots="slots" @change="onValuesChange"></mt-picker>
-                    </mt-popup>
+              <mt-cell title :value="areaString" is-link @click.native="handlerArea"></mt-cell>
+              <mt-popup v-model="areaVisible" class="area-class" position="bottom">
+                <mt-picker :slots="slot1" value-key="areaName" @change="onValuesChange1"></mt-picker>
+                <mt-picker :slots="slot2" value-key="areaName" @change="onValuesChange2"></mt-picker>
+                <mt-picker :slots="slot3" value-key="areaName" @change="onValuesChange3"></mt-picker>
+                <mt-picker :slots="slot4" value-key="areaName"></mt-picker>
+              </mt-popup>
             </div>
           </div>
         </li>
@@ -116,26 +119,36 @@ import apiArea from "@/api/AreaApi.js";
 import apiOrg from "@/api/orgApi";
 import apiEqp from "@/api/eqpApi";
 import apiAuth from "@/api/authApi";
-import data from '../assets/data/data.json'
-let index = 0
-let index2 = 0
-let index3 = 0
+import data from "../assets/data/data.json";
+let index = 0;
+let index2 = 0;
+let index3 = 0;
 // 初始化省
-let province = data.map(res => {
-  return res.name
-})
+// var province = data.map(res => {
+//   return res.name;
+// });
+let province = [];
+let provinceId = [];
+// console.log("main:");
+// console.log(province);
 // 初始化市
-let city = data[index].childs.map(res => {
-  return res.name
-})
+// let city = data[index].childs.map(res => {
+//   return res.name
+// })
+let city = [];
+let cityId = [];
 // 初始化区
-let area = data[index].childs[index2].childs.map(res => {
-  return res.name
-})
+// let area = data[index].childs[index2].childs.map(res => {
+//   return res.name
+// })
+let area = [];
+let areaId = [];
 // 初始化街
-let street = data[index].childs[index2].childs[index3].childs.map(res => {
-  return res.name
-})
+// let street = data[index].childs[index2].childs[index3].childs.map(res => {
+//   return res.name
+// })
+let street = [];
+let streetId = [];
 export default {
   name: "trouble",
   components: {
@@ -154,60 +167,68 @@ export default {
       //四级联动
       areaVisible: false,
       streetVisible: false,
-      areaString: '请选择',
-      streetString: '请选择',
-      slots: [{
-        flex: 1,
-        values: province,
-        className: 'slot1',
-        textAlign: 'left'
-      }, {
-        divider: true,
-        content: '-',
-        className: 'slot2'
-      }, {
-        flex: 1,
-        values: city,
-        className: 'slot3',
-        textAlign: 'left'
-      }, {
-        divider: true,
-        content: '-',
-        className: 'slot4'
-      }, {
-        flex: 1,
-        values: area,
-        className: 'slot5',
-        textAlign: 'left'
-      }],
-      slotstree: [{
-        flex: 1,
-        values: street,
-        className: 'slot1',
-        textAlign: 'center'
-      }]
+      areaString: "请选择",
+      areaValue: "",
+      streetString: "请选择",
+      slot1: [
+        {
+          flex: 1,
+          values: [],
+          className: "slot1",
+          textAlign: "left"
+        }
+      ],
+      slot2: [
+        {
+          flex: 1,
+          values: [],
+          className: "slot2",
+          textAlign: "left"
+        }
+      ],
+      slot3: [
+        {
+          flex: 1,
+          values: [],
+          className: "slot3",
+          textAlign: "left"
+        }
+      ],
+      slot4: [
+        {
+          flex: 1,
+          values: [],
+          className: "slot4",
+          textAlign: "left"
+        }
+      ],
+      slotobj:[],
+      s1pick:{},
+      s2pick:{},
+      s3pick:{},
       //四级联动
     };
   },
   created() {
-    this.InitSelect();
+    // this.InitSelect();
   },
   mounted() {
     var img = $(".img");
     var callBack = function(album) {
       //alert(album);
-      console.log("album:" + album);
-      console.log("img:" + img);
+      // console.log("album:" + album);
+      // console.log("img:" + img);
       album.forEach(function(val, idx) {
         var div = $("<div></div>");
         var img = $("<img/>");
         img.attr("src", val.data);
-        console.log("src=" + JSON.stringify(val.data));
+        // console.log("src=" + JSON.stringify(val.data));
         div.append(img);
         $(".album").append(div);
       });
     };
     var carera = new $.Pgater($("#btn"), callBack);
+    this.InitSelect();
   },
   methods: {
     InitSelect() {
@@ -221,7 +242,20 @@ export default {
       apiArea
         .SelectConfigAreaData()
         .then(res => {
-          this.areaList = res.data.dicAreaList;
+          this.slotobj = res.data.dicAreaList
+          let slot1mp = res.data.dicAreaList
+          this.slot1[0].values = slot1mp
+          this.s1pick = slot1mp[0]
+          let slot2tmp = slot1mp[0].children
+          this.slot2[0].values = slot2tmp
+          // this.s2pick = slot2mp[0]
+          let slot3tmp = slot2tmp[0].children
+          this.slot3[0].values = slot3tmp
+          // this.s3pick = slot3mp[0]
+          if(slot3tmp != null){
+            let slot4tmp = slot3tmp[0].children
+            this.slot4[0].values = slot4tmp
+          }
         })
         .catch(err => console.log(err));
     },
@@ -264,43 +298,89 @@ export default {
         this.openTouch();
       }
     },
-    onValuesChange(picker, values) {
-      let one = values[0]
-      let two = values[1]
-      let three = values[2]
-      index = province.indexOf(one)
-      if (index >= 0 && province.length > 0) {
-        city = data[index].childs.map(res => {
-          return res.name
-        })
-        picker.setSlotValues(1, city)
-        two = values[1]
-      }
+    // onValuesChange(picker, values) {
+    //   // console.log('onValuesChange_start')
+    //   // console.log('values:')
+    //   // console.log(values)
+    //   let one = values[0];
+    //   let two = values[1];
+    //   let three = values[2];
+    //   index = province.indexOf(one);
+    //   if (index >= 0 && province.length > 0) {
+    //     city = data[index].childs.map(res => {
+    //       return res.name;
+    //     });
+    //     picker.setSlotValues(1, city);
+    //     two = values[1];
+    //   }
 
-      index2 = city.indexOf(two)
-      if (index2 >= 0 && city.length > 0) {
-        area = data[index].childs[index2].childs.map(res => {
-          return res.name
-        })
-        picker.setSlotValues(2, area)
-        three = values[2]
-      }
-      index3 = area.indexOf(three)
-      if (index >= 0 && index2 >= 0 && index3 >= 0) {
-        street = data[index].childs[index2].childs[index3].childs.map(res => {
-          return res.name
-        })
-        this.slotstree[0].values = street
-      }
+    //   index2 = city.indexOf(two);
+    //   if (index2 >= 0 && city.length > 0) {
+    //     area = data[index].childs[index2].childs.map(res => {
+    //       return res.name;
+    //     });
+    //     picker.setSlotValues(2, area);
+    //     three = values[2];
+    //   }
+    //   index3 = area.indexOf(three);
+    //   if (index >= 0 && index2 >= 0 && index3 >= 0) {
+    //     street = data[index].childs[index2].childs[index3].childs.map(res => {
+    //       return res.name;
+    //     });
+    //     this.slotstree[0].values = street;
+    //   }
 
-      if (index2 === -1 || index3 === -1) {
-        this.streetString = '无可选街道'
+    //   if (index2 === -1 || index3 === -1) {
+    //     this.streetString = "无可选街道";
+    //   }
+    //   this.areaString = values.join(",");
+    // },
+    onValuesChange1(picker, values) {
+      this.s1pick = values[0]
+      console.log('s1pick:')
+      console.log(this.s1pick)
+      let s1 = this.slotobj
+      let s2 = s1.filter(c => c.id === values[0].id)[0]
+      if(s2 != undefined)
+      {
+        this.slot2[0].values = s2.children
       }
-      this.areaString = values.join(',')
-    },    
-    handlerArea() {
-      this.areaVisible = true
+      // this.areaString = values.join(",")
     },
+    onValuesChange2(picker, values) {
+      let dataall = this.slotobj
+      let s1 = dataall.filter(c => c.id === this.s1pick.id)[0]
+      if(s1 != undefined){
+        let s2 = s1.children
+        this.s2pick = s2.filter(c=>c.id === values[0].id)[0]
+        this.slot3[0].values = this.s2pick.children
+      }
+    },
+    onValuesChange3(picker, values) {
+      let dataall = this.slotobj
+      let s1 = dataall.filter(c => c.id === this.s1pick.id)[0]
+      if(s1 != undefined){
+        let s2 = s1.children
+        if(s2 != undefined){
+          let s3 = s2.filter(c=>c.id === this.s2pick.id)[0]
+          if(s3 != undefined){
+            console.log('s3')
+            console.log(s3)
+            let s3p = s3.children
+            this.s3pick = s3p.filter(c=>c.id === values[0].id)[0]
+            console.log('this.s3pick')
+            console.log(this.s3pick)
+            this.slot4[0].values = this.s3pick.children
+          }
+
+          
+        }
+        
+      }
+    },
+    handlerArea() {
+      this.areaVisible = true;
+    }
   }
 };
 </script>
@@ -409,5 +489,16 @@ export default {
   color: #8e9092;
   position: absolute;
   margin: 0 auto;
+}
+.itemvalue .mint-popup-bottom{
+  width:100%;
+}
+.itemvalue .picker{
+  display:inline-block;
+  width: 24%;
+}
+.itemvalue .picker-item{
+  font-size: 12px;
+  padding: 0 0;
 }
 </style>
