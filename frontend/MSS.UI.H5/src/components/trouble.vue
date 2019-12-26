@@ -212,6 +212,19 @@
           </div>
         </li>
         <li class="itemli">
+          <div class="itemlabel">
+            <span>报修故障描述:</span>
+          </div>
+          <div class="itemvalue">
+            <div class="input">
+              <el-input type="textarea"
+                        :rows="2"
+                        placeholder="请输入内容"
+                        v-model="repairDesc"></el-input>
+            </div>
+          </div>
+        </li>
+        <li class="itemli">
           <div id="btn">点击拍照</div>
           <div class="album"></div>
         </li>
@@ -360,6 +373,7 @@ export default {
           defaultIndex: 0
         }
       ],
+      repairDesc:'',
     };
   },
   created() {
@@ -690,7 +704,8 @@ export default {
   width: 100%;
   height: 85%;
   overflow: scroll;
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -789,5 +804,8 @@ export default {
 }
 .itemvaluepick .mint-cell-wrapper {
   font-size: 12px;
+}
+.troublescroll ul::-webkit-scrollbar{
+    display: none;
 }
 </style>
