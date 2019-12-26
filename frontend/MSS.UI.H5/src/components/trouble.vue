@@ -115,6 +115,27 @@
           </div>
         </li>
         <li class="itemli">
+          <div class="itemlabel">
+            <span>故障设备:</span>
+          </div>
+          <div class="itemvalue itemvaluepick">
+            <div class="input">
+              <el-input v-model="eqpcode" placeholder="请输入故障图纸号" clearable></el-input>
+              <el-button round @click.native="choseeqp()">确定</el-button>
+            </div>
+          </div>
+        </li>
+        <li class="itemli">
+          <div class="itemlabel">
+            <span>(已选故障设备)</span>
+          </div>
+          <div class="itemvalue itemvaluepick">
+            <div class="input">
+              <span v-model="eqpIDs">{{eqpShow}}</span>
+            </div>
+          </div>
+        </li>
+        <li class="itemli">
           <div id="btn">点击拍照</div>
           <div class="album"></div>
         </li>
@@ -216,7 +237,11 @@ export default {
         }
       ],
       slotobj:[],
-      //四级联动
+      //设备图纸
+      eqpcode:'',
+      eqpIDs:[],
+      eqpShow:'',
+      eqpShowArr:[],
     };
   },
   created() {
@@ -407,6 +432,35 @@ export default {
     },
     handlerEndLocation() {
       this.endlocationVisible = true
+    },
+    choseeqp(){
+      // console.log(this.eqpcode)
+      let parm = {
+        order: 'asc',
+        sort: 'eqp_code',
+        rows: 10,
+        page: 1,
+        SearchCode: this.eqpcode,
+      }
+      apiEqp.getEqp(parm).then(res => {
+        let eqplist = res.data.rows
+        if(eqplist != null && eqplist.length > 0){
+            let eqplistobj = this.eqpIDs
+            let c = eqplistobj.filter(c=>c.eqp === eqplist[0].id)
+
+            if(c.length === 0){
+              this.eqpIDs.push({
+                eqp: eqplist[0].id,
+                org: eqplist[0].topOrg,
+                name: eqplist[0].name,
+              })
+              this.eqpShowArr.push(eqplist[0].name)
+            }
+            this.eqpShow = this.eqpShowArr.join(',')
+            console.log('eqpIDs:')
+            console.log(this.eqpIDs)
+        }
+      }).catch(err => console.log(err))
     },
   }
 };
