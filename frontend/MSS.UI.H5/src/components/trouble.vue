@@ -69,16 +69,14 @@
           <div class="itemlabel">
             <span>故障等级:</span>
           </div>
-          <div class="itemvalue">
+          <div class="itemvalue itemvaluepick">
             <div class="input">
-              <el-select v-model="level" clearable filterable placeholder="请选择故障等级">
-                <el-option
-                  v-for="item in levelList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
+              <mt-cell title :value="level" is-link @click.native="handlerLevel"></mt-cell>
+              <mt-popup v-model="levelVisible" class="area-class" position="bottom">
+                <mt-picker ref="levelpicker1" :slots="levelslot1" value-key="name" :show-toolbar="true">
+                  <mt-button @click="handlelevelpickConfirm" class="sure" >确认</mt-button>
+                </mt-picker>
+              </mt-popup>
             </div>
           </div>
         </li>
@@ -132,21 +130,31 @@ export default {
   },
   data() {
     return {
-      happeningTime: "",
-      reportedTime: "",
-      urgentOrder: "",
-      dateValue: "",
-      level: "",
+      happeningTime: '',
+      reportedTime: '',
+      urgentOrder: '',
+      dateValue: '',
+      // 故障等级
+      level: '',
+      levelValue:'',
+      levelVisible:false,
       levelList: [],
+      levelslot1:[
+        {
+          flex: 1,
+          values: [],
+          className: "levelslot1",
+          textAlign: "center",
+          defaultIndex: 0,
+        }
+      ],
       //四级联动
       areaVisible: false,
-      streetVisible: false,
       areaString: '',
       areaValue: '',
       line:0,
       startlocation:0,
       startlocationby:0,
-      streetString: "请选择",
       slot1: [
         {
           flex: 1,
@@ -210,7 +218,9 @@ export default {
       apiAuth
         .getSubCode(dictionary.troubleLevel)
         .then(res => {
-          this.levelList = res.data;
+          // this.levelList = res.data;
+          this.levelslot1[0].values = res.data
+          this.level = '请选择'
         })
         .catch(err => console.log(err));
 
@@ -231,9 +241,10 @@ export default {
             let slot4tmp = slot3tmp[0].children
             this.slot4[0].values = slot4tmp
           }
+          this.areaString = '请选择'
         })
         .catch(err => console.log(err));
-        this.areaString = '请选择'
+        
     },
     selectYear() {
       if (this.happeningTime) {
@@ -307,6 +318,12 @@ export default {
       
       this.areaVisible = false
     },
+    handlelevelpickConfirm() {
+      let curpick1 = this.$refs.levelpicker1.getValues()[0]
+      this.level = curpick1.name
+      this.levelValue = curpick1.id
+      this.levelVisible = false
+    },
     onValuesChange1(picker, values) {
         let s1 = this.slotobj
         let s2 = s1.filter(c => c.id === values[0].id)[0]
@@ -375,7 +392,10 @@ export default {
     },
     handlerArea() {
       this.areaVisible = true;
-    }
+    },
+    handlerLevel() {
+      this.levelVisible = true;
+    },
   }
 };
 </script>
