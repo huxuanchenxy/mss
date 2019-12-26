@@ -100,6 +100,21 @@
           </div>
         </li>
         <li class="itemli">
+          <div class="itemlabel">
+            <span>结束站点:</span>
+          </div>
+          <div class="itemvalue itemvaluepick">
+            <div class="input">
+              <mt-cell title :value="endlocation" is-link @click.native="handlerEndLocation"></mt-cell>
+              <mt-popup v-model="endlocationVisible" class="area-class" position="bottom">
+                <mt-picker ref="endlocationpicker" :slots="endlocationslot" value-key="areaName" :show-toolbar="true">
+                  <mt-button @click="handleEndLocationConfirm" class="sure" >确认</mt-button>
+                </mt-picker>
+              </mt-popup>
+            </div>
+          </div>
+        </li>
+        <li class="itemli">
           <div id="btn">点击拍照</div>
           <div class="album"></div>
         </li>
@@ -138,7 +153,6 @@ export default {
       level: '',
       levelValue:'',
       levelVisible:false,
-      levelList: [],
       levelslot1:[
         {
           flex: 1,
@@ -148,7 +162,20 @@ export default {
           defaultIndex: 0,
         }
       ],
-      //四级联动
+      //区域结束位置
+      endlocation: '请选择',
+      endlocationValue: '',
+      endlocationVisible:false,
+      endlocationslot:[
+        {
+          flex: 1,
+          values: [],
+          className: "endlocationslot1",
+          textAlign: "center",
+          defaultIndex: 0,
+        }
+      ],
+      //区域起始位置四级联动
       areaVisible: false,
       areaString: '',
       areaValue: '',
@@ -296,6 +323,9 @@ export default {
         areaarr.push(curpick1.areaName)
         areaidarr.push(curpick1.id)
         this.line = curpick1.id
+        apiArea.ListBigAreaByLine(curpick1.id).then(res => {
+          this.endlocationslot[0].values = res.data
+        }).catch(err => console.log(err))
       }
       if(curpick2 != undefined){
         areaarr.push(curpick2.areaName)
@@ -323,6 +353,12 @@ export default {
       this.level = curpick1.name
       this.levelValue = curpick1.id
       this.levelVisible = false
+    },
+    handleEndLocationConfirm(){
+      let curpick1 = this.$refs.endlocationpicker.getValues()[0]
+      this.endlocation = curpick1.areaName
+      this.endlocationValue = curpick1.id
+      this.endlocationVisible = false
     },
     onValuesChange1(picker, values) {
         let s1 = this.slotobj
@@ -363,38 +399,14 @@ export default {
           }
         }
     },
-    joinArea(){
-      console.log('111')
-      console.log(this.slotflag)
-      let areaarr = []
-      this.areaString = '请选择'
-      if(this.s1pick != undefined){
-          areaarr.push(this.s1pick.areaName)
-      }
-      if(this.s2pick != undefined){
-          areaarr.push(this.s2pick.areaName)
-      }
-      if(this.s3pick != undefined){
-          areaarr.push(this.s3pick.areaName)
-      }
-      if(this.s4pick != undefined){
-          areaarr.push(this.s4pick.areaName)
-      }
-      if(this.slotflag){
-        this.areaString = areaarr.join(",")
-      }else{
-        this.slotflag = true
-      }
-      console.log('222')
-      console.log(this.slotflag)
-      console.log('joinArea')
-      console.log(this.areaString)
-    },
     handlerArea() {
-      this.areaVisible = true;
+      this.areaVisible = true
     },
     handlerLevel() {
-      this.levelVisible = true;
+      this.levelVisible = true
+    },
+    handlerEndLocation() {
+      this.endlocationVisible = true
     },
   }
 };
