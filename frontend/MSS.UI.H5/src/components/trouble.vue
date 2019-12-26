@@ -141,8 +141,11 @@ export default {
       //四级联动
       areaVisible: false,
       streetVisible: false,
-      areaString: "",
-      areaValue: "",
+      areaString: '',
+      areaValue: '',
+      line:0,
+      startlocation:0,
+      startlocationby:0,
       streetString: "请选择",
       slot1: [
         {
@@ -277,19 +280,31 @@ export default {
       let curpick3 = this.$refs.picker3.getValues()[0]
       let curpick4 = this.$refs.picker4.getValues()[0]
       let areaarr = []
+      let areaidarr = []
       if(curpick1 != undefined){
         areaarr.push(curpick1.areaName)
+        areaidarr.push(curpick1.id)
+        this.line = curpick1.id
       }
       if(curpick2 != undefined){
         areaarr.push(curpick2.areaName)
+        areaidarr.push(curpick2.id)
       }
       if(curpick3 != undefined){
         areaarr.push(curpick3.areaName)
+        areaidarr.push(curpick3.id)
+        this.startlocation = curpick3.id
+        this.startlocationby = 1
       }
       if(curpick4 != undefined){
         areaarr.push(curpick4.areaName)
+        areaidarr.push(curpick4.id)
+        this.startlocationby = 2
       }
       this.areaString = areaarr.join(",")
+      this.areaValue = areaidarr.join(",")
+      
+      
       this.areaVisible = false
     },
     onValuesChange1(picker, values) {
