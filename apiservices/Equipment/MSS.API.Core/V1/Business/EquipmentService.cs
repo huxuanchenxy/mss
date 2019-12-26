@@ -239,6 +239,20 @@ namespace MSS.API.Core.V1.Business
             }
             return ret;
         }
+        public async Task<ApiResult> ListByTeam(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _eqpRepo.ListByTeam(id);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
 
         public async Task<ApiResult> GetAll()
         {

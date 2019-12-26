@@ -58,7 +58,7 @@ import { transformDate } from '@/common/js/utils.js'
 import api from '@/api/workflowApi'
 import XButton from '@/components/button'
 import { HotTable } from '@handsontable/vue'
-import Handsontable from 'handsontable'
+// import Handsontable from 'handsontable'
 export default {
   name: 'DetailEntity',
   components: {
@@ -67,12 +67,14 @@ export default {
   },
   data () {
     return {
-      settings: {
-        data: Handsontable.helper.createSpreadsheetData(500, 50)
-      },
+      settings: {},
       loading: false,
       title: ' | 检修单明细',
       entity: {},
+      eqpLifeHistory: {
+        eqpSelected: [],
+        eqpType: ''
+      },
       isShow: false,
       sourceName: ''
     }
@@ -80,12 +82,26 @@ export default {
   created () {
     this.getDetail(this.$route.params.id)
     this.sourceName = this.$route.params.sourceName
+    if (this.sourceName === 'SeeHistory') {
+      this.eqpLifeHistory.eqpSelected = this.$route.params.eqpSelected
+      this.eqpLifeHistory.eqpType = this.$route.params.eqpType
+    }
   },
   methods: {
     back () {
-      this.$router.push({
-        name: this.sourceName
-      })
+      if (this.sourceName === 'SeeHistory') {
+        this.$router.push({
+          name: this.sourceName,
+          params: {
+            eqpSelected: this.eqpLifeHistory.eqpSelected,
+            eqpType: this.eqpLifeHistory.eqpType
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.sourceName
+        })
+      }
     },
     getDetail (id) {
       this.loading = true

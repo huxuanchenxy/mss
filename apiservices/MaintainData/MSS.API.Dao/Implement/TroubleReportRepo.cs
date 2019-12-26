@@ -133,7 +133,7 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation,string unpassReason="")
+        public async Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation)
         {
             return await WithConnection(async c =>
             {
@@ -143,17 +143,9 @@ namespace MSS.API.Dao.Implement
                 {
                     sql += ",accepted_time=@time ";
                 }
-                if (status == TroubleStatus.PendingApproval && operation == TroubleOperation.Unpass)
-                {
-                    sql += ",is_sure=2,sure_by=@userID,sure_time=@time,unpass_reason=@reason ";
-                }
-                else if (status == TroubleStatus.Finished && operation == TroubleOperation.Pass)
-                {
-                    sql += ",is_sure=1,sure_by=@userID,sure_time=@time ";
-                }
                 sql += " where id in @ids";
                 int ret = await c.ExecuteAsync(sql,
-                    new { ids, userID, time = DateTime.Now, status, operation,reason= unpassReason });
+                    new { ids, userID, time = DateTime.Now, status, operation});
                 return ret;
             });
         }
@@ -523,17 +515,37 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<int> UpdateDealResult(int id, int userID, TroubleStatus status, TroubleOperation operation, string unpassReason = "")
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " update trouble_deal set ";
+                if (status == TroubleStatus.PendingApproval && operation == TroubleOperation.Unpass)
+                {
+                    sql += "is_sure=2,sure_by=@userID,sure_time=@time,unpass_reason=@reason ";
+                }
+                else if (status == TroubleStatus.Finished && operation == TroubleOperation.Pass)
+                {
+                    sql += "is_sure=1,sure_by=@userID,sure_time=@time ";
+                }
+                sql += " where id=@id";
+                return await c.ExecuteAsync(sql,
+                    new { id, userID, time = DateTime.Now, status, operation,reason=unpassReason });
+            });
+        }
+
+
         public async Task<List<TroubleDeal>> ListDealByTrouble(int trouble, int topOrg = 0)
         {
             return await WithConnection(async c =>
             {
-                string sql = " select a.*,ot.name,u1.user_name,u2.user_name as dname,u3.user_name as uname, " +
+                string sql = " select DISTINCT a.*,ot.name,u1.user_name,u2.user_name as dname,u3.user_name as uname, " +
                 " u4.user_name as sname from trouble_deal a " +
                 " left join org_tree ot on ot.id=a.org_top "+
                 " left join user u1 on u1.id=a.created_by " +
                 " left join user u2 on u2.id=a.deal_by " +
-                " left join user u3 on u2.id=a.update_by " +
-                " left join user u4 on u3.id=a.sure_by " +
+                " left join user u3 on u3.id=a.update_by " +
+                " left join user u4 on u4.id=a.sure_by " +
                 " where a.trouble=" + trouble;
                 if (topOrg > 0)
                 {

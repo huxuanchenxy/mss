@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Transactions;
+using static MSS.API.Common.MyDictionary;
 
 
 // Coded By admin 2019/9/26 17:41:26
@@ -447,6 +448,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
         public async Task<ApiResult> SavePMEntity(PMEntity pmEntity)
         {
             ApiResult ret = new ApiResult();
+            EqpHistory eqp = new EqpHistory();
             DateTime dt= DateTime.Now;
             pmEntity.CreatedTime = dt;
             pmEntity.CreatedBy = _userID;
@@ -456,6 +458,14 @@ namespace MSS.Platform.Workflow.WebApi.Service
             if (pmEntity.IsFinished)
             {
                 pmEntity.Status = (int)PMStatus.Finished;
+                if (pmEntity.Eqp != null)
+                {
+                    eqp.CreatedBy = _userID;
+                    eqp.CreatedTime = dt;
+                    eqp.EqpID = (int)pmEntity.Eqp;
+                    eqp.Type = (int)EqpHistoryType.Maintenance;
+                    eqp.ShowName = pmEntity.Title;
+                }
             }
             try
             {
@@ -477,6 +487,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     File.Copy(module.FilePath, entityPath);
                     SaveExcelEntity(entityPath, fileType, pmEntity);
                     int newid = await _repo.SavePMEntity(pmEntity);
+                    eqp.WorkingOrder = newid;
                     List<PMEntityMonthDetail> details = new List<PMEntityMonthDetail>();
                     foreach (int item in pmEntity.PMMonthDetails)
                     {
@@ -486,6 +497,10 @@ namespace MSS.Platform.Workflow.WebApi.Service
                         details.Add(detail);
                     }
                     ret.data = await _repo.SavePMEntityMonthDetail(details);
+                    if (pmEntity.IsFinished)
+                    {
+                        await _repo.SaveEqpHistory(eqp);
+                    }
                     scope.Complete();
                 }
                 return ret;
@@ -500,6 +515,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
         public async Task<ApiResult> UpdatePMEntity(PMEntity pmEntity)
         {
             ApiResult ret = new ApiResult();
+            EqpHistory eqp = new EqpHistory();
             DateTime dt = DateTime.Now;
             pmEntity.UpdatedBy = _userID;
             pmEntity.UpdatedTime = dt;
@@ -507,6 +523,15 @@ namespace MSS.Platform.Workflow.WebApi.Service
             if (pmEntity.IsFinished)
             {
                 pmEntity.Status = (int)PMStatus.Finished;
+                if (pmEntity.Eqp != null)
+                {
+                    eqp.CreatedBy = _userID;
+                    eqp.CreatedTime = dt;
+                    eqp.EqpID = (int)pmEntity.Eqp;
+                    eqp.Type = (int)EqpHistoryType.Maintenance;
+                    eqp.ShowName = pmEntity.Title;
+                    eqp.WorkingOrder = pmEntity.ID;
+                }
             }
             try
             {
@@ -550,6 +575,10 @@ namespace MSS.Platform.Workflow.WebApi.Service
                             details.Add(detail);
                         }
                         ret.data = await _repo.SavePMEntityMonthDetail(details);
+                    }
+                    if (pmEntity.IsFinished)
+                    {
+                        await _repo.SaveEqpHistory(eqp);
                     }
                     scope.Complete();
                 }
@@ -697,7 +726,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     string fileType = Path.GetExtension(entity.FilePath);
                     ListShowModule(file, fileType, ref showData, ref showMerge);
                 }
-                if (isUpdate) ret.data = new { module, cpmd, showData, showMerge };
+                if (isUpdate) ret.data = new { entity.Eqp,module, cpmd, showData, showMerge };
                 else ret.data = new { entity, showData, showMerge };
             }
             catch (Exception ex)

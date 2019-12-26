@@ -40,7 +40,8 @@
           </div>
         </div>
         <div class="search-btn">
-          <i @click="searchRes"><x-button ><i class="iconfont icon-search"></i> 查询</x-button></i>
+          <i @click="searchRes(false)"><x-button ><i class="iconfont icon-search"></i> 查询</x-button></i>
+          <i @click="searchRes(true)"><x-button ><i class="iconfont icon-search"></i> 隐藏维护保养</x-button></i>
           <i @click="eqpDetail"><x-button ><i class="iconfont el-icon-more"></i> 设备明细</x-button></i>
         </div>
       </div>
@@ -67,7 +68,8 @@
                 <el-collapse-item :title="item.content">
                   <div v-for="data in item.children" :key="data.key">
                     <div class="secondContent" v-show="item.detailType === 1" @click="detail(data.id, 1)">{{"施工申请单"+data.id}}</div>
-                    <div class="secondContent" v-show="item.detailType === 2" @click="detail(data.id, 2)">{{"故障报告单"+data.id}}</div>
+                    <div class="secondContent" v-show="item.detailType === 2" @click="detail(data.id, 2)">{{"故障报告单："+data.name}}</div>
+                    <div class="secondContent" v-show="item.detailType === 3" @click="detail(data.id, 3)">{{"检修单："+data.name}}</div>
                     <div class="secondContent" v-show="item.detailType === 0" @click="preview(data)">{{data.name}}</div>
                   </div>
                 </el-collapse-item>
@@ -131,7 +133,7 @@ export default {
           this.eqpSelected = this.$route.params.eqpSelected
           // this.eqpSelected.push(this.eqpList[0].id)
           // this.eqp = this.getDefaultEqp(this.eqpList[0])
-          this.searchRes()
+          this.searchRes(false)
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
     } else {
@@ -153,7 +155,7 @@ export default {
     if ('eqpSelected' in this.$route.params) {
       this.eqpSelected = this.$route.params.eqpSelected
       this.eqpType = this.$route.params.eqpType
-      this.searchRes()
+      this.searchRes(false)
     }
   },
   methods: {
@@ -169,9 +171,9 @@ export default {
       if (tmp.children === null) return tmp.id
       else return this.getDefaultEqp(tmp)
     },
-    searchRes () {
+    searchRes (isHide) {
       this.eqp = this.eqpSelected[this.eqpSelected.length - 1]
-      api.ListByEqp(this.eqp).then(res => {
+      api.ListByEqp(this.eqp, isHide).then(res => {
         apiEqp.getUploadFileByEqp(this.eqp).then(ret => {
           let tmp = [{
             tag: '技术资料',
@@ -200,6 +202,17 @@ export default {
         case 2:
           this.$router.push({
             name: 'DetailTroubleReport',
+            params: {
+              id: id,
+              sourceName: 'SeeHistory',
+              eqpSelected: this.eqpSelected,
+              eqpType: this.eqpType
+            }
+          })
+          break
+        case 3:
+          this.$router.push({
+            name: 'DetailEntity',
             params: {
               id: id,
               sourceName: 'SeeHistory',

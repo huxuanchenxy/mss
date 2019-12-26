@@ -15,6 +15,7 @@ namespace MSS.API.Model.Data
         public int Type { get; set; }
         public string TypeName { get; set; }
         public int WorkingOrder { get; set; }
+        public string ShowName { get; set; }
         public DateTime CreatedTime { get; set; }
         public string CreatedDate { get; set; }
         public int CreatedBy { get; set; }
@@ -32,6 +33,7 @@ namespace MSS.API.Model.Data
             Map(o => o.Type).ToColumn("type");
             Map(o => o.TypeName).ToColumn("name");
             Map(o => o.WorkingOrder).ToColumn("working_order");
+            Map(o => o.ShowName).ToColumn("show_name");
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedTime).ToColumn("created_time");
             Map(o => o.CreatedDate).ToColumn("created_date");

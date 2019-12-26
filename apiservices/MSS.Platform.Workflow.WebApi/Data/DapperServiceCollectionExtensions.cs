@@ -48,6 +48,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 config.AddMap(new PMModuleMap());
                 config.AddMap(new PMEntityMap()); 
                 config.AddMap(new PMEntityMonthDetailMap());
+                config.AddMap(new EqpHistoryMap());
             });
             return services;
         }

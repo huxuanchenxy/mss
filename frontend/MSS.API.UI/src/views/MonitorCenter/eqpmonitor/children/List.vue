@@ -131,6 +131,9 @@
         <li class="list number">
           设备状态
         </li>
+        <li class="list number">
+          操作
+        </li>
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -144,6 +147,9 @@
                 <div class="number">{{ item.teamName }}</div>
                 <div class="number">
                   {{ statusShow(item.status) }}
+                </div>
+                <div class="number">
+                  <li @click="detail(item.id)" ><x-button >查看明细</x-button></li>
                 </div>
               </div>
             </li>
@@ -249,6 +255,15 @@ export default {
     this.search()
   },
   methods: {
+    detail (id) {
+      this.$router.push({
+        name: 'DetailEqp',
+        params: {
+          id: id,
+          sourceName: 'monitorCenter'
+        }
+      })
+    },
     checkDisable (label) {
       if (+this.position === label) {
         return false
@@ -399,8 +414,20 @@ export default {
         ids = Object.keys(this.alarmList)
       }
       if (ids.length === 0) {
-        this.dataList = []
-        this.total = 0
+        // this.dataList = []
+        // this.total = 0
+        let parm = {
+          order: this.currentSort.order,
+          sort: this.currentSort.sort,
+          rows: 10,
+          page: this.currentPage
+        }
+        eqpApi.getEqp(parm).then(res => {
+          this.loading = false
+          this.dataList = res.data.rows
+          console.log(this.dataList)
+          this.total = res.data.total
+        }).catch(err => console.log(err))
         return
       }
       let parm = {

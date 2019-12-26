@@ -11,7 +11,7 @@ namespace MSS.API.Core.V1.Business
 {
     public interface IEqpHistoryService
     {
-        Task<ApiResult> ListByEqp(int id);
+        Task<ApiResult> ListByEqp(int id,bool isHide);
         Task<ApiResult> ListByType(string types);
     }
 }

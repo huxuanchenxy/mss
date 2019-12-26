@@ -282,7 +282,22 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
-
+        public async Task<List<Equipment>> ListByTeam(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<Equipment>(
+                    "SELECT * FROM equipment WHERE team =@id and is_del=" + (int)IsDeleted.no, new { id });
+                if (result != null && result.Count() > 0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
         public async Task<List<Equipment>> GetAll()
         {
             return await WithConnection(async c =>
