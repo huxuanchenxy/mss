@@ -22,10 +22,10 @@ namespace MSS.API.Core.V1.Controllers
             _eqpHistoryService = eqpHistoryService;
         }
 
-        [HttpGet("ListByEqp/{id}")]
-        public ActionResult ListByEqp(int id)
+        [HttpGet("ListByEqp/{id}/{isHide}")]
+        public ActionResult ListByEqp(int id,bool isHide)
         {
-            var resp = _eqpHistoryService.ListByEqp(id);
+            var resp = _eqpHistoryService.ListByEqp(id,isHide);
             return Ok(resp.Result);
         }
         [HttpGet("ListByType/{types}")]

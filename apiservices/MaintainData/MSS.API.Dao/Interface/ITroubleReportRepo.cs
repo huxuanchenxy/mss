@@ -10,7 +10,7 @@ namespace MSS.API.Dao.Interface
     {
         Task<TroubleReport> GetByID(int id);
         Task<TroubleReportView> ListPage(TroubleReportParm parm);
-        Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation, string unpassReason = "");
+        Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation);
         Task<TroubleReport> Save(TroubleReport troubleReport);
         Task<string> GetLineCodeByID(int id);
         Task<string> GetNodeCodeByID(int id);
@@ -30,5 +30,6 @@ namespace MSS.API.Dao.Interface
         Task<TroubleDeal> SaveDeal(TroubleDeal troubleDeal);
         Task<int> UpdateDeal(TroubleDeal troubleDeal);
         Task<List<TroubleDeal>> ListDealByTrouble(int trouble, int topOrg = 0);
+        Task<int> UpdateDealResult(int id, int userID, TroubleStatus status, TroubleOperation operation, string unpassReason = "");
     }
 }

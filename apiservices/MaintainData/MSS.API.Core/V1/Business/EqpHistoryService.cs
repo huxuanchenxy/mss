@@ -24,12 +24,12 @@ namespace MSS.API.Core.V1.Business
         }
 
 
-        public async Task<ApiResult> ListByEqp(int id)
+        public async Task<ApiResult> ListByEqp(int id,bool isHide)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                List<EqpHistory> ehs = await _eqpHistoryRepo.ListByEqp(id);
+                List<EqpHistory> ehs = await _eqpHistoryRepo.ListByEqp(id, isHide);
                 if (ehs != null && ehs.Count() > 0)
                 {
                     ret.data = ListToTimeLine(ehs);
@@ -87,22 +87,24 @@ namespace MSS.API.Core.V1.Business
                     // 相同类型
                     foreach (EqpHistory e in groupType)
                     {
-                        children.Add(new { id = e.WorkingOrder });
+                        children.Add(new { id = e.WorkingOrder,name=e.ShowName });
                         content = e.TypeName;
                     }
                     int detailType = 1;
                     switch (groupType.Key)
                     {
-                        case (int)MyDictionary.EqpHistoryType.TroubleReport:
+                        case (int)MyDictionary.EqpHistoryType.TroublePM:
                             detailType = 2;
+                            break;
+                        case (int)MyDictionary.EqpHistoryType.Maintenance:
+                            detailType = 3;
                             break;
                         case (int)MyDictionary.EqpHistoryType.Install:
                         case (int)MyDictionary.EqpHistoryType.Expiration:
-                        case (int)MyDictionary.EqpHistoryType.FirstMajorConstructio:
-                        case (int)MyDictionary.EqpHistoryType.MajorMaintenance:
-                        case (int)MyDictionary.EqpHistoryType.MediumMaintenance:
-                        case (int)MyDictionary.EqpHistoryType.SecondaryMajorConstructio:
-                        case (int)MyDictionary.EqpHistoryType.TroubleMaintenance:
+                        case (int)MyDictionary.EqpHistoryType.FirstWork:
+                        case (int)MyDictionary.EqpHistoryType.MajorPM:
+                        case (int)MyDictionary.EqpHistoryType.MediumPM:
+                        case (int)MyDictionary.EqpHistoryType.SecondWork:
                             detailType = 1;
                             break;
                     }

@@ -235,7 +235,7 @@ export default {
       this.sourceName = this.$route.params.sourceName
       this.troubleReport.id = this.$route.params.id
     }
-    if (this.sourceName === 'SeeHistory') {
+    if (this.sourceName === 'SeeHistory' && this.$route.params.eqpSelected !== undefined) {
       this.eqpLifeHistory.eqpSelected = this.$route.params.eqpSelected
       this.eqpLifeHistory.eqpType = this.$route.params.eqpType
     }

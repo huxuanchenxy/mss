@@ -90,14 +90,16 @@ namespace MSS.API.Common
         public enum EqpHistoryType
         {
             Install = 39,
-            MediumMaintenance = 40,
-            MajorMaintenance = 41,
-            TroubleMaintenance = 42,
-            FirstMajorConstructio=43,
-            SecondaryMajorConstructio=44,
-            Expiration=45,
-            TroubleReport=46
+            MediumPM = 40,
+            MajorPM = 41,
+            TroublePM = 46,
+            FirstWork = 43,
+            SecondWork = 44,
+            Change = 157,
+            Maintenance = 189,
+            Expiration = 45
         }
+
     }
 
     public enum OrgType
