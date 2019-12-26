@@ -2,3 +2,5 @@
 /apiservices/MSS.Platform.Workflow.WebApi/bin
 /apiservices/MSS.Platform.Workflow.WebApi/.vs
 /apiservices/MSS.Platform.Workflow.WebApi/*.user
+node_modules
+/frontend/MSS.UI.H5/dist

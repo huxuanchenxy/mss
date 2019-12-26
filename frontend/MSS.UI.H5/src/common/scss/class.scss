@@ -1,0 +1,137 @@
+// 公用class
+
+// 左浮动
+.fl {
+  float: left;
+}
+
+// 右浮动
+.fr {
+  float: right;
+}
+
+// 清除浮动
+.clearfix:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+// 文本对齐
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+.vertical-middle {
+  vertical-align: middle;
+}
+
+.vertical-baseline {
+  vertical-align: baseline;
+}
+
+.bold{
+  font-weight: bold;
+}
+
+// 状态显示
+.inline-block {
+  display: inline-block;
+}
+
+.block {
+  display: block;
+}
+
+.hide {
+  display: none;
+}
+
+.o-hide {
+  overflow: hidden;
+}
+
+.m-t-20px{
+  margin-top: 20px;
+}
+
+.m-t-30px{
+  margin-top: 30px;
+}
+
+.m-r-20px{
+  margin-right: 20px;
+}
+
+// 主体容器大小
+.container-wrap {
+  // width: $main-wrap-width;
+  margin: 0 auto;
+}
+
+.container-fluid {
+  width: 100%;
+}
+
+.width-full{
+  width: 100%;
+}
+
+.height-full{
+  height: 100%;
+}
+
+// 颜色
+.color-transparent{
+  color: transparent;
+}
+
+.color-blue{
+  color: $color-highlight-text !important;
+}
+
+.color-white{
+  color: $color-white !important;
+}
+
+// 字体大小
+.f-s-small{
+  font-size: $font-size-small;
+}
+
+.f-s-base{
+  font-size: $font-size-base;
+}
+
+.f-s-large{
+  font-size: $font-size-large;
+}
+
+.con-padding-horizontal{
+  @extend .con-padding-horizontal;
+}
+
+.c-pointer{
+  cursor: pointer;
+}
+
+.word-break{
+  word-break: break-word;
+}
+
+.flex{
+  display: flex;
+}

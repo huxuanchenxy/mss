@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>Combined Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.800000012">
+        <g id="按钮3/点击" transform="translate(-12.000000, -7.000000)" stroke="#FFFFFF" stroke-width="2">
+            <g id="按钮2-默认">
+                <g id="Group" transform="translate(10.000000, 5.000000)">
+                    <path d="M10.2530483,13.2469863 L10.2530483,12.8238827 L11.0875924,12.6838727 C13.4771572,12.2829797 15.2530483,10.2039143 15.2530483,7.75304833 C15.2530483,4.99162458 13.0144721,2.75304833 10.2530483,2.75304833 C7.49162458,2.75304833 5.25304833,4.99162458 5.25304833,7.75304833 C5.25304833,10.2039143 7.02893941,12.2829797 9.41850422,12.6838727 L10.2530483,12.8238827 L10.2530483,13.2469863 Z" id="Combined-Shape" transform="translate(10.253048, 10.253048) rotate(-45.000000) translate(-10.253048, -10.253048) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
