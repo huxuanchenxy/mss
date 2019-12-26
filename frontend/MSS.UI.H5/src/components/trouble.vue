@@ -73,8 +73,13 @@
             <div class="input">
               <mt-cell title :value="level" is-link @click.native="handlerLevel"></mt-cell>
               <mt-popup v-model="levelVisible" class="area-class" position="bottom">
-                <mt-picker ref="levelpicker1" :slots="levelslot1" value-key="name" :show-toolbar="true">
-                  <mt-button @click="handlelevelpickConfirm" class="sure" >确认</mt-button>
+                <mt-picker
+                  ref="levelpicker1"
+                  :slots="levelslot1"
+                  value-key="name"
+                  :show-toolbar="true"
+                >
+                  <mt-button @click="handlelevelpickConfirm" class="sure">确认</mt-button>
                 </mt-picker>
               </mt-popup>
             </div>
@@ -88,12 +93,26 @@
             <div class="input">
               <mt-cell title :value="areaString" is-link @click.native="handlerArea"></mt-cell>
               <mt-popup v-model="areaVisible" class="area-class" position="bottom">
-                <mt-picker ref="picker1" :slots="slot1" value-key="areaName" @change="onValuesChange1">
-                </mt-picker>
-                <mt-picker ref="picker2" :slots="slot2" value-key="areaName" @change="onValuesChange2"></mt-picker>
-                <mt-picker ref="picker3" :slots="slot3" value-key="areaName" @change="onValuesChange3"></mt-picker>
+                <mt-picker
+                  ref="picker1"
+                  :slots="slot1"
+                  value-key="areaName"
+                  @change="onValuesChange1"
+                ></mt-picker>
+                <mt-picker
+                  ref="picker2"
+                  :slots="slot2"
+                  value-key="areaName"
+                  @change="onValuesChange2"
+                ></mt-picker>
+                <mt-picker
+                  ref="picker3"
+                  :slots="slot3"
+                  value-key="areaName"
+                  @change="onValuesChange3"
+                ></mt-picker>
                 <mt-picker ref="picker4" :slots="slot4" value-key="areaName" :show-toolbar="true">
-                  <mt-button @click="handlePickConfirm" class="sure" >确认</mt-button>
+                  <mt-button @click="handlePickConfirm" class="sure">确认</mt-button>
                 </mt-picker>
               </mt-popup>
             </div>
@@ -107,8 +126,13 @@
             <div class="input">
               <mt-cell title :value="endlocation" is-link @click.native="handlerEndLocation"></mt-cell>
               <mt-popup v-model="endlocationVisible" class="area-class" position="bottom">
-                <mt-picker ref="endlocationpicker" :slots="endlocationslot" value-key="areaName" :show-toolbar="true">
-                  <mt-button @click="handleEndLocationConfirm" class="sure" >确认</mt-button>
+                <mt-picker
+                  ref="endlocationpicker"
+                  :slots="endlocationslot"
+                  value-key="areaName"
+                  :show-toolbar="true"
+                >
+                  <mt-button @click="handleEndLocationConfirm" class="sure">确认</mt-button>
                 </mt-picker>
               </mt-popup>
             </div>
@@ -132,6 +156,38 @@
           <div class="itemvalue itemvaluepick">
             <div class="input">
               <span v-model="eqpIDs">{{eqpShow}}</span>
+            </div>
+          </div>
+        </li>
+        <li class="itemli">
+          <div class="itemlabel">
+            <span>报修单位:</span>
+          </div>
+          <div class="itemvalue itemvaluepick">
+            <div class="input">
+              <mt-cell title :value="companyString" is-link @click.native="handlerComany"></mt-cell>
+              <mt-popup v-model="companyVisible" class="area-class" position="bottom">
+                <mt-picker
+                  ref="companypicker1"
+                  :slots="companyslot1"
+                  value-key="label"
+                  @change="onCompanyChange1"
+                ></mt-picker>
+                <mt-picker
+                  ref="companypicker2"
+                  :slots="companyslot2"
+                  value-key="label"
+                  @change="onCompanyChange2"
+                ></mt-picker>
+                <mt-picker
+                  ref="companypicker3"
+                  :slots="companyslot3"
+                  value-key="label"
+                  :show-toolbar="true"
+                >
+                  <mt-button @click="handleCompanyConfirm" class="sure">确认</mt-button>
+                </mt-picker>
+              </mt-popup>
             </div>
           </div>
         </li>
@@ -166,50 +222,50 @@ export default {
   },
   data() {
     return {
-      happeningTime: '',
-      reportedTime: '',
-      urgentOrder: '',
-      dateValue: '',
+      happeningTime: "",
+      reportedTime: "",
+      urgentOrder: "",
+      dateValue: "",
       // 故障等级
-      level: '',
-      levelValue:'',
-      levelVisible:false,
-      levelslot1:[
+      level: "",
+      levelValue: "",
+      levelVisible: false,
+      levelslot1: [
         {
           flex: 1,
           values: [],
           className: "levelslot1",
           textAlign: "center",
-          defaultIndex: 0,
+          defaultIndex: 0
         }
       ],
       //区域结束位置
-      endlocation: '请选择',
-      endlocationValue: '',
-      endlocationVisible:false,
-      endlocationslot:[
+      endlocation: "请选择",
+      endlocationValue: "",
+      endlocationVisible: false,
+      endlocationslot: [
         {
           flex: 1,
           values: [],
           className: "endlocationslot1",
           textAlign: "center",
-          defaultIndex: 0,
+          defaultIndex: 0
         }
       ],
       //区域起始位置四级联动
       areaVisible: false,
-      areaString: '',
-      areaValue: '',
-      line:0,
-      startlocation:0,
-      startlocationby:0,
+      areaString: "",
+      areaValue: "",
+      line: 0,
+      startlocation: 0,
+      startlocationby: 0,
       slot1: [
         {
           flex: 1,
           values: [],
           className: "slot1",
           textAlign: "left",
-          defaultIndex: 0,
+          defaultIndex: 0
         }
       ],
       slot2: [
@@ -236,12 +292,41 @@ export default {
           textAlign: "left"
         }
       ],
-      slotobj:[],
+      slotobj: [],
       //设备图纸
-      eqpcode:'',
-      eqpIDs:[],
-      eqpShow:'',
-      eqpShowArr:[],
+      eqpcode: "",
+      eqpIDs: [],
+      eqpShow: "",
+      eqpShowArr: [],
+      //报修单位
+      companyslotobj: [],
+      companyString: "",
+      companyVisible: false,
+      companyValue: "",
+      companyslot1: [
+        {
+          flex: 1,
+          values: [],
+          className: "companyslot1",
+          textAlign: "left"
+        }
+      ],
+      companyslot2: [
+        {
+          flex: 1,
+          values: [],
+          className: "companyslot2",
+          textAlign: "left"
+        }
+      ],
+      companyslot3: [
+        {
+          flex: 1,
+          values: [],
+          className: "companyslot3",
+          textAlign: "left"
+        }
+      ]
     };
   },
   created() {
@@ -271,32 +356,49 @@ export default {
         .getSubCode(dictionary.troubleLevel)
         .then(res => {
           // this.levelList = res.data;
-          this.levelslot1[0].values = res.data
-          this.level = '请选择'
+          this.levelslot1[0].values = res.data;
+          this.level = "请选择";
         })
         .catch(err => console.log(err));
 
       apiArea
         .SelectConfigAreaData()
         .then(res => {
-          this.slotobj = res.data.dicAreaList
-          let slot1mp = res.data.dicAreaList
-          this.slot1[0].values = slot1mp
+          this.slotobj = res.data.dicAreaList;
+          let slot1mp = res.data.dicAreaList;
+          this.slot1[0].values = slot1mp;
 
-          let slot2tmp = slot1mp[0].children
-          this.slot2[0].values = slot2tmp
+          let slot2tmp = slot1mp[0].children;
+          this.slot2[0].values = slot2tmp;
 
-          let slot3tmp = slot2tmp[0].children
-          this.slot3[0].values = slot3tmp
+          let slot3tmp = slot2tmp[0].children;
+          this.slot3[0].values = slot3tmp;
 
-          if(slot3tmp != null){
-            let slot4tmp = slot3tmp[0].children
-            this.slot4[0].values = slot4tmp
+          if (slot3tmp != null) {
+            let slot4tmp = slot3tmp[0].children;
+            this.slot4[0].values = slot4tmp;
           }
-          this.areaString = '请选择'
+          this.areaString = "请选择";
         })
         .catch(err => console.log(err));
-        
+
+      apiOrg
+        .getOrgAll()
+        .then(res => {
+          this.reportCompanyList = res.data
+          this.companyslotobj = res.data
+          let slot1mp = res.data
+          this.companyslot1[0].values = slot1mp;
+
+          let slot2tmp = slot1mp[0].children;
+          this.companyslot2[0].values = slot2tmp;
+
+          let slot3tmp = slot2tmp[0].children;
+          this.companyslot3[0].values = slot3tmp;
+
+          this.companyString = "请选择";
+        })
+        .catch(err => console.log(err))
     },
     selectYear() {
       if (this.happeningTime) {
@@ -337,131 +439,175 @@ export default {
         this.openTouch();
       }
     },
-    handlePickConfirm () {
-      let curpick1 = this.$refs.picker1.getValues()[0]
-      let curpick2 = this.$refs.picker2.getValues()[0]
-      let curpick3 = this.$refs.picker3.getValues()[0]
-      let curpick4 = this.$refs.picker4.getValues()[0]
-      let areaarr = []
-      let areaidarr = []
-      if(curpick1 != undefined){
-        areaarr.push(curpick1.areaName)
-        areaidarr.push(curpick1.id)
-        this.line = curpick1.id
-        apiArea.ListBigAreaByLine(curpick1.id).then(res => {
-          this.endlocationslot[0].values = res.data
-        }).catch(err => console.log(err))
+    handlePickConfirm() {
+      let curpick1 = this.$refs.picker1.getValues()[0];
+      let curpick2 = this.$refs.picker2.getValues()[0];
+      let curpick3 = this.$refs.picker3.getValues()[0];
+      let curpick4 = this.$refs.picker4.getValues()[0];
+      let areaarr = [];
+      let areaidarr = [];
+      if (curpick1 != undefined) {
+        areaarr.push(curpick1.areaName);
+        areaidarr.push(curpick1.id);
+        this.line = curpick1.id;
+        apiArea
+          .ListBigAreaByLine(curpick1.id)
+          .then(res => {
+            this.endlocationslot[0].values = res.data;
+          })
+          .catch(err => console.log(err));
       }
-      if(curpick2 != undefined){
-        areaarr.push(curpick2.areaName)
-        areaidarr.push(curpick2.id)
+      if (curpick2 != undefined) {
+        areaarr.push(curpick2.areaName);
+        areaidarr.push(curpick2.id);
       }
-      if(curpick3 != undefined){
-        areaarr.push(curpick3.areaName)
-        areaidarr.push(curpick3.id)
-        this.startlocation = curpick3.id
-        this.startlocationby = 1
+      if (curpick3 != undefined) {
+        areaarr.push(curpick3.areaName);
+        areaidarr.push(curpick3.id);
+        this.startlocation = curpick3.id;
+        this.startlocationby = 1;
       }
-      if(curpick4 != undefined){
-        areaarr.push(curpick4.areaName)
-        areaidarr.push(curpick4.id)
-        this.startlocationby = 2
+      if (curpick4 != undefined) {
+        areaarr.push(curpick4.areaName);
+        areaidarr.push(curpick4.id);
+        this.startlocationby = 2;
       }
-      this.areaString = areaarr.join(",")
-      this.areaValue = areaidarr.join(",")
-      
-      
-      this.areaVisible = false
+      this.areaString = areaarr.join(",");
+      this.areaValue = areaidarr.join(",");
+
+      this.areaVisible = false;
     },
     handlelevelpickConfirm() {
-      let curpick1 = this.$refs.levelpicker1.getValues()[0]
-      this.level = curpick1.name
-      this.levelValue = curpick1.id
-      this.levelVisible = false
+      let curpick1 = this.$refs.levelpicker1.getValues()[0];
+      this.level = curpick1.name;
+      this.levelValue = curpick1.id;
+      this.levelVisible = false;
     },
-    handleEndLocationConfirm(){
-      let curpick1 = this.$refs.endlocationpicker.getValues()[0]
-      this.endlocation = curpick1.areaName
-      this.endlocationValue = curpick1.id
-      this.endlocationVisible = false
+    handleEndLocationConfirm() {
+      let curpick1 = this.$refs.endlocationpicker.getValues()[0];
+      this.endlocation = curpick1.areaName;
+      this.endlocationValue = curpick1.id;
+      this.endlocationVisible = false;
+    },
+    handleCompanyConfirm(){
+      let curpick1 = this.$refs.companypicker1.getValues()[0]
+      let curpick2 = this.$refs.companypicker2.getValues()[0]
+      let curpick3 = this.$refs.companypicker3.getValues()[0]
+      let areaarr = []
+      let areaidarr = []
+      if (curpick1 != undefined) {
+        areaarr.push(curpick1.label)
+        areaidarr.push(curpick1.id)
+      }
+      if (curpick2 != undefined) {
+        areaarr.push(curpick2.label)
+        areaidarr.push(curpick2.id)
+      }
+      if (curpick3 != undefined) {
+        areaarr.push(curpick3.label)
+        areaidarr.push(curpick3.id)
+      }
+      this.companyString = areaarr.join(",")
+      this.companyValue = areaidarr.join(",")
+      this.companyVisible = false;
     },
     onValuesChange1(picker, values) {
-        let s1 = this.slotobj
-        let s2 = s1.filter(c => c.id === values[0].id)[0]
-        if(s2 != undefined)
-        {
-          this.slot2[0].values = s2.children
-        }
-      
+      let s1 = this.slotobj;
+      let s2 = s1.filter(c => c.id === values[0].id)[0];
+      if (s2 != undefined) {
+        this.slot2[0].values = s2.children;
+      }
     },
     onValuesChange2(picker, values) {
-        let dataall = this.slotobj
-        let curpick1 = this.$refs.picker1.getValues()[0]
-        let s1 = dataall.filter(c => c.id === curpick1.id)[0]
-        if(s1 != undefined){
-          let s2 = s1.children
-          let s3 = s2.filter(c=>c.id === values[0].id)[0]
-          this.slot3[0].values = s3.children
-        }
+      let dataall = this.slotobj;
+      let curpick1 = this.$refs.picker1.getValues()[0];
+      let s1 = dataall.filter(c => c.id === curpick1.id)[0];
+      if (s1 != undefined) {
+        let s2 = s1.children;
+        let s3 = s2.filter(c => c.id === values[0].id)[0];
+        this.slot3[0].values = s3.children;
+      }
     },
     onValuesChange3(picker, values) {
-        let dataall = this.slotobj
-        let curpick1 = this.$refs.picker1.getValues()[0]
-        let curpick2 = this.$refs.picker2.getValues()[0]
-        let s1 = dataall.filter(c => c.id === curpick1.id)[0]
-        if(s1 != undefined){
-          let s2 = s1.children
-          if(s2 != undefined){
-            let s3 = s2.filter(c=>c.id === curpick2.id)[0]
-            if(s3 != undefined){
-              let s3c = s3.children
-              if(s3c != undefined){
-                  let s4 = s3c.filter(c=>c.id === values[0].id)[0]
-                  this.slot4[0].values = s4.children
-              }
-              
+      let dataall = this.slotobj;
+      let curpick1 = this.$refs.picker1.getValues()[0];
+      let curpick2 = this.$refs.picker2.getValues()[0];
+      let s1 = dataall.filter(c => c.id === curpick1.id)[0];
+      if (s1 != undefined) {
+        let s2 = s1.children;
+        if (s2 != undefined) {
+          let s3 = s2.filter(c => c.id === curpick2.id)[0];
+          if (s3 != undefined) {
+            let s3c = s3.children;
+            if (s3c != undefined) {
+              let s4 = s3c.filter(c => c.id === values[0].id)[0];
+              this.slot4[0].values = s4.children;
             }
           }
         }
+      }
+    },
+    onCompanyChange1(picker,values){
+      let s1 = this.companyslotobj;
+      let s2 = s1.filter(c => c.id === values[0].id)[0];
+      if (s2 != undefined) {
+        this.companyslot2[0].values = s2.children;
+      }
+    },
+    onCompanyChange2(picker,values){
+      let dataall = this.companyslotobj;
+      let curpick1 = this.$refs.companypicker1.getValues()[0];
+      let s1 = dataall.filter(c => c.id === curpick1.id)[0];
+      if (s1 != undefined) {
+        let s2 = s1.children;
+        let s3 = s2.filter(c => c.id === values[0].id)[0];
+        this.companyslot3[0].values = s3.children;
+      }
     },
     handlerArea() {
-      this.areaVisible = true
+      this.areaVisible = true;
     },
     handlerLevel() {
-      this.levelVisible = true
+      this.levelVisible = true;
     },
     handlerEndLocation() {
-      this.endlocationVisible = true
+      this.endlocationVisible = true;
     },
-    choseeqp(){
+    handlerComany() {
+      this.companyVisible = true;
+    },
+    choseeqp() {
       // console.log(this.eqpcode)
       let parm = {
-        order: 'asc',
-        sort: 'eqp_code',
+        order: "asc",
+        sort: "eqp_code",
         rows: 10,
         page: 1,
-        SearchCode: this.eqpcode,
-      }
-      apiEqp.getEqp(parm).then(res => {
-        let eqplist = res.data.rows
-        if(eqplist != null && eqplist.length > 0){
-            let eqplistobj = this.eqpIDs
-            let c = eqplistobj.filter(c=>c.eqp === eqplist[0].id)
+        SearchCode: this.eqpcode
+      };
+      apiEqp
+        .getEqp(parm)
+        .then(res => {
+          let eqplist = res.data.rows;
+          if (eqplist != null && eqplist.length > 0) {
+            let eqplistobj = this.eqpIDs;
+            let c = eqplistobj.filter(c => c.eqp === eqplist[0].id);
 
-            if(c.length === 0){
+            if (c.length === 0) {
               this.eqpIDs.push({
                 eqp: eqplist[0].id,
                 org: eqplist[0].topOrg,
-                name: eqplist[0].name,
-              })
-              this.eqpShowArr.push(eqplist[0].name)
+                name: eqplist[0].name
+              });
+              this.eqpShowArr.push(eqplist[0].name);
             }
-            this.eqpShow = this.eqpShowArr.join(',')
-            console.log('eqpIDs:')
-            console.log(this.eqpIDs)
-        }
-      }).catch(err => console.log(err))
-    },
+            this.eqpShow = this.eqpShowArr.join(",");
+            console.log("eqpIDs:");
+            console.log(this.eqpIDs);
+          }
+        })
+        .catch(err => console.log(err));
+    }
   }
 };
 </script>
@@ -487,9 +633,12 @@ export default {
 }
 .troublescroll {
   position: absolute;
-  top: 90px;
+  top: 70px;
   width: 100%;
-  height: 100%;
+  height: 85%;
+  overflow: scroll;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* .input {
@@ -571,21 +720,21 @@ export default {
   position: absolute;
   margin: 0 auto;
 }
-.itemvaluepick .mint-popup-bottom{
-  width:100%;
+.itemvaluepick .mint-popup-bottom {
+  width: 100%;
 }
-.itemvaluepick .picker{
-  display:inline-block;
+.itemvaluepick .picker {
+  display: inline-block;
   width: 24%;
 }
-.itemvaluepick .picker-item{
+.itemvaluepick .picker-item {
   font-size: 12px;
   padding: 0 0;
 }
-.itemvaluepick .mint-cell{
+.itemvaluepick .mint-cell {
   min-height: 30px;
 }
-.itemvaluepick .mint-cell-wrapper{
+.itemvaluepick .mint-cell-wrapper {
   font-size: 12px;
 }
 </style>
