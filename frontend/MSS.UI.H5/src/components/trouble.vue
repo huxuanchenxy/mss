@@ -192,6 +192,26 @@
           </div>
         </li>
         <li class="itemli">
+          <div class="itemlabel">
+            <span>报修人:</span>
+          </div>
+          <div class="itemvalue itemvaluepick">
+            <div class="input">
+              <mt-cell title :value="reportby" is-link @click.native="handlerReportBy"></mt-cell>
+              <mt-popup v-model="reportbyVisible" class="area-class" position="bottom">
+                <mt-picker
+                  ref="reportbypicker"
+                  :slots="reportByslot"
+                  value-key="userName"
+                  :show-toolbar="true"
+                >
+                  <mt-button @click="handleReportByConfirm" class="sure">确认</mt-button>
+                </mt-picker>
+              </mt-popup>
+            </div>
+          </div>
+        </li>
+        <li class="itemli">
           <div id="btn">点击拍照</div>
           <div class="album"></div>
         </li>
@@ -326,7 +346,20 @@ export default {
           className: "companyslot3",
           textAlign: "left"
         }
-      ]
+      ],
+      //报修人
+      reportby: "请选择",
+      reportByValue: "",
+      reportbyVisible: false,
+      reportByslot: [
+        {
+          flex: 1,
+          values: [],
+          className: "reportByslot1",
+          textAlign: "center",
+          defaultIndex: 0
+        }
+      ],
     };
   },
   created() {
@@ -489,6 +522,12 @@ export default {
       this.endlocationValue = curpick1.id;
       this.endlocationVisible = false;
     },
+    handleReportByConfirm(){
+      let curpick1 = this.$refs.reportbypicker.getValues()[0];
+      this.reportby = curpick1.userName;
+      this.reportByValue = curpick1.id;
+      this.reportbyVisible = false;
+    },
     handleCompanyConfirm(){
       let curpick1 = this.$refs.companypicker1.getValues()[0]
       let curpick2 = this.$refs.companypicker2.getValues()[0]
@@ -498,14 +537,25 @@ export default {
       if (curpick1 != undefined) {
         areaarr.push(curpick1.label)
         areaidarr.push(curpick1.id)
+        console.log('curpick1.id')
+        console.log(curpick1.id)
+        apiOrg.listUserByNode(curpick1.id).then(res => {
+          this.reportByslot[0].values = res.data
+        }).catch(err => console.log(err))
       }
       if (curpick2 != undefined) {
         areaarr.push(curpick2.label)
         areaidarr.push(curpick2.id)
+        apiOrg.listUserByNode(curpick2.id).then(res => {
+          this.reportByslot[0].values = res.data
+        }).catch(err => console.log(err))
       }
       if (curpick3 != undefined) {
         areaarr.push(curpick3.label)
         areaidarr.push(curpick3.id)
+        apiOrg.listUserByNode(curpick3.id).then(res => {
+          this.reportByslot[0].values = res.data
+        }).catch(err => console.log(err))
       }
       this.companyString = areaarr.join(",")
       this.companyValue = areaidarr.join(",")
@@ -565,16 +615,19 @@ export default {
       }
     },
     handlerArea() {
-      this.areaVisible = true;
+      this.areaVisible = true
     },
     handlerLevel() {
-      this.levelVisible = true;
+      this.levelVisible = true
     },
     handlerEndLocation() {
-      this.endlocationVisible = true;
+      this.endlocationVisible = true
     },
     handlerComany() {
-      this.companyVisible = true;
+      this.companyVisible = true
+    },
+    handlerReportBy(){
+      this.reportbyVisible = true
     },
     choseeqp() {
       // console.log(this.eqpcode)
