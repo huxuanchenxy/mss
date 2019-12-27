@@ -376,31 +376,62 @@ export default {
           defaultIndex: 0
         }
       ],
-      repairDesc: ""
-    };
+      repairDesc: "",
+      fileIDsEdit:[],
+      upfiles:[],
+    }
   },
   created() {
     // this.InitSelect();
   },
   mounted() {
-    var img = $(".img");
-    var callBack = function(album) {
-      //alert(album);
-      // console.log("album:" + album);
-      // console.log("img:" + img);
-      album.forEach(function(val, idx) {
-        var div = $("<div></div>");
-        var img = $("<img/>");
-        img.attr("src", val.data);
-        // console.log("src=" + JSON.stringify(val.data));
-        div.append(img);
-        $(".album").append(div);
-      });
-    };
-    var carera = new $.Pgater($("#btn"), callBack);
+    // var img = $(".img")
+    // var callBack = function(album,fileid) {
+    //   //alert(album);
+    //   // console.log("album:" + album);
+    //   // console.log("img:" + img);
+    //   // console.log('fileid:')
+    //   // console.log(fileid)
+    //   // let upfiles = _this.fileIDsEdit
+    //   // console.log(upfiles)
+    //   // let check = upfiles.filter(c=>c === fileid)[0]
+    //   // if(check != undefined){
+    //   //   _this.fileIDsEdit.push(fileid)
+    //   // }
+    //   // console.log(this.fileIDsEdit)
+    //   album.forEach(function(val, idx) {
+    //     var div = $("<div></div>");
+    //     var img = $("<img/>");
+    //     img.attr("src", val.data);
+    //     // console.log("src=" + JSON.stringify(val.data));
+    //     div.append(img);
+    //     $(".album").append(div);
+    //   });
+    // };
+    var carera = new $.Pgater($("#btn"), this.callBack);
     this.InitSelect();
   },
   methods: {
+    callBack(album,fileid){
+      let upfilestmp = this.upfiles
+      
+      let check = upfilestmp.filter(c=>c === fileid)[0]
+      // console.log('check:')
+      // console.log(check)
+      if(check === undefined){
+        this.upfiles.push(fileid)
+      }
+      // console.log(this.fileIDsEdit)
+      var img = $(".img")
+      album.forEach(function(val, idx) {
+        var div = $("<div></div>")
+        var img = $("<img/>")
+        img.attr("src", val.data)
+        // console.log("src=" + JSON.stringify(val.data));
+        div.append(img)
+        $(".album").append(div)
+      })
+    },
     InitSelect() {
       apiAuth
         .getSubCode(dictionary.troubleLevel)
@@ -691,6 +722,8 @@ export default {
         .catch(err => console.log(err));
     },
     submitclick(){
+      let tfile = this.upfiles.join(',')
+      this.fileIDsEdit.push({'type':'137','ids':tfile})
       let troubleReport = {
         HappeningTime: this.happeningTime,
         ReportedTime: this.reportedTime,
@@ -701,7 +734,7 @@ export default {
         EndLocation: this.endlocationValue,
         EndLocationBy: 1,
         UrgentRepairOrder: this.urgentOrder,
-        Eqps: JSON.stringify(eqpIDs),
+        Eqps: JSON.stringify(this.eqpIDs),
         Level: this.levelValue,
         ReportedCompany: this.companySel,
         ReportedCompanyPath: this.companyValue,
