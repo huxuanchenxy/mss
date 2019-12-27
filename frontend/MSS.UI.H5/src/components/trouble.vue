@@ -217,16 +217,18 @@
           </div>
           <div class="itemvalue">
             <div class="input">
-              <el-input type="textarea"
-                        :rows="2"
-                        placeholder="请输入内容"
-                        v-model="repairDesc"></el-input>
+              <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="repairDesc"></el-input>
             </div>
           </div>
         </li>
-        <li class="itemli">
+        <li class="itemli itemlipic">
           <div id="btn">点击拍照</div>
           <div class="album"></div>
+        </li>
+        <li class="itemli itemsubmit">
+          <div class="itemsingle">
+            <el-button type="primary" @click.native="submitclick()">提交</el-button>
+          </div>
         </li>
       </ul>
     </div>
@@ -336,6 +338,7 @@ export default {
       companyString: "",
       companyVisible: false,
       companyValue: "",
+      companySel:0,
       companyslot1: [
         {
           flex: 1,
@@ -373,7 +376,7 @@ export default {
           defaultIndex: 0
         }
       ],
-      repairDesc:'',
+      repairDesc: ""
     };
   },
   created() {
@@ -432,9 +435,9 @@ export default {
       apiOrg
         .getOrgAll()
         .then(res => {
-          this.reportCompanyList = res.data
-          this.companyslotobj = res.data
-          let slot1mp = res.data
+          this.reportCompanyList = res.data;
+          this.companyslotobj = res.data;
+          let slot1mp = res.data;
           this.companyslot1[0].values = slot1mp;
 
           let slot2tmp = slot1mp[0].children;
@@ -445,7 +448,7 @@ export default {
 
           this.companyString = "请选择";
         })
-        .catch(err => console.log(err))
+        .catch(err => console.log(err));
     },
     selectYear() {
       if (this.happeningTime) {
@@ -536,40 +539,52 @@ export default {
       this.endlocationValue = curpick1.id;
       this.endlocationVisible = false;
     },
-    handleReportByConfirm(){
+    handleReportByConfirm() {
       let curpick1 = this.$refs.reportbypicker.getValues()[0];
       this.reportby = curpick1.userName;
       this.reportByValue = curpick1.id;
       this.reportbyVisible = false;
     },
-    handleCompanyConfirm(){
-      let curpick1 = this.$refs.companypicker1.getValues()[0]
-      let curpick2 = this.$refs.companypicker2.getValues()[0]
-      let curpick3 = this.$refs.companypicker3.getValues()[0]
-      let areaarr = []
-      let areaidarr = []
+    handleCompanyConfirm() {
+      let curpick1 = this.$refs.companypicker1.getValues()[0];
+      let curpick2 = this.$refs.companypicker2.getValues()[0];
+      let curpick3 = this.$refs.companypicker3.getValues()[0];
+      let areaarr = [];
+      let areaidarr = [];
       if (curpick1 != undefined) {
-        areaarr.push(curpick1.label)
-        areaidarr.push(curpick1.id)
-        console.log('curpick1.id')
-        console.log(curpick1.id)
-        apiOrg.listUserByNode(curpick1.id).then(res => {
-          this.reportByslot[0].values = res.data
-        }).catch(err => console.log(err))
+        areaarr.push(curpick1.label);
+        areaidarr.push(curpick1.id);
+        // console.log("curpick1.id");
+        // console.log(curpick1.id);
+        apiOrg
+          .listUserByNode(curpick1.id)
+          .then(res => {
+            this.reportByslot[0].values = res.data
+          })
+          .catch(err => console.log(err))
+        this.companySel = curpick1.id
       }
       if (curpick2 != undefined) {
         areaarr.push(curpick2.label)
         areaidarr.push(curpick2.id)
-        apiOrg.listUserByNode(curpick2.id).then(res => {
-          this.reportByslot[0].values = res.data
-        }).catch(err => console.log(err))
+        apiOrg
+          .listUserByNode(curpick2.id)
+          .then(res => {
+            this.reportByslot[0].values = res.data
+          })
+          .catch(err => console.log(err))
+          this.companySel = curpick2.id
       }
       if (curpick3 != undefined) {
         areaarr.push(curpick3.label)
         areaidarr.push(curpick3.id)
-        apiOrg.listUserByNode(curpick3.id).then(res => {
-          this.reportByslot[0].values = res.data
-        }).catch(err => console.log(err))
+        apiOrg
+          .listUserByNode(curpick3.id)
+          .then(res => {
+            this.reportByslot[0].values = res.data
+          })
+          .catch(err => console.log(err))
+          this.companySel = curpick3.id
       }
       this.companyString = areaarr.join(",")
       this.companyValue = areaidarr.join(",")
@@ -611,14 +626,14 @@ export default {
         }
       }
     },
-    onCompanyChange1(picker,values){
+    onCompanyChange1(picker, values) {
       let s1 = this.companyslotobj;
       let s2 = s1.filter(c => c.id === values[0].id)[0];
       if (s2 != undefined) {
         this.companyslot2[0].values = s2.children;
       }
     },
-    onCompanyChange2(picker,values){
+    onCompanyChange2(picker, values) {
       let dataall = this.companyslotobj;
       let curpick1 = this.$refs.companypicker1.getValues()[0];
       let s1 = dataall.filter(c => c.id === curpick1.id)[0];
@@ -629,19 +644,19 @@ export default {
       }
     },
     handlerArea() {
-      this.areaVisible = true
+      this.areaVisible = true;
     },
     handlerLevel() {
-      this.levelVisible = true
+      this.levelVisible = true;
     },
     handlerEndLocation() {
-      this.endlocationVisible = true
+      this.endlocationVisible = true;
     },
     handlerComany() {
-      this.companyVisible = true
+      this.companyVisible = true;
     },
-    handlerReportBy(){
-      this.reportbyVisible = true
+    handlerReportBy() {
+      this.reportbyVisible = true;
     },
     choseeqp() {
       // console.log(this.eqpcode)
@@ -674,15 +689,48 @@ export default {
           }
         })
         .catch(err => console.log(err));
-    }
+    },
+    submitclick(){
+      let troubleReport = {
+        HappeningTime: this.happeningTime,
+        ReportedTime: this.reportedTime,
+        Line: this.line,
+        StartLocation: this.startlocation,
+        StartLocationBy: this.startlocationby,
+        StartLocationPath: this.areaValue,
+        EndLocation: this.endlocationValue,
+        EndLocationBy: 1,
+        UrgentRepairOrder: this.urgentOrder,
+        Eqps: JSON.stringify(eqpIDs),
+        Level: this.levelValue,
+        ReportedCompany: this.companySel,
+        ReportedCompanyPath: this.companyValue,
+        ReportedBy: this.reportByValue,
+        Desc: this.repairDesc,
+        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+      }
+      // if (this.$route.params.type === 'Add') {
+        api.SaveTroubleReport(troubleReport).then(res => {
+          if (res.code === 0) {
+            this.$router.push({name: 'troublelist'})
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+          } else {
+            this.$message({
+              message: res.msg === '' ? '添加失败' : res.msg,
+              type: 'error'
+            })
+          }
+        }).catch(err => console.log(err))
+      // }
+    },
   }
 };
 </script>
 <style>
 .wrapper {
-  /* display: flex;
-        flex-direction: column;
-        height: 100vh; */
   position: fixed;
   width: 100%;
   height: 100%;
@@ -709,18 +757,6 @@ export default {
   -webkit-overflow-scrolling: touch;
 }
 
-/* .input {
-  width: 200px;
-  height: 24px;
-  line-height: 12px;
-  font-size: 14px;
-  padding: 5px 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-.input:empty::before {
-  content: attr(placeholder);
-} */
 .itemlabel {
   display: inline-block;
   width: 30%;
@@ -748,28 +784,40 @@ export default {
   width: 90%;
 }
 #btn {
-  width: 200px;
-  height: 50px;
-  background: deeppink;
-  text-align: center;
-  line-height: 50px;
-  margin: 10px auto;
+    width: 80px;
+    height: 50px;
+    background: #303133;
+    text-align: center;
+    line-height: 50px;
+    margin: 0px auto;
+    display: inline-block;
+    position: absolute;
+    color: #fff;
 }
 .album {
-  width: 100%;
-  display: flex;
-  height: auto;
-  background: #999999;
-  min-height: 50px;
-  justify-content: space-around;
-  flex-wrap: wrap;
+    width: 77%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: inline-block;
+    height: 50px;
+    background: #999999;
+    min-height: 51px;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    left: 23%;
+    position: absolute;
 }
 .album > div {
-  width: 24%;
-  height: auto;
+    width: 24%;
+    height: 50px;
+    display: inline-block;
+    padding-left: 2%;
 }
 .album > div > img {
-  width: 100%;
+    width: 100%;
+    height: 100%;
 }
 .itemli {
   position: relative;
@@ -805,7 +853,17 @@ export default {
 .itemvaluepick .mint-cell-wrapper {
   font-size: 12px;
 }
-.troublescroll ul::-webkit-scrollbar{
-    display: none;
+.troublescroll ul::-webkit-scrollbar {
+  display: none;
+}
+.itemlipic{
+  padding-top: 20px;
+}
+.itemsingle{
+    width: 100%;
+    text-align: center;
+}
+.itemsubmit{
+  top: 35px;
 }
 </style>

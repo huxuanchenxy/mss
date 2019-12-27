@@ -34,22 +34,28 @@ $.Pgater.prototype.bindFuc = function(ele, callBack) {
 	var formData = new FormData();
 	formData.append('file', ele[0].files[0]);
 	formData.append('type', t);
-	formData.append('systemResource', systemResource);
+  formData.append('systemResource', systemResource);
+  let token = window.sessionStorage.getItem('token')
 	$.ajax({
-		type:"POST",                             
-		url:"http://10.89.36.187:8084/api/v1/Upload",                  
+    type:"POST", 
+    headers: {
+      Authorization: `Bearer ${token}`
+    },                            
+		url:"http://10.89.36.154:5801/eqpapi/Upload",                  
 		data: formData  ,                    
 		async: true,
 		cache: false,
 		contentType: false,
 		processData: false,
-		success: function (msg) {                 
-			console.log("ajax请求成功")
+		success: function (ret) {                 
+      console.log("ajax请求成功")
+      console.log(ret)
 		},
 		//请求失败触发的方法
 		error:function(XMLHttpRequest, textStatus, errorThrown){
 			console.log("ajax请求失败");
-			console.log("请求对象XMLHttpRequest: "+XMLHttpRequest);
+      console.log("请求对象XMLHttpRequest: ");
+      console.log(XMLHttpRequest);
 			console.log("错误类型textStatus: "+textStatus);
 			console.log("异常对象errorThrown: "+errorThrown);
 		}
