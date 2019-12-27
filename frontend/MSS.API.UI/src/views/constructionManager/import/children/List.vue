@@ -300,17 +300,17 @@ export default {
       this.searchResult(this.currentPage)
     },
     search () {
+      this.searchResult(1)
+    },
+    // 搜索
+    searchResult (page) {
       if (this.importCommon.year === '' || this.importCommon.company === '') {
         this.$message({
           message: '由于数据量较大，请选择年份和公司',
           type: 'warning'
         })
-      } else {
-        this.searchResult(1)
+        return
       }
-    },
-    // 搜索
-    searchResult (page) {
       this.currentPage = page
       this.loading = true
       api.getImportPage({

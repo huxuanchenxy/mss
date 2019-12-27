@@ -375,7 +375,15 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 List<string> tmp = new List<string>();
                 for (int i = 0; i < colLength; i++)
                 {
-                    tmp.Add(row.GetCell(i).ToString().Trim());
+                    var cell = row.GetCell(i);
+                    if (cell != null)
+                    {
+                        tmp.Add(cell.ToString().Trim());
+                    }
+                    else
+                    {
+                        tmp.Add("");
+                    }
                 }
                 showData.Add(tmp);
             }
