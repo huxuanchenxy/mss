@@ -94,7 +94,17 @@ export default {
       // console.log(event)
     },
     toggle1 (flag1) {
-      this.$router.go(-1)
+      if (this.addattr === 'myCheckList') {
+        this.$router.push({
+          name: 'troublelist',
+          params: {
+            attr: this.addattr
+          }
+        })
+      } else {
+        this.$router.go(-1)
+      }
+      // Bus.$emit('addattr', this.addattr)
     },
     JumpTo (v) {
       // console.log('v:' +  v)

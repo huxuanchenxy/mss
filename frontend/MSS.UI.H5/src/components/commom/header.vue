@@ -5,7 +5,7 @@
             //     <img class="logo" :src="src"
             // </mu-icon-button>-->
       <mu-icon-button icon="menu" slot="left" @click="toggle()" />
-      <mu-icon-button
+      <mu-icon-button v-show="addattr !== 'myCheckList'"
         icon="add"
         slot="right"
         @click="toggle1()"
