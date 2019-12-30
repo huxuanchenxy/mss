@@ -4,24 +4,44 @@
     <tabs class="tab"></tabs>
     <div class="warningscroll">
       <mu-list class="warningmylist">
-          <li class="list" v-for="(item) in NotificationList" :key="item.key">
-            <mu-list-item>
-            <mu-icon value="feedback" class="muicon"></mu-icon>
-            <span class="cssDeviceName">{{item.eqpName}}</span>
-            <span class="cssCreateTime">2019-11-29 14:55:37</span>
-            <span class="cssDeviceContent">设备中修时间超过60天</span>
-            </mu-list-item>
-            <mu-divider class="mudivider"></mu-divider>
+        <li class="list" v-show="addattr === 'notification'" v-for="(item) in NotificationList" :key="item.key">
+          <mu-list-item>
+          <mu-icon value="feedback" class="muicon"></mu-icon>
+          <span class="cssDeviceName">{{item.eqpName}}</span>
+          <span class="cssCreateTime">{{transformDate(item.createdTime)}}</span>
+          <span class="cssDeviceContent">{{item.content}}</span>
+          </mu-list-item>
+          <mu-divider class="mudivider"></mu-divider>
         </li>
-        </mu-list>
+        <li class="list" v-show="addattr === 'prealarm'" v-for="(item) in WarnList" :key="item.key">
+          <mu-list-item>
+          <mu-icon value="feedback" class="muicon"></mu-icon>
+          <span class="cssDeviceName">{{item.eqpName}}</span>
+          <span class="cssCreateTime">{{transformDate(item.createdTime)}}</span>
+          <span class="cssDeviceContent">{{item.content}}</span>
+          </mu-list-item>
+          <mu-divider class="mudivider"></mu-divider>
+        </li>
+        <li v-show="addattr === 'alarm'" class="list" v-for="(item) in AlarmList" :key="item.key">
+          <mu-list-item>
+          <mu-icon value="feedback" class="muicon"></mu-icon>
+          <span class="cssDeviceName">{{item.eqpName}}</span>
+          <span class="cssCreateTime">{{transformDate(item.originTime)}}</span>
+          <span class="cssDeviceContent">{{item.des}}</span>
+          </mu-list-item>
+          <mu-divider class="mudivider"></mu-divider>
+        </li>
+      </mu-list>
     </div>
     <BottomNavigation></BottomNavigation>
   </div>
 </template>
 <script>
-import isheader from "./commom/header2.vue";
-import BottomNavigation from "./commom/bottom.vue";
-import tabs from "./commom/tabs3.vue";
+import { transformDate } from '@/common/js/utils.js'
+import isheader from "./commom/header2.vue"
+import BottomNavigation from "./commom/bottom.vue"
+import tabs from "./commom/tabs3.vue"
+import Bus from './commom/Bus'
 import api from '@/api/eventCenterApi'
 export default {
   name: "warning",
@@ -30,14 +50,29 @@ export default {
     tabs,
     BottomNavigation,
   },
-  mounted(){
-      this.getNotification()
-  },
   data() {
     return {
       msg: "Welcome to Your 上海18号线智能运维系统 App",
-      NotificationList:[],
-    };
+      addattr: 'notification',
+      NotificationList: [],
+      AlarmList: [],
+      WarnList: []
+    }
+  },
+  mounted(){
+    Bus.$on('addattr',(val)=>{
+      console.log('warning:' + val)
+      this.addattr=val
+      switch (val) {
+        case 'notification':
+          this.getNotification()
+          break
+        case 'prealarm':
+          this.getWarnning()
+          break
+      }
+    })
+    this.getNotification()
   },
   methods:{
     getNotification () {
@@ -48,8 +83,32 @@ export default {
         }
       }).catch(err => console.log(err))
     },
+    getWarnning () {
+      // this.loading = true
+      api.getAllWarning().then(res => {
+        // this.loading = false
+        if (res.code === 0) {
+          this.WarnList = res.data
+          // this.NotificationList = res.data
+        }
+      }).catch(err => console.log(err))
+    },
+    getAlarm () {
+      // this.loading = true
+      api.getAlarm().then(res => {
+        // this.loading = false
+        if (res.code === ApiRESULT.Success) {
+          // this.AlarmList1 = res.data.filter(item => item.eLevel < 2)
+          // this.AlarmList2 = res.data.filter(item => item.eLevel >= 2)
+          this.AlarmList = res.data
+        }
+      }).catch(err => console.log(err))
+    },
+    transformDate (val) {
+      return transformDate(val)
+    }
   }
-};
+}
 </script>
 <style>
 .wrapper {
