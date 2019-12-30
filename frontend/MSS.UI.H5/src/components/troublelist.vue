@@ -202,6 +202,7 @@
       </li>
     </mu-list>
     </div>
+    </div>
     <div class="isloadingspan" v-show="isloadingbottom">正在加载...</div>
     <BottomNavigation></BottomNavigation>
   </div>
@@ -220,6 +221,7 @@ import {
   dictionary,
   troubleStatus
 } from "@/common/js/dictionary.js";
+import Bus from "./commom/Bus";
 export default {
   name: "troublelist",
   components: {
@@ -227,13 +229,13 @@ export default {
     tabs,
     BottomNavigation
   },
-  mounted() {
-    // console.log(this.$el)
-    // this.scroller = this.$el.getElementsByClassName('troublelistscroll')
-    // console.log( this.$el.getElementsByClassName('troublelistscroll'))
-    this.InitSelect()
-    this.searchResult(this.curPage)
-  },
+  // mounted() {
+  //   // console.log(this.$el)
+  //   // this.scroller = this.$el.getElementsByClassName('troublelistscroll')
+  //   // console.log( this.$el.getElementsByClassName('troublelistscroll'))
+  //   this.InitSelect()
+  //   this.searchResult(this.curPage)
+  // },
   data() {
     return {
       addattr: '',
@@ -277,7 +279,7 @@ export default {
   },
   mounted () {
     this.InitSelect();
-    this.searchResult(1);
+    this.searchResult(this.curPage);
     if (this.$route.params.attr !== undefined) {
       this.addattr = this.$route.params.attr
       Bus.$emit('addattr', this.addattr)
@@ -356,6 +358,7 @@ export default {
       }).catch(err => console.log(err))
     },
     filterclick(){
+      this.troubleList = []
       this.searchResult(1)
       this.activeName = '0'
     },
@@ -405,7 +408,7 @@ export default {
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
-        rows: 7,
+        rows: 5,
         page: page,
         TroubleReportDesc: this.desc,
         TroubleStatus: this.troubleStatus,
@@ -448,7 +451,28 @@ export default {
           this.isloadingbottom = false
         })
         .catch(err => console.log(err))
-    }
+    },
+        loadMore: function() {
+      // this.busy = false
+      // alert(11111111)
+      // setTimeout(() => {
+      //   this.searchResult(this.curPage++)
+      //   this.busy = false;
+      // }, 1000);
+      
+      
+      // let curP = this.curPage++
+      if(this.curPage != 1){
+        this.loading = true
+        // alert('load curPage: ' + this.curPage)
+        this.isloadingbottom = true
+        this.searchResult(this.curPage)
+      }
+      
+      // this.curPage++
+      // console.log(this.curPage)
+      
+    },
   }
 };
 </script>
