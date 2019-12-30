@@ -4,6 +4,7 @@
         <mu-tabs class="tabs" :value="activeTab" @change="handleTabChange">
             <mu-tab value="addfix" title="故障报修" />
              <mu-tab value="myfix" title="我的接修" />
+             <mu-tab value="myCheckList" title="我的检修单" />
             <!--<mu-tab value="weex" title="weex" />
             <mu-tab value="share" title="分享" />
             <mu-tab value="ask" title="问答" />
@@ -59,6 +60,10 @@ export default {
   },
   mounted () {
     this.scroller = this.$el
+    Bus.$on('addattr',(val)=>{
+      console.log('tabs2:' + val)
+      this.activeTab = val
+    })
     // 有时PDF文件地址会出现跨域的情况,这里最好处理一下
     // this.pdfSrc = pdf.createLoadingTask(this.pdfSrc)
     // this.pdfSrc = pdf.createLoadingTask({ url: this.pdfSrc, CMapReaderFactory })

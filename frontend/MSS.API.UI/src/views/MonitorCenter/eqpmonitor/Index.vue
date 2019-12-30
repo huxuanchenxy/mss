@@ -60,7 +60,7 @@ export default {
       }
 
       .inp{
-        width: PXtoEm(160);
+        width: PXtoEm(160)!important;
         margin-left: PXtoEm(14);
       }
 

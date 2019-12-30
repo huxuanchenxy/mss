@@ -12,7 +12,7 @@
         <router-link :to="{name: 'CommonList'}">返回</router-link>
       </x-button>
     </div>
-    <div class="box">
+    <div class="box1">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
@@ -57,19 +57,6 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
       </div>
-      <ul class="con-padding-horizontal btn-group">
-        <el-popover
-            popper-class="my-pop"
-            placement="bottom"
-            width="260"
-            v-model="popVisiable">
-            <el-input v-model="pmTitle" placeholder="请输入检修单抬头"></el-input>
-            <div style="text-align: right;">
-                <el-button size="mini" type="text" @click="add">创建</el-button>
-            </div>
-            <el-button class="btn1" slot="reference">创建检修单</el-button>
-        </el-popover>
-      </ul>
     </div>
     <div  class="content-wrap">
       <el-tabs class="tab-height" v-model="activeName" @tab-click="searchResult(1)">
@@ -120,7 +107,7 @@
                   layout="slot, jumper, prev, pager, next"
                   prev-text="上一页"
                   next-text="下一页"
-                  :total="tab.total">
+                  :total="currentTotal">
                   <span>总共 {{ tab.total }} 条记录</span>
                 </el-pagination>
               </el-scrollbar>
@@ -146,7 +133,8 @@ export default {
       btn: {
         save: false
       },
-      popVisiable: false,
+      // 当前标签页的总数，直接用tab.total且页数不同时，翻页无效（比如其他标签页2页，9月份3页，第三页始终只能跳到第二页）
+      currentTotal: 1,
       editObj: [],
       title: '',
       areaParams: {
@@ -220,6 +208,7 @@ export default {
       if (this.type === 1) {
         api.createMonthPlan(this.importCommon.id).then(res => {
           this.monthList = res.data
+          this.currentTotal = this.monthList[0].total
           this.type = 2
         }).catch(err => console.log(err))
       } else {
@@ -232,65 +221,65 @@ export default {
     this.searchResult(1)
   },
   methods: {
-    add () {
-      if (this.editObj.length === 0) {
-        this.$message({
-          message: '请选择所要创建检修单的计划',
-          type: 'warning'
-        })
-        return
-      }
-      let arr = []
-      let before = {
-        team: this.editObj[0].team,
-        location: this.editObj[0].location,
-        locationBy: this.editObj[0].locationBy,
-        planDate: this.editObj[0].planDate
-      }
-      for (let i = 0; i < this.editObj.length; i++) {
-        let item = this.editObj[i]
-        if (item.team === before.team && item.location === before.location && item.locationBy === before.locationBy && (item.planDate === before.planDate || item.planDate.indexOf('-') !== -1 || before.planDate.indexOf('-') !== -1)) {
-          arr.push({
-            detail: item.id,
-            count: item.planQuantity,
-            planCode: item.eqpType,
-            pmType: item.pmType
-          })
-        } else {
-          this.$message({
-            message: '所选计划的班组、地点、时间必须保持一致',
-            type: 'warning'
-          })
-        }
-      }
-      let mList = {
-        title: this.pmTitle,
-        team: before.team,
-        location: before.location,
-        locationBy: before.locationBy,
-        planDate: before.planDate,
-        details: arr
-      }
-      api.saveMList(mList).then(res => {
-        if (res.code === 0) {
-          this.$message({
-            message: '创建成功',
-            type: 'success'
-            // onClose: () => {
-            //   this.$router.push({
-            //     name: 'MaintenanceList'
-            //   })
-            // }
-          })
-          this.popVisiable = false
-        } else {
-          this.$message({
-            message: res.msg === '' ? '创建失败' : res.msg,
-            type: 'error'
-          })
-        }
-      }).catch(err => console.log(err))
-    },
+    // add () {
+    //   if (this.editObj.length === 0) {
+    //     this.$message({
+    //       message: '请选择所要创建检修单的计划',
+    //       type: 'warning'
+    //     })
+    //     return
+    //   }
+    //   let arr = []
+    //   let before = {
+    //     team: this.editObj[0].team,
+    //     location: this.editObj[0].location,
+    //     locationBy: this.editObj[0].locationBy,
+    //     planDate: this.editObj[0].planDate
+    //   }
+    //   for (let i = 0; i < this.editObj.length; i++) {
+    //     let item = this.editObj[i]
+    //     if (item.team === before.team && item.location === before.location && item.locationBy === before.locationBy && (item.planDate === before.planDate || item.planDate.indexOf('-') !== -1 || before.planDate.indexOf('-') !== -1)) {
+    //       arr.push({
+    //         detail: item.id,
+    //         count: item.planQuantity,
+    //         planCode: item.eqpType,
+    //         pmType: item.pmType
+    //       })
+    //     } else {
+    //       this.$message({
+    //         message: '所选计划的班组、地点、时间必须保持一致',
+    //         type: 'warning'
+    //       })
+    //     }
+    //   }
+    //   let mList = {
+    //     title: this.pmTitle,
+    //     team: before.team,
+    //     location: before.location,
+    //     locationBy: before.locationBy,
+    //     planDate: before.planDate,
+    //     details: arr
+    //   }
+    //   api.saveMList(mList).then(res => {
+    //     if (res.code === 0) {
+    //       this.$message({
+    //         message: '创建成功',
+    //         type: 'success'
+    //         // onClose: () => {
+    //         //   this.$router.push({
+    //         //     name: 'MaintenanceList'
+    //         //   })
+    //         // }
+    //       })
+    //       this.popVisiable = false
+    //     } else {
+    //       this.$message({
+    //         message: res.msg === '' ? '创建失败' : res.msg,
+    //         type: 'error'
+    //       })
+    //     }
+    //   }).catch(err => console.log(err))
+    // },
     position_change (val) {
       if (val.length === 0) {
         this.area = ''
@@ -362,6 +351,7 @@ export default {
       }).then(res => {
         this.loading = false
         let tmp = res.data
+        this.currentTotal = tmp.total
         if (tmp === null) tmp = []
         this.$set(this.monthList, month, tmp)
         // this.monthList[month] = res.data
