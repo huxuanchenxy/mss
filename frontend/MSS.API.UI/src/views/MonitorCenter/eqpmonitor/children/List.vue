@@ -83,6 +83,13 @@
               </el-select>
             </div>
           </div>
+          <div class="input-group">
+            <!--<el-radio v-model="position" label="6" style="padding-right:5px;"></el-radio>-->
+            <label for="">图纸编号</label>
+            <div class="inp">
+              <el-input v-model.trim="eqpCode" placeholder="请输入设备图纸编号"></el-input>
+            </div>
+          </div>
         </div>
         <div class="search-btn" @click="searchRes">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
@@ -474,7 +481,8 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: this.currentPage,
-        LocationPath: location
+        LocationPath: location,
+        SearchCode: this.eqpCode
       }
       eqpApi.getEqp(parm).then(res => {
         this.loading = false

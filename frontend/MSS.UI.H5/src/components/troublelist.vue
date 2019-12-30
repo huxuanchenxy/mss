@@ -2,6 +2,91 @@
   <div class="wrapper">
     <isheader class="header"></isheader>
     <tabs class="tab"></tabs>
+    <div v-if="addattr === 'myCheckList'">
+    <div>
+      <span class="spanfilter">筛选</span>
+      <el-collapse class="filtercollapse" v-model="activeName" accordion>
+        <el-collapse-item title="" name="1">
+          <div class="troublefilter">
+            <li>
+              <div class="troublefilterleft">
+                <span>检修单名称:</span>
+              </div>
+              <div class="troublefilterright">
+                <el-input class="troublerightele" v-model.trim="entityTitle" placeholder="请输入检修单名称"></el-input>
+              </div>
+            </li>
+            <li>
+              <div class="troublefilterleft">
+                <span>检修单状态:</span>
+              </div>
+              <div class="troublefilterright">
+                <el-select class="troublerightele" v-model="entityStatus" clearable filterable placeholder="按检修单状态筛选">
+                  <el-option
+                    v-for="item in entityStatusList"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </div>
+            </li>
+            <li>
+              <div class="troublefilterleft">
+                <span>最后保存/提交日期:</span>
+              </div>
+              <div class="troublefilterright">
+                <span class="dateinput" placeholder="开始日期" @click="selectDate('sd')">{{sdCheck}}</span>
+                <span class="dateinput2" placeholder="结束日期" @click="selectDate('ed')">{{edCheck}}</span>
+              <mt-datetime-picker
+                v-model="dateValue"
+                type="date"
+                ref="dateCheckPicker"
+                year-format="{value} 年"
+                month-format="{value} 月"
+                date-format="{value} 日"
+                :endDate="new Date()"
+                @confirm="handleCheckConfirm"
+              ></mt-datetime-picker>
+                          <mt-datetime-picker
+                v-model="dateValue"
+                type="date"
+                ref="dateCheckPicker2"
+                year-format="{value} 年"
+                month-format="{value} 月"
+                date-format="{value} 日"
+                :endDate="new Date()"
+                @confirm="handleCheckConfirm2"
+              ></mt-datetime-picker>
+              </div>
+            </li>
+            <li>
+              <div class="troublefilterright">
+                <el-button type="primary" @click="filterCheckClick">确定</el-button>
+              </div>
+            </li>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="troublelistscroll">
+      <mu-list class="troublemylist">
+        <li class="liitem" v-for="item in mList" :key="item.key">
+          <mu-list-item @click="inputCheck(item.id)">
+            <mu-icon value="label" class="muicon"></mu-icon>
+            <span class="itemcode">{{ item.title }}</span>
+            <span class="itemlineName">{{ item.teamName }}</span>
+            <span class="itemstartLocationName">{{ item.locationName }}</span>
+            <span class="itemreportedByName">{{ item.updatedByName }}</span>
+            <span class="itemstatusName">({{ item.statusName }})</span>
+            <span class="itemhappeningTime">{{ item.updatedTime }}</span>
+          </mu-list-item>
+          <mu-divider class="mudivider"></mu-divider>
+        </li>
+      </mu-list>
+    </div>
+    </div>
+    <div v-else>
     <div>
       <span class="spanfilter">筛选</span>
       <el-collapse class="filtercollapse" v-model="activeName" accordion>
@@ -127,6 +212,7 @@ import BottomNavigation from "./commom/bottom.vue";
 import tabs from "./commom/tabs2.vue";
 import axios from "axios";
 import api from "@/api/DeviceMaintainRegApi.js";
+import apiWork from '@/api/workflowApi'
 import apiAuth from "@/api/authApi";
 import { transformDate, dateFtt } from "@/common/js/utils.js";
 import {
@@ -135,7 +221,7 @@ import {
   troubleStatus
 } from "@/common/js/dictionary.js";
 export default {
-  name: "trouble",
+  name: "troublelist",
   components: {
     isheader,
     tabs,
@@ -150,6 +236,17 @@ export default {
   },
   data() {
     return {
+      addattr: '',
+      editEntity: [],
+      entityTitle: '',
+      entityStatus: '',
+      entityStatusList: [],
+      currentCheckPage: 1,
+      totalCheck: 0,
+      sdCheck: '',
+      edCheck: '',
+      mList: '',
+
       troubleList: [],
       troubleListAll:[],
       troubleListByID: {},
@@ -178,31 +275,89 @@ export default {
       isloadingbottom:false,
     };
   },
-  methods: {
-    loadMore: function() {
-      // this.busy = false
-      // alert(11111111)
-      // setTimeout(() => {
-      //   this.searchResult(this.curPage++)
-      //   this.busy = false;
-      // }, 1000);
-      
-      
-      // let curP = this.curPage++
-      if(this.curPage != 1){
-        this.loading = true
-        // alert('load curPage: ' + this.curPage)
-        this.isloadingbottom = true
-        this.searchResult(this.curPage)
+  mounted () {
+    this.InitSelect();
+    this.searchResult(1);
+    if (this.$route.params.attr !== undefined) {
+      this.addattr = this.$route.params.attr
+      Bus.$emit('addattr', this.addattr)
+      this.searchCheckResult(1)
+    }
+    Bus.$on('addattr',(val)=>{
+      this.addattr=val
+      if (val === 'myCheckList') {
+        this.searchCheckResult(1)
       }
-      
-      // this.curPage++
-      // console.log(this.curPage)
-      
+    })
+  },
+  methods: {
+    inputCheck (id) {
+      let clientHeight = `${document.documentElement.clientHeight}`
+      debugger
+      if (clientHeight < 1024) {
+        this.$message({
+          showClose: true,
+          message: '只有pad端才有填写功能',
+          type: 'warning'
+        })
+        return
+      }
+      this.$router.push({
+        name: 'inputCheck',
+        params: {
+          id: id,
+          attr: this.addattr
+        }
+      })
     },
-    filterclick() {
-      this.searchResult(1);
-      this.activeName = "0";
+    filterCheckClick(){
+      this.searchCheckResult(1)
+      this.activeName = '0'
+    },
+    selectDate (type) {
+      if (type === 'sd') {
+        this.$refs.dateCheckPicker.open()
+      } else {
+        this.$refs.dateCheckPicker2.open()
+      }
+    },
+    handleCheckConfirm (value) {
+      this.sdCheck = dateFtt(value,'yyyy-MM-dd')
+    },
+    handleCheckConfirm2 (value) {
+      this.edCheck = dateFtt(value,'yyyy-MM-dd')
+    },
+    searchCheckResult(page) {
+      this.currentCheckPage = page;
+      let parm = {
+        order: this.currentSort.order,
+        sort: this.currentSort.sort,
+        rows: 10,
+        page: page,
+        title: this.entityTitle,
+        status: this.entityStatus,
+        start: this.sdCheck
+      }
+      if (this.edCheck !== '') {
+        parm.end = this.edCheck + ' 23:59:59'
+      }
+      apiWork.getEntityList(parm).then(res => {
+        this.loading = false
+        if (res.data.total > 0) {
+          res.data.rows.map(item => {
+            item.updatedTime = transformDate(item.updatedTime)
+          })
+          this.mList = res.data.rows
+          this.totalCheck = res.data.total
+        } else {
+          this.mList = []
+          this.totalCheck = 0
+        }
+      }).catch(err => console.log(err))
+    },
+    filterclick(){
+      this.searchResult(1)
+      this.activeName = '0'
     },
     openPicker() {
       this.$refs.refhappeningTime.open();
@@ -228,6 +383,10 @@ export default {
       this.endDate = this.date2;
     },
     InitSelect() {
+      // 检修单状态加载
+      apiAuth.getSubCode(dictionary.pmStatus).then(res => {
+        this.entityStatusList = res.data
+      }).catch(err => console.log(err))
       // 故障状态列表
       apiAuth
         .getSubCode(dictionary.troubleStatus)
@@ -556,5 +715,8 @@ overflow: scroll;
     bottom: 0;
     margin: 0 auto;
         color: #1b7ec9;
+}
+.el-icon-close{
+  display: inline-block!important;
 }
 </style>

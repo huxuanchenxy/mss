@@ -26,5 +26,9 @@ export default {
   getnextprocess: parm => { return axios.post(`${api}/Wf/GetNextStepRoleUserTree`, parm).then(res => res.data) },
 
   getcurrentprocess: parm => { return axios.post(`${api}/Wf/QueryReadyActivityInstance`, parm).then(res => res.data) },
-  getMonthChart: parm => { return axios.get(`${api}/ConstructionPlanMonthChart/GetMonthChart`, {params: parm}).then(res => res.data) }
+  getMonthChart: parm => { return axios.get(`${api}/ConstructionPlanMonthChart/GetMonthChart`, {params: parm}).then(res => res.data) },
+
+  getEntityList: parm => { return axios.get(`${api}/Maintenance/ListEntityPage`, {params: parm}).then(res => res.data) },
+  getEntityByID: (id, isUpdate) => { return axios.get(`${api}/Maintenance/GetEntityByID/${id}/${isUpdate}`).then(res => res.data) },
+  updatePMEntity: parm => { return axios.put(`${api}/Maintenance/UpdatePMEntity`, parm).then(res => res.data) }
 }

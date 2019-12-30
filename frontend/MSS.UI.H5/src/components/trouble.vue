@@ -93,6 +93,13 @@
             <div class="input">
               <mt-cell title :value="areaString" is-link @click.native="handlerArea"></mt-cell>
               <mt-popup v-model="areaVisible" class="area-class" position="bottom">
+                <mt-picker ref="picker1" :slots="slot1" value-key="areaName" @change="onValuesChange1">
+                </mt-picker>
+                <mt-picker ref="picker2" :slots="slot2" value-key="areaName" @change="onValuesChange2"></mt-picker>
+                <mt-picker ref="picker3" :slots="slot3" value-key="areaName" @change="onValuesChange3"></mt-picker>
+                <mt-picker ref="picker4" :slots="slot4" value-key="areaName" :show-toolbar="true" @change="onValuesChange4">
+                  <mt-button @click="handlePickConfirm" class="sure" >确认</mt-button>
+                </mt-picker>
                 <mt-picker
                   ref="picker1"
                   :slots="slot1"
@@ -337,6 +344,13 @@ export default {
           textAlign: "left"
         }
       ],
+      slotobj:[],
+      s1pick:undefined,
+      s2pick:undefined,
+      s3pick:undefined,
+      s4pick:undefined,
+      slotflag:false,
+      //四级联动
       slotobj: [],
       //设备图纸
       eqpcode: "",
@@ -436,6 +450,19 @@ export default {
       apiArea
         .SelectConfigAreaData()
         .then(res => {
+          this.slotobj = res.data.dicAreaList
+          let slot1mp = res.data.dicAreaList
+          this.slot1[0].values = slot1mp
+          // this.s1pick = slot1mp[0]
+          let slot2tmp = slot1mp[0].children
+          this.slot2[0].values = slot2tmp
+          // this.s2pick = slot2mp[0]
+          let slot3tmp = slot2tmp[0].children
+          this.slot3[0].values = slot3tmp
+          // this.s3pick = slot3mp[0]
+          if(slot3tmp != null){
+            let slot4tmp = slot3tmp[0].children
+            this.slot4[0].values = slot4tmp
           this.slotobj = res.data.dicAreaList;
           let slot1mp = res.data.dicAreaList;
           this.slot1[0].values = slot1mp;
@@ -445,10 +472,6 @@ export default {
 
           let slot3tmp = slot2tmp[0].children;
           this.slot3[0].values = slot3tmp;
-
-          if (slot3tmp != null) {
-            let slot4tmp = slot3tmp[0].children;
-            this.slot4[0].values = slot4tmp;
           }
           this.areaString = "请选择";
         })
@@ -471,6 +494,7 @@ export default {
           this.companyString = "请选择";
         })
         .catch(err => console.log(err));
+        this.areaString = '请选择'
     },
     selectYear() {
       if (this.happeningTime) {
@@ -511,43 +535,82 @@ export default {
         this.openTouch();
       }
     },
-    handlePickConfirm() {
-      let curpick1 = this.$refs.picker1.getValues()[0];
-      let curpick2 = this.$refs.picker2.getValues()[0];
-      let curpick3 = this.$refs.picker3.getValues()[0];
-      let curpick4 = this.$refs.picker4.getValues()[0];
-      let areaarr = [];
-      let areaidarr = [];
-      if (curpick1 != undefined) {
-        areaarr.push(curpick1.areaName);
-        areaidarr.push(curpick1.id);
-        this.line = curpick1.id;
-        apiArea
-          .ListBigAreaByLine(curpick1.id)
-          .then(res => {
-            this.endlocationslot[0].values = res.data;
-          })
-          .catch(err => console.log(err));
+    handlePickConfirm () {
+      let curpick1 = this.$refs.picker1.getValues()[0]
+      let curpick2 = this.$refs.picker2.getValues()[0]
+      let curpick3 = this.$refs.picker3.getValues()[0]
+      let curpick4 = this.$refs.picker4.getValues()[0]
+      let areaarr = []
+      if(curpick1 != undefined){
+        areaarr.push(curpick1.areaName)
       }
-      if (curpick2 != undefined) {
-        areaarr.push(curpick2.areaName);
-        areaidarr.push(curpick2.id);
+      if(curpick2 != undefined){
+        areaarr.push(curpick2.areaName)
       }
-      if (curpick3 != undefined) {
-        areaarr.push(curpick3.areaName);
-        areaidarr.push(curpick3.id);
-        this.startlocation = curpick3.id;
-        this.startlocationby = 1;
+      if(curpick3 != undefined){
+        areaarr.push(curpick3.areaName)
       }
-      if (curpick4 != undefined) {
-        areaarr.push(curpick4.areaName);
-        areaidarr.push(curpick4.id);
-        this.startlocationby = 2;
+      if(curpick4 != undefined){
+        areaarr.push(curpick4.areaName)
       }
-      this.areaString = areaarr.join(",");
-      this.areaValue = areaidarr.join(",");
-
-      this.areaVisible = false;
+      this.areaString = areaarr.join(",")
+      this.areaVisible = false
+    },
+    onValuesChange1(picker, values) {
+      console.log('this.s1pick:')
+      console.log(this.s1pick)
+      // if(this.slotflag == false){
+        // this.s1pick = values[0]
+        let s1 = this.slotobj
+        let s2 = s1.filter(c => c.id === values[0].id)[0]
+        if(s2 != undefined)
+        {
+          this.slot2[0].values = s2.children
+        }
+      
+    },
+    onValuesChange2(picker, values) {
+      // if(this.s1pick != undefined){
+        let dataall = this.slotobj
+        let curpick1 = this.$refs.picker1.getValues()[0]
+        let s1 = dataall.filter(c => c.id === this.curpick1.id)[0]
+        if(s1 != undefined){
+          let s2 = s1.children
+          let s3 = s2.filter(c=>c.id === values[0].id)[0]
+          this.slot3[0].values = s3.children
+        }
+      // }
+    },
+    onValuesChange3(picker, values) {
+      // if(this.s1pick != undefined){
+        let dataall = this.slotobj
+        let s1 = dataall.filter(c => c.id === this.s1pick.id)[0]
+        if(s1 != undefined){
+          let s2 = s1.children
+          if(s2 != undefined){
+            let s3 = s2.filter(c=>c.id === this.s2pick.id)[0]
+            if(s3 != undefined){
+              let s3p = s3.children
+              this.s3pick = s3p.filter(c=>c.id === values[0].id)[0]
+              this.slot4[0].values = this.s3pick.children
+            }
+          }
+        }
+      // }
+    },
+    onValuesChange4(picker, values){
+      // if(this.s1pick != undefined){
+        this.s4pick = values[0]
+      // }
+    },
+    joinArea(){
+      console.log('111')
+      console.log(this.slotflag)
+      let areaarr = []
+      this.areaString = '请选择'
+      if(this.s1pick != undefined){
+          areaarr.push(this.s1pick.areaName)
+      }
     },
     handlelevelpickConfirm() {
       let curpick1 = this.$refs.levelpicker1.getValues()[0];
@@ -664,6 +727,21 @@ export default {
         let s3 = s2.filter(c => c.id === values[0].id)[0];
         this.companyslot3[0].values = s3.children;
       }
+      if(this.s3pick != undefined){
+          areaarr.push(this.s3pick.areaName)
+      }
+      if(this.s4pick != undefined){
+          areaarr.push(this.s4pick.areaName)
+      }
+      if(this.slotflag){
+        this.areaString = areaarr.join(",")
+      }else{
+        this.slotflag = true
+      }
+      console.log('222')
+      console.log(this.slotflag)
+      console.log('joinArea')
+      console.log(this.areaString)
     },
     handlerArea() {
       this.areaVisible = true;
@@ -859,6 +937,23 @@ export default {
   color: #8e9092;
   position: absolute;
   margin: 0 auto;
+}
+.itemvaluepick .mint-popup-bottom{
+  width:100%;
+}
+.itemvaluepick .picker{
+  display:inline-block;
+  width: 24%;
+}
+.itemvaluepick .picker-item{
+  font-size: 12px;
+  padding: 0 0;
+}
+.itemvaluepick .mint-cell{
+  min-height: 30px;
+}
+.itemvaluepick .mint-cell-wrapper{
+  font-size: 12px;
 }
 .itemvaluepick .mint-popup-bottom {
   width: 100%;

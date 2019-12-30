@@ -14,6 +14,10 @@ import ElementUI from 'element-ui'
 import './common/scss/global.scss'
 import '../theme/index.css'
 import VueEmoji from "vue-emoji"
+
+// excel在线编辑插件handsontable
+import 'handsontable/dist/handsontable.full.css'
+
 // Vue.use(silder)
 //引用拖拽插件
 import VueDND from 'awe-dnd'

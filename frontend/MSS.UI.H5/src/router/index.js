@@ -8,6 +8,7 @@ import warning from "../components/warning.vue"
 import my from "../components/my.vue"
 import mysetting from "../components/mysetting.vue"
 import troublelist from "../components/troublelist.vue"
+import inputCheck from "../components/inputCheck.vue"
 Vue.use(Router)
 
 export default new Router({
@@ -31,6 +32,11 @@ export default new Router({
       path: '/troublelist',
       name: 'troublelist',
       component: troublelist
+    },
+    {
+      path: '/inputCheck',
+      name: 'inputCheck',
+      component: inputCheck
     },
     {
       path: '/warning',

@@ -229,7 +229,7 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.editEntity = []
-      this.loading = true
+      // this.loading = true
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
@@ -238,7 +238,7 @@ export default {
         title: this.entityTitle,
         status: this.entityStatus
       }
-      if (this.searchDate.length !== 0) {
+      if (this.searchDate !== null && this.searchDate.length !== 0) {
         parm.start = this.searchDate[0]
         parm.end = this.searchDate[1] + ' 23:59:59'
       }
