@@ -99,6 +99,7 @@
                 <mt-picker ref="picker3" :slots="slot3" value-key="areaName" @change="onValuesChange3"></mt-picker>
                 <mt-picker ref="picker4" :slots="slot4" value-key="areaName" :show-toolbar="true" @change="onValuesChange4">
                   <mt-button @click="handlePickConfirm" class="sure" >确认</mt-button>
+                </mt-picker>
                 <mt-picker
                   ref="picker1"
                   :slots="slot1"
@@ -340,7 +341,6 @@ export default {
       s4pick:undefined,
       slotflag:false,
       //四级联动
-    };
       slotobj: [],
       //设备图纸
       eqpcode: "",
@@ -481,10 +481,6 @@ export default {
 
           let slot3tmp = slot2tmp[0].children;
           this.slot3[0].values = slot3tmp;
-
-          if (slot3tmp != null) {
-            let slot4tmp = slot3tmp[0].children;
-            this.slot4[0].values = slot4tmp;
           }
           this.areaString = "请选择";
         })
@@ -624,45 +620,6 @@ export default {
       if(this.s1pick != undefined){
           areaarr.push(this.s1pick.areaName)
       }
-      if(this.s2pick != undefined){
-          areaarr.push(this.s2pick.areaName)
-    handlePickConfirm() {
-      let curpick1 = this.$refs.picker1.getValues()[0];
-      let curpick2 = this.$refs.picker2.getValues()[0];
-      let curpick3 = this.$refs.picker3.getValues()[0];
-      let curpick4 = this.$refs.picker4.getValues()[0];
-      let areaarr = [];
-      let areaidarr = [];
-      if (curpick1 != undefined) {
-        areaarr.push(curpick1.areaName);
-        areaidarr.push(curpick1.id);
-        this.line = curpick1.id;
-        apiArea
-          .ListBigAreaByLine(curpick1.id)
-          .then(res => {
-            this.endlocationslot[0].values = res.data;
-          })
-          .catch(err => console.log(err));
-      }
-      if (curpick2 != undefined) {
-        areaarr.push(curpick2.areaName);
-        areaidarr.push(curpick2.id);
-      }
-      if (curpick3 != undefined) {
-        areaarr.push(curpick3.areaName);
-        areaidarr.push(curpick3.id);
-        this.startlocation = curpick3.id;
-        this.startlocationby = 1;
-      }
-      if (curpick4 != undefined) {
-        areaarr.push(curpick4.areaName);
-        areaidarr.push(curpick4.id);
-        this.startlocationby = 2;
-      }
-      this.areaString = areaarr.join(",");
-      this.areaValue = areaidarr.join(",");
-
-      this.areaVisible = false;
     },
     handlelevelpickConfirm() {
       let curpick1 = this.$refs.levelpicker1.getValues()[0];
