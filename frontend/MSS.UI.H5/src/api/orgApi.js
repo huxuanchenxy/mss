@@ -17,6 +17,9 @@ export default {
   delOrgNode: id => { return axios.delete(`${api}/org/${id}`).then(res => res.data) },
   getOrgUserByNodeID: (id) => { return axios.get(`${api}/orguser/${id}`).then(res => res.data) },
   delOrgUser: ids => { return axios.delete(`${api}/orguser/${ids}`).then(res => res.data) },
-  ListNodeByNodeType: (nodeType) => { return axios.get(`${api}/org/ListNodeByNodeType/${nodeType}`).then(res => res.data) },
-  ListUserByNode: (node) => { return axios.get(`${api}/orguser/ListUserByNode/${node}`).then(res => res.data) }
+  listNodeByNodeType: (nodeType) => { return axios.get(`${api}/org/ListNodeByNodeType/${nodeType}`).then(res => res.data) },
+  listUserByNode: (node) => { return axios.get(`${api}/orguser/ListUserByNode/${node}`).then(res => res.data) },
+
+  getOrgTopNodeByUser: (user) => { return axios.get(`${api}/org/topnode/${user}`).then(res => res.data) },
+  listUserAllByTopNode: () => { return axios.get(`${api}/orguser/usersintoporg`).then(res => res.data) }
 }
