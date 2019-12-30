@@ -97,7 +97,11 @@
                 <span>关键字:</span>
               </div>
               <div class="troublefilterright">
-                <el-input class="troublerightele" v-model.trim="desc" placeholder="这里输入关键字"></el-input>
+                <el-input
+                  class="troublerightele"
+                  v-model.trim="desc"
+                  placeholder="这里输入关键字"
+                ></el-input>
               </div>
             </li>
             <li>
@@ -105,7 +109,13 @@
                 <span>故障状态:</span>
               </div>
               <div class="troublefilterright">
-                <el-select class="troublerightele" v-model="troubleStatus" clearable filterable placeholder="按故障状态筛选">
+                <el-select
+                  class="troublerightele"
+                  v-model="troubleStatus"
+                  clearable
+                  filterable
+                  placeholder="按故障状态筛选"
+                >
                   <el-option
                     v-for="item in troubleStatusList"
                     :key="item.key"
@@ -120,59 +130,79 @@
                 <span>发生日期:</span>
               </div>
               <div class="troublefilterright">
-                <span class="dateinput" placeholder="开始日期" @click="selectYear" v-model="startDate">{{date1}}</span>
-                <span class="dateinput2" placeholder="结束日期" @click="selectYear2" v-model="endDate">{{date2}}</span>
-              <mt-datetime-picker
-                v-model="dateValue"
-                type="date"
-                ref="datePicker"
-                year-format="{value} 年"
-                month-format="{value} 月"
-                date-format="{value} 日"
-                :endDate="new Date()"
-                @confirm="handleConfirm"
-              ></mt-datetime-picker>
-                          <mt-datetime-picker
-                v-model="dateValue"
-                type="date"
-                ref="datePicker2"
-                year-format="{value} 年"
-                month-format="{value} 月"
-                date-format="{value} 日"
-                :endDate="new Date()"
-                @confirm="handleConfirm2"
-              ></mt-datetime-picker>
+                <span
+                  class="dateinput"
+                  placeholder="开始日期"
+                  @click="selectYear"
+                  v-model="startDate"
+                  >{{ date1 }}</span
+                >
+                <span
+                  class="dateinput2"
+                  placeholder="结束日期"
+                  @click="selectYear2"
+                  v-model="endDate"
+                  >{{ date2 }}</span
+                >
+                <mt-datetime-picker
+                  v-model="dateValue"
+                  type="date"
+                  ref="datePicker"
+                  year-format="{value} 年"
+                  month-format="{value} 月"
+                  date-format="{value} 日"
+                  :endDate="new Date()"
+                  @confirm="handleConfirm"
+                ></mt-datetime-picker>
+                <mt-datetime-picker
+                  v-model="dateValue"
+                  type="date"
+                  ref="datePicker2"
+                  year-format="{value} 年"
+                  month-format="{value} 月"
+                  date-format="{value} 日"
+                  :endDate="new Date()"
+                  @confirm="handleConfirm2"
+                ></mt-datetime-picker>
               </div>
             </li>
             <li>
               <div class="troublefilterright">
-                <el-button type="primary" @click="filterclick()">确定</el-button>
+                <el-button type="primary" @click="filterclick()"
+                  >确定</el-button
+                >
               </div>
             </li>
           </div>
         </el-collapse-item>
       </el-collapse>
     </div>
-    <div class="troublelistscroll">
-      <mu-list class="troublemylist">
-        <li class="liitem" v-for="item in troubleList" :key="item.key">
-          <mu-list-item>
-            <mu-icon value="label" class="muicon"></mu-icon>
-            <span class="itemcode">{{ item.code }}</span>
-            <span class="itemlineName">{{ item.lineName }}</span>
-            <span class="itemstartLocationName">{{ item.startLocationName }}</span>
-            <span class="itemdesc">{{ item.desc }}</span>
-            <span class="itemreportedCompanyName">{{ item.reportedCompanyName }}</span>
-            <span class="itemreportedByName">{{ item.reportedByName }}</span>
-            <span class="itemstatusName">({{ item.statusName }})</span>
-            <span class="itemlastOperationName">最新操作: {{ item.lastOperationName }}</span>
-            <span class="itemhappeningTime">{{ item.happeningTime }}</span>
-          </mu-list-item>
-          <mu-divider class="mudivider"></mu-divider>
-        </li>
-      </mu-list>
+    <div class="troublelistscroll" v-loading="loading">
+    <mu-list class="troublemylist" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="5">
+      <li class="liitem" v-for="item in troubleList" :key="item.key">
+        <mu-list-item>
+          <mu-icon value="label" class="muicon"></mu-icon>
+          <span class="itemcode">{{ item.code }}</span>
+          <span class="itemlineName">{{ item.lineName }}</span>
+          <span class="itemstartLocationName">{{
+            item.startLocationName
+          }}</span>
+          <span class="itemdesc">{{ item.desc }}</span>
+          <span class="itemreportedCompanyName">{{
+            item.reportedCompanyName
+          }}</span>
+          <span class="itemreportedByName">{{ item.reportedByName }}</span>
+          <span class="itemstatusName">({{ item.statusName }})</span>
+          <span class="itemlastOperationName"
+            >最新操作: {{ item.lastOperationName }}</span
+          >
+          <span class="itemhappeningTime">{{ item.happeningTime }}</span>
+        </mu-list-item>
+        <mu-divider class="mudivider"></mu-divider>
+      </li>
+    </mu-list>
     </div>
-    </div>
+    <div class="isloadingspan" v-show="isloadingbottom">正在加载...</div>
     <BottomNavigation></BottomNavigation>
   </div>
 </template>
@@ -184,8 +214,7 @@ import axios from "axios";
 import api from "@/api/DeviceMaintainRegApi.js";
 import apiWork from '@/api/workflowApi'
 import apiAuth from "@/api/authApi";
-import { transformDate,dateFtt } from "@/common/js/utils.js";
-import Bus from './commom/Bus'
+import { transformDate, dateFtt } from "@/common/js/utils.js";
 import {
   troubleOperation,
   dictionary,
@@ -197,6 +226,13 @@ export default {
     isheader,
     tabs,
     BottomNavigation
+  },
+  mounted() {
+    // console.log(this.$el)
+    // this.scroller = this.$el.getElementsByClassName('troublelistscroll')
+    // console.log( this.$el.getElementsByClassName('troublelistscroll'))
+    this.InitSelect()
+    this.searchResult(this.curPage)
   },
   data() {
     return {
@@ -212,13 +248,13 @@ export default {
       mList: '',
 
       troubleList: [],
+      troubleListAll:[],
       troubleListByID: {},
       year: "",
       dateValue: "",
       isClicked: false,
       total: 0,
       currentPage: 1,
-      loading: false,
       currentSort: {
         sort: "code",
         order: "asc"
@@ -228,10 +264,15 @@ export default {
       troubleStatusList: [],
       activeName: "0",
       desc: "",
-      date1:'',
-      date2:'',
-      startDate:'',
-      endDate:'',
+      date1: "",
+      date2: "",
+      startDate: "",
+      endDate: "",
+      loading: false,
+      scroller: null,
+      busy: false,
+      curPage:1,
+      isloadingbottom:false,
     };
   },
   mounted () {
@@ -332,14 +373,14 @@ export default {
       // this.year = value.getFullYear();
       // this.month = value.getMonth() + 1;
       // this.date1 = value.getDate();
-      this.date1 = dateFtt(value,'yyyy-MM-dd')
-      this.startDate = this.date1
+      this.date1 = dateFtt(value, "yyyy-MM-dd");
+      this.startDate = this.date1;
       this.isClicked = true;
     },
     handleConfirm2(value) {
       // console.log('date2:' + value);
-      this.date2 = dateFtt(value,'yyyy-MM-dd')
-      this.endDate = this.date2
+      this.date2 = dateFtt(value, "yyyy-MM-dd");
+      this.endDate = this.date2;
     },
     InitSelect() {
       // 检修单状态加载
@@ -357,32 +398,56 @@ export default {
     searchResult(page) {
       this.currentPage = page;
       let st, et;
-      console.log('this.date1:' + this.date1)
-      if (this.startDate !== '' && this.endDate !== '') {
+      if (this.startDate !== "" && this.endDate !== "") {
         st = this.startDate + " 00:00:00";
         et = this.endDate + " 23:59:59";
       }
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
-        rows: 10,
+        rows: 7,
         page: page,
         TroubleReportDesc: this.desc,
         TroubleStatus: this.troubleStatus,
         StartTime: st,
         EndTime: et
-      };
+      }
+      // alert('ajaxPage:' + this.curPage)
       api
         .getTroubleReportPage(parm)
         .then(res => {
           res.data.rows.map(item => {
             this.troubleListByID[item.id] = item;
-            item.happeningTime = transformDate(item.happeningTime);
-          });
-          this.troubleList = res.data.rows;
-          this.total = res.data.total;
+            item.happeningTime = transformDate(item.happeningTime)
+          })
+          let da = res.data.rows
+          // alert('ajaxdatalength' + da.length)
+          let curlist = this.troubleList
+          da.forEach(element => {
+            // console.log('id:')
+            // alert('id:' + element.id)
+            let check = curlist.filter(c=>c.id == element.id)[0]
+            // alert('check:' + check)
+            // console.log('check:')
+            // console.log(check)
+            if(check == undefined && da.length != 0){
+                this.troubleList.push(element)
+            }
+            
+          })
+          if(da.length != 0){
+
+            
+            this.curPage = this.curPage + 1
+          }
+          // this.troubleList = res.data.rows
+          // this.troubleList.push(da)
+          // this.total = res.data.total
+          this.busy = false
+          this.loading = false
+          this.isloadingbottom = false
         })
-        .catch(err => console.log(err));
+        .catch(err => console.log(err))
     }
   }
 };
@@ -411,7 +476,7 @@ export default {
   /* top: 115px; */
   padding: 8px 0;
   width: 100%;
-  height: 74%;
+  height: 60%;
   position: relative;
   overflow-x: scroll;
   overflow-y: scroll;
@@ -443,12 +508,13 @@ export default {
   color: #c3bfbf;
 }
 .troublelistscroll {
-  overflow: scroll;
-  overflow-y: hidden;
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 145px;
+overflow: scroll;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    position: absolute;
+    height: 60%;
+    width: 100%;
+    top: 156px;
 }
 .itemcode {
   position: absolute;
@@ -530,7 +596,7 @@ export default {
   position: absolute;
   top: 10px;
   width: 94%;
-  height:90%;
+  height: 90%;
 }
 .troublefilter li {
   padding: 10px;
@@ -554,7 +620,7 @@ export default {
   top: 156px;
   bottom: 0;
   width: 100%;
-      height: 35%;
+  height: 35%;
   padding-left: 0.5em !important;
   padding-right: 0.5em !important;
   /* background:none !important; */
@@ -572,7 +638,7 @@ export default {
 .troublefilterright {
   right: 0;
   position: absolute;
-      width: 57%;
+  width: 57%;
 }
 
 .dateinput {
@@ -583,7 +649,7 @@ export default {
   padding: 5px 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  color:#8e9092;
+  color: #8e9092;
 }
 .dateinput:empty::before {
   content: attr(placeholder);
@@ -597,47 +663,58 @@ export default {
   padding: 5px 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  color:#8e9092;
+  color: #8e9092;
 }
 .dateinput2:empty::before {
   content: attr(placeholder);
 }
-.troublefilterright .v-modal{
+.troublefilterright .v-modal {
   z-index: 3000;
   position: fixed !important;
-    left: 0!important;
-    top: 0!important;
-    width: 100%!important;
-    height: 100%!important;
-    opacity: 0.5!important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0.5 !important;
 }
-.troublefilterright .mint-popup{
+.troublefilterright .mint-popup {
   position: fixed !important;
 }
-.troublefilterright .mint-popup-bottom{
-top:156px;
+.troublefilterright .mint-popup-bottom {
+  top: 156px;
 }
-.troublefilterright .dateinput{
-width: 47%;
-    position: absolute;
-    right: 53%;
-}
-.troublefilterright .dateinput2{
+.troublefilterright .dateinput {
   width: 47%;
-    position: absolute;
-    right: 0;
-}
-.troublefilterright .troublerightele{
-      position: absolute;
-    right: 0;
-    width:100%;
-}
-.spanfilter{
   position: absolute;
-    top: 123px;
-    right: 16%;
-    font-size: 16px;
-    color: #fff;
+  right: 53%;
+}
+.troublefilterright .dateinput2 {
+  width: 47%;
+  position: absolute;
+  right: 0;
+}
+.troublefilterright .troublerightele {
+  position: absolute;
+  right: 0;
+  width: 100%;
+}
+.spanfilter {
+  position: absolute;
+  top: 123px;
+  right: 16%;
+  font-size: 16px;
+  color: #fff;
+}
+.isloadingspan{
+  position: fixed;
+    width: 87px;
+    height: 19px;
+    left: 0;
+    top: 87%;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+        color: #1b7ec9;
 }
 .el-icon-close{
   display: inline-block!important;

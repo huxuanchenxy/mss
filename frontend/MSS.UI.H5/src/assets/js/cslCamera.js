@@ -1,4 +1,4 @@
-$.Pgater = (function () {
+$.Pgater = (function() {
   var agent = navigator.userAgent.toLowerCase();
   var iswx = agent.indexOf("qqbrowser") >= 0;
   if (iswx) {
@@ -11,7 +11,7 @@ $.Pgater = (function () {
     );
   }
   File.css("display", "none");
-  return function (target, callBack) {
+  return function(target, callBack) {
     // console.log(File);
     this.ele = File;
     this.parent = target;
@@ -20,8 +20,8 @@ $.Pgater = (function () {
     this.bindFuc(this.ele, callBack);
   };
 })();
-$.Pgater.prototype.bindFuc = function (ele, callBack) {
-  ele.on("change", function () {
+$.Pgater.prototype.bindFuc = function(ele, callBack) {
+  ele.on("change", function() {
     // console.log('ele[0]: ');
     // console.log(ele[0]);
     // console.log('ele[0].files: ');
@@ -32,10 +32,10 @@ $.Pgater.prototype.bindFuc = function (ele, callBack) {
     // let dataReq = { type: t, systemResource: systemResource, file: all };
 
     var formData = new FormData();
-    formData.append('file', ele[0].files[0]);
-    formData.append('type', t);
-    formData.append('systemResource', systemResource);
-    let token = window.sessionStorage.getItem('token')
+    formData.append("file", ele[0].files[0]);
+    formData.append("type", t);
+    formData.append("systemResource", systemResource);
+    let token = window.sessionStorage.getItem("token");
     $.ajax({
       type: "POST",
       headers: {
@@ -47,19 +47,19 @@ $.Pgater.prototype.bindFuc = function (ele, callBack) {
       cache: false,
       contentType: false,
       processData: false,
-      success: function (ret) {
-        console.log("ajax请求成功")
-        console.log(ret)
+      success: function(ret) {
+        console.log("ajax请求成功");
+        console.log(ret);
         var reader = new FileReader();
         var album = [];
         // console.log(all.length);
         var length = all.length;
         var i = 0;
-        var recur = function () {
+        var recur = function() {
           console.log(all[i]);
           reader.readAsDataURL(all[i]);
           var One = all[i];
-          reader.onload = function (e) {
+          reader.onload = function(e) {
             //alert(One);
             console.log(One);
             One.data = this.result;
@@ -71,26 +71,33 @@ $.Pgater.prototype.bindFuc = function (ele, callBack) {
               ele.value = "";
               // alert(i);
               // callBack(album,img);
-              callBack(album,ret.data.id);
+              callBack(album, ret.data.id);
             }
           };
         };
         recur();
       },
       //请求失败触发的方法
-      error: function (XMLHttpRequest, textStatus, errorThrown) {
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
         console.log("ajax请求失败");
         console.log("请求对象XMLHttpRequest: ");
         console.log(XMLHttpRequest);
         console.log("错误类型textStatus: " + textStatus);
         console.log("异常对象errorThrown: " + errorThrown);
       }
-    })
-
+    });
   });
 };
-$.Pgater.prototype.bindClk = function (ele, tar) {
-  ele.on("click", function () {
+$.Pgater.prototype.bindClk = function(ele, tar) {
+  ele.on("click", function() {
     tar.click();
   });
 };
+
+// $(document).ready(function() {
+//   $(function() {
+//     $(".album > div > img").on("click",function() {
+//       alert('clicked')
+//     });
+//   });
+// });

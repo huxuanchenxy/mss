@@ -151,7 +151,7 @@
           </div>
           <div class="itemvalue itemvaluepick">
             <div class="input">
-              <el-input v-model="eqpcode" placeholder="请输入故障图纸号" clearable></el-input>
+              <el-input v-model="eqpcode" placeholder="请输入故障图纸号" clearable class="troubleeqpcode"></el-input>
               <el-button round @click.native="choseeqp()">确定</el-button>
             </div>
           </div>
@@ -231,6 +231,16 @@
         <li class="itemli itemlipic">
           <div id="btn">点击拍照</div>
           <div class="album"></div>
+              <!-- <mt-popup v-model="previewPicVisible" class="previewPic" position="bottom">
+                <mt-picker
+                  ref="reportbypicker"
+                  :slots="reportByslot"
+                  value-key="userName"
+                  :show-toolbar="true"
+                >
+                  <mt-button @click="handleReportByConfirm" class="sure">确认</mt-button>
+                </mt-picker>
+              </mt-popup> -->
         </li>
         <li class="itemli itemsubmit">
           <div class="itemsingle">
@@ -393,35 +403,12 @@ export default {
       repairDesc: "",
       fileIDsEdit:[],
       upfiles:[],
+      previewPicVisible:true,
     }
   },
   created() {
-    // this.InitSelect();
   },
   mounted() {
-    // var img = $(".img")
-    // var callBack = function(album,fileid) {
-    //   //alert(album);
-    //   // console.log("album:" + album);
-    //   // console.log("img:" + img);
-    //   // console.log('fileid:')
-    //   // console.log(fileid)
-    //   // let upfiles = _this.fileIDsEdit
-    //   // console.log(upfiles)
-    //   // let check = upfiles.filter(c=>c === fileid)[0]
-    //   // if(check != undefined){
-    //   //   _this.fileIDsEdit.push(fileid)
-    //   // }
-    //   // console.log(this.fileIDsEdit)
-    //   album.forEach(function(val, idx) {
-    //     var div = $("<div></div>");
-    //     var img = $("<img/>");
-    //     img.attr("src", val.data);
-    //     // console.log("src=" + JSON.stringify(val.data));
-    //     div.append(img);
-    //     $(".album").append(div);
-    //   });
-    // };
     var carera = new $.Pgater($("#btn"), this.callBack);
     this.InitSelect();
   },
@@ -441,10 +428,14 @@ export default {
         var div = $("<div></div>")
         var img = $("<img/>")
         img.attr("src", val.data)
+        img.attr("οnclick", "showPreViewPic()")
         // console.log("src=" + JSON.stringify(val.data));
         div.append(img)
         $(".album").append(div)
       })
+    },
+    showPreViewPic1(){
+      this.previewPicVisible = true
     },
     InitSelect() {
       apiAuth
@@ -993,5 +984,11 @@ export default {
 }
 .itemsubmit{
   top: 35px;
+}
+.previewPic{
+  display:none;
+}
+.itemvalue .troubleeqpcode{
+  width: 65%;
 }
 </style>

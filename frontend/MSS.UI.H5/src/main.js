@@ -26,7 +26,8 @@ Vue.use(VueEmoji)
 Vue.use(VueDND)
 Vue.use(MuseUI)
 Vue.use(scroll)
-
+var infiniteScroll =  require('vue-infinite-scroll')
+Vue.use(infiniteScroll)
 Vue.use(BaiduMap, {
   // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
   ak: 'ZZunCHGz66gcNItI8ILT6j2AI6EjTBhK'
