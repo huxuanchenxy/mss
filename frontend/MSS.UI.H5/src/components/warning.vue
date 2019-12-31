@@ -149,25 +149,26 @@ padding: 8px 0;
 .warningmylist .mu-divider {
   background-color: #fff;
 }
-.cssDeviceName {
-  position: absolute;
-  top: 5%;
-  left: 13%;
-  font-size: 20px;
-  color: #fff;
+.warningmylist .cssDeviceName {
+position: absolute;
+    top: 5%;
+    left: 13%;
+    font-size: 15px;
+    color: #fff;
 }
-.cssDeviceContent {
-  position: absolute;
-  left: 13%;
-  bottom: 16%;
-  font-size: 12px;
-  color: #c3bfbf;
+.warningmylist .cssDeviceContent {
+position: absolute;
+    left: 13%;
+    bottom: 7%;
+    font-size: 12px;
+    color: #c3bfbf;
 }
-.cssCreateTime {
-  position: absolute;
-  right: 5%;
-  font-size: 12px;
-  color: #c3bfbf;
+.warningmylist .cssCreateTime {
+position: absolute;
+    right: 5%;
+    font-size: 12px;
+    color: #c3bfbf;
+    top: 10%;
 }
 .warningscroll{
     overflow: scroll;
