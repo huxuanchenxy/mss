@@ -483,12 +483,11 @@ export default {
     z-index: 3000;
     -webkit-overflow-scrolling: touch;
 }
+</style>
+<style>
   .el-icon-close{
     display:none !important;
   }
-</style>
-<style>
-
   .el-icon-upload-success{
     display:none !important;
   }
