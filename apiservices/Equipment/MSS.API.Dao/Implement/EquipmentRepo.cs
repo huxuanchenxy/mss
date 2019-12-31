@@ -176,7 +176,7 @@ namespace MSS.API.Dao.Implement
                     for (int i = 0; i < local.Length; ++i)
                     {
                         whereSql.Append(" AND FIND_IN_SET(" + local[i] + ",a.location_path)="
-                        + (i + 1));
+                        + (i + 2));
                     }
                 }
                 sql.Append(whereSql)

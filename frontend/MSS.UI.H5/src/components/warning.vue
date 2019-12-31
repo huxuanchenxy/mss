@@ -70,6 +70,9 @@ export default {
         case 'prealarm':
           this.getWarnning()
           break
+        case 'alarm':
+          this.getAlarm()
+          break
       }
     })
     this.getNotification()
@@ -97,10 +100,11 @@ export default {
       // this.loading = true
       api.getAlarm().then(res => {
         // this.loading = false
-        if (res.code === ApiRESULT.Success) {
+        if (res.code === 0) {
           // this.AlarmList1 = res.data.filter(item => item.eLevel < 2)
           // this.AlarmList2 = res.data.filter(item => item.eLevel >= 2)
           this.AlarmList = res.data
+          console.log(this.AlarmList)
         }
       }).catch(err => console.log(err))
     },
