@@ -6,7 +6,7 @@
     </div>
 </template>
 <script>
-    import isheader from './commom/header.vue'
+    import isheader from './commom/header2.vue'
     import BottomNavigation from './commom/bottom.vue'
     import tabs from './commom/tabs.vue'
     import axios from 'axios'
