@@ -744,7 +744,7 @@ overflow: scroll;
     margin: 0 auto;
         color: #1b7ec9;
 }
-.el-icon-close{
+/* .el-icon-close{
   display: inline-block!important;
-}
+} */
 </style>
