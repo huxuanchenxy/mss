@@ -840,10 +840,7 @@ export default {
       let id = this.$route.query.id;
       if (id != 0) {
         this.submitshow = false;
-      } else {
-        this.submitshow = true;
-      }
-      api
+        api
         .getTroubleReportByID(id)
         .then(res => {
           let data = res.data;
@@ -899,6 +896,14 @@ export default {
           //   this.fileIDsEdit.length === 0 ? "" : JSON.stringify(this.fileIDsEdit)
         })
         .catch(err => console.log(err));
+      } else {
+        this.submitshow = true;
+      }
+      
+    
+    
+    
+    
     }
   }
 };
