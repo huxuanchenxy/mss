@@ -32,6 +32,7 @@
     "qs": "^6.5.2",
     "sass-loader": "^7.0.1",
     "timeago.js": "^3.0.1",
+    "vconsole": "^3.3.4",
     "vue": "^2.5.2",
     "vue-baidu-map": "^0.10.5",
     "vue-countup-v2": "^4.0.0",

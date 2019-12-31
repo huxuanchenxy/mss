@@ -17,7 +17,7 @@ import VueEmoji from "vue-emoji"
 
 // excel在线编辑插件handsontable
 import 'handsontable/dist/handsontable.full.css'
-
+// import Vconsole from './vconsole'
 // Vue.use(silder)
 //引用拖拽插件
 import VueDND from 'awe-dnd'

@@ -4,3 +4,4 @@
 /apiservices/MSS.Platform.Workflow.WebApi/*.user
 node_modules
 /frontend/MSS.UI.H5/dist
+/frontend/desktop.ini
