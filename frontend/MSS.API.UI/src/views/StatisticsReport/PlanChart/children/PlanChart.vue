@@ -14,7 +14,7 @@
           <div class="top-input-group" ref="middleTopInput">
             <div class="list" >
               <span class="lable">公司</span>
-              <el-select v-model="company" multiple collapse-tags  clearable filterable placeholder="请选择">
+              <el-select v-model="company" multiple collapse-tags  clearable filterable placeholder="请选择" @change="companyChange">
                 <el-option
                   v-for="item in companyList"
                   :key="item.id"
@@ -243,6 +243,7 @@ export default {
       manufacturerList: [],
       team: '',
       teamList: [],
+      teamInitList: [],
       defaultParams: {
         label: 'label',
         value: 'id',
@@ -273,6 +274,18 @@ export default {
     // this.drawChart()
   },
   methods: {
+    companyChange () {
+      if (this.company.length !== 0) {
+        this.teamList = []
+        this.company.map(val => {
+          this.teamInitList.map(item => {
+            if (item.id === val) this.teamList.push(item)
+          })
+        })
+      } else {
+        this.teamList = this.teamInitList
+      }
+    },
     onResize (el) {
       if (this.dateChartCount && el.id === 'countChart') {
         this.dateChartCount.resize()
@@ -354,9 +367,10 @@ export default {
       }).catch(err => console.log(err))
 
       // 班组加载
-      // apiOrg.getOrgAll().then(res => {
-      //   this.teamList = res.data
-      // }).catch(err => console.log(err))
+      apiOrg.getOrgAll().then(res => {
+        this.teamList = res.data
+        this.teamInitList = res.data
+      }).catch(err => console.log(err))
 
       // 公司加载
       apiOrg.getOrgAll().then(res => {
