@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <isheader class="header"></isheader>
-    <div class="troublescroll">
+    <div class="troublescrollinputcheck">
       <HotTable :settings="settings" licenseKey="non-commercial-and-evaluation" v-show="isShowList"/>
       <div style="text-align: center;margin-top:10px">
       <el-button type="primary" class="focus" @click="save(false)"  v-show="isShowList">保存</el-button>
@@ -150,7 +150,7 @@ export default {
   right: 0;
   z-index: 1;
 }
-.troublescroll {
+.troublescrollinputcheck {
   position: absolute;
   top: 80px;
   width: 100%;

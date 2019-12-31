@@ -179,7 +179,7 @@
     </div>
     <div class="troublelistscroll" v-loading="loading">
     <mu-list class="troublemylist" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="5">
-      <li class="liitem" v-for="item in troubleList" :key="item.key">
+      <li class="liitem" v-for="item in troubleList" :key="item.key" @click="totroubledetail(item.id)">
         <mu-list-item>
           <mu-icon value="label" class="muicon"></mu-icon>
           <span class="itemcode">{{ item.code }}</span>
@@ -473,6 +473,10 @@ export default {
       // console.log(this.curPage)
       
     },
+    totroubledetail(_id){
+        // console.log(id)
+       this.$router.push({name: 'trouble', query: { id: _id }})
+    },
   }
 };
 </script>
@@ -571,7 +575,7 @@ overflow: scroll;
 }
 .itemreportedCompanyName {
   position: absolute;
-  right: 20%;
+  right: 30%;
   bottom: 5%;
   font-size: 12px;
   color: #f5f7fa;

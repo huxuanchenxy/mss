@@ -129,7 +129,8 @@ export default {
       console.log("addattr:" + this.addattr);
 
       this.$router.push({
-        name: "trouble"
+        name: "trouble",
+        // query:{id:0},
       });
     },
     JumpTo(v) {
