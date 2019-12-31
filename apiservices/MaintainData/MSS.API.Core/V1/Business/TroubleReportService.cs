@@ -258,7 +258,10 @@ namespace MSS.API.Core.V1.Business
                             await _eqpHistoryRepo.SaveEqpHistory(eqps);
                         }
                     }
-                    await _troubleReportRepo.UpdateDealResult(thTmp.Trouble, _userID, status, operation,content);
+                    if (operation==TroubleOperation.Unpass || operation==TroubleOperation.Pass)
+                    {
+                        await _troubleReportRepo.UpdateDealResult(thTmp.Trouble, _userID, status, operation, content);
+                    }
                     ret.data = await _troubleReportRepo.UpdateStatus(ids.Split(), _userID, status, operation);
                     scope.Complete();
                 }

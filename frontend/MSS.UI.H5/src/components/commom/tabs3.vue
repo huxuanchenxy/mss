@@ -12,6 +12,7 @@
     </div>
 </template>
 <script>
+    import Bus from './Bus'
     import axios from 'axios'
     import timeago from 'timeago.js'
     import api from '@/api/eqpApi'
@@ -62,7 +63,7 @@
                 this.nomore = false //切换tab，重置
                 this.activeTab = val
                 this.url = 'http://www.vue-js.com/api/v1/topics?tab=' + val
-                
+                Bus.$emit('addattr', val)
             },
             getData() {
                 let that = this

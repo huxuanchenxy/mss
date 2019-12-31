@@ -192,7 +192,7 @@ namespace MSS.API.Dao.Implement
                         ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     sql = "insert into trouble_history " +
-                    " values (0,@Trouble,@Operation,@Content,@CreatedBy,@CreatedTime)";
+                    " values (0,@Trouble,@OrgTop,@Operation,@Content,@CreatedBy,@CreatedTime)";
                     await c.QueryFirstOrDefaultAsync<int>(sql, troubleHistory, trans);
                     trans.Commit();
                     return result;
