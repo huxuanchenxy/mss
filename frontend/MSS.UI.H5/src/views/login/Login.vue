@@ -99,7 +99,7 @@ export default {
           this.userName.isShowIcon = 'success'
           this.userPassword.isShowIcon = 'success'
           window.sessionStorage.setItem('token', res.access_token)
-          this.$router.push('/home')
+          this.$router.push('/troublelist')
         } else {
           this.$message.error('登录失败')
         }

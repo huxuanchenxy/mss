@@ -23,12 +23,12 @@
         <mu-list-item title="技术资料" @click="JumpTo(1)"
           ><mu-icon value="business_center" class="navlefticon"></mu-icon
         ></mu-list-item>
-        <mu-list-item title="我的工单" @click="JumpTo(2)"
+        <!-- <mu-list-item title="我的工单" @click="JumpTo(2)"
           ><mu-icon value="mail" class="navlefticon"></mu-icon
         ></mu-list-item>
         <mu-list-item title="我的故障报告" @click="JumpTo(3)"
           ><mu-icon value="report" class="navlefticon"></mu-icon
-        ></mu-list-item>
+        ></mu-list-item> -->
         <mu-list-item title="修改密码" @click="JumpTo(4)"
           ><mu-icon value="person" class="navlefticon"></mu-icon
         ></mu-list-item>
@@ -129,7 +129,8 @@ export default {
       console.log("addattr:" + this.addattr);
 
       this.$router.push({
-        name: "trouble"
+        name: "trouble",
+        // query:{id:0},
       });
     },
     JumpTo(v) {
