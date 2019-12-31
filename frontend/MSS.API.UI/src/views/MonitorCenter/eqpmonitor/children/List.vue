@@ -13,10 +13,10 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <el-radio v-model="position" label="1" style="padding-right:5px;"></el-radio>
+            <el-radio v-model="position" label="9" style="padding-right:5px;"></el-radio>
             <label for="name">车站</label>
             <div class="inp">
-              <el-select v-model="Station" :disabled="checkDisable(1)" placeholder="请选择">
+              <el-select v-model="Station" :disabled="checkDisable(9)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in StationList"
@@ -28,10 +28,10 @@
             </div>
           </div>
           <div class="input-group">
-            <el-radio v-model="position" label="2" style="padding-right:5px;"></el-radio>
+            <el-radio v-model="position" label="10" style="padding-right:5px;"></el-radio>
             <label for="">轨行区</label>
             <div class="inp">
-              <el-select v-model="RailLineArea" :disabled="checkDisable(2)" placeholder="请选择">
+              <el-select v-model="RailLineArea" :disabled="checkDisable(10)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in RailLineAreaList"
@@ -43,10 +43,10 @@
             </div>
           </div>
           <div class="input-group">
-            <el-radio v-model="position" label="3" style="padding-right:5px;"></el-radio>
+            <el-radio v-model="position" label="11" style="padding-right:5px;"></el-radio>
             <label for="">保护区</label>
             <div class="inp">
-              <el-select v-model="ProtectArea" :disabled="checkDisable(3)" placeholder="请选择">
+              <el-select v-model="ProtectArea" :disabled="checkDisable(11)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in ProtectAreaList"
@@ -58,10 +58,10 @@
             </div>
           </div>
           <div class="input-group">
-            <el-radio v-model="position" label="4" style="padding-right:5px;"></el-radio>
+            <el-radio v-model="position" label="12" style="padding-right:5px;"></el-radio>
             <label for="">车场</label>
             <div class="inp">
-              <el-select v-model="ProductionArea" :disabled="checkDisable(4)" placeholder="请选择">
+              <el-select v-model="ProductionArea" :disabled="checkDisable(12)" placeholder="请选择">
                 <el-option label="请选择" value=''></el-option>
                 <el-option
                   v-for="item in ProductionAreaList"
@@ -199,8 +199,8 @@ export default {
         update: false
       },
       title: ' | 设备监控',
-
-      position: '1',
+      eqpcode: '1',
+      position: '9',
       StationList: [],
       RailLineAreaList: [],
       ProtectAreaList: [],
@@ -432,7 +432,6 @@ export default {
         eqpApi.getEqp(parm).then(res => {
           this.loading = false
           this.dataList = res.data.rows
-          console.log(this.dataList)
           this.total = res.data.total
         }).catch(err => console.log(err))
         return
@@ -459,16 +458,16 @@ export default {
       this.loading = true
       let sub = ''
       switch (this.position) {
-        case '1':
+        case '9':
           sub = this.Station
           break
-        case '2':
+        case '10':
           sub = this.RailLineArea
           break
-        case '3':
+        case '11':
           sub = this.ProtectArea
           break
-        case '4':
+        case '12':
           sub = this.ProductionArea
           break
       }
