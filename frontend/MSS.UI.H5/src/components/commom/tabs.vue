@@ -284,14 +284,16 @@
         height:100%;
     }
     .box{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    
-        // width: 200px;
-        height: 40px;
-        // border: 1px solid;
-        top: -28px;
-        position: relative;
+    display: flex;
+    /* -webkit-box-pack: center; */
+    -ms-flex-pack: center;
+    /* justify-content: center; */
+    /* -webkit-box-align: center; */
+    -ms-flex-align: center;
+    align-items: center;
+    height: 40px;
+    top: -28px;
+    left: 10px;
+    position: relative;
     }
 </style>
