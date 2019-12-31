@@ -27,6 +27,7 @@
           <mu-icon value="feedback" class="muicon"></mu-icon>
           <span class="cssDeviceName">{{item.eqpName}}</span>
           <span class="cssCreateTime">{{transformDate(item.originTime)}}</span>
+          <span class="itemLevelName">{{'等级' + item.eLevel}}</span>
           <span class="cssDeviceContent">{{item.des}}</span>
           </mu-list-item>
           <mu-divider class="mudivider"></mu-divider>
@@ -172,5 +173,13 @@ position: absolute;
 }
 .warningscroll{
     overflow: scroll;
+}
+.itemLevelName {
+  position: absolute;
+  left: 3%;
+  top: 65%;
+  font-size: 12px;
+  color: #f5f7fa;
+  overflow: auto;
 }
 </style>
