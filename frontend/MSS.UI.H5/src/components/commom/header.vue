@@ -130,7 +130,7 @@ export default {
 
       this.$router.push({
         name: "trouble",
-        // query:{id:0},
+        query:{id:0},
       });
     },
     JumpTo(v) {
