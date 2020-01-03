@@ -136,7 +136,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 import { pmStatus, dictionary } from '@/common/js/dictionary.js'
-// import { btn } from '@/element/btn.js'
+import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
 import apiAuth from '@/api/authApi'
@@ -182,19 +182,22 @@ export default {
     }
   },
   created () {
-    // let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
-    // if (!user.is_super) {
-    //   let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
-    //   this.btn.save = !actions.some((item, index) => {
-    //     return item.actionID === btn.actionGroup.save
-    //   })
-    //   this.btn.delete = !actions.some((item, index) => {
-    //     return item.actionID === btn.actionGroup.delete
-    //   })
-    //   this.btn.update = !actions.some((item, index) => {
-    //     return item.actionID === btn.actionGroup.update
-    //   })
-    // }
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btn.save = !actions.some((item, index) => {
+        return item.actionID === btn.pmEntity.save
+      })
+      this.btn.delete = !actions.some((item, index) => {
+        return item.actionID === btn.pmEntity.delete
+      })
+      this.btn.update = !actions.some((item, index) => {
+        return item.actionID === btn.pmEntity.update
+      })
+      this.btn.reject = !actions.some((item, index) => {
+        return item.actionID === btn.pmEntity.reject
+      })
+    }
     // this.init()
     // 检修单状态加载
     apiAuth.getSubCode(dictionary.pmStatus).then(res => {

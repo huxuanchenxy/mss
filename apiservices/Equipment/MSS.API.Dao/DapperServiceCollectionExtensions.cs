@@ -25,6 +25,7 @@ namespace MSS.API.Dao
             services.AddTransient<IEquipmentRepo<Equipment>, EquipmentRepo>();
             services.AddTransient<IUploadFileRepo<UploadFile>, UploadFileRepo>();
             services.AddTransient<IEquipmentConfigRepo<EquipmentConfig>, EquipmentConfigRepo>();
+            services.AddTransient<IEquipmentRepairHistoryRepo<EquipmentRepairHistory>, EquipmentRepairHistoryRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -35,6 +36,7 @@ namespace MSS.API.Dao
                 config.AddMap(new UploadFileMap());
                 config.AddMap(new EquipmentConfigMap());
                 config.AddMap(new UploadFileRelationMap());
+                config.AddMap(new EquipmentRepairHistoryMap());
             });
             return services;
         }

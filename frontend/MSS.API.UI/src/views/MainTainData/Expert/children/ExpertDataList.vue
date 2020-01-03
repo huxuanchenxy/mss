@@ -19,7 +19,7 @@
             <label for="name">关键字</label>
             <div class="inp">
               <el-input v-model.trim="keyword"
-                        placeholder="请输入站区名称"></el-input>
+                        placeholder="请输入关键字"></el-input>
             </div>
           </div>
           <div class="input-group">
