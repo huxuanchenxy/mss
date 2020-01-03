@@ -60,9 +60,27 @@ namespace MSS.Platform.Workflow.WebApi.Service
             ApiResult ret = new ApiResult();
             try
             {
-                parm.year = 2019;
-                parm.month = 11;
+                DateTime startDate = new DateTime();
+                DateTime endDate = new DateTime();
+                if (!string.IsNullOrEmpty(parm.startTime))
+                {
+                    startDate = Convert.ToDateTime(parm.startTime);
+                    parm.year = startDate.Year;
+                }
+                if (!string.IsNullOrEmpty(parm.endTime))
+                {
+                    endDate = Convert.ToDateTime(parm.endTime);
+                }
+
+                //parm.year = 2019;
+                //parm.month = 11;
                 parm.xAxisType = 1;//按日统计
+                
+                if (parm.month == 0)
+                {
+                    DateTime now = DateTime.Now;
+                    parm.month = now.Month;
+                }
                 var data = await _repo.GetByParm(parm);
                 DateTime dt = new DateTime(parm.year, parm.month, 1);
                 int days = DateTime.DaysInMonth(dt.Year, dt.Month);
@@ -82,21 +100,26 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     }
                     for (int i = 1; i <= days; i++)
                     {
-                        string curdt = new DateTime(parm.year, parm.month, i).ToString("MM-dd");
-                        d.Add(curdt);
-                        var dynot0 = data.Where(c => c.Day == i);//只有当天有的
-                        int countdynot0 = 0;
-                        foreach (var dno0 in dynot0)
+
+                        if ((startDate.Day <= i && i <= endDate.Day) || string.IsNullOrEmpty(parm.startTime))
                         {
-                            countdynot0 += dno0.PmFrequency;
+                            string curdt = new DateTime(parm.year, parm.month, i).ToString("MM-dd");
+                            d.Add(curdt);
+                            var dynot0 = data.Where(c => c.Day == i);//只有当天有的
+                            int countdynot0 = 0;
+                            foreach (var dno0 in dynot0)
+                            {
+                                countdynot0 += dno0.PmFrequency;
+                            }
+                            float curdayCount = countdy0 + countdynot0;
+                            //fake
+                            int fake = new Random().Next(-10, 10);
+                            float curdayFinish = curdayCount + fake;
+                            int curpercent = (int)(Math.Round((curdayCount / curdayFinish), 2) * 100);
+                            legend1.Add(curpercent);
+                            //legend2.Add(curdayCount- fake);
                         }
-                        float curdayCount = countdy0 + countdynot0;
-                        //fake
-                        int fake = new Random().Next(-10, 10);
-                        float curdayFinish = curdayCount + fake;
-                        int curpercent = (int)(Math.Round((curdayCount / curdayFinish),2) * 100);
-                        legend1.Add(curpercent);
-                        //legend2.Add(curdayCount- fake);
+
                     }
                     ConstructionPlanMonthChartSeries legendobj1 = new ConstructionPlanMonthChartSeries();
                     legendobj1.Name = "计划完成率";

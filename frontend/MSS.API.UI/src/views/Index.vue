@@ -5,7 +5,7 @@
         <img class="icon" src="../common/images/icon-home.svg" alt=""> 首页
       </h2>
       <li class="listtitle">
-        <span class="title">上海轨道交通18号线智能运维系统</span>
+        <span class="title">上海轨道交通18号线维修支持系统</span>
       </li>
       <a href="#/monitorCenter/eqpmonitor/list">进入系统</a>
     </div>
