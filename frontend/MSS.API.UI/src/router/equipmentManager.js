@@ -68,6 +68,24 @@ const routes = [
           }
         ]
       }, {
+        path: 'eqpRepair',
+        component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/firm/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'eqpRepair',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeEqpRepairList',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/eqpRepair/children/SeeEqpRepairList.vue')
+          }, {
+            path: 'add',
+            name: 'AddEqpRepair',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/eqpRepair/children/AddEqpRepair.vue')
+          }
+        ]
+      }, {
         path: 'firm',
         component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/firm/Index.vue'),
         children: [

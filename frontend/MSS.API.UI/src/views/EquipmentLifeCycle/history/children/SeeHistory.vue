@@ -30,7 +30,6 @@
             <div class="inp">
               <el-cascader class="cascader_width"
                 filterable
-                expand-trigger="hover"
                 :props="defaultParams"
                 :show-all-levels="false"
                 :options="eqpList"
