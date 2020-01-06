@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
 using MSS.API.Common;
+using System.Data;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Implement
 {
@@ -19,13 +23,44 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = " insert into equipment_repair_history " +
-                    " values (0,@Trouble,@Eqp,@EqpPath,@Desc, " +
-                    " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
-                sql += "SELECT LAST_INSERT_ID()";
-                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, equipmentRepairHistory);
-                equipmentRepairHistory.ID = newid;
-                return equipmentRepairHistory;
+                string sql;
+                IDbTransaction trans = c.BeginTransaction();
+                try
+                {
+                    sql = " insert into equipment_repair_history " +
+                        " values (0,@Trouble,@Eqp,@EqpPath,@Desc, " +
+                        " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
+                    sql += "SELECT LAST_INSERT_ID()";
+                    int newid = await c.QueryFirstOrDefaultAsync<int>(sql, equipmentRepairHistory, trans);
+                    equipmentRepairHistory.ID = newid;
+                    if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))
+                    {
+                        List<object> objs = new List<object>();
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(equipmentRepairHistory.UploadFiles);
+                        foreach (var obj in jobj)
+                        {
+                            foreach (var item in obj["ids"].ToString().Split(','))
+                            {
+                                objs.Add(new
+                                {
+                                    eqpRepairID = newid,
+                                    fileID = Convert.ToInt32(item),
+                                    type = Convert.ToInt32(obj["type"]),
+                                    systemResource = (int)SystemResource.EqpRepair
+                                });
+                            }
+                        }
+                        sql = "insert into upload_file_relation values (0,@eqpRepairID,@fileID,@type,@systemResource)";
+                        int ret = await c.ExecuteAsync(sql, objs, trans);
+                    }
+                    trans.Commit();
+                    return equipmentRepairHistory;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    throw new Exception(ex.ToString());
+                }
             });
         }
 
@@ -33,10 +68,44 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                var result = await c.ExecuteAsync(" update equipment_repair_history " +
-                    " set trouble=@Trouble,eqp=@Eqp,eqp_path=@EqpPath,desc=@Desc, " +
-                    " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", equipmentRepairHistory);
-                return result;
+                string sql;
+                IDbTransaction trans = c.BeginTransaction();
+                try
+                {
+                    sql = " update equipment_repair_history " +
+                        " set trouble=@Trouble,eqp=@Eqp,eqp_path=@EqpPath,`desc`=@Desc, " +
+                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id";
+                    int result = await c.ExecuteAsync(sql, equipmentRepairHistory,trans);
+                    if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))
+                    {
+                        sql = "delete from upload_file_relation where entity_id=@id and system_resource=@sr";
+                        int ret = await c.ExecuteAsync(sql, new { id = equipmentRepairHistory.ID, sr = SystemResource.EmergencyPlan }, trans);
+                        List<object> objs = new List<object>();
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(equipmentRepairHistory.UploadFiles);
+                        foreach (var obj in jobj)
+                        {
+                            foreach (var item in obj["ids"].ToString().Split(','))
+                            {
+                                objs.Add(new
+                                {
+                                    eqpRepairID = equipmentRepairHistory.ID,
+                                    fileID = Convert.ToInt32(item),
+                                    type = Convert.ToInt32(obj["type"]),
+                                    systemResource = (int)SystemResource.EqpRepair
+                                });
+                            }
+                        }
+                        sql = "insert into upload_file_relation values (0,@eqpRepairID,@fileID,@type,@systemResource)";
+                        ret = await c.ExecuteAsync(sql, objs, trans);
+                    }
+                    trans.Commit();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    throw new Exception(ex.ToString());
+                }
             });
         }
 
@@ -45,23 +114,28 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.ExecuteAsync(" delete from equipment_repair_history " +
-                " WHERE id in @ids ");
+                " WHERE id in @ids ",new { ids});
                 return result;
             });
         }
 
-        public async Task<object> GetPageByParm(EquipmentRepairHistoryQueryParm parm)
+        public async Task<EquipmentRepairHistoryView> GetPageByParm(EquipmentRepairHistoryQueryParm parm)
         {
             return await WithConnection(async c =>
             {
+                EquipmentRepairHistoryView erhv= new EquipmentRepairHistoryView();
+                erhv.rows = new List<EquipmentRepairHistory>();
+                erhv.total = 0;
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,dt.name as tname,u1.user_name as created_name,u2.user_name as updated_name ")
+                sql.Append("SELECT a.*,e.eqp_name,t.code,u1.user_name as created_name,")
+                .Append("e.eqp_code,u2.user_name as updated_name ")
                 .Append(" FROM equipment_repair_history a ")
-                .Append(" left join dictionary_tree dt on a.type=dt.id ")
+                .Append(" left join equipment e on a.eqp=e.id ")
+                .Append(" left join trouble_report t on a.trouble=t.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
-                .Append(" left join user u2 on a.updated_by=u2.id ");
+                .Append(" left join user u2 on a.updated_by=u2.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
-                whereSql.Append(" WHERE a.is_del=" + (int)IsDeleted.no);
+                //whereSql.Append(" WHERE a.is_del=" + (int)IsDeleted.no);
                 if (parm.Trouble!=null)
                 {
                     whereSql.Append(" and a.trouble =" + parm.Trouble);
@@ -77,10 +151,13 @@ namespace MSS.API.Dao.Implement
                 sql.Append(whereSql)
                 .Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
-                List<EquipmentRepairHistory> ets = (await c.QueryAsync<EquipmentRepairHistory>(sql.ToString())).ToList();
-                int total = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from equipment_repair_history a " + whereSql.ToString());
-                return new { rows = ets, total = total };
+                erhv.total = await c.QueryFirstOrDefaultAsync<int>(
+                    "select count(*) from equipment_repair_history a where 1=1 " + whereSql.ToString());
+                if (erhv.total>0)
+                {
+                    erhv.rows= (await c.QueryAsync<EquipmentRepairHistory>(sql.ToString())).ToList();
+                }
+                return erhv;
             });
         }
 

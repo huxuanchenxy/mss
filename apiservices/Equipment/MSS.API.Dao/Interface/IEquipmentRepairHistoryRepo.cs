@@ -11,7 +11,7 @@ namespace MSS.API.Dao.Interface
         Task<EquipmentRepairHistory> Save(EquipmentRepairHistory equipmentRepairHistory);
         Task<int> Update(EquipmentRepairHistory equipmentRepairHistory);
         Task<int> Delete(string[] ids);
-        Task<object> GetPageByParm(EquipmentRepairHistoryQueryParm parm);
+        Task<EquipmentRepairHistoryView> GetPageByParm(EquipmentRepairHistoryQueryParm parm);
         Task<EquipmentRepairHistory> GetByID(int id);
     }
 }

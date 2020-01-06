@@ -30,12 +30,14 @@ namespace MSS.API.Core.V1.Business
     {
         //private readonly ILogger<UserService> _logger;
         private readonly IEquipmentRepairHistoryRepo<EquipmentRepairHistory> _equipmentRepairHistoryRepo;
-
+        private readonly IUploadFileRepo<UploadFile> _uploadFileRepo;
         private readonly int userID;
-        public EquipmentRepairHistoryService(IEquipmentRepairHistoryRepo<EquipmentRepairHistory> equipmentRepairHistoryRepo, IAuthHelper auth)
+        public EquipmentRepairHistoryService(IEquipmentRepairHistoryRepo<EquipmentRepairHistory> equipmentRepairHistoryRepo,
+            IUploadFileRepo<UploadFile> uploadFileRepo,IAuthHelper auth)
         {
             //_logger = logger;
             _equipmentRepairHistoryRepo = equipmentRepairHistoryRepo;
+            _uploadFileRepo = uploadFileRepo;
             userID = auth.GetUserId();
         }
 
@@ -113,7 +115,23 @@ namespace MSS.API.Core.V1.Business
                 parm.rows = parm.rows == 0 ? PAGESIZE : parm.rows;
                 parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
                 parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
-                ret.data = await _equipmentRepairHistoryRepo.GetPageByParm(parm);
+                EquipmentRepairHistoryView erhv = await _equipmentRepairHistoryRepo.GetPageByParm(parm);
+                if (erhv.total != 0)
+                {
+                    var list = await _uploadFileRepo.ListByEntity(erhv.rows.Select(a => a.ID).ToArray(), MyDictionary.SystemResource.EqpRepair);
+                    if (list != null && list.Count>0)
+                    {
+                        foreach (var item in erhv.rows)
+                        {
+                            var tmp = list.Where(a => a.Entity == item.ID);
+                            if (tmp.Count() > 0)
+                            {
+                                item.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.CascaderShow(tmp.ToList()));
+                            }
+                        }
+                    }
+                }
+                ret.data = erhv;
                 return ret;
             }
             catch (Exception ex)
@@ -129,7 +147,13 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _equipmentRepairHistoryRepo.GetByID(id);
+                EquipmentRepairHistory erh = await _equipmentRepairHistoryRepo.GetByID(id);
+                var list = await _uploadFileRepo.ListByEntity(new int[] { id }, MyDictionary.SystemResource.EqpRepair);
+                if (list != null)
+                {
+                    erh.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.ListShow(list));
+                }
+                ret.data = erh;
                 return ret;
             }
             catch (Exception ex)

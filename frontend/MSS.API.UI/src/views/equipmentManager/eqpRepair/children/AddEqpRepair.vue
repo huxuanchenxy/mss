@@ -50,6 +50,9 @@
           <span class="lable">过程描述<em class="validate-mark">*(500字以内)</em></span>
           <el-input type="textarea" :rows="4" v-model="desc.text" placeholder="请输入过程描述" @keyup.native="validateInputRange(desc)"></el-input>
         </div>
+        <div class="upload-list con-padding-horizontal">
+          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+        </div>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
@@ -63,13 +66,17 @@
 </template>
 <script>
 import { validateInputCommon, nullToEmpty, strToIntArr } from '@/common/js/utils.js'
+import { systemResource } from '@/common/js/dictionary.js'
+import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
+import MyUploadPDF from '@/components/UploadPDF'
 import XButton from '@/components/button'
 import apiMain from '@/api/DeviceMaintainRegApi.js'
 import api from '@/api/eqpApi'
 export default {
   name: 'AddEqpRepair',
   components: {
-    XButton
+    XButton,
+    'upload-pdf': MyUploadPDF
   },
   data () {
     return {
@@ -85,13 +92,19 @@ export default {
       troubleList: [],
       desc: {text: '', tips: ''},
       eqpSelected: {text: [], tips: ''},
-      eqpList: []
+      eqpList: [],
+      systemResource: systemResource.eqpRepair,
+      fileIDs: '',
+      fileIDsEdit: []
     }
   },
   created () {
     this.init()
   },
   methods: {
+    getFileIDs (ids) {
+      this.fileIDsEdit = ids
+    },
     init () {
       this.eqpRepairID = this.$route.query.id
       apiMain.getAllTroubleReport().then(res => {
@@ -114,6 +127,7 @@ export default {
           this.eqpSelected.text = strToIntArr(data.eqpPath)
           this.trouble.text = data.trouble
           this.desc.text = nullToEmpty(data.desc)
+          this.fileIDs = data.uploadFiles
         }
         this.loading = false
       }).catch(err => console.log(err))
@@ -148,6 +162,13 @@ export default {
         })
         return
       }
+      if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
+        this.$message({
+          message: '文件正在上传中，请耐心等待',
+          type: 'warning'
+        })
+        return
+      }
       let eqp
       let len = this.eqpSelected.text.length
       if (len < 3) {
@@ -164,7 +185,9 @@ export default {
         eqp: eqp,
         eqpPath: this.eqpSelected.text.join(','),
         trouble: this.trouble.text,
-        desc: this.desc.text
+        desc: this.desc.text,
+        Type: this.systemResource,
+        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
         api.addEqpRepair(eqpRepair).then(res => {
@@ -404,7 +427,7 @@ export default {
 .upload-list{
   margin-top: PXtoEm(25);
   margin-bottom: PXtoEm(25);
-  width: -webkit-fill-available;
+  width: 50%;
 }
 .left{
   text-indent: 9.5%

@@ -78,14 +78,21 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append(" select * from equipment where is_del=0 and eqp_type=@eqpType and line=@line ");
+                sql.Append(" select * from equipment where is_del=0 ");
                 object o = new { eqpType, line };
                 if (topOrg != null)
                 {
-                    sql.Append(" and top_org=@topOrg");
-                    o = new { eqpType, line,topOrg };
+                    sql.Append(" and top_org="+topOrg);
                 }
-                var list = await c.QueryAsync<Equipment>(sql.ToString(),o);
+                if (eqpType != 0)
+                {
+                    sql.Append(" and eqp_type=" + eqpType);
+                }
+                if (line != 0)
+                {
+                    sql.Append(" and line=" + line);
+                }
+                var list = await c.QueryAsync<Equipment>(sql.ToString());
                 return list.ToList();
             });
         }

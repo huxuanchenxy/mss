@@ -68,6 +68,7 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.trouble === 0 }, { 'el-icon-caret-top': headOrder.trouble === 1 }, { 'el-icon-caret-bottom': headOrder.trouble === 2 }]"></i>
         </li>
         <li class="list last-update-time">过程描述</li>
+        <li class="list upload-cascader">附件</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -89,6 +90,14 @@
                 <div class="name">{{ item.eqpName }}</div>
                 <div class="name word-break">{{ item.troubleCode }}</div>
                 <div class="last-update-time color-white word-break">{{ item.desc }}</div>
+                <div class="upload-cascader">
+                  <el-cascader clearable
+                    v-show="item.uploadFileArr.length != 0"
+                    @change="preview"
+                    :show-all-levels="false"
+                    :options="item.uploadFileArr">
+                  </el-cascader>
+                </div>
                 <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
                 <div class="last-update-time color-white word-break">{{ item.updatedName }}</div>
               </div>
@@ -129,6 +138,7 @@
 import { transformDate } from '@/common/js/utils.js'
 import { btn } from '@/element/btn.js'
 // import { dictionary } from '@/common/js/dictionary.js'
+import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
 import apiMain from '@/api/DeviceMaintainRegApi.js'
 import api from '@/api/eqpApi'
@@ -157,6 +167,7 @@ export default {
       desc: '',
       editEqpRepairID: [],
       eqpRepairList: [],
+      uploadFile: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -212,6 +223,22 @@ export default {
       this.currentPage = 1
       this.searchResult(1)
     },
+    preview (val) {
+      let id = val[val.length - 1]
+      if (isPreview(id, this.uploadFile[id].label)) {
+        // let arr = this.uploadFile[id].label.split('.')
+        // if (arr[arr.length - 1] === 'pdf') {
+        //   this.centerDialogVisible = true
+        //   this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+        //   this.isVedio = false
+        // } else {
+        //   this.previewUrl = FILE_SERVER_PATH + this.uploadFile[id].url
+        //   this.isVedio = true
+        //   this.centerDialogVisible = true
+        // }
+      }
+      // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
+    },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
@@ -266,6 +293,17 @@ export default {
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
+            if (item.uploadFiles !== null) {
+              item.uploadFileArr = JSON.parse(item.uploadFiles)
+              item.uploadFileArr.map(val => {
+                val.children.map(item => {
+                  this.uploadFile[item.value] = item
+                  console.log(this.uploadFile)
+                })
+              })
+            } else {
+              item.uploadFileArr = []
+            }
           })
           this.eqpRepairList = res.data.rows
         }

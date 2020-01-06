@@ -22,7 +22,12 @@ namespace MSS.API.Core.V1.Controllers
         {
             _troubleReportService = troubleReportService;
         }
-
+        [HttpGet("ListAll")]
+        public ActionResult ListAll()
+        {
+            var resp = _troubleReportService.ListAll();
+            return Ok(resp.Result);
+        }
         [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {
