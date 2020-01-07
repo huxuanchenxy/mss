@@ -12,7 +12,7 @@
       <div class="middle-content-wrap height-full" :class="{ active: searchHideMore }" :style="{ height: searchHideMoreHeight }">
         <div class="content con-padding-horizontal">
           <div class="top-input-group" ref="middleTopInput">
-            <div class="list" >
+            <!-- <div class="list" >
               <span class="lable">公司</span>
               <el-select v-model="company" multiple collapse-tags  clearable filterable placeholder="请选择" @change="companyChange">
                 <el-option
@@ -22,7 +22,7 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-            </div>
+            </div> -->
             <div class="list">
               <span class="lable">负责班组</span>
                <el-cascader class="cascader_width" clearable
@@ -45,25 +45,56 @@
               </el-select>
             </div> -->
             <div class="list">
+              <span class="lable">日/月/年统计</span>
+              <el-radio-group v-model="xAxisType" @change="radioChange">
+                <el-radio :label=1>日</el-radio>
+                <el-radio :label=2>月</el-radio>
+                <!-- <el-radio :label=3>年</el-radio> -->
+              </el-radio-group>
+            </div>
+            <div class="list">
+                <el-select v-model="yearValue" value-key="value" placeholder="请选择" class="planselyear">
+                  <el-option
+                    v-for="item in yearOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+              </el-select>
+            </div>
+            <div class="list">
+              <el-select v-model="monthValue1"
+                    :disabled="monthDisable" value-key="value" placeholder="请选择" class="planselyear">
+                  <el-option
+                    v-for="item in monthOptions1"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+              </el-select>
+              <span>至</span>
+              <el-select v-model="monthValue2" :disabled="monthDisable" value-key="value" placeholder="请选择" class="planselyear">
+                  <el-option
+                    v-for="item in monthOptions2"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+              </el-select>
+            </div>
+            <div class="list">
               <span class="lable">时间</span>
               <el-date-picker
                 v-model="time.text"
                 type="daterange"
                 prefix-icon="el-icon-date"
                 :unlink-panels="true"
+                :disabled="time.disable"
                 value-format="yyyy-MM-dd"
                 range-separator="至"
                 start-placeholder="计划开始日期"
                 end-placeholder="计划结束日期">
               </el-date-picker>
-            </div>
-            <div class="list">
-              <span class="lable">日/月/年统计</span>
-              <el-radio-group v-model="dateType">
-                <el-radio :label=1>日</el-radio>
-                <el-radio :label=2>月</el-radio>
-                <el-radio :label=3>年</el-radio>
-              </el-radio-group>
             </div>
             <div class="search-btn text-center">
               <x-button class="active" @click.native="searchResult()"><i class="iconfont icon-search"></i> 查询</x-button>
@@ -171,9 +202,10 @@ export default {
       eqpType: [],
       time: {
         text: '',
-        tips: ''
+        tips: '',
+        disable: false
       },
-      dateType: 0,
+      xAxisType: 1,
       groups: {
         sub_system_id: {
           modelID: 'subSystemID',
@@ -257,7 +289,14 @@ export default {
 
       loading: false,
       company: [],
-      companyList: []
+      companyList: [],
+      yearValue: '',
+      yearOptions: [],
+      monthOptions2: [],
+      monthOptions1: [],
+      monthValue1: '',
+      monthValue2: '',
+      monthDisable: true
     }
   },
   created () {
@@ -382,6 +421,16 @@ export default {
         this.supplierList = res.data.filter((item) => { return item.type === firmType.supplier })
         this.manufacturerList = res.data.filter((item) => { return item.type === firmType.manufacturer })
       }).catch(err => console.log(err))
+
+      for (var i = 1; i <= 12; i++) {
+        this.monthOptions1.push({label: i + '月', value: i + ''})
+        this.monthOptions2.push({label: i + '月', value: i + ''})
+      }
+      this.monthValue1 = '1'
+      this.monthValue2 = '1'
+      this.yearOptions.push({label: '2019年', value: '2019'})
+      this.yearOptions.push({label: '2020年', value: '2020'})
+      this.yearValue = '2020'
     },
 
     search (param, callbacks) {
@@ -391,19 +440,6 @@ export default {
           this.loading_count = true
         }
       })
-      // api.reportAlarm(param).then(res => {
-      //   // this.loading = false
-      //   callbacks.forEach(item => {
-      //     if (item === this.drawCountChart) {
-      //       this.loading_count = false
-      //     }
-      //   })
-      //   if (res.code === ApiRESULT.Success) {
-      //     for (let callback of callbacks) {
-      //       callback(param, res.data, true)
-      //     }
-      //   }
-      // }).catch(err => console.log(err))
       apiplan.getMonthChart(param).then(res => {
         // this.loading = false
         callbacks.forEach(item => {
@@ -497,6 +533,10 @@ export default {
         sTime = this.time.text[0]
         eTime = this.time.text[1] + ' 23:59:59'
       }
+      // console.log('year:')
+      // console.log(this.yearValue)
+      // console.log('month:')
+      // console.log(this.monthValue)
       var param = {
         SubSystemIDs: this.subSystem.join(','),
         EqpTypeIDs: this.eqpType.join(','),
@@ -506,8 +546,12 @@ export default {
         OrgPath: this.teamPath.text.join(','),
         startTime: sTime,
         endTime: eTime,
-        dateType: this.dateType,
-        groupby: this.groupby.slice(0, 1).join(',')
+        xAxisType: this.xAxisType,
+        groupby: this.groupby.slice(0, 1).join(','),
+        year: this.yearValue,
+        startMonth: this.monthValue1,
+        endMonth: this.monthValue2
+        // month: this.monthValue
       }
       this.groupidxForCount = 0
       this.groupidxForAvg = 0
@@ -522,6 +566,16 @@ export default {
       // 获取当前制造商
       this.getManufacturerSelected()
       this.search(param, [this.drawCountChart])
+    },
+    radioChange (val) {
+      if (val === 2 || val === 3) {
+        this.time.disable = true
+        this.time.text = ''
+        this.monthDisable = false
+      } else {
+        this.time.disable = false
+        this.monthDisable = true
+      }
     }
   }
 }
@@ -763,6 +817,9 @@ export default {
 
     /deep/ .el-row {
       height: 100%;
+    }
+    /deep/ .planselyear{
+      width:88px;
     }
 </style>
 <style>

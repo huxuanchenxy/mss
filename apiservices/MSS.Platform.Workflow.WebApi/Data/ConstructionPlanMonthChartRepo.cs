@@ -171,6 +171,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
 
                 if (parm.xAxisType == 1)
                 {
+                    
                     if (parm.month != 0)
                     {
                         whereSql.Append(" and month = '" + parm.month + "'");
@@ -178,6 +179,17 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     if (parm.year != 0)
                     {
                         whereSql.Append(" and year = '" + parm.year + "'");
+                    }
+                }
+                if (parm.xAxisType == 2)
+                {
+                    if (parm.year != 0)
+                    {
+                        whereSql.Append(" and year = '" + parm.year + "'");
+                    }
+                    if (parm.startMonth != 0 && parm.endMonth != 0)
+                    {
+                        whereSql.Append(" and ( month >= '" + parm.startMonth + "'AND month <= '" + parm.endMonth + "' ) ");
                     }
                 }
                 sql.Append(whereSql);

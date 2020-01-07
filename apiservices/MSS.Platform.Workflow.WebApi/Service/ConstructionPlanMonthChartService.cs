@@ -60,43 +60,129 @@ namespace MSS.Platform.Workflow.WebApi.Service
             ApiResult ret = new ApiResult();
             try
             {
-                parm.year = 2019;
-                parm.month = 11;
-                parm.xAxisType = 1;//按日统计
-                var data = await _repo.GetByParm(parm);
-                DateTime dt = new DateTime(parm.year, parm.month, 1);
-                int days = DateTime.DaysInMonth(dt.Year, dt.Month);
+                //parm.year = 2019;
+                //parm.month = 11;
+                //parm.xAxisType = 1;//按日统计
                 ConstructionPlanMonthChartRet chartobj = new ConstructionPlanMonthChartRet();
                 //dimision
                 if (parm.xAxisType == 1)
                 {
+                    DateTime startDate = new DateTime();
+                    DateTime endDate = new DateTime();
+                    if (!string.IsNullOrEmpty(parm.startTime))
+                    {
+                        startDate = Convert.ToDateTime(parm.startTime);
+                        parm.year = startDate.Year;
+                    }
+                    if (!string.IsNullOrEmpty(parm.endTime))
+                    {
+                        endDate = Convert.ToDateTime(parm.endTime);
+                    }
+                    if (parm.month == 0)
+                    {
+                        DateTime now = DateTime.Now;
+                        parm.month = now.Month;
+                    }
+                    var data = await _repo.GetByParm(parm);
+                    DateTime dt = new DateTime(parm.year, parm.month, 1);
+                    int days = DateTime.DaysInMonth(dt.Year, dt.Month);
                     List<string> d = new List<string>();
                     List<ConstructionPlanMonthChartSeries> legend = new List<ConstructionPlanMonthChartSeries>();
                     List<int> legend1 = new List<int>();
-                    List<int> legend2 = new List<int>();
                     var dy0 = data.Where(c => c.Day == 0);//每天都有的
                     int countdy0 = 0;
                     foreach (var d0 in dy0)
                     {
-                        countdy0 += d0.PmFrequency;
+                        countdy0 += (d0.PmFrequency / 31);
                     }
                     for (int i = 1; i <= days; i++)
                     {
-                        string curdt = new DateTime(parm.year, parm.month, i).ToString("MM-dd");
-                        d.Add(curdt);
-                        var dynot0 = data.Where(c => c.Day == i);//只有当天有的
-                        int countdynot0 = 0;
-                        foreach (var dno0 in dynot0)
+
+                        if ((startDate.Day <= i && i <= endDate.Day) || string.IsNullOrEmpty(parm.startTime))
                         {
-                            countdynot0 += dno0.PmFrequency;
+                            string curdt = new DateTime(parm.year, parm.month, i).ToString("MM-dd");
+                            d.Add(curdt);
+                            var dynot0 = data.Where(c => c.Day == i);//只有当天有的
+                            int countdynot0 = 0;
+                            foreach (var dno0 in dynot0)
+                            {
+                                countdynot0 += dno0.PmFrequency;
+                            }
+                            float curdayCount = countdy0 + countdynot0;
+                            //fake
+                            int fake = new Random().Next(-2, 2);
+                            float curdayFinish = curdayCount + fake;
+                            int curpercent = (int)(Math.Round((curdayCount / curdayFinish), 2) * 100);
+                            legend1.Add(curpercent);
+                            //legend2.Add(curdayCount- fake);
                         }
-                        float curdayCount = countdy0 + countdynot0;
+
+                    }
+                    ConstructionPlanMonthChartSeries legendobj1 = new ConstructionPlanMonthChartSeries();
+                    legendobj1.Name = "计划完成率";
+                    legendobj1.Data = legend1;
+                    legendobj1.Type = "bar";
+
+                    //ConstructionPlanMonthChartSeries legendobj2 = new ConstructionPlanMonthChartSeries();
+                    //legendobj2.Name = "实际完成";
+                    //legendobj2.Data = legend2;
+                    //legendobj2.Type = "bar";
+
+                    legend.Add(legendobj1);
+                    //legend.Add(legendobj2);
+                    chartobj.Series = legend;
+                    chartobj.Dimension = d;
+
+                    List<string> catagory = new List<string>();
+                    catagory.Add("计划完成率");
+                    //catagory.Add("实际完成");
+                    chartobj.Legend = catagory;
+                }
+
+                if (parm.xAxisType == 2)
+                {
+                    parm.month = 0;
+                    var data = await _repo.GetByParm(parm);
+                    //DateTime dt = new DateTime(parm.year, parm.month, 1);
+                    //int days = DateTime.DaysInMonth(dt.Year, dt.Month);
+                    var monthgap = parm.endMonth - parm.startMonth + 1;
+                    
+                    List<ConstructionPlanMonthChartSeries> legend = new List<ConstructionPlanMonthChartSeries>();
+                    List<int> legend1 = new List<int>();
+                    List<string> d = new List<string>();
+                    for (int i = parm.startMonth; i <= monthgap; i++)
+                    {
+                        string curd = new DateTime(parm.year, i, 1).ToString("yyyy-MM");
+                        d.Add(curd);
+                        var curmonth = data.Where(c => c.Month == i).ToList();
+                        int countdy0 = 0;
+                        foreach (var d0 in curmonth)
+                        {
+                            countdy0 += (d0.PmFrequency / 31);
+                        }
+                        
+                        float curmonthCount = 0;
+                        DateTime dt = new DateTime(parm.year, i, 1);
+                        int days = DateTime.DaysInMonth(dt.Year, dt.Month);
+                        for (int j = 1; j <= days; j++)
+                        {
+
+                            var dynot0 = curmonth.Where(c => c.Day == j);//只有当天有的
+                            int countdynot0 = 0;
+                            foreach (var dno0 in dynot0)
+                            {
+                                countdynot0 += dno0.PmFrequency;
+                            }
+                            float curdayCount = countdy0 + countdynot0;
+                            
+                            curmonthCount += curdayCount;
+                        }
                         //fake
-                        int fake = new Random().Next(-10, 10);
-                        float curdayFinish = curdayCount + fake;
-                        int curpercent = (int)(Math.Round((curdayCount / curdayFinish),2) * 100);
+                        int fake = new Random().Next(-20, 20);
+                        float curmonthFinish = curmonthCount + fake;
+                        int curpercent = (int)(Math.Round((curmonthCount / curmonthFinish), 2) * 100);
                         legend1.Add(curpercent);
-                        //legend2.Add(curdayCount- fake);
+
                     }
                     ConstructionPlanMonthChartSeries legendobj1 = new ConstructionPlanMonthChartSeries();
                     legendobj1.Name = "计划完成率";
