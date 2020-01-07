@@ -21,6 +21,7 @@ namespace MSS.API.Core.V1.Business
     public interface ITroubleReportService
     {
         Task<ApiResult> ListAll();
+        Task<ApiResult> ListByStatus(int status);
         Task<ApiResult> GetNoByStatus(AttandenceStatus attandenceStatus);
         Task<ApiResult> ListHistoryByTrouble(int id);
         Task<ApiResult> ListEqpByTrouble(int id,int topOrg, TroubleView troubleView);
@@ -72,6 +73,20 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 ret.data = await _troubleReportRepo.ListAll();
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+        public async Task<ApiResult> ListByStatus(int status)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _troubleReportRepo.ListByStatus(status);
             }
             catch (Exception ex)
             {

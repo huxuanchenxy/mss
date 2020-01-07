@@ -301,6 +301,24 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<List<TroubleReport>> ListByStatus(int status)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "select * from trouble_report tr where status=@status";
+                var tmp = await c.QueryAsync<TroubleReport>(sql,new { status});
+                if (tmp.Count() > 0)
+                {
+                    return tmp.ToList();
+                }
+                else
+                {
+                    return new List<TroubleReport>();
+                }
+            });
+        }
+
+
         #endregion
 
         #region get 辅助查询

@@ -83,9 +83,9 @@
         </li>
         <li class="list">
           <div class="inp-wrap">
-            <span class="text">专家库标题</span>
+            <span class="text">专家库主题</span>
             <div class="inp">
-              <el-select v-model="expertKey" style="height:30px" placeholder="请选择">
+              <el-select v-model="expertKey" clearable style="height:30px" placeholder="请选择">
                 <el-option
                   v-for="item in expertKeyList"
                   :key="item.key"

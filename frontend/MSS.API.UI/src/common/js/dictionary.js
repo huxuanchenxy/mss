@@ -35,7 +35,8 @@ export const troubleStatus = {
   repaired: 50,
   delayed: 133,
   finished: 134,
-  canceled: 135
+  canceled: 135,
+  pendingApproval: 89
 }
 
 export const firmType = {

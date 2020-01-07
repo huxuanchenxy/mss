@@ -24,9 +24,9 @@
           </li>
           <li class="list">
             <div class="inp-wrap">
-              <span class="text">标题<em class="validate-mark">*</em></span>
+              <span class="text">主题<em class="validate-mark">*</em></span>
               <div class="inp">
-              <el-input placeholder="请输入标题" v-model="Experttitle.text" @keyup.native="validateInput(Experttitle)"></el-input>
+              <el-input placeholder="请输入主题" v-model="Experttitle.text" @keyup.native="validateInput(Experttitle)"></el-input>
             </div>
             </div>
              <p class="validate-tips">{{ Experttitle.tips }}</p>

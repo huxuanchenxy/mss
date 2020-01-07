@@ -23,10 +23,10 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="name">标题</label>
+            <label for="name">主题</label>
             <div class="inp">
               <el-input v-model.trim="ExpertTitle"
-                        placeholder="请输入标题名称"></el-input>
+                        placeholder="请输入主题名称"></el-input>
             </div>
           </div>
           <div class="input-group">
@@ -120,7 +120,7 @@
         </li>
         <li class="list title c-pointer"
             @click="changeOrder('title')">
-          标题
+          主题
           <i :class="[{ 'el-icon-d-caret': headOrder.title === 0 }, { 'el-icon-caret-top': headOrder.title === 1 }, { 'el-icon-caret-bottom': headOrder.title === 2 }]"></i>
         </li>
         <!-- <li class="list number c-pointer" @click="changeOrder('content')">

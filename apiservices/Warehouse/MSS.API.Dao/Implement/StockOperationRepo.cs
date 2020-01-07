@@ -213,9 +213,9 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,u1.user_name,u2.user_name as pname,so.operation_id as fsoName, ")
-                .Append(" dt.name,w1.name as wname,w2.name as toWName,o.name as bname,ot.name as pdname ")
-                .Append(" FROM stock_operation a ")
+                sql.Append("SELECT DISTINCT a.*,u1.user_name,u2.user_name as pname,so.operation_id as fsoName, ")
+                .Append(" dt.name,w1.name as wname,w2.name as toWName,o.name as bname,ot.name as pdname, ")
+                .Append(" tr.code FROM stock_operation a ")
                 .Append(" left join stock_operation so on a.from_stock_opetration=so.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.picker=u2.id ")
@@ -224,6 +224,8 @@ namespace MSS.API.Dao.Implement
                 .Append(" left join dictionary_tree dt on a.reason=dt.id ")
                 .Append(" left join warehouse w1 on a.warehouse=w1.id ")
                 .Append(" left join warehouse w2 on a.to_warehouse=w2.id ")
+                .Append(" right join stock_operation_detail sod on a.id=sod.operation ")
+                .Append(" left join trouble_report tr on sod.working_order=tr.id ")
                 .Append(" left join org_tree o on a.budget_dept=o.id where a.id=@id ");
                 var result = await c.QueryFirstOrDefaultAsync<StockOperation>(
                     sql.ToString(), new { id = id });

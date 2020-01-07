@@ -28,6 +28,12 @@ namespace MSS.API.Core.V1.Controllers
             var resp = _troubleReportService.ListAll();
             return Ok(resp.Result);
         }
+        [HttpGet("ListByStatus/{status}")]
+        public ActionResult ListByStatus(int status)
+        {
+            var resp = _troubleReportService.ListByStatus(status);
+            return Ok(resp.Result);
+        }
         [HttpGet("{id}")]
         public ActionResult GetByID(int id)
         {

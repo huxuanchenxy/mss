@@ -647,10 +647,12 @@ namespace MSS.API.Core.V1.Business
                     switch (reason)
                     {
                         case StockOptDetailType.MoveTo:
+                        case StockOptDetailType.MoveLocation:
                             sd.InStockNo = GetNo(StockChange.Subtract, sd.InStockNo, sod.CountNo);
                             if (sd.InStockNo < 0) { GetApiResult("存货不足，请刷新重试"); return ret; }
                             break;
                         case StockOptDetailType.TroubleMoveTo:
+                        case StockOptDetailType.TroubleMoveLocation:
                             sd.TroubleNo = GetNo(StockChange.Subtract, sd.TroubleNo, sod.CountNo);
                             if (sd.TroubleNo < 0) { GetApiResult("故障件数量小于零，请刷新重试"); return ret; }
                             break;
