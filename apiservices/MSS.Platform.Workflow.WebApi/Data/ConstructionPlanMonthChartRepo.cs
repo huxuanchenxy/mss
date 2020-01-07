@@ -164,7 +164,9 @@ namespace MSS.Platform.Workflow.WebApi.Data
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql = sql.Append("  SELECT * FROM construction_plan_month_chart WHERE 1 = 1 ");
+                sql = sql.Append("  SELECT a.*,c.status,c.updated_time donetime" +
+                    " FROM construction_plan_month_chart a LEFT JOIN pm_entity_month_detail b" +
+                    " ON a.id = b.month_detail LEFT JOIN pm_entity c ON c.id = b.pm_entity WHERE 1 = 1 ");
 
                 StringBuilder whereSql = new StringBuilder();
                 //whereSql.Append(" WHERE ai.ProcessInstanceID = '" + parm.ProcessInstanceID + "'");
@@ -174,27 +176,27 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     
                     if (parm.month != 0)
                     {
-                        whereSql.Append(" and month = '" + parm.month + "'");
+                        whereSql.Append(" and a.month = '" + parm.month + "'");
                     }
                     if (parm.year != 0)
                     {
-                        whereSql.Append(" and year = '" + parm.year + "'");
+                        whereSql.Append(" and a.year = '" + parm.year + "'");
                     }
                 }
                 if (parm.xAxisType == 2)
                 {
                     if (parm.year != 0)
                     {
-                        whereSql.Append(" and year = '" + parm.year + "'");
+                        whereSql.Append(" and a.year = '" + parm.year + "'");
                     }
                     if (parm.startMonth != 0 && parm.endMonth != 0)
                     {
-                        whereSql.Append(" and ( month >= '" + parm.startMonth + "'AND month <= '" + parm.endMonth + "' ) ");
+                        whereSql.Append(" and ( a.month >= '" + parm.startMonth + "'AND a.month <= '" + parm.endMonth + "' ) ");
                     }
                 }
                 if (parm.team != 0)
                 {
-                    whereSql.Append(" and team = '" + parm.team + "'");
+                    whereSql.Append(" and a.team = '" + parm.team + "'");
                 }
                 sql.Append(whereSql);
 

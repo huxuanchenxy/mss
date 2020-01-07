@@ -65,6 +65,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public int Query { get; set; }
         public System.DateTime UpdateTime { get; set; }
         public int UpdateBy { get; set; }
+        public int status { get; set; }
+        public string donetime { get; set; }
     }
 
     public class ConstructionPlanMonthChartMap : EntityMap<ConstructionPlanMonthChart>
