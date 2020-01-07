@@ -144,9 +144,9 @@ namespace MSS.Platform.Workflow.WebApi.Service
                         if (item.Frequency% 31 == 0)
                         {
                             string d = "." + MSS.Platform.Workflow.WebApi.Model.Common.GetLastDay(i, year);
-                            ConstructionPlanMonthDetail c = GetCommonProperty(item,i, cpic,all,dtNow, ref dt,ref dtChart);
-                            c.PlanDate = year + m+".01-" + year + m+d;
-                            dt.Rows[j+index][14] = c.PlanDate;
+                            string planDate= year + m + ".01-" + year + m + d;
+                            ConstructionPlanMonthDetail c = GetCommonProperty(item,i, cpic,all,dtNow, planDate, ref dt,ref dtChart);
+                            //dt.Rows[j+index][14] = c.PlanDate;
                             month.Add(c);
                         }
                         else
@@ -155,9 +155,9 @@ namespace MSS.Platform.Workflow.WebApi.Service
                             List<int> allDate = GetDay(item,ref day);
                             foreach (var date in allDate)
                             {
-                                ConstructionPlanMonthDetail c = GetCommonProperty(item,i,cpic,all,dtNow,ref dt,ref dtChart);
-                                c.PlanDate = year + m + "."+date.ToString("D2");
-                                dt.Rows[j+index][14] = c.PlanDate;
+                                string planDate = year + m + "." + date.ToString("D2");
+                                ConstructionPlanMonthDetail c = GetCommonProperty(item,i,cpic,all,dtNow, planDate,ref dt,ref dtChart);
+                                //dt.Rows[j+index][14] = c.PlanDate;
                                 month.Add(c);
                             }
                         }
@@ -172,12 +172,12 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     List<int> allMonth = GetMonth(item);
                     foreach (var m in allMonth)
                     {
-                        ConstructionPlanMonthDetail c = GetCommonProperty(item,m,cpic,all,dtNow,ref dt,ref dtChart);
-                        int min=dayMinInMonth[m-1].Min();
-                        int day = dayMinInMonth[m-1].IndexOf(min);
+                        int min = dayMinInMonth[m - 1].Min();
+                        int day = dayMinInMonth[m - 1].IndexOf(min);
                         dayMinInMonth[m - 1][day] += item.Once;
-                        c.PlanDate = year + "."+ m.ToString("D2") + "." + (day+1).ToString("D2");
-                        dt.Rows[index+j][14] = c.PlanDate;
+                        string planDate = year + "." + m.ToString("D2") + "." + (day + 1).ToString("D2");
+                        ConstructionPlanMonthDetail c = GetCommonProperty(item,m,cpic,all,dtNow, planDate,ref dt,ref dtChart);
+                        //dt.Rows[index+j][14] = c.PlanDate;
                         month.Add(c);
                         j++;
                     }
@@ -319,7 +319,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             return ret;
         }
         private ConstructionPlanMonthDetail GetCommonProperty (ConstructionPlanYear item,int month, 
-            ConstructionPlanImportCommon cpic,AllQuery all,DateTime dtNow,ref DataTable dt,ref DataTable dtChart)
+            ConstructionPlanImportCommon cpic,AllQuery all,DateTime dtNow,string planDate,ref DataTable dt,ref DataTable dtChart)
         {
             ConstructionPlanMonthDetail c = new ConstructionPlanMonthDetail();
             #region 通用属性
@@ -343,6 +343,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             c.PlanQuantity = item.Quantity;
             c.RealQuantity = item.Quantity;
             c.Query = cpic.ID;
+            c.PlanDate = planDate;
             c.UpdateTime = dtNow;
             c.UpdateBy = _userID;
 
@@ -352,7 +353,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             return c;
         }
         private ConstructionPlanMonthDetail GetCommonProperty(ConstructionPlanMonth item, int month,
-            ConstructionPlanImportCommon cpic, AllQuery all, DateTime dtNow, ref DataTable dt, ref DataTable dtChart)
+            ConstructionPlanImportCommon cpic, AllQuery all, DateTime dtNow, string planDate, ref DataTable dt, ref DataTable dtChart)
         {
             ConstructionPlanMonthDetail c = new ConstructionPlanMonthDetail();
             #region 通用属性
@@ -376,6 +377,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
             c.PlanQuantity = item.Quantity;
             c.RealQuantity = item.Quantity;
             c.Query = cpic.ID;
+            c.PlanDate = planDate;
             c.UpdateTime = dtNow;
             c.UpdateBy = _userID;
 
@@ -489,7 +491,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 else
                 {
                     
-                    dr[24] = c.PlanDate.Substring(7);
+                    dr[24] = c.PlanDate.Substring(8);
                     dr[11] = 1;
                 }
             }

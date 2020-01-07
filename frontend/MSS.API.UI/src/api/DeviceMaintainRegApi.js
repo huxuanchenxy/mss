@@ -27,6 +27,7 @@ export default {
   getTroubleHistoryByID: id => { return axios.get(`${api}/TroubleReport/ListHistoryByTrouble/${id}`).then(res => res.data) },
   getTroubleEqpByID: (id, topOrg, troubleView) => { return axios.get(`${api}/TroubleReport/ListEqpByTrouble/${id}/${topOrg}/${troubleView}`).then(res => res.data) },
   assignEqp: (eqps) => { return axios.put(`${api}/TroubleReport/AssignEqp/${eqps}`).then(res => res.data) },
+  getAllTroubleReport: () => { return axios.get(`${api}/TroubleReport/ListAll`).then(res => res.data) },
 
   saveTroubleDeal: parm => { return axios.post(`${api}/TroubleReport/SaveDeal`, parm).then(res => res.data) },
   getDealByID: (id, orgTop) => { return axios.get(`${api}/TroubleReport/GetDealByID/${id}/${orgTop}`).then(res => res.data) }

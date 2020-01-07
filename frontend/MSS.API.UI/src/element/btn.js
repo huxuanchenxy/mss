@@ -133,5 +133,19 @@ export const btn = {
   myPreCheck: {
     pass: 148,
     reject: 149
+  },
+  pmModule: {
+    import: 161
+  },
+  pmEntity: {
+    save: 162,
+    delete: 163,
+    update: 164,
+    reject: 165
+  },
+  eqpRepairHistory: {
+    save: 167,
+    delete: 168,
+    update: 169
   }
 }
