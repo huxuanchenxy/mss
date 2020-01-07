@@ -63,13 +63,24 @@
               </el-select>
             </div>
             <div class="list">
-              <el-date-picker
-                v-model="monthValue"
-                type="monthrange"
-                range-separator="至"
-                start-placeholder="开始月份"
-                end-placeholder="结束月份">
-              </el-date-picker>
+              <el-select v-model="monthValue1"
+                    :disabled="monthDisable" value-key="value" placeholder="请选择" class="planselyear">
+                  <el-option
+                    v-for="item in monthOptions1"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+              </el-select>
+              <span>至</span>
+              <el-select v-model="monthValue2" :disabled="monthDisable" value-key="value" placeholder="请选择" class="planselyear">
+                  <el-option
+                    v-for="item in monthOptions2"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+              </el-select>
             </div>
             <div class="list">
               <span class="lable">时间</span>
@@ -281,8 +292,11 @@ export default {
       companyList: [],
       yearValue: '',
       yearOptions: [],
-      monthValue: '',
-      monthOptions: []
+      monthOptions2: [],
+      monthOptions1: [],
+      monthValue1: '',
+      monthValue2: '',
+      monthDisable: true
     }
   },
   created () {
@@ -408,10 +422,12 @@ export default {
         this.manufacturerList = res.data.filter((item) => { return item.type === firmType.manufacturer })
       }).catch(err => console.log(err))
 
-      // for (var i = 1; i <= 12; i++) {
-      //   this.monthOptions.push({label: i + '月', value: i + ''})
-      // }
-      // this.monthValue = '1'
+      for (var i = 1; i <= 12; i++) {
+        this.monthOptions1.push({label: i + '月', value: i + ''})
+        this.monthOptions2.push({label: i + '月', value: i + ''})
+      }
+      this.monthValue1 = '1'
+      this.monthValue2 = '1'
       this.yearOptions.push({label: '2019年', value: '2019'})
       this.yearOptions.push({label: '2020年', value: '2020'})
       this.yearValue = '2020'
@@ -532,7 +548,9 @@ export default {
         endTime: eTime,
         xAxisType: this.xAxisType,
         groupby: this.groupby.slice(0, 1).join(','),
-        year: this.yearValue
+        year: this.yearValue,
+        startMonth: this.monthValue1,
+        endMonth: this.monthValue2
         // month: this.monthValue
       }
       this.groupidxForCount = 0
@@ -553,8 +571,10 @@ export default {
       if (val === 2 || val === 3) {
         this.time.disable = true
         this.time.text = ''
+        this.monthDisable = false
       } else {
         this.time.disable = false
+        this.monthDisable = true
       }
     }
   }
