@@ -11,6 +11,10 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public int year { get; set; }
         public int month { get; set; }
         public int xAxisType { get; set; }//x轴 按日1,月2，年3统计
+        public string startTime { get; set; }
+        public string endTime { get; set; }
+        public int startMonth { get; set; }
+        public int endMonth { get; set; }
     }
     public class ConstructionPlanMonthChartPageView
     {
