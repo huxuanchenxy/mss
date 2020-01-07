@@ -284,6 +284,23 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
+        public async Task<List<TroubleReport>> ListAll()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "select * from trouble_report tr ";
+                var tmp = await c.QueryAsync<TroubleReport>(sql);
+                if (tmp.Count() > 0)
+                {
+                    return tmp.ToList();
+                }
+                else
+                {
+                    return new List<TroubleReport>();
+                }
+            });
+        }
+
         #endregion
 
         #region get 辅助查询

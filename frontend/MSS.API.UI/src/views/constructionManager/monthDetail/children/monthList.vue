@@ -188,11 +188,6 @@ export default {
     }
   },
   created () {
-    this.importCommon = this.$route.params.item
-    this.type = this.$route.params.type
-    this.title = ' | 月计划列表 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
-    this.updateTitle = ' | 月计划修改 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
-    this.activeName = new Date().getMonth() + ''
     // 班组加载
     apiOrg.getOrgAll().then(res => {
       this.teamList = res.data
@@ -204,7 +199,11 @@ export default {
   },
   activated () {
     if (this.$route.params.type !== undefined) {
+      this.importCommon = this.$route.params.item
       this.type = this.$route.params.type
+      this.title = ' | 月计划列表 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
+      this.updateTitle = ' | 月计划修改 | ' + this.importCommon.year + '年-' + this.importCommon.lineName + '-' + this.importCommon.companyName + '-' + this.importCommon.departmentName
+      this.activeName = new Date().getMonth() + ''
       if (this.type === 1) {
         api.createMonthPlan(this.importCommon.id).then(res => {
           this.monthList = res.data

@@ -122,7 +122,7 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-// import { btn } from '@/element/btn.js'
+import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/workflowApi'
 export default {
@@ -133,8 +133,7 @@ export default {
   data () {
     return {
       btn: {
-        save: false,
-        update: false
+        import: false
       },
       title: ' | 检修单模板',
       moduleName: '',
@@ -162,19 +161,13 @@ export default {
     }
   },
   created () {
-    // let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
-    // if (!user.is_super) {
-    //   let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
-    //   this.btn.save = !actions.some((item, index) => {
-    //     return item.actionID === btn.actionGroup.save
-    //   })
-    //   this.btn.delete = !actions.some((item, index) => {
-    //     return item.actionID === btn.actionGroup.delete
-    //   })
-    //   this.btn.update = !actions.some((item, index) => {
-    //     return item.actionID === btn.actionGroup.update
-    //   })
-    // }
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    if (!user.is_super) {
+      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+      this.btn.import = !actions.some((item, index) => {
+        return item.actionID === btn.pmModule.import
+      })
+    }
     this.init()
   },
   activated () {

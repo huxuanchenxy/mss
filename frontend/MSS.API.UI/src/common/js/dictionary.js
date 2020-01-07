@@ -51,7 +51,8 @@ export const systemResource = {
   emergencyPlan: 57,
   regulation: 58,
   construction: 109,
-  troubleReport: 136
+  troubleReport: 136,
+  eqpRepair: 190
 }
 
 export const sparePartsOperationType = {
