@@ -20,8 +20,8 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = "INSERT INTO early_warnning_setting (equipment_type_id, param_id, param_name, param_unit, param_limit_upper, param_limit_lower, is_actived"
-                            +", created_time, created_by, updated_by, updated_time, is_del)"
-                            +" Values (@EquipmentTypeID, @ParamID, @ParamName, @ParamUnit, @ParamLimitUpper, @ParamLimitLower, @IsActived, @CreatedTime, @CreatedBy, @UpdatedBy, @UpdatedTime, @IsDel);";
+                            + ",expert, created_time, created_by, updated_by, updated_time, is_del)"
+                            + " Values (@EquipmentTypeID, @ParamID, @ParamName, @ParamUnit, @ParamLimitUpper, @ParamLimitLower, @IsActived,@Expert, @CreatedTime, @CreatedBy, @UpdatedBy, @UpdatedTime, @IsDel);";
                 sql += "SELECT LAST_INSERT_ID()";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql,
                     setting);
@@ -62,7 +62,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = "UPDATE early_warnning_setting SET equipment_type_id =@EquipmentTypeID, param_id = @ParamID, param_name = @ParamName, param_unit = @ParamUnit, param_limit_upper = @ParamLimitUpper, param_limit_lower = @ParamLimitLower, is_actived = @IsActived,"
-                            + " updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE ID=@ID;";
+                            + "expert=@Expert, updated_by = @UpdatedBy, updated_time = @UpdatedTime WHERE ID=@ID;";
                 await c.ExecuteAsync(sql, setting);
                 return setting;
             });
