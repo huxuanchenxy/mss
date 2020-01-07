@@ -192,6 +192,10 @@ namespace MSS.Platform.Workflow.WebApi.Data
                         whereSql.Append(" and ( month >= '" + parm.startMonth + "'AND month <= '" + parm.endMonth + "' ) ");
                     }
                 }
+                if (parm.team != 0)
+                {
+                    whereSql.Append(" and team = '" + parm.team + "'");
+                }
                 sql.Append(whereSql);
 
                 List<ConstructionPlanMonthChart> result = new List<ConstructionPlanMonthChart>();

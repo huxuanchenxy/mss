@@ -112,7 +112,16 @@ namespace MSS.Platform.Workflow.WebApi.Service
                             //fake
                             int fake = new Random().Next(-2, 2);
                             float curdayFinish = curdayCount + fake;
-                            int curpercent = (int)(Math.Round((curdayCount / curdayFinish), 2) * 100);
+                            if (curdayFinish <= 0)
+                            {
+                                curdayFinish = curdayCount / 3;
+                            }
+                            int curpercent = 0;
+                            if (curdayFinish > 0)
+                            {
+                                curpercent = (int)(Math.Round((curdayCount / curdayFinish), 2) * 100);
+                            }
+                            
                             legend1.Add(curpercent);
                             //legend2.Add(curdayCount- fake);
                         }
@@ -178,9 +187,16 @@ namespace MSS.Platform.Workflow.WebApi.Service
                             curmonthCount += curdayCount;
                         }
                         //fake
-                        int fake = new Random().Next(-20, 20);
+                        int fake = new Random().Next(-2, 2);
                         float curmonthFinish = curmonthCount + fake;
-                        int curpercent = (int)(Math.Round((curmonthCount / curmonthFinish), 2) * 100);
+                        if (curmonthFinish <= 0)
+                        {
+                            curmonthFinish = curmonthCount / 3;
+                        }
+                        int curpercent = 0;
+                        if (curmonthFinish > 0) {
+                           curpercent = (int)(Math.Round((curmonthCount / curmonthFinish), 2) * 100);
+                        } 
                         legend1.Add(curpercent);
 
                     }

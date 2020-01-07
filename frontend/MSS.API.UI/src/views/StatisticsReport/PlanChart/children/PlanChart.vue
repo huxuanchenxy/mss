@@ -533,25 +533,24 @@ export default {
         sTime = this.time.text[0]
         eTime = this.time.text[1] + ' 23:59:59'
       }
-      // console.log('year:')
-      // console.log(this.yearValue)
-      // console.log('month:')
-      // console.log(this.monthValue)
+      // console.log(this.teamPath.text)
+      let selteam = this.teamPath.text
+      let singleselteam = selteam[selteam.length - 1]
       var param = {
         SubSystemIDs: this.subSystem.join(','),
         EqpTypeIDs: this.eqpType.join(','),
         LocationPath: this.area.join(','),
         SupplierIDs: this.supplier.join(','),
         ManufacturerIDs: this.manufacturer.join(','),
-        OrgPath: this.teamPath.text.join(','),
+        // OrgPath: this.teamPath.text.join(','),
         startTime: sTime,
         endTime: eTime,
         xAxisType: this.xAxisType,
         groupby: this.groupby.slice(0, 1).join(','),
         year: this.yearValue,
         startMonth: this.monthValue1,
-        endMonth: this.monthValue2
-        // month: this.monthValue
+        endMonth: this.monthValue2,
+        team: singleselteam
       }
       this.groupidxForCount = 0
       this.groupidxForAvg = 0
