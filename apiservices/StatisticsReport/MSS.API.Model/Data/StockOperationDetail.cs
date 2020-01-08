@@ -13,6 +13,7 @@ namespace MSS.API.Model.Data
         public string startTime { get; set; }
         public string endTime { get; set; }
         public string legendData { get; set; }
+        public int dateType { get; set; }
     }
     public class StockOperationDetailPageView
     {

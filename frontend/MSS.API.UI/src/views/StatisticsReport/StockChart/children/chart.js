@@ -160,7 +160,7 @@ function getDataZoom (size) {
 // groupModel 为alarmData数据以什么字段聚合，modelName和modelID为数据中属性名（modelID为值，modelName为显示名）
 // 以设备类型为例，modelID=eqpTypeID modelName=eqpTypeName。
 function prepareChartData (data, groupModel, cursor) {
-  console.log('pre:' + JSON.stringify(data))
+  // console.log('pre:' + JSON.stringify(data))
   let legendData = {}
   let xAxisData = {}
   if (data) {
