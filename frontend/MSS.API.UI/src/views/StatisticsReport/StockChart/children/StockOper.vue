@@ -472,7 +472,8 @@ export default {
         startTime: sTime,
         endTime: eTime,
         dateType: this.dateType,
-        groupby: this.groupby.slice(0, 1).join(',')
+        groupby: this.groupby.slice(0, 1).join(','),
+        legendData: '1,3,8'
       }
       this.groupidxForCount = 0
       this.groupidxForAvg = 0

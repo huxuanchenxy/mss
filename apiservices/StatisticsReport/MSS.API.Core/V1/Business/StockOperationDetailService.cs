@@ -3,6 +3,8 @@ using MSS.API.Common.Utility;
 using MSS.API.Dao.Interface;
 using MSS.API.Model.Data;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -33,8 +35,41 @@ namespace MSS.API.Core.V1.Business
                 parm.StockOperationType = 68;//物资接收
                 parm.SparePartsType = 60;//耗材
                 var data = await _repo.GetByParm(parm);
+                List<string> xAxisData = new List<string>();
+                foreach (var d in data)
+                {
+                    var curdate = d.CreatedTime.ToString("yyyy-MM-dd");
+                    if (!xAxisData.Contains(curdate))
+                    {
+                        xAxisData.Add(curdate);
+                    }
+                }
+
+                var data1 = await _repo.GetSpareParts(parm.legendData);
+                List<string> legendData = new List<string>();
+                List<dynamic> seariesdata = new List<dynamic>();
+                foreach (var d in data1)
+                {
+                    if (!legendData.Contains(d.name))
+                    {
+                        legendData.Add(d.name);
+                    }
+                    List<int> curdata = new List<int>();
+                    foreach (var x in xAxisData)
+                    {
+                        var currows = data.Where(c => c.SparePartsId == d.id && c.CreatedTime.ToString("yyyy-MM-dd") == x);
+                        int curCount = 0;
+                        foreach (var c in currows)
+                        {
+                            curCount += c.CountNo;
+                        }
+                        curdata.Add(curCount);
+                    }
+                    seariesdata.Add(new { name = d.name, data = curdata, type = "bar" });
+                }
+                dynamic retdata = new { legendData= legendData, xAxisData= xAxisData, seariesData= seariesdata };
                 ret.code = Code.Success;
-                ret.data = data;
+                ret.data = retdata;
             }
             catch (Exception ex)
             {

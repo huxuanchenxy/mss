@@ -20,8 +20,8 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 StringBuilder sql = new StringBuilder();
-                sql = sql.Append($@"  SELECT a.count_no,a.unit_price,a.amount
-                                        ,b.created_time,c.name,c.eqp_type
+                sql = sql.Append($@"  SELECT a.count_no CountNo ,a.unit_price UniPrice,a.amount Amount
+                                        ,b.created_time CreatedTime,c.name Name,c.eqp_type EqpType,c.id as SparePartsId
                                         FROM stock_operation_detail a
                                         LEFT JOIN stock_operation b ON a.operation = b.id
                                         LEFT JOIN spare_parts c ON c.id = a.spare_parts WHERE 1= 1 ");
@@ -41,7 +41,7 @@ namespace MSS.API.Dao.Implement
                 }
 
 
-                sql.Append(whereSql);
+                sql.Append(whereSql + " ORDER BY b.created_time ASC ");
 
                 List<StockOperationDetail> result = new List<StockOperationDetail>();
                 var data = await c.QueryAsync<StockOperationDetail>(sql.ToString());
@@ -167,6 +167,16 @@ namespace MSS.API.Dao.Implement
                 ",updated_time=@updated_time,updated_by=@updated_by" +
                 " WHERE id in @ids ", new { ids = ids, updated_time = DateTime.Now, updated_by = userID });
                 return result;
+            });
+        }
+
+        public async Task<List<SpareParts>> GetSpareParts(string ids)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<SpareParts>(
+                    " SELECT DISTINCT id,name,type FROM spare_parts WHERE  id in ("+ids+") ");
+                return result.ToList();
             });
         }
     }
