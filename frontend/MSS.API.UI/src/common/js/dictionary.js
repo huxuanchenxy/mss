@@ -11,7 +11,8 @@ export const dictionary = {
   troubleLevel: 126,
   pmStatus: 176,
   pmMajor: 180,
-  pmLevel: 185
+  pmLevel: 185,
+  troubleChartType: 191
 }
 
 export const troubleOperation = {
