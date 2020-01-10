@@ -18,8 +18,8 @@
         <div class="search-btn" @click="searchRes">
         </div>
       </div>
-            <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="refreshpage"></li>
+                        <ul class="con-padding-horizontal btn-group">
+        <li class="list" @click="refreshpage"><x-button>刷新</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -85,6 +85,7 @@
             <span>总共 {{ total }} 条记录</span>
           </el-pagination> -->
         </el-scrollbar>
+      <div id="mynetwork"></div>
       </div>
     </div>
 
@@ -93,6 +94,9 @@
 <script>
 import XButton from '@/components/button'
 import api from '@/api/monitorserver'
+import vis from 'vis-network/dist/vis-network.min.js'
+import 'vis-network/dist/vis-network.min.css'
+import pcimg from './pc.png'
 export default {
   name: 'SeeProcessConsul',
   components: {
@@ -142,6 +146,9 @@ export default {
   },
   activated () {
     this.searchResult(this.currentPage)
+  },
+  mounted () {
+    this.ShowVisNetWork()
   },
   methods: {
     init () {
@@ -241,6 +248,34 @@ export default {
       this.currentPage = 1
       this.loading = true
       this.searchResult(1)
+    },
+    ShowVisNetWork () {
+      // create an array with nodes
+      var nodes = new vis.DataSet([
+        { id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false },
+        { id: 2, label: 'Web服务器(10.89.36.103)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false },
+        { id: 3, label: '网关(10.89.36.154)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false },
+        { id: 4, label: '后台服务(10.89.36.153)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 0, physics: false }
+        // { id: 5, label: 'MBN' }
+      ])
+
+      // create an array with edges
+      var edges = new vis.DataSet([
+        // { from: 1, to: 3 },
+        { from: 1, to: 2 },
+        { from: 2, to: 3 },
+        { from: 3, to: 4 }
+        // { from: 3, to: 3 }
+      ])
+
+      // create a network
+      var container = document.getElementById('mynetwork')
+      var data = {
+        nodes: nodes,
+        edges: edges
+      }
+      var options = {}
+      var network = new vis.Network(container, data, options)// eslint-disable-line no-unused-vars
     }
   }
 }
@@ -350,5 +385,15 @@ $con-height: $content-height - 145 - 56;
   .state{
     width: 5%;
   }
+}
+</style>
+<style>
+#mynetwork {
+    width: 600px;
+    height: 400px;
+    /* border: 1px solid lightgray; */
+    position: absolute;
+    top: 48%;
+    left: 30%;
 }
 </style>
