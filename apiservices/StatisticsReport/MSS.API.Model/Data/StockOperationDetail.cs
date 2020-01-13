@@ -6,12 +6,14 @@ using System.Collections.Generic;
 // Coded by admin 2019/11/29 17:02:07
 namespace MSS.API.Model.Data
 {
-    public class StockOperationDetailParm 
+    public class StockOperationDetailParm
     {
         public int StockOperationType { get; set; }
         public int SparePartsType { get; set; }
         public string startTime { get; set; }
         public string endTime { get; set; }
+        public string legendData { get; set; }
+        public int dateType { get; set; }
     }
     public class StockOperationDetailPageView
     {
@@ -48,6 +50,7 @@ namespace MSS.API.Model.Data
         public int Status { get; set; }
         public string Name { get; set; }
         public int EqpType { get; set; }
+        public int SparePartsId { get; set; }
     }
 
     public class StockOperationDetailMap : EntityMap<StockOperationDetail>
@@ -81,7 +84,15 @@ namespace MSS.API.Model.Data
             Map(o => o.Status).ToColumn("status");
             Map(o => o.Name).ToColumn("name");
             Map(o => o.EqpType).ToColumn("eqp_type");
+            Map(o => o.SparePartsId).ToColumn("spare_parts_id");
         }
+    }
+
+    public class SpareParts : BaseEntity
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+
     }
 
 }

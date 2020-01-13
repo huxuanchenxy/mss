@@ -64,7 +64,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 //parm.month = 11;
                 //parm.xAxisType = 1;//按日统计
                 ConstructionPlanMonthChartRet chartobj = new ConstructionPlanMonthChartRet();
-                //dimision
+                //废除日报表20200107
                 if (parm.xAxisType == 1)
                 {
                     DateTime startDate = new DateTime();
@@ -110,9 +110,20 @@ namespace MSS.Platform.Workflow.WebApi.Service
                             }
                             float curdayCount = countdy0 + countdynot0;
                             //fake
+                            //string curdta = new DateTime(parm.year, parm.month, i).ToString("yyyy-MM-dd");
+                            //var realfinish = data.Where(c=>c.status == 179 && string.IsNullOrEmpty(c.donetime) ? false : Convert.ToDateTime(c.donetime).ToString("yyyy-MM-dd") == curdta);
                             int fake = new Random().Next(-2, 2);
                             float curdayFinish = curdayCount + fake;
-                            int curpercent = (int)(Math.Round((curdayCount / curdayFinish), 2) * 100);
+                            if (curdayFinish <= 0)
+                            {
+                                curdayFinish = curdayCount / 3;
+                            }
+                            int curpercent = 0;
+                            if (curdayFinish > 0)
+                            {
+                                curpercent = (int)(Math.Round((curdayCount / curdayFinish), 2) * 100);
+                            }
+                            
                             legend1.Add(curpercent);
                             //legend2.Add(curdayCount- fake);
                         }
@@ -145,42 +156,39 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     var data = await _repo.GetByParm(parm);
                     //DateTime dt = new DateTime(parm.year, parm.month, 1);
                     //int days = DateTime.DaysInMonth(dt.Year, dt.Month);
-                    var monthgap = parm.endMonth - parm.startMonth + 1;
+
                     
                     List<ConstructionPlanMonthChartSeries> legend = new List<ConstructionPlanMonthChartSeries>();
                     List<int> legend1 = new List<int>();
                     List<string> d = new List<string>();
-                    for (int i = parm.startMonth; i <= monthgap; i++)
+                    for (int i = parm.startMonth; i <= parm.endMonth; i++)
                     {
                         string curd = new DateTime(parm.year, i, 1).ToString("yyyy-MM");
                         d.Add(curd);
                         var curmonth = data.Where(c => c.Month == i).ToList();
-                        int countdy0 = 0;
+                        float curmonthCount = 0;
                         foreach (var d0 in curmonth)
                         {
-                            countdy0 += (d0.PmFrequency / 31);
-                        }
-                        
-                        float curmonthCount = 0;
-                        DateTime dt = new DateTime(parm.year, i, 1);
-                        int days = DateTime.DaysInMonth(dt.Year, dt.Month);
-                        for (int j = 1; j <= days; j++)
-                        {
-
-                            var dynot0 = curmonth.Where(c => c.Day == j);//只有当天有的
-                            int countdynot0 = 0;
-                            foreach (var dno0 in dynot0)
-                            {
-                                countdynot0 += dno0.PmFrequency;
-                            }
-                            float curdayCount = countdy0 + countdynot0;
-                            
-                            curmonthCount += curdayCount;
+                            curmonthCount += d0.PmFrequency;
                         }
                         //fake
-                        int fake = new Random().Next(-20, 20);
-                        float curmonthFinish = curmonthCount + fake;
-                        int curpercent = (int)(Math.Round((curmonthCount / curmonthFinish), 2) * 100);
+                        //int fake = new Random().Next(-2, 2);
+                        //float curmonthFinish = curmonthCount + fake;
+                        float curmonthFinish = 0;
+                        var curmonthFinishdata = curmonth.Where(c => c.status == 179);
+                        foreach (var cc in curmonthFinishdata)
+                        {
+                            curmonthFinish += cc.PmFrequency;
+                        }
+                        int curpercent = 0;
+                        if (curmonthFinish > 0)
+                        {
+                            curpercent = (int)(Math.Round((curmonthFinish / curmonthCount), 2) * 100);
+                        }
+                        else
+                        {
+                            curpercent = 0;//写死假的
+                        }
                         legend1.Add(curpercent);
 
                     }

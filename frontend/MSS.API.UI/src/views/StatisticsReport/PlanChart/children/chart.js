@@ -160,8 +160,6 @@ function getDataZoom (size) {
 // groupModel 为alarmData数据以什么字段聚合，modelName和modelID为数据中属性名（modelID为值，modelName为显示名）
 // 以设备类型为例，modelID=eqpTypeID modelName=eqpTypeName。
 function prepareChartData (data, groupModel, cursor) {
-  console.log('pre:' + JSON.stringify(data))
-  // let legendData = {}
   let xAxisData = {}
   if (data) {
     // for (let i = 0; i < data.length; ++i) {
@@ -191,7 +189,7 @@ function prepareChartData (data, groupModel, cursor) {
     // seariescount = [{'name': '计划', 'data': [50, 60, 70], 'type': 'bar'}, {'name': '实际完成', 'data': [45, 48, 65], 'type': 'bar'}]
     seariescount = data.series
     // console.log('seariescount:' + JSON.stringify(seariescount))
-    seariescount.push({'name': '基准线', markLine: {'lineStyle': {'normal': {'color': '#fff'}}, 'label': {'normal': {formatter: '100%'}}, 'data': [{yAxis: '100'}]}, 'type': 'line', 'data': []})
+    seariescount.push({'name': '基准线', markLine: {'lineStyle': {'normal': {'color': '#fff'}}, 'label': {'normal': {formatter: '90%'}}, 'data': [{yAxis: '90'}]}, 'type': 'line', 'data': []})
     optionCount.series = seariescount
     if (optionCount.xAxis[0].data.length === 0) {
       optionCount.xAxis[0].data.push('无数据')

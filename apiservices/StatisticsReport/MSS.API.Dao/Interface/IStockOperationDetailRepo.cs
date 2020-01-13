@@ -15,5 +15,6 @@ namespace MSS.API.Dao.Interface
         Task<StockOperationDetail> GetByID(long id);
         Task<int> Update(StockOperationDetail obj);
         Task<int> Delete(string[] ids, int userID);
+        Task<List<SpareParts>> GetSpareParts(string ids);
     }
 }
