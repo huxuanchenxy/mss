@@ -353,7 +353,7 @@ export default {
       let id = val[val.length - 1]
       if (isPreview(id, this.uploadFile[id].label)) {
         let arr = this.uploadFile[id].label.split('.')
-        if (arr[arr.length - 1] === 'pdf') {
+        if (arr[arr.length - 1].toLowerCase() === 'pdf') {
           this.centerDialogVisible = true
           this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
           this.videoFlag = false

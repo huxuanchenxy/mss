@@ -90,8 +90,13 @@ namespace MSS.API.Core.V1.Business
                     ret.code = Code.DataIsExist;
                     ret.msg = "挂有设备的设备类型不允许删除";
                 }
+                else if (await _eqpTypeRepo.UseEqpType(ids))
+                {
+                    ret.code = Code.DataIsExist;
+                    ret.msg = "此设备类型被用于物资定义中，不允许删除";
+                }
                 // 判断设备类型下有没有挂设备，有的话不允许删除
-                ret.data = await _eqpTypeRepo.Delete(ids.Split(','),userID);
+                else ret.data = await _eqpTypeRepo.Delete(ids.Split(','),userID);
             }
             catch (Exception ex)
             {

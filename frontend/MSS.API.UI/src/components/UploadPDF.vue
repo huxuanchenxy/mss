@@ -240,7 +240,7 @@ export default {
     preview (item) {
       let arr = item.name.split('.')
       let extTmp = arr[arr.length - 1]
-      if (arr[arr.length - 1] === 'pdf') {
+      if (arr[arr.length - 1].toLowerCase() === 'pdf') {
         if (item.status === 'success') {
           if (item.url.indexOf('blob:') !== -1) {
             this.previewUrl = PDF_BLOB_VIEW_URL + item.url

@@ -118,6 +118,17 @@ namespace MSS.API.Dao.Implement
                 return result;
             });
         }
+        public async Task<bool> UseEqpType(string eqpTypes)
+        {
+            return await WithConnection(async c =>
+            {
+                int result = await c.QueryFirstOrDefaultAsync<int>(
+                    "SELECT count(*) FROM spare_parts where eqp_type in @eqpType and is_del=" + (int)IsDeleted.no,
+                    new { eqpType= eqpTypes.Split(',') });
+                return result > 0;
+            });
+        }
+
 
         public async Task<EqpTypeView> GetPageByParm(EqpTypeQueryParm parm)
         {

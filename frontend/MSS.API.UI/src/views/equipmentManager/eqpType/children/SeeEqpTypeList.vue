@@ -126,7 +126,7 @@
 </template>
 <script>
 import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
-import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
+import { isPreview, isExistFile } from '@/common/js/UpDownloadFileHelper.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
@@ -202,6 +202,8 @@ export default {
       if (isPreview(id, this.uploadFile[id].label)) {
         this.centerDialogVisible = true
         this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+        debugger
+        console.log(isExistFile(this.previewUrl))
       }
       // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
     },
@@ -322,7 +324,7 @@ export default {
           this.searchResult(1)
         } else {
           this.$message({
-            message: '删除失败',
+            message: '删除失败，' + res.msg,
             type: 'error'
           })
         }

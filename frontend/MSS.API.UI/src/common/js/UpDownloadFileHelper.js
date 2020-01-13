@@ -44,3 +44,26 @@ export const isPreview = (id, name) => {
     return false
   }
 }
+
+/**
+ * 判断服务的文件是否存在
+ * @param filepath 文件地址  即目录名
+ * @returns {Boolean}  文件名
+ */
+export const isExistFile = (filepath) => {
+  let xmlhttp
+  if (filepath === null || filepath === undefined || filepath === '') {
+    return false
+  }
+  if (window.XMLHttpRequest) {
+    xmlhttp = new XMLHttpRequest()
+  }
+  debugger
+  xmlhttp.open('GET', filepath, false)
+  xmlhttp.send()
+  if (xmlhttp.readyState === 4) {
+    if (xmlhttp.status === 200) return true
+    else if (xmlhttp.status === 404) return false
+    else return false
+  }
+}

@@ -157,7 +157,8 @@ export default {
   methods: {
     createStateFilter (queryString) {
       return (state) => {
-        return (state.user_name.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
+        return (state.user_name.toLowerCase().indexOf(queryString.toLowerCase()) > -1 ||
+        state.job_number.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
       }
     },
     filterNode (value, data) {

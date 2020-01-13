@@ -252,6 +252,12 @@ export default {
     }
   },
   created () {
+    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    // 没有设备监控权限且不是管理员的直接调转到第一个有权限的菜单默认界面
+    if (!this.$router.navList.hasOwnProperty('/monitorCenter') && user.is_super !== 1) {
+      this.$router.push('/troubleManager')
+      return
+    }
     this.getAllAreaList()
     this.init()
     this.getAlarm()
