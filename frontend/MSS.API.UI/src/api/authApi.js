@@ -16,6 +16,7 @@ export default {
 
   getSubCode: code => { return axios.get(`${api}/Dictionary/SubCode/${code}`).then(res => res.data) },
   getSubCodeOrder: code => { return axios.get(`${api}/Dictionary/SubCodeByOrder/${code}`).then(res => res.data) },
+  getTwoCascader: code => { return axios.get(`${api}/Dictionary/GetTwoCascader/${code}`).then(res => res.data) },
   getBusinessType: code => { return axios.get(`${api}/Dictionary/BusinessType/${code}`).then(res => res.data) },
   // getDictionary: parm => { return axios.get(`${api}/Dictionary/QueryList`, {params: parm}).then(res => res.data) },
   // getDictionaryByID: id => { return axios.get(`${api}/Dictionary/${id}`).then(res => res.data) },

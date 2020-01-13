@@ -165,8 +165,6 @@
           <el-pagination
             :current-page.sync="currentPage"
             @current-change="handleCurrentChange"
-            @prev-click="prevPage"
-            @next-click="nextPage"
             layout="slot, jumper, prev, pager, next"
             prev-text="上一页"
             next-text="下一页"
@@ -240,10 +238,11 @@ export default {
     apiOrg.getOrgAll().then(res => {
       this.companyList = res.data
     }).catch(err => console.log(err))
+    this.importCommon.year = new Date().getFullYear() + ''
     // this.init()
   },
   activated () {
-    if (this.importCommon.year !== '' && this.importCommon.company !== '') {
+    if (this.importCommon.year !== null && this.importCommon.company !== '' && this.importCommon.company !== null) {
       this.searchResult(this.currentPage)
     }
   },
@@ -300,17 +299,21 @@ export default {
       this.searchResult(this.currentPage)
     },
     search () {
+      if (!this.isMatch) return
       this.searchResult(1)
     },
-    // 搜索
-    searchResult (page) {
-      if (this.importCommon.year === '' || this.importCommon.company === '') {
+    isMatch () {
+      if (this.importCommon.year === null || this.importCommon.company === '' || this.importCommon.company === null) {
         this.$message({
           message: '由于数据量较大，请选择年份和公司',
           type: 'warning'
         })
-        return
+        return false
       }
+      return true
+    },
+    // 搜索
+    searchResult (page) {
       this.currentPage = page
       this.loading = true
       api.getImportPage({
@@ -335,6 +338,10 @@ export default {
     },
     // 序号、指定页翻页
     handleCurrentChange (val) {
+      if (!this.isMatch()) {
+        this.currentPage = val - 1
+        return
+      }
       this.currentPage = val
       this.searchResult(val)
     },
@@ -342,13 +349,11 @@ export default {
     // 上一页
     prevPage (val) {
       this.currentPage = val
-      this.searchResult(val)
     },
 
     // 下一页
     nextPage (val) {
       this.currentPage = val
-      this.searchResult(val)
     }
   }
 }

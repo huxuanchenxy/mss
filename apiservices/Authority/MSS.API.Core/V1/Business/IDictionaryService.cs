@@ -13,6 +13,7 @@ namespace MSS.API.Core.V1.Business
     {
         Task<ApiResult> GetSubByCode(int pid);
         Task<ApiResult> GetSubByCodeOrder(int pid);
+        Task<ApiResult> GetTwoCascader(int pid);
         Task<ApiResult> GetByParent(int pid);
         //Task<MSSResult<DictionaryView>> GetPageByParm(DictionaryQueryParm parm);
         //Task<MSSResult> GetByID(int id);

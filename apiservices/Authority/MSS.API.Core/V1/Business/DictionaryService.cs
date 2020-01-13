@@ -56,6 +56,46 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
+        public async Task<ApiResult> GetTwoCascader(int pid)
+        {
+            ApiResult mRet = new ApiResult();
+            List<cascader> cascaders = new List<cascader>();
+            try
+            {
+                List<DictionaryTree> dts= await _DictionaryRepo.GetSubByCodeOrder(pid);
+                List<DictionaryTree> dts2= await _DictionaryRepo.GetSubByCodesOrder(dts.Select(a=>a.id));
+                foreach (var item in dts)
+                {
+                    cascader c = new cascader();
+                    c.value = item.id;
+                    c.label = item.name;
+                    c.children = new List<cascader>();
+                    foreach (var item2 in dts2.Where(a=>a.parent_id==item.id))
+                    {
+                        cascader c2 = new cascader();
+                        c2.value = item2.id;
+                        c2.label = item2.name;
+                        c.children.Add(c2);
+                    }
+                    cascaders.Add(c);
+                }
+                mRet.data = cascaders;
+                return mRet;
+            }
+            catch (Exception ex)
+            {
+                mRet.code = Code.Failure;
+                mRet.msg = ex.Message;
+                return mRet;
+            }
+        }
+
+        class cascader
+        {
+            public int value { get; set; }
+            public string label { get; set; }
+            public List<cascader> children { get; set; }
+        }
         public async Task<ApiResult> GetByParent(int pid)
         {
             ApiResult mRet = new ApiResult();

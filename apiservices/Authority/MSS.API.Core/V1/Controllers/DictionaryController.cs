@@ -42,6 +42,13 @@ namespace MSS.API.Core.V1.Controllers
             return Ok(resp.Result);
         }
 
+        [HttpGet("GetTwoCascader/{code}")]
+        public ActionResult GetTwoCascader(int code)
+        {
+            var resp = _DictionaryService.GetTwoCascader(code);
+            return Ok(resp.Result);
+        }
+
         [HttpGet("BusinessType/{code}")]
         public ActionResult GetByParent(int code)
         {

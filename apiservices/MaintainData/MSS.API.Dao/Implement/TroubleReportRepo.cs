@@ -162,7 +162,7 @@ namespace MSS.API.Dao.Implement
                         " start_location=@StartLocation,start_location_by=@StartLocationBy,start_location_path=@StartLocationPath, " +
                         " end_location=@EndLocation,end_location_by=@EndLocationBy,urgent_repair_order=@UrgentRepairOrder, " +
                         " level=@Level,reported_company=@ReportedCompany,reported_company_path=@ReportedCompanyPath, " +
-                        " reported_by=@ReportedBy,description=@Desc,last_operation=@LastOperation," +
+                        " reported_by=@ReportedBy,description=@Desc,last_operation=@LastOperation,chart_type=@ChartType,chart_type_path=@ChartTypePath," +
                         " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", troubleReport, trans);
                     List<TroubleEqp> eqps = JsonConvert.DeserializeObject<List<TroubleEqp>>(troubleReport.Eqps);
                     sql = "delete from trouble_eqp where trouble=@id";
@@ -215,7 +215,7 @@ namespace MSS.API.Dao.Implement
                     sql = " insert into trouble_report " +
                         " values (0,@Code,@HappeningTime,@ReportedTime,@Line,@StartLocation,@StartLocationBy,@StartLocationPath, " +
                         " @EndLocation,@EndLocationBy,@UrgentRepairOrder,@Level,@ReportedCompany,@ReportedCompanyPath,@ReportedBy," +
-                        " @Desc,@Status,@LastOperation,@CreatedBy,@CreatedTime,@AcceptedTime,@UpdatedTime,@UpdatedBy); ";
+                        " @Desc,@Status,@LastOperation,@ChartType,@ChartTypePath,@CreatedBy,@CreatedTime,@AcceptedTime,@UpdatedTime,@UpdatedBy); ";
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, troubleReport, trans);
                     troubleReport.ID = newid;
@@ -300,6 +300,24 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
+
+        public async Task<List<TroubleReport>> ListByStatus(int status)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "select * from trouble_report tr where status=@status";
+                var tmp = await c.QueryAsync<TroubleReport>(sql,new { status});
+                if (tmp.Count() > 0)
+                {
+                    return tmp.ToList();
+                }
+                else
+                {
+                    return new List<TroubleReport>();
+                }
+            });
+        }
+
 
         #endregion
 

@@ -18,6 +18,10 @@ namespace MSS.API.Model.Data
 
         public string EquipmentTypeName { get; set; }
         public string UserName { get; set;}
+        /// <summary>
+        /// 专家库ID
+        /// </summary>
+        public int? Expert { get; set; }
     }
 
     public class EarlyWarnningSettingMap : EntityMap<EarlyWarnningSetting>

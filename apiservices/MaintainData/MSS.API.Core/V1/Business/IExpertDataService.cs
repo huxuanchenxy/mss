@@ -44,5 +44,9 @@ namespace MSS.API.Core.V1.Business
         /// <returns></returns>
         Task<ApiResult> GetListByPage(string strWhere,  string sort, string orderby, int page, int size);
         //Task<List<UploadFile>> ListByEntity(int[] ids, SystemResource systemResource);
+
+        #region twg
+        Task<ApiResult> ListByType(int type);
+        #endregion
     }
 }
