@@ -148,7 +148,7 @@ export default {
     this.searchResult(this.currentPage)
   },
   mounted () {
-    this.ShowVisNetWork()
+    // this.ShowVisNetWork()
   },
   methods: {
     init () {
@@ -199,7 +199,8 @@ export default {
         //   // item.healthDo = item.healthStatus === 1
         //   item.PrettyMemoryUsed = 1
         // })
-        console.log(res)
+        // console.log(res)
+        this.ShowVisNetWork(res.data)
         this.UserList = res.data
         // this.total = res.data.total
       }).catch(err => console.log(err))
@@ -249,22 +250,34 @@ export default {
       this.loading = true
       this.searchResult(1)
     },
-    ShowVisNetWork () {
+    ShowVisNetWork (res) {
       // create an array with nodes
-      var nodes = new vis.DataSet([
-        { id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false },
-        { id: 2, label: 'Web服务器(10.89.36.103)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false },
-        { id: 3, label: '网关(10.89.36.154)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false },
-        { id: 4, label: '后台服务(10.89.36.153)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 0, physics: false }
-        // { id: 5, label: 'MBN' }
-      ])
+      let n2 = res.filter(c => c.ip === '10.89.36.103')[0]
+      let n3 = res.filter(c => c.ip === '10.89.36.154')[0]
+      let n4 = res.filter(c => c.ip === '10.89.36.153')[0]
+      let n5 = res.filter(c => c.ip === '10.89.36.152')[0]
+      let retarr = []
+      retarr.push({ id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false })
+      retarr.push({ id: 2, label: 'Web服务器(' + n2.ip + ')(cpu:' + n2.cpuLoad + '%)(mem:' + n2.percentMemoryUsed + '%)(network:' + n2.prettyTotalNetwork + ')(disk:' + n2.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false, font: {color: '#fff'} })
+      retarr.push({ id: 3, label: '网关(' + n3.ip + ')(cpu:' + n3.cpuLoad + '%)(mem:' + n3.percentMemoryUsed + '%)(network:' + n3.prettyTotalNetwork + ')(disk:' + n3.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false, font: {color: '#fff'} })
+      retarr.push({ id: 4, label: '后台服务(' + n4.ip + ')(cpu:' + n4.cpuLoad + '%)(mem:' + n4.percentMemoryUsed + '%)(network:' + n4.prettyTotalNetwork + ')(disk:' + n4.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: -300, y: 0, physics: false, font: {color: '#fff'} })
+      retarr.push({ id: 5, label: '后台服务(' + n5.ip + ')(cpu:' + n5.cpuLoad + '%)(mem:' + n5.percentMemoryUsed + '%)(network:' + n5.prettyTotalNetwork + ')(disk:' + n5.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 300, y: 0, physics: false, font: {color: '#fff'} })
+      // var nodes = new vis.DataSet([
+      //   { id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false },
+      //   { id: 2, label: 'Web服务器(10.89.36.103)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false, font: {color: '#fff'} },
+      //   { id: 3, label: '网关(10.89.36.154)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false, font: {color: '#fff'} },
+      //   { id: 4, label: '后台服务(10.89.36.153)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 0, physics: false, font: {color: '#fff'} }
+      //   // { id: 5, label: 'MBN' }
+      // ])
+      var nodes = new vis.DataSet(retarr)
 
       // create an array with edges
       var edges = new vis.DataSet([
         // { from: 1, to: 3 },
         { from: 1, to: 2 },
         { from: 2, to: 3 },
-        { from: 3, to: 4 }
+        { from: 3, to: 4 },
+        { from: 3, to: 5 }
         // { from: 3, to: 3 }
       ])
 
@@ -274,7 +287,11 @@ export default {
         nodes: nodes,
         edges: edges
       }
-      var options = {}
+      var options = {
+        interaction: {
+          dragView: false
+        }
+      }
       var network = new vis.Network(container, data, options)// eslint-disable-line no-unused-vars
     }
   }
@@ -389,11 +406,11 @@ $con-height: $content-height - 145 - 56;
 </style>
 <style>
 #mynetwork {
-    width: 600px;
+    width: 97%;
     height: 400px;
     /* border: 1px solid lightgray; */
     position: absolute;
-    top: 48%;
-    left: 30%;
+    top: 50%;
+    /* left: 30%; */
 }
 </style>
