@@ -44,16 +44,15 @@
                 </el-option>
               </el-select>
             </div> -->
-            <div class="list">
+            <!-- <div class="list">
               <span class="lable">日/月/年统计</span>
               <el-radio-group v-model="xAxisType" @change="radioChange">
                 <el-radio :label=1>日</el-radio>
                 <el-radio :label=2>月</el-radio>
-                <!-- <el-radio :label=3>年</el-radio> -->
               </el-radio-group>
-            </div>
+            </div> -->
             <div class="list">
-                <el-select v-model="yearValue" value-key="value" placeholder="请选择" class="planselyear">
+                              <el-select v-model="yearValue" value-key="value" placeholder="请选择" class="planselyear">
                   <el-option
                     v-for="item in yearOptions"
                     :key="item.value"
@@ -61,8 +60,6 @@
                     :value="item.value">
                   </el-option>
               </el-select>
-            </div>
-            <div class="list">
               <el-select v-model="monthValue1"
                     :disabled="monthDisable" value-key="value" placeholder="请选择" class="planselyear">
                   <el-option
@@ -82,7 +79,7 @@
                   </el-option>
               </el-select>
             </div>
-            <div class="list">
+            <!-- <div class="list">
               <span class="lable">时间</span>
               <el-date-picker
                 v-model="time.text"
@@ -95,7 +92,7 @@
                 start-placeholder="计划开始日期"
                 end-placeholder="计划结束日期">
               </el-date-picker>
-            </div>
+            </div> -->
             <div class="search-btn text-center">
               <x-button class="active" @click.native="searchResult()"><i class="iconfont icon-search"></i> 查询</x-button>
             </div>
@@ -205,7 +202,7 @@ export default {
         tips: '',
         disable: false
       },
-      xAxisType: 1,
+      xAxisType: 2,
       groups: {
         sub_system_id: {
           modelID: 'subSystemID',
@@ -296,7 +293,7 @@ export default {
       monthOptions1: [],
       monthValue1: '',
       monthValue2: '',
-      monthDisable: true
+      monthDisable: false
     }
   },
   created () {
@@ -533,25 +530,24 @@ export default {
         sTime = this.time.text[0]
         eTime = this.time.text[1] + ' 23:59:59'
       }
-      // console.log('year:')
-      // console.log(this.yearValue)
-      // console.log('month:')
-      // console.log(this.monthValue)
+      // console.log(this.teamPath.text)
+      let selteam = this.teamPath.text
+      let singleselteam = selteam[selteam.length - 1]
       var param = {
         SubSystemIDs: this.subSystem.join(','),
         EqpTypeIDs: this.eqpType.join(','),
         LocationPath: this.area.join(','),
         SupplierIDs: this.supplier.join(','),
         ManufacturerIDs: this.manufacturer.join(','),
-        OrgPath: this.teamPath.text.join(','),
+        // OrgPath: this.teamPath.text.join(','),
         startTime: sTime,
         endTime: eTime,
         xAxisType: this.xAxisType,
         groupby: this.groupby.slice(0, 1).join(','),
         year: this.yearValue,
         startMonth: this.monthValue1,
-        endMonth: this.monthValue2
-        // month: this.monthValue
+        endMonth: this.monthValue2,
+        team: singleselteam
       }
       this.groupidxForCount = 0
       this.groupidxForAvg = 0

@@ -160,61 +160,25 @@ function getDataZoom (size) {
 // groupModel 为alarmData数据以什么字段聚合，modelName和modelID为数据中属性名（modelID为值，modelName为显示名）
 // 以设备类型为例，modelID=eqpTypeID modelName=eqpTypeName。
 function prepareChartData (data, groupModel, cursor) {
-  console.log('pre:' + JSON.stringify(data))
+  // console.log('pre:' + JSON.stringify(data))
   let legendData = {}
   let xAxisData = {}
   if (data) {
-    // for (let i = 0; i < data.length; ++i) {
-    //   let obj = data[i]
-    //   let groupID = obj.dimension[groupModel.modelID]
-    //   if (!legendData[groupID]) {
-    //     let groupName = obj.dimension[groupModel.modelName]
-    //     legendData[groupID] = groupName || '其他'
-    //   }
-    //   if (!xAxisData[obj.date]) {
-    //     xAxisData[obj.date] = []
-    //   }
-    //   xAxisData[obj.date].push(obj)
-    // }
     let seariescount = []
-    // for (let key in legendData) {
-    //   let objcount = {
-    //     id: key,
-    //     name: legendData[key],
-    //     type: 'bar',
-    //     stack: 'test',
-    //     // barMinHeight: 1,
-    //     // barCategoryGap: 10,
-    //     // barGap: 1,
-    //     // barWidth: 20,
-    //     barMaxWidth: 20,
-    //     cursor: cursor,
-    //     data: []
-    //   }
-    //   for (let x in xAxisData) {
-    //     let count = 0
-    //     for (let i = 0; i < xAxisData[x].length; ++i) {
-    //       if (xAxisData[x][i].dimension[groupModel.modelID] === +key) {
-    //         count = xAxisData[x][i].num
-    //         break
-    //       }
-    //     }
-    //     objcount.data.push(count)
-    //   }
-    //   seariescount.push(objcount)
-    // }
-    // var seriesobj = data.legend
-    legendData = ['螺钉', '扳手', '手套']
+    // legendData = ['螺钉', '扳手', '手套']
+    legendData = data.legendData
     optionCount.legend.data = legendData
     // optionCount.legend.data = data.legend
-    xAxisData = ['2019-11-01', '2019-11-05', '2019-11-25']
+    // xAxisData = ['2019-11-01', '2019-11-05', '2019-11-25']
+    xAxisData = data.xAxisData
     // xAxisData = data.dimension
     // optionCount.xAxis[0].data = Object.keys(xAxisData)
     optionCount.xAxis[0].data = xAxisData
     // console.log('xAxisData:' + JSON.stringify(xAxisData))
     // console.log('legendData:' + JSON.stringify(legendData))
     // optionCount.series = seariescount
-    seariescount = [{'name': '螺钉', 'data': [50, 60, 42], 'type': 'bar'}, {'name': '扳手', 'data': [69, 48, 65], 'type': 'bar'}, {'name': '手套', 'data': [35, 38, 56], 'type': 'bar'}]
+    // seariescount = [{'name': '螺钉', 'data': [50, 60, 100], 'type': 'bar'}, {'name': '扳手', 'data': [69, 48, 65], 'type': 'bar'}, {'name': '手套', 'data': [35, 38, 56], 'type': 'bar'}]
+    seariescount = data.seariesData
     // seariescount = data.series
     // console.log('seariescount:' + JSON.stringify(seariescount))
     optionCount.series = seariescount

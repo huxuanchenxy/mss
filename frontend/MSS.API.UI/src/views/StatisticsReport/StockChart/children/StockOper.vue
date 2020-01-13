@@ -52,7 +52,6 @@
               <el-radio-group v-model="dateType">
                 <el-radio :label=1>日</el-radio>
                 <el-radio :label=2>月</el-radio>
-                <el-radio :label=3>年</el-radio>
               </el-radio-group>
             </div>
             <div class="search-btn text-center">
@@ -165,7 +164,7 @@ export default {
         text: '',
         tips: ''
       },
-      dateType: 0,
+      dateType: 1,
       groups: {
         sub_system_id: {
           modelID: 'subSystemID',
@@ -472,7 +471,8 @@ export default {
         startTime: sTime,
         endTime: eTime,
         dateType: this.dateType,
-        groupby: this.groupby.slice(0, 1).join(',')
+        groupby: this.groupby.slice(0, 1).join(','),
+        legendData: '1,3,8'
       }
       this.groupidxForCount = 0
       this.groupidxForAvg = 0

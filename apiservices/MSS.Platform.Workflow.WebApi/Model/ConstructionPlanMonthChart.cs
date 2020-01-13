@@ -15,6 +15,7 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public string endTime { get; set; }
         public int startMonth { get; set; }
         public int endMonth { get; set; }
+        public int team { get; set; }
     }
     public class ConstructionPlanMonthChartPageView
     {
@@ -64,6 +65,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public int Query { get; set; }
         public System.DateTime UpdateTime { get; set; }
         public int UpdateBy { get; set; }
+        public int status { get; set; }
+        public string donetime { get; set; }
     }
 
     public class ConstructionPlanMonthChartMap : EntityMap<ConstructionPlanMonthChart>
