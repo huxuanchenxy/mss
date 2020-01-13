@@ -45,6 +45,7 @@ namespace MSS.API.Model.Data
         public string DetailList { get; set; }
         public string SomeOrder { get; set; }
         public int? WorkingOrder { get; set; }
+        public string WorkingOrderCode { get; set; }
     }
 
     public class StockOperationMap : EntityMap<StockOperation>
@@ -68,6 +69,8 @@ namespace MSS.API.Model.Data
             Map(o => o.BudgetDept).ToColumn("budget_dept");
             Map(o => o.BudgetDeptPath).ToColumn("budget_dept_path");
             Map(o => o.BudgetDeptName).ToColumn("bname");
+            Map(o => o.WorkingOrderCode).ToColumn("code");
+            Map(o => o.WorkingOrder).ToColumn("working_order");
 
             Map(o => o.Remark).ToColumn("remark");
             Map(o => o.Agreement).ToColumn("agreement");

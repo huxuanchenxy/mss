@@ -9,6 +9,7 @@ namespace MSS.API.Dao.Interface
    public interface ITroubleReportRepo<T>
     {
         Task<List<TroubleReport>> ListAll();
+        Task<List<TroubleReport>> ListByStatus(int status);
         Task<TroubleReport> GetByID(int id);
         Task<TroubleReportView> ListPage(TroubleReportParm parm);
         Task<int> UpdateStatus(string[] ids, int userID, TroubleStatus status,TroubleOperation operation);

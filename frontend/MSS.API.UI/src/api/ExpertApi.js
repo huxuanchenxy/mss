@@ -17,5 +17,7 @@ export default {
   addEPlan: parm => { return axios.post(`${api}/EmergencyPlan`, parm).then(res => res.data) },
   updateEPlan: parm => { return axios.put(`${api}/EmergencyPlan`, parm).then(res => res.data) },
   delEPlan: ids => { return axios.delete(`${api}/EmergencyPlan/${ids}`).then(res => res.data) },
-  getEPlanAll: () => { return axios.get(`${api}/EmergencyPlan/All`).then(res => res.data) }
+  getEPlanAll: () => { return axios.get(`${api}/EmergencyPlan/All`).then(res => res.data) },
+
+  ListByType: type => { return axios.get(`${api}/ExpertData/ListByType/${type}`).then(res => res.data) }
 }

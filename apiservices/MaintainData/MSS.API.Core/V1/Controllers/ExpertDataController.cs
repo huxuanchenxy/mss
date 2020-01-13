@@ -153,5 +153,14 @@ namespace MSS.API.Core.V1.Controllers
             ret.data = true;
             return ret;
         }
+
+        #region twg
+        [HttpGet("ListByType/{type}")]
+        public ActionResult ListByType(int type)
+        {
+            var resp = _expertService.ListByType(type);
+            return Ok(resp.Result);
+        }
+        #endregion
     }
 }

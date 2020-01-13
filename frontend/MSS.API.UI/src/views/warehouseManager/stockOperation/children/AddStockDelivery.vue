@@ -47,13 +47,13 @@
           </li>
           <li v-show="isShow.workingOrder === 1 && !isShow.stockDetail" class="list">
             <div class="inp-wrap">
-              <span class="text">工单<em class="validate-mark">*</em></span>
+              <span class="text">故障单<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="workingOrder.text" clearable filterable placeholder="请选择工单"  @change="validateSelect(workingOrder)">
+                <el-select v-model="workingOrder.text" clearable filterable placeholder="请选择故障单"  @change="validateSelect(workingOrder)">
                   <el-option
                     v-for="item in workingOrderList"
                     :key="item.key"
-                    :label="item.id"
+                    :label="item.code"
                     :value="item.id">
                   </el-option>
                 </el-select>
@@ -312,10 +312,11 @@
 </template>
 <script>
 import { vInput, vNumber, validateInputCommon } from '@/common/js/utils.js'
-import { sparePartsOperationType, sparePartsOperationDetailType } from '@/common/js/dictionary.js'
+import { sparePartsOperationType, sparePartsOperationDetailType, troubleStatus } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import api from '@/api/wmsApi'
 import apiAuth from '@/api/authApi'
+import apiMain from '@/api/DeviceMaintainRegApi.js'
 export default {
   name: 'AddStockDelivery',
   components: {
@@ -341,7 +342,7 @@ export default {
       sparePartsList: '',
       pickerList: [],
       picker: {text: '', tips: ''},
-      workingOrderList: [{id: 1}],
+      workingOrderList: [],
       workingOrder: {text: '', tips: ''},
       remark: {text: '', tips: ''},
       entity: '',
@@ -367,7 +368,7 @@ export default {
       },
       isShow: {
         picker: true,
-        // 1:显示工单；2:显示someOrder；3:都不显示
+        // 1:显示故障单；2:显示someOrder；3:都不显示
         workingOrder: 1,
         stockDetail: false,
         scrap: false
@@ -392,6 +393,10 @@ export default {
     // 领料人加载
     apiAuth.getUserAll().then(res => {
       this.pickerList = res.data
+    }).catch(err => console.log(err))
+    // 故障单加载
+    apiMain.getTroubleReportByStatus(troubleStatus.processing).then(res => {
+      this.workingOrderList = res.data
     }).catch(err => console.log(err))
   },
   methods: {
@@ -420,7 +425,7 @@ export default {
           this.fromStockOperationName = '领料'
           this.isShow.picker = true
           this.isShow.workingOrder = 1
-          this.someOrderName = '工单'
+          this.someOrderName = '故障单'
           this.isShow.stockDetail = true
           this.editNoName = '退回数量'
           this.editNoCompareName = '可退回数量'

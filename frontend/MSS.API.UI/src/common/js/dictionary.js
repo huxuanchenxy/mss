@@ -11,7 +11,8 @@ export const dictionary = {
   troubleLevel: 126,
   pmStatus: 176,
   pmMajor: 180,
-  pmLevel: 185
+  pmLevel: 185,
+  troubleChartType: 191
 }
 
 export const troubleOperation = {
@@ -35,7 +36,8 @@ export const troubleStatus = {
   repaired: 50,
   delayed: 133,
   finished: 134,
-  canceled: 135
+  canceled: 135,
+  pendingApproval: 89
 }
 
 export const firmType = {

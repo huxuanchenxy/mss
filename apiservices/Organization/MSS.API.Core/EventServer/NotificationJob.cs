@@ -54,8 +54,8 @@ namespace MSS.API.Core.EventServer
                     var _services = await _consulServiceProvider.GetServiceAsync("ExpertDataAndDeviceService");
                     IHttpClientHelper<ApiResult> httpHelper = new HttpClientHelper<ApiResult>();
                     string types = (int)MyDictionary.EqpHistoryType.Install + "," 
-                        + (int)MyDictionary.EqpHistoryType.MediumMaintenance + ","
-                        + (int)MyDictionary.EqpHistoryType.MajorMaintenance;
+                        + (int)MyDictionary.EqpHistoryType.MediumPM + ","
+                        + (int)MyDictionary.EqpHistoryType.MajorPM;
                     ApiResult result = await httpHelper.
                         GetSingleItemRequest(_services + "/api/v1/EqpHistory/ListByType/" + types);
                     if (result.code == Code.Success)
@@ -88,7 +88,7 @@ namespace MSS.API.Core.EventServer
         {
             DateTime? start = null;
             EqpHistory his_medium = eqpHistory.Where(c => c.Type ==
-                MyDictionary.EqpHistoryType.MediumMaintenance && c.EqpID == eqp.ID).FirstOrDefault();
+                MyDictionary.EqpHistoryType.MediumPM && c.EqpID == eqp.ID).FirstOrDefault();
             if (his_medium != null)
             {
                 start = his_medium.CreatedTime;
@@ -127,7 +127,7 @@ namespace MSS.API.Core.EventServer
         {
             DateTime? start = null;
             EqpHistory his_major = eqpHistory.Where(c => c.Type ==
-                MyDictionary.EqpHistoryType.MajorMaintenance && c.EqpID == eqp.ID).FirstOrDefault();
+                MyDictionary.EqpHistoryType.MajorPM && c.EqpID == eqp.ID).FirstOrDefault();
             if (his_major != null)
             {
                 start = his_major.CreatedTime;

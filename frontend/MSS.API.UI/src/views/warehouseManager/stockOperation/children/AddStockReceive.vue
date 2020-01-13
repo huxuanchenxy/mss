@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeStockReceiveList' }">返回</router-link></x-button>
+      <i @click="back"><x-button class="active">返回</x-button></i>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -457,6 +457,15 @@ export default {
     }).catch(err => console.log(err))
   },
   methods: {
+    back () {
+      if (this.isAdd) {
+        this.isAdd = false
+      } else {
+        this.$router.push({
+          name: 'SeeStockReceiveList'
+        })
+      }
+    },
     warehouseChange () {
       if (this.warehouse.text !== '') {
         // 库位加载

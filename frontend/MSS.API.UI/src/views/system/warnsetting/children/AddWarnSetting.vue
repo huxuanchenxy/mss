@@ -81,7 +81,21 @@
           </div>
           <p class="validate-tips">{{ limitDown.tips }}</p>
         </li>
-        <li class="list"/>
+        <li class="list">
+          <div class="inp-wrap">
+            <span class="text">专家库主题</span>
+            <div class="inp">
+              <el-select v-model="expertKey" clearable style="height:30px" placeholder="请选择">
+                <el-option
+                  v-for="item in expertKeyList"
+                  :key="item.key"
+                  :label="item.title"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+        </li>
       </ul>
       <ul class="input-group-ex">
         <li class="list" >
@@ -143,6 +157,7 @@
 import { vdouble3, ApiRESULT } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/warnSettingApi'
+import apiExpert from '@/api/ExpertApi.js'
 export default {
   name: 'AddUser',
   components: {
@@ -178,7 +193,10 @@ export default {
         text: '',
         tips: ''
       },
-      settingEx: []
+      settingEx: [],
+
+      expertKey: '',
+      expertKeyList: []
     }
   },
   created () {
@@ -227,6 +245,9 @@ export default {
       api.getParamByEqpType(id).then(res => {
         this.paramList = res.data
         this.paramObj = res.data[0]
+      }).catch(err => console.log(err))
+      apiExpert.ListByType(id).then(res => {
+        this.expertKeyList = res.data
       }).catch(err => console.log(err))
     },
     validateInputDouble3 (val) {
@@ -323,7 +344,8 @@ export default {
           ParamLimitUpper: this.limitUp.text,
           ParamLimitLower: this.limitDown.text,
           IsActived: this.isActived,
-          settingEx: this.settingEx
+          settingEx: this.settingEx,
+          Expert: this.expertKey
         }
         if (this.isShow === 'add') {
           api.saveWarnningSetting(param).then((res) => {
@@ -374,6 +396,7 @@ export default {
             }
           })
           this.settingEx = res.data.settingEx
+          this.expertKey = res.data.expert
         }
       }).catch(err => console.log(err))
     },

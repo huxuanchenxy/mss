@@ -106,7 +106,7 @@
       </li>
       <li v-show="isShow.workingOrder" class="list">
         <div class="inp-wrap">
-          <span class="text">工单</span>
+          <span class="text">故障单</span>
           <div class="inp">{{stockOperation.workingOrder}}</div>
         </div>
       </li>
@@ -322,7 +322,7 @@ export default {
           this.stockOperation.createdName = data.createdName
           this.stockOperation.createdTime = transformDate(data.createdTime)
           this.stockOperation.remark = data.remark
-          this.stockOperation.workingOrder = data.workingOrder
+          this.stockOperation.workingOrder = data.workingOrderCode
           this.stockOperation.someOrder = data.someOrder
           this.stockOperation.detailList = JSON.parse(data.detailList)
 

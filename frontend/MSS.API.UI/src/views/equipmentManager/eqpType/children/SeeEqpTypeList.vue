@@ -322,7 +322,7 @@ export default {
           this.searchResult(1)
         } else {
           this.$message({
-            message: '删除失败',
+            message: '删除失败，' + res.msg,
             type: 'error'
           })
         }

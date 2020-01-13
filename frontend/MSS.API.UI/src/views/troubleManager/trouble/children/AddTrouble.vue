@@ -45,7 +45,19 @@
             </div>
             <p class="validate-tips">{{ reportedTime.tips }}</p>
           </li>
-          <li class="list"/>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">故障类别<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-cascader filterable
+                  :show-all-levels="false"
+                  :options="troubleTypeList"
+                  v-model="troubleType.text">
+                </el-cascader>
+              </div>
+            </div>
+            <p class="validate-tips">{{ troubleType.tips }}</p>
+          </li>
           <li class="list">
             <div class="inp-wrap">
               <span class="text">起始站点/区域<em class="validate-mark">*</em></span>
@@ -234,6 +246,8 @@ export default {
         value: 'id',
         children: 'children'
       },
+      troubleTypeList: [],
+      troubleType: {text: [], tips: ''},
       areaStart: {text: [], tips: ''},
       areaList: [],
       areaEnd: {text: '', tips: ''},
@@ -275,6 +289,9 @@ export default {
     // 故障等级列表
     apiAuth.getSubCode(dictionary.troubleLevel).then(res => {
       this.levelList = res.data
+    }).catch(err => console.log(err))
+    apiAuth.getTwoCascader(dictionary.troubleChartType).then(res => {
+      this.troubleTypeList = res.data
     }).catch(err => console.log(err))
     // 报修单位加载
     apiOrg.getOrgAll().then(res => {
@@ -419,6 +436,7 @@ export default {
         this.position_change()
         this.reportBy.text = _res.reportedBy
         this.repairDesc.text = _res.desc
+        this.troubleType.text = this.strToIntArr(_res.chartTypePath)
         this.fileIDs = _res.uploadFiles
       }).catch(err => console.log(err))
     },
@@ -445,6 +463,7 @@ export default {
     validateInputAll () {
       if (this.happeningTime.text === null) { this.msg('发生时间必选'); return false } else
       if (this.reportedTime.text === null) { this.msg('报修时间必选'); return false } else
+      if (this.troubleType.text === null || this.troubleType.text === '') { this.msg('故障类别必选'); return false } else
       if (this.areaStart.text.length === 0) { this.msg('起点站区/区域必选'); return false } else
       if (!this.validateInputNull(this.urgentOrder)) { this.msg('抢修号令验证失败,请查看提示信息'); return false } else
       if (this.reportCompanyPath.text.length === 0) { this.msg('报修单位必选'); return false } else
@@ -521,6 +540,8 @@ export default {
         ReportedCompanyPath: this.reportCompanyPath.text.join(','),
         ReportedBy: this.reportBy.text,
         Desc: this.repairDesc.text,
+        ChartType: this.troubleType.text[1],
+        ChartTypePath: this.troubleType.text.join(','),
         UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.params.type === 'Add') {

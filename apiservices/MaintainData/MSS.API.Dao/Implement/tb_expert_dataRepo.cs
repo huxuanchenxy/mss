@@ -234,5 +234,25 @@ namespace MSS.API.Dao.Implement
                     return ret;
                 });
         }
+
+        #region twg
+        public async Task<List<tb_expert_data>> ListByType(int type)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<tb_expert_data>(
+                    "SELECT * FROM tb_expert_data WHERE device_type = @type", new { type });
+                if (result.Count()>0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return new List<tb_expert_data>();
+                }
+            });
+        }
+
+        #endregion
     }
 }         

@@ -43,5 +43,9 @@ namespace MSS.API.Dao.Interface
         Task<List<tb_expert_data>> GetListByPage(string strWhere,  string sort, string orderby, int page, int size);
 
         Task<List<UploadFile>> ListByEntity(int[] ids, SystemResource systemResource);
+
+        #region twg
+        Task<List<tb_expert_data>> ListByType(int type);
+        #endregion
     }
 }

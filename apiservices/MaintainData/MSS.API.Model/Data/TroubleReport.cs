@@ -65,6 +65,8 @@ namespace MSS.API.Model.Data
         public int LastOperation { get; set; }
         public string LastOperationName { get; set; }
         //public string Solution { get; set; }
+        public int ChartType { get; set; }
+        public string ChartTypePath { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedByName { get; set; }
         public DateTime CreatedTime { get; set; }
@@ -110,6 +112,8 @@ namespace MSS.API.Model.Data
             Map(o => o.StatusName).ToColumn("name");
             Map(o => o.LastOperation).ToColumn("last_operation");
             Map(o => o.LastOperationName).ToColumn("loname");
+            Map(o => o.ChartType).ToColumn("chart_type");
+            Map(o => o.ChartTypePath).ToColumn("chart_type_path");
             //Map(o => o.Solution).ToColumn("solution");
             Map(o => o.ReportedBy).ToColumn("reported_by");
             Map(o => o.ReportedByName).ToColumn("user_name");

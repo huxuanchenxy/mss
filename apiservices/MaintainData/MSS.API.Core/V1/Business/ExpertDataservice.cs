@@ -251,5 +251,22 @@ namespace MSS.API.Core.V1.Business
 
             return ret;
         }
+
+        #region twg
+        public async Task<ApiResult> ListByType(int type)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data = await _expertRepo.ListByType(type);
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+        #endregion
     }
 }
