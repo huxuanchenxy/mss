@@ -241,5 +241,23 @@ namespace MSS.API.Core.V1.Business
                 return ret;
             }
         }
+
+        public async Task<ApiResult> FileIsExist(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                UploadFile uf = await _uploadFileRepo.GetByID(id);
+                ret.data = File.Exists((BASEFILE + uf.FilePath).Replace('/', '\\'));
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
     }
 }

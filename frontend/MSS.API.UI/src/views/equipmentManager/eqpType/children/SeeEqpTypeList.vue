@@ -200,8 +200,17 @@ export default {
     preview (val) {
       let id = val[val.length - 1]
       if (isPreview(id, this.uploadFile[id].label)) {
-        this.centerDialogVisible = true
-        this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+        api.fileIsExist(id).then(res => {
+          if (res.data) {
+            this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
+            this.centerDialogVisible = true
+          } else {
+            this.$message({
+              message: '未找到所要查看的文件',
+              type: 'warning'
+            })
+          }
+        }).catch(err => console.log(err))
       }
       // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
     },

@@ -115,6 +115,13 @@ namespace MSS.API.Core.V1.Controllers
             }
         }
 
+        [HttpGet("FileIsExist/{id}")]
+        public ActionResult FileIsExist(int id)
+        {
+            var ret = _uploadService.FileIsExist(id);
+            return Ok(ret.Result);
+        }
+
         private List<UploadFileRelation> ObjectToList(FilesByEntity fe)
         {
             List<UploadFileRelation> ret = new List<UploadFileRelation>();
