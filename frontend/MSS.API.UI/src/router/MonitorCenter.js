@@ -44,22 +44,14 @@ const routes = [
             component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
           }
         ]
-      },
+      }  ,
       {
-        path: 'MonitorServer',
-        component: () => import( '@/views/system/operlog/index.vue'),
-        children: [
-          {
-            path: '/',
-            name: 'MonitorServer',
-            redirect: 'list'
-          }, 
-          {
-            path: 'list',
-            name: 'SeeMonitorServer',
-            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeMonitorServer.vue')
-          }
-        ]
+        path: '/monitorCenter/MonitorServer',
+        name: 'MonitorServer',
+        component: () => import('@/views/MonitorCenter/MonitorServer/SeeMonitorServer.vue'),
+        meta: {
+          keepAlive: true
+        }
       }
     ]
   }

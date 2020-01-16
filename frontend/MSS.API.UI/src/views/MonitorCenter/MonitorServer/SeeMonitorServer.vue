@@ -81,7 +81,7 @@ import vis from 'vis-network/dist/vis-network.min.js'
 import 'vis-network/dist/vis-network.min.css'
 import pcimg from './pc.png'
 export default {
-  name: 'SeeProcessConsul',
+  name: 'SeeMonitorServer',
   components: {
     XButton
   },
