@@ -2,7 +2,7 @@
   <div class="wrap height-full">
     <div class="content">
       <keep-alive include="SeeOperlogList">
-        <router-view @title="getTitle"/>
+        <router-view @title="getTitle" v-if="!$route.meta.keepAlive"/>
       </keep-alive>
     </div>
   </div>

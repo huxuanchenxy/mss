@@ -62,15 +62,16 @@ routes = routes.concat(ConstructionManager)
 routes = routes.concat(ConstructionManager1)
 // 故障管理
 routes = routes.concat(TroubleManager)
-// 网络监控
-import monitor from './monitor'
-routes = routes.concat(monitor)
 
 // 工作流
 import workflow from './workflow'
 routes = routes.concat(workflow)
 
+import monitor2 from './MonitorCenter2'
+routes = routes.concat(monitor2)
+
 const router = new Router({
+  // mode: 'history',
   routes
 })
 

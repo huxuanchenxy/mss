@@ -1,9 +1,10 @@
 <template>
   <router-view/>
+  <!-- <div>monitorCenter</div> -->
 </template>
 <script>
 export default {
-  name: 'equipmentManager',
+  name: 'monitorCenter',
   data () {
     return {
 
