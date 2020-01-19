@@ -5,7 +5,7 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
+        <img :src="{ titlepic }" alt="" class="icon">{{ title }}
       </h2>
     </div>
     <div class="box">
@@ -87,7 +87,8 @@ export default {
   },
   data () {
     return {
-      title: ' | 服务器监控',
+      title: '',
+      titlepic: '',
       time: '',
       serviceName: '',
       startTime: '',
@@ -124,7 +125,7 @@ export default {
     }
   },
   created () {
-    this.$emit('title', '| 服务监控')
+    // this.$emit('title', '| 服务监控')
     this.init()
   },
   activated () {
@@ -132,6 +133,7 @@ export default {
   },
   mounted () {
     // this.ShowVisNetWork()
+    this.InitTitle()
   },
   methods: {
     init () {
@@ -278,6 +280,20 @@ export default {
         }
       }
       var network = new vis.Network(container, data, options)// eslint-disable-line no-unused-vars
+    },
+    InitTitle () {
+      let navlist = this.$router.navList
+      if (navlist !== undefined) {
+        let r = this.$router.navList[this.$route.matched[0].path]
+        let rc = r.children
+        this.titlepic = this.$router.navList[this.$route.matched[0].path].iconClsActive
+        this.title = this.$router.navList[this.$route.matched[0].path].name + ' | ' + rc.filter(item => item.path === this.$route.path)[0].name
+        window.sessionStorage.setItem('title', this.title)
+        window.sessionStorage.setItem('titlepic', this.titlepic)
+      } else {
+        this.title = window.sessionStorage.getItem('title')
+        this.titlepic = window.sessionStorage.getItem('titlepic')
+      }
     }
   }
 }

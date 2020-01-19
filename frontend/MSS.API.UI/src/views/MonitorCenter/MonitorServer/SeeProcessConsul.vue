@@ -5,30 +5,30 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
+        <img :src="{ titlepic }" alt="" class="icon">{{ title }}
       </h2>
     </div>
-    <div class="box">
+    <div class="boxSeeProcessConsul">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
             <label for="name">服务名称</label>
-            <div class="inp">
-              <el-input v-model.trim="serviceName" placeholder="请输入服务名称"></el-input>
+            <div class="inp" id="txtserviceName">
+              <el-input v-model.trim="serviceName" placeholder="请输入服务名称" clearable></el-input>
+            </div>
+            <div class="search-btn" @click="searchRes">
+              <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
+            </div>
+            <div class="refresh-btn" @click="refreshpage">
+              <x-button ><i class="iconfont icon-search"></i> 刷新</x-button>
             </div>
           </div>
         </div>
-        <div class="search-btn" @click="searchRes">
-          <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
-        </div>
       </div>
-            <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="refreshpage"><x-button>刷新</x-button></li>
-      </ul>
     </div>
     <!-- 内容 -->
-    <div class="content-wrap">
+    <div class="content-wrap content-process">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
         <li class="list number c-pointer" @click="changeOrder('service_name')">
@@ -116,7 +116,8 @@ export default {
   },
   data () {
     return {
-      title: ' | 服务监控',
+      title: '',
+      titlepic: '',
       time: '',
       serviceName: '',
       startTime: '',
@@ -153,8 +154,9 @@ export default {
     }
   },
   created () {
-    this.$emit('title', '| 服务监控')
+    // this.$emit('title', '| 服务监控')
     this.init()
+    this.InitTitle()
   },
   activated () {
     this.searchResult(this.currentPage)
@@ -255,6 +257,22 @@ export default {
       this.currentPage = 1
       this.loading = true
       this.searchResult(1)
+    },
+    InitTitle () {
+      let navlist = this.$router.navList
+      // console.log('navlist:')
+      // console.log(navlist)
+      if (navlist !== undefined) {
+        let r = this.$router.navList[this.$route.matched[0].path]
+        let rc = r.children
+        this.titlepic = this.$router.navList[this.$route.matched[0].path].iconClsActive
+        this.title = this.$router.navList[this.$route.matched[0].path].name + ' | ' + rc.filter(item => item.path === this.$route.path)[0].name
+        window.sessionStorage.setItem('title', this.title)
+        window.sessionStorage.setItem('titlepic', this.titlepic)
+      } else {
+        this.title = window.sessionStorage.getItem('title')
+        this.titlepic = window.sessionStorage.getItem('titlepic')
+      }
     },
     changeStatus: function ($event, item) {
       // alert($event)
@@ -425,5 +443,27 @@ $con-height: $content-height - 145 - 56;
   .state{
     width: 5%;
   }
+}
+</style>
+<style>
+.boxSeeProcessConsul .inp{
+  display: inline-block;
+}
+.boxSeeProcessConsul .search-btn{
+  display:inline-block;
+  right:10%;
+  position:absolute;
+}
+.boxSeeProcessConsul .refresh-btn{
+  display:inline-block;
+  right:4%;
+  position:absolute;
+}
+.boxSeeProcessConsul .search-wrap{
+  height: 40px;
+  line-height: 40px;
+}
+.content-process{
+  height:92% !important;
 }
 </style>

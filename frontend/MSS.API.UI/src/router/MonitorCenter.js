@@ -23,35 +23,6 @@ const routes = [
             component: () => import(/* webpackChunkName: "system" */ '@/views/MonitorCenter/eqpmonitor/children/List.vue')
           }
         ]
-      }, 
-      {
-        path: 'ProcessConsul',
-        component: () => import( '@/views/system/operlog/index.vue'),
-        children: [
-          {
-            path: '/',
-            name: 'ProcessConsul',
-            redirect: 'list'
-          }, 
-          {
-            path: 'list',
-            name: 'SeeProcessConsul',
-            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeProcessConsul.vue')
-          }, 
-          {
-            path: 'addMaintainConfig/:mark?/:id?',
-            name: 'addMaintainConfig',
-            component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
-          }
-        ]
-      }  ,
-      {
-        path: '/monitorCenter/MonitorServer',
-        name: 'MonitorServer',
-        component: () => import('@/views/MonitorCenter/MonitorServer/SeeMonitorServer.vue'),
-        meta: {
-          keepAlive: true
-        }
       }
     ]
   }

@@ -14,7 +14,7 @@
         <div class="wrap">
           <div class="input-group">
             <label for="name">计划名称</label>
-            <div class="inp">
+            <div class="inp" id="txtplanName">
               <el-input v-model.trim="planName" placeholder="请输入计划名称" clearable></el-input>
             </div>
           </div>
@@ -457,11 +457,7 @@ $con-height: $content-height - 145 - 56;
 }
 </style>
 <style>
-.content-header{
-  height: 7.45455% !important;
-}.content-wrap {
-    height: 83.45455% !important;
-}.inp {
-  width: 200px !important;
+#txtplanName{
+  display: inline-block;
 }
 </style>
