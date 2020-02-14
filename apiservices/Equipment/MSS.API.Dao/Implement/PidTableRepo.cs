@@ -28,16 +28,10 @@ namespace MSS.API.Dao.Implement
             {
 
                 StringBuilder sql = new StringBuilder();
-                sql.Append($@"  SELECT 
-                PID,
-                eqp_id,
-                prop,
-                Des,
-                pid_type,
-                UT,
-                UP,
-                DW,
-                UUP,DDW FROM pid_table
+                sql.Append($@"  SELECT a.*,b.eqp_code,b.eqp_name,c.type_name
+FROM `pid_table` a
+LEFT JOIN equipment b on a.eqp_id = b.id
+left join equipment_type c on c.id = b.eqp_type
                  ");
                 StringBuilder whereSql = new StringBuilder();
                 //whereSql.Append(" WHERE ai.ProcessInstanceID = '" + parm.ProcessInstanceID + "'");
@@ -110,7 +104,10 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<PidTable>(
-                    "SELECT * FROM pid_table WHERE PID = @pid", new { pid = pid });
+                    $@"SELECT a.*,b.eqp_code,b.eqp_name,c.type_name
+FROM `pid_table` a
+LEFT JOIN equipment b on a.eqp_id = b.id
+left join equipment_type c on c.id = b.eqp_type WHERE a.PID = @pid", new { pid = pid });
                 return result;
             });
         }

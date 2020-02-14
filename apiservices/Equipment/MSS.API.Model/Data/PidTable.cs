@@ -27,6 +27,9 @@ namespace MSS.API.Model.Data
         public float DW { get; set; }
         public float UUP { get; set; }
         public float DDW { get; set; }
+        public string EqpCode { get; set; }
+        public string EqpName { get; set; }
+        public string TypeName { get; set; }
     }
 
     public class PidTableMap : EntityMap<PidTable>
@@ -43,6 +46,9 @@ namespace MSS.API.Model.Data
             Map(o => o.DW).ToColumn("DW");
             Map(o => o.UUP).ToColumn("UUP");
             Map(o => o.DDW).ToColumn("DDW");
+            Map(o => o.EqpCode).ToColumn("eqp_code");
+            Map(o => o.EqpName).ToColumn("eqp_name");
+            Map(o => o.TypeName).ToColumn("type_name");
         }
     }
 
