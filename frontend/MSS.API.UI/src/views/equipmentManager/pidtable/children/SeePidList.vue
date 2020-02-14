@@ -73,34 +73,34 @@
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
         <li class="list number c-pointer" @click="changeOrder('eqp_code')">
-          图纸编号
+          PID
           <i :class="[{ 'el-icon-d-caret': headOrder.eqp_code === 0 }, { 'el-icon-caret-top': headOrder.eqp_code === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_code === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('eqp_name')">
           名称
           <i :class="[{ 'el-icon-d-caret': headOrder.eqp_name === 0 }, { 'el-icon-caret-top': headOrder.eqp_name === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_name === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('sub_system')">
+        <!-- <li class="list number c-pointer" @click="changeOrder('sub_system')">
           子系统
           <i :class="[{ 'el-icon-d-caret': headOrder.sub_system === 0 }, { 'el-icon-caret-top': headOrder.sub_system === 1 }, { 'el-icon-caret-bottom': headOrder.sub_system === 2 }]"></i>
-        </li>
+        </li> -->
         <li class="list number c-pointer" @click="changeOrder('eqp_type')">
           类型
           <i :class="[{ 'el-icon-d-caret': headOrder.eqp_type === 0 }, { 'el-icon-caret-top': headOrder.eqp_type === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_type === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('team')">
+        <!-- <li class="list number c-pointer" @click="changeOrder('team')">
           管辖班组
           <i :class="[{ 'el-icon-d-caret': headOrder.team === 0 }, { 'el-icon-caret-top': headOrder.team === 1 }, { 'el-icon-caret-bottom': headOrder.team === 2 }]"></i>
         </li>
-        <li class="list number">安装位置</li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
+        <li class="list number">安装位置</li> -->
+        <!-- <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
         <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
-        </li>
+        </li> -->
       </ul>
       <div class="scroll">
         <el-scrollbar>
@@ -110,14 +110,13 @@
                 <div class="checkbox">
                   <input type="checkbox" v-model="editEqpID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.code }}</div>
-                <div class="name">{{ item.name }}</div>
-                <div class="name">{{ item.subSystemName }}</div>
-                <div class="name">{{ item.tName }}</div>
-                <div class="number">{{ item.teamName }}</div>
-                <div class="number">{{ item.locationName }}</div>
-                <div class="last-update-time color-white">{{ item.updatedTime }}</div>
-                <div class="last-maintainer">{{ item.updatedName }}</div>
+                <div class="number">{{ item.pid }}</div>
+                <div class="name">{{ item.eqpName }}</div>
+                <div class="name">{{ item.typeName }}</div>
+                <!-- <div class="number">{{ item.teamName }}</div>
+                <div class="number">{{ item.locationName }}</div> -->
+                <!-- <div class="last-update-time color-white">{{ item.updatedTime }}</div>
+                <div class="last-maintainer">{{ item.updatedName }}</div> -->
               </div>
             </li>
           </ul>
@@ -153,7 +152,7 @@
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
+// import { transformDate } from '@/common/js/utils.js'
 import { dictionary } from '@/common/js/dictionary.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
@@ -308,8 +307,8 @@ export default {
         // res.data.rows.map(item => {
         //   item.updatedTime = transformDate(item.updatedTime)
         // })
-        // this.EqpList = res.data.rows
-        // this.total = res.data.total
+        this.EqpList = res.data.rows
+        this.total = res.data.total
       }).catch(err => console.log(err))
     },
 
