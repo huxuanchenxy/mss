@@ -125,6 +125,28 @@ const routes = [
             component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidtable/children/DetailPid.vue')
           }
         ]
+      }, {
+        path: 'pidcount',
+        component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidcount/Index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'pidcount',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeePidCountList',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidcount/children/SeePidCountList.vue')
+          }, {
+            path: 'add',
+            name: 'AddPidCount',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidcount/children/AddPidCount.vue')
+          }, {
+            path: 'detail',
+            name: 'DetailPidCount',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidcount/children/DetailPidCount.vue')
+          }
+        ]
       }
     ]
   }

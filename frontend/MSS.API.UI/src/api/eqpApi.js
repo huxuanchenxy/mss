@@ -1,7 +1,7 @@
 import axios from './interceptors'
 // let api = 'http://localhost:3851/api/v1'
-let api = 'http://localhost:8084/api/v1'
-// let api = 'http://10.89.36.154:5801/eqpapi'
+// let api = 'http://localhost:8084/api/v1'
+let api = 'http://10.89.36.154:5801/eqpapi'
 export default {
   getEqpType: parm => { return axios.get(`${api}/EquipmentType`, {params: parm}).then(res => res.data) },
   getEqpTypeByID: id => { return axios.get(`${api}/EquipmentType/${id}`).then(res => res.data) },
@@ -22,7 +22,7 @@ export default {
   getEqpByTeam: id => { return axios.get(`${api}/Equipment/GetByTeam/${id}`).then(res => res.data) },
   getEqpAll: () => { return axios.get(`${api}/Equipment/All`).then(res => res.data) },
 
-  getPid: parm => { return axios.get(`${api}/PidTable/GetPageList`, {params: parm}).then(res => res.data) },
+  getPidCount: parm => { return axios.get(`${api}/PidCount/GetPageList`, {params: parm}).then(res => res.data) },
   getFirm: parm => { return axios.get(`${api}/Firm`, {params: parm}).then(res => res.data) },
   getFirmByID: id => { return axios.get(`${api}/Firm/${id}`).then(res => res.data) },
   addFirm: parm => { return axios.post(`${api}/Firm`, parm).then(res => res.data) },

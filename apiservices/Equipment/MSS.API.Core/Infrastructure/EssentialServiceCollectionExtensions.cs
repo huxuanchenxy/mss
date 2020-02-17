@@ -28,6 +28,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IAuthHelper, AuthHelper>();
             services.AddTransient<IServiceDiscoveryProvider, ConsulServiceProvider>();
             services.AddTransient<IPidTableService, PidTableService>();
+            services.AddTransient<IPidCountService,PidCountService>();
             return services;
         }
     }
