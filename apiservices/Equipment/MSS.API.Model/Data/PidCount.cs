@@ -19,7 +19,6 @@ namespace MSS.API.Model.Data
 
     public class PidCount : BaseEntity
     {
-        public int Id { get; set; }
         public string NodeId { get; set; }
         public string NodeName { get; set; }
         public string NodeTip { get; set; }
@@ -27,10 +26,6 @@ namespace MSS.API.Model.Data
         public long RemainCount { get; set; }
         public long UsedCount { get; set; }
         public long RemindCount { get; set; }
-        public System.DateTime CreatedTime { get; set; }
-        public int CreatedBy { get; set; }
-        public System.DateTime UpdatedTime { get; set; }
-        public int UpdatedBy { get; set; }
         public string UpdatedName { get; set; }
         public string CreatedName { get; set; }
     }
@@ -39,7 +34,7 @@ namespace MSS.API.Model.Data
     {
         public PidCountMap()
         {
-            Map(o => o.Id).ToColumn("id");
+            Map(o => o.ID).ToColumn("id");
             Map(o => o.NodeId).ToColumn("node_id");
             Map(o => o.NodeName).ToColumn("node_name");
             Map(o => o.NodeTip).ToColumn("node_tip");

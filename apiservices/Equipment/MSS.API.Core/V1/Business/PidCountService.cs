@@ -79,7 +79,7 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                PidCount et = await _repo.GetByID(obj.Id);
+                PidCount et = await _repo.GetByID(obj.ID);
                 if (et != null)
                 {
                     DateTime dt = DateTime.Now;

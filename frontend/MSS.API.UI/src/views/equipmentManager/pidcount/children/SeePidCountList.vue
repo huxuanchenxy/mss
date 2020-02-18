@@ -37,7 +37,6 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
-        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
         <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
       </ul>
@@ -85,7 +84,7 @@
             <li class="list" v-for="(item) in EqpList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editEqpID" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editObjID" :value="item.id" @change="emitEditID">
                 </div>
                 <div class="number">{{ item.nodeId }}</div>
                 <div class="name">{{ item.nodeName }}</div>
@@ -164,7 +163,7 @@ export default {
       area: [],
       areaList: [],
       EqpList: [],
-      editEqpID: [],
+      editObjID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -269,7 +268,7 @@ export default {
 
     add () {
       this.$router.push({
-        name: 'AddEqp',
+        name: 'AddPidCount',
         params: {
           mark: 'add'
         }
@@ -277,21 +276,21 @@ export default {
     },
     // 修改设备
     edit () {
-      if (!this.editEqpID.length) {
+      if (!this.editObjID.length) {
         this.$message({
           message: '请选择需要修改的设备',
           type: 'warning'
         })
-      } else if (this.editEqpID.length > 1) {
+      } else if (this.editObjID.length > 1) {
         this.$message({
           message: '修改的设备不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddEqp',
+          name: 'AddPidCount',
           params: {
-            id: this.editEqpID[0],
+            id: this.editObjID[0],
             mark: 'edit'
           }
         })
@@ -299,12 +298,12 @@ export default {
     },
     // 查看设备明细
     detail () {
-      if (!this.editEqpID.length) {
+      if (!this.editObjID.length) {
         this.$message({
           message: '请选择需要查看的设备',
           type: 'warning'
         })
-      } else if (this.editEqpID.length > 1) {
+      } else if (this.editObjID.length > 1) {
         this.$message({
           message: '查看的设备不能超过1个',
           type: 'warning'
@@ -313,15 +312,15 @@ export default {
         this.$router.push({
           name: 'DetailEqp',
           params: {
-            id: this.editEqpID[0],
-            sourceName: 'SeeEqpList'
+            id: this.editObjID[0],
+            sourceName: 'SeePidCountList'
           }
         })
       }
     },
     // 删除设备
     remove () {
-      if (!this.editEqpID.length) {
+      if (!this.editObjID.length) {
         this.$message({
           message: '请选择需要删除的设备',
           type: 'warning'
@@ -334,9 +333,9 @@ export default {
     },
     // 弹框确认是否删除
     dialogEnter () {
-      api.delEqp(this.editEqpID.join(',')).then(res => {
+      api.delEqp(this.editObjID.join(',')).then(res => {
         if (res.code === 0) {
-          this.editEqpID = []
+          this.editObjID = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -363,12 +362,12 @@ export default {
 
     // 获取修改设备id
     emitEditID () {
-      this.$emit('editEqpID', this.editEqpID)
+      this.$emit('editObjID', this.editObjID)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.EqpList.map(val => this.editEqpID.push(val.id)) : this.editEqpID = []
+      this.bCheckAll ? this.EqpList.map(val => this.editObjID.push(val.id)) : this.editObjID = []
       this.emitEditID()
     },
 

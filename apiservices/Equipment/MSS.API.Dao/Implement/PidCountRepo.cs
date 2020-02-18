@@ -119,7 +119,7 @@ namespace MSS.API.Dao.Implement
                     ";
                 sql += "SELECT LAST_INSERT_ID() ";
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, obj);
-                obj.Id = newid;
+                obj.ID = newid;
                 return obj;
             });
         }
