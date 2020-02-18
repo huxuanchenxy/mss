@@ -5,25 +5,30 @@
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
       <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
+        <img :src="{ titlepic }" alt="" class="icon">{{ title }}
       </h2>
     </div>
-    <div class="box">
+    <div class="boxSeeProcessConsul">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
+            <label for="name">服务名称</label>
+            <div class="inp" id="txtserviceName">
+              <el-input v-model.trim="serviceName" placeholder="请输入服务名称" clearable></el-input>
+            </div>
+            <div class="search-btn" @click="searchRes">
+              <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
+            </div>
+            <div class="refresh-btn" @click="refreshpage">
+              <x-button ><i class="iconfont icon-search"></i> 刷新</x-button>
+            </div>
           </div>
         </div>
-        <div class="search-btn" @click="searchRes">
-        </div>
       </div>
-                        <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="refreshpage"><x-button>刷新</x-button></li>
-      </ul>
     </div>
     <!-- 内容 -->
-    <div class="content-wrap">
+    <div class="content-wrap content-process">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" style="visibility: hidden;"></li>
         <li class="list number c-pointer" @click="changeOrder('service_name')">
@@ -35,19 +40,22 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.serviceAddr === 0 }, { 'el-icon-caret-top': headOrder.serviceAddr === 1 }, { 'el-icon-caret-bottom': headOrder.serviceAddr === 2 }]"></i>
        </li>
        <li class="list number c-pointer" @click="changeOrder('service_port')">
-          CPU
+          服务端口
           <i :class="[{ 'el-icon-d-caret': headOrder.servicePort === 0 }, { 'el-icon-caret-top': headOrder.servicePort === 1 }, { 'el-icon-caret-bottom': headOrder.servicePort === 2 }]"></i>
        </li>
         <li class="list number c-pointer" @click="changeOrder('healthStatus')" >
-          内存
+          健康状态
           <i :class="[{ 'el-icon-d-caret': headOrder.healthStatus === 0 }, { 'el-icon-caret-top': headOrder.healthStatus === 1 }, { 'el-icon-caret-bottom': headOrder.healthStatus === 2 }]"></i>
        </li>
                <li class="list number c-pointer">
-          网络
+          操作
           <i :class="[{ 'el-icon-d-caret': headOrder.healthStatus === 0 }, { 'el-icon-caret-top': headOrder.healthStatus === 1 }, { 'el-icon-caret-bottom': headOrder.healthStatus === 2 }]"></i>
        </li>
-        <li class="list number c-pointer" @click="changeOrder('service_pid')" >硬盘
+        <li class="list number c-pointer" @click="changeOrder('service_pid')" >进程pid
           <i :class="[{ 'el-icon-d-caret': headOrder.servicePID === 0 }, { 'el-icon-caret-top': headOrder.servicePID === 1 }, { 'el-icon-caret-bottom': headOrder.servicePID === 2 }]"></i>
+        </li>
+        <li class="list number c-pointer" @click="changeOrder('updated_time')">最后启动时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.updatedTime === 0 }, { 'el-icon-caret-top': headOrder.updatedTime === 1 }, { 'el-icon-caret-bottom': headOrder.updatedTime === 2 }]"></i>
         </li>
       </ul>
       <div class="scroll">
@@ -58,22 +66,28 @@
                 <div class="checkbox">
                   <input type="checkbox" v-model="lookOperlogID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="name">{{ item.prettyName }}</div>
-                <div class="name">{{ item.ip }}</div>
+                <div class="name">{{ item.serviceName }}</div>
+                <div class="name">{{ item.serviceAddr }}</div>
                 <!--<div class="name">
                   <router-link :to="{ name: 'SeeActionList', params: { id: item.id } }">{{ item.servicePort }}</router-link>
                 </div>-->
-                <div class="name">{{ item.cpuLoad }}%</div>
-
-                <div class="name">{{ item.percentMemoryUsed }}%</div>
+                <div class="name">{{ item.servicePort }}</div>
+                <div class="name">
+                  <span v-if="item.healthStatus===1">running</span><span v-else>stoped</span>
+                </div>
+                <div class="name"><el-switch
+                    v-model="item.healthDo"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949" @change='changeStatus($event,item)'>
+                  </el-switch></div>
+                <div class="name">{{ item.servicePID }}</div>
                 <!-- <div class="name">{{ item.mac_add }}</div> -->
-                <div class="name">{{ item.prettyTotalNetwork }}</div>
-                <div class="name">{{ item.diskText }}%</div>
+                <div class="name">{{ item.updatedTime }}</div>
               </div>
             </li>
           </ul>
         <!-- 分页 -->
-          <!-- <el-pagination
+          <el-pagination
             :current-page.sync="currentPage"
             @current-change="handleCurrentChange"
             @prev-click="prevPage"
@@ -83,20 +97,18 @@
             next-text="下一页"
             :total="total">
             <span>总共 {{ total }} 条记录</span>
-          </el-pagination> -->
+          </el-pagination>
         </el-scrollbar>
-      <div id="mynetwork"></div>
       </div>
     </div>
 
   </div>
 </template>
 <script>
+import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
-import api from '@/api/monitorserver'
-import vis from 'vis-network/dist/vis-network.min.js'
-import 'vis-network/dist/vis-network.min.css'
-import pcimg from './pc.png'
+import api1 from '@/api/processConsul1Api'
+import api2 from '@/api/processConsul2Api'
 export default {
   name: 'SeeProcessConsul',
   components: {
@@ -104,7 +116,8 @@ export default {
   },
   data () {
     return {
-      title: ' | 服务器监控',
+      title: '',
+      titlepic: '',
       time: '',
       serviceName: '',
       startTime: '',
@@ -141,14 +154,12 @@ export default {
     }
   },
   created () {
-    this.$emit('title', '| 服务监控')
+    // this.$emit('title', '| 服务监控')
     this.init()
+    this.InitTitle()
   },
   activated () {
     this.searchResult(this.currentPage)
-  },
-  mounted () {
-    // this.ShowVisNetWork()
   },
   methods: {
     init () {
@@ -192,17 +203,14 @@ export default {
         page: page,
         serviceName: this.serviceName
       }
-      api.getPage(parm).then(res => {
+      api1.getPage(parm).then(res => {
         this.loading = false
-        // res.data.rows.map(item => {
-        //   // item.updatedTime = transformDate(item.updatedTime)
-        //   // item.healthDo = item.healthStatus === 1
-        //   item.PrettyMemoryUsed = 1
-        // })
-        // console.log(res)
-        this.ShowVisNetWork(res.data)
-        this.UserList = res.data
-        // this.total = res.data.total
+        res.data.rows.map(item => {
+          item.updatedTime = transformDate(item.updatedTime)
+          item.healthDo = item.healthStatus === 1
+        })
+        this.UserList = res.data.rows
+        this.total = res.data.total
       }).catch(err => console.log(err))
     },
     // 搜索功能
@@ -250,49 +258,82 @@ export default {
       this.loading = true
       this.searchResult(1)
     },
-    ShowVisNetWork (res) {
-      // create an array with nodes
-      let n2 = res.filter(c => c.ip === '10.89.36.103')[0]
-      let n3 = res.filter(c => c.ip === '10.89.36.154')[0]
-      let n4 = res.filter(c => c.ip === '10.89.36.153')[0]
-      let n5 = res.filter(c => c.ip === '10.89.36.152')[0]
-      let retarr = []
-      retarr.push({ id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false })
-      retarr.push({ id: 2, label: 'Web服务器(' + n2.ip + ')(cpu:' + n2.cpuLoad + '%)(mem:' + n2.percentMemoryUsed + '%)(network:' + n2.prettyTotalNetwork + ')(disk:' + n2.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false, font: {color: '#fff'} })
-      retarr.push({ id: 3, label: '网关(' + n3.ip + ')(cpu:' + n3.cpuLoad + '%)(mem:' + n3.percentMemoryUsed + '%)(network:' + n3.prettyTotalNetwork + ')(disk:' + n3.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false, font: {color: '#fff'} })
-      retarr.push({ id: 4, label: '后台服务(' + n4.ip + ')(cpu:' + n4.cpuLoad + '%)(mem:' + n4.percentMemoryUsed + '%)(network:' + n4.prettyTotalNetwork + ')(disk:' + n4.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: -300, y: 0, physics: false, font: {color: '#fff'} })
-      retarr.push({ id: 5, label: '后台服务(' + n5.ip + ')(cpu:' + n5.cpuLoad + '%)(mem:' + n5.percentMemoryUsed + '%)(network:' + n5.prettyTotalNetwork + ')(disk:' + n5.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 300, y: 0, physics: false, font: {color: '#fff'} })
-      // var nodes = new vis.DataSet([
-      //   { id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false },
-      //   { id: 2, label: 'Web服务器(10.89.36.103)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false, font: {color: '#fff'} },
-      //   { id: 3, label: '网关(10.89.36.154)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false, font: {color: '#fff'} },
-      //   { id: 4, label: '后台服务(10.89.36.153)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 0, physics: false, font: {color: '#fff'} }
-      //   // { id: 5, label: 'MBN' }
-      // ])
-      var nodes = new vis.DataSet(retarr)
-
-      // create an array with edges
-      var edges = new vis.DataSet([
-        // { from: 1, to: 3 },
-        { from: 1, to: 2 },
-        { from: 2, to: 3 },
-        { from: 3, to: 4 },
-        { from: 3, to: 5 }
-        // { from: 3, to: 3 }
-      ])
-
-      // create a network
-      var container = document.getElementById('mynetwork')
-      var data = {
-        nodes: nodes,
-        edges: edges
+    InitTitle () {
+      let navlist = this.$router.navList
+      // console.log('navlist:')
+      // console.log(navlist)
+      if (navlist !== undefined) {
+        let r = this.$router.navList[this.$route.matched[0].path]
+        let rc = r.children
+        this.titlepic = this.$router.navList[this.$route.matched[0].path].iconClsActive
+        this.title = this.$router.navList[this.$route.matched[0].path].name + ' | ' + rc.filter(item => item.path === this.$route.path)[0].name
+        window.sessionStorage.setItem('title', this.title)
+        window.sessionStorage.setItem('titlepic', this.titlepic)
+      } else {
+        this.title = window.sessionStorage.getItem('title')
+        this.titlepic = window.sessionStorage.getItem('titlepic')
       }
-      var options = {
-        interaction: {
-          dragView: false
+    },
+    changeStatus: function ($event, item) {
+      // alert($event)
+      // alert(item.serviceAddr)
+      if (item.serviceAddr === '10.89.36.103') {
+        if ($event) {
+          api1.startProcess(item.id).then(res => {
+            this.loading = false
+            this.$message({
+              message: '启动成功,请耐心等待服务器启动',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
+          }).catch(err => console.log(err))
+        } else {
+          api1.stopProcess(item.id).then(res => {
+            this.loading = false
+            this.$message({
+              message: '停止成功,请耐心等待服务器停止',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
+          }).catch(err => console.log(err))
+        }
+      } else if (item.serviceAddr === '10.89.36.160') {
+        if ($event) {
+          api2.startProcess(item.id).then(res => {
+            this.loading = false
+            this.$message({
+              message: '启动成功,请耐心等待服务器启动',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
+          }).catch(err => console.log(err))
+        } else {
+          api2.stopProcess(item.id).then(res => {
+            this.loading = false
+            this.$message({
+              message: '停止成功,请耐心等待服务器停止',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({
+                  name: 'SeeProcessConsul'
+                })
+              }
+            })
+          }).catch(err => console.log(err))
         }
       }
-      var network = new vis.Network(container, data, options)// eslint-disable-line no-unused-vars
     }
   }
 }
@@ -405,12 +446,24 @@ $con-height: $content-height - 145 - 56;
 }
 </style>
 <style>
-#mynetwork {
-    width: 97%;
-    height: 400px;
-    /* border: 1px solid lightgray; */
-    position: absolute;
-    top: 50%;
-    /* left: 30%; */
+.boxSeeProcessConsul .inp{
+  display: inline-block;
+}
+.boxSeeProcessConsul .search-btn{
+  display:inline-block;
+  right:10%;
+  position:absolute;
+}
+.boxSeeProcessConsul .refresh-btn{
+  display:inline-block;
+  right:4%;
+  position:absolute;
+}
+.boxSeeProcessConsul .search-wrap{
+  height: 40px;
+  line-height: 40px;
+}
+.content-process{
+  height:92% !important;
 }
 </style>
