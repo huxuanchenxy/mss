@@ -7,7 +7,9 @@ namespace MSS.API.Model.Data
 {
     public class PidCountParm : BaseQueryParm
     {
-
+        public string nodeId { get; set; }
+        public string nodeName { get; set; }
+        public string nodeTip { get; set; }
     }
     public class PidCountPageView
     {

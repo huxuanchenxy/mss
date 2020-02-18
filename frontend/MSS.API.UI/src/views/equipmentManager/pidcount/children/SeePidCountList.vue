@@ -13,47 +13,21 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="">子系统</label>
+            <label for="">车站编号</label>
             <div class="inp">
-              <el-select v-model="subSystem" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="item in subSystemList"
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-input clearable v-model.trim="parm.nodeId" placeholder="请输入车站编号"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="">设备类型</label>
+            <label for="">车站名称</label>
             <div class="inp">
-              <el-select v-model="eqpType" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="item in eqpTypeList"
-                  :key="item.key"
-                  :label="item.tName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-input clearable v-model.trim="parm.nodeName" placeholder="请输入车站名称"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="name">设备图纸编码</label>
+            <label for="">车站缩写</label>
             <div class="inp">
-              <el-input v-model.trim="eqpCode" placeholder="请输入设备图纸编码"></el-input>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="">安装位置</label>
-            <div class="inp">
-              <el-cascader clearable
-                change-on-select
-                :props="areaParams"
-                :show-all-levels="true"
-                :options="areaList"
-                v-model="area">
-              </el-cascader>
+              <el-input clearable v-model.trim="parm.nodeTip" placeholder="请输入车站缩写"></el-input>
             </div>
           </div>
         </div>
@@ -158,12 +132,12 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import { dictionary } from '@/common/js/dictionary.js'
+// import { dictionary } from '@/common/js/dictionary.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
-import apiAuth from '@/api/authApi'
+// import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
-import apiArea from '@/api/AreaApi.js'
+// import apiArea from '@/api/AreaApi.js'
 export default {
   name: 'SeePidCountList',
   components: {
@@ -176,10 +150,10 @@ export default {
         delete: false,
         update: false
       },
-      areaParams: {
-        label: 'areaName',
-        value: 'id',
-        children: 'children'
+      parm: {
+        nodeId: '',
+        nodeName: '',
+        nodeTip: ''
       },
       title: ' | 点位资源',
       eqpCode: '',
@@ -206,11 +180,9 @@ export default {
         btn: true
       },
       headOrder: {
-        eqp_code: 1,
-        eqp_name: 0,
-        sub_system: 0,
-        eqp_type: 0,
-        team: 0,
+        node_id: 1,
+        node_name: 0,
+        node_tip: 0,
         updated_time: 0,
         updated_by: 0
       }
@@ -234,24 +206,6 @@ export default {
       this.eqp = this.$route.params.id
     }
     this.init()
-    // 子系统加载
-    apiAuth.getSubCode(dictionary.subSystem).then(res => {
-      this.subSystemList = res.data
-    }).catch(err => console.log(err))
-
-    // 设备类型加载
-    api.getEqpTypeAll().then(res => {
-      this.eqpTypeList = res.data
-      if (this.$route.params.id !== undefined) {
-        this.eqpType = this.$route.params.id
-        this.searchResult(1)
-      }
-    }).catch(err => console.log(err))
-
-    // 安装位置加载
-    apiArea.SelectConfigAreaData().then(res => {
-      this.areaList = res.data.dicAreaList
-    }).catch(err => console.log(err))
   },
   activated () {
     this.searchResult(this.currentPage)
@@ -266,11 +220,9 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.eqp_code = 0
-        this.headOrder.eqp_name = 0
-        this.headOrder.sub_system = 0
-        this.headOrder.eqp_type = 0
-        this.headOrder.team = 0
+        this.headOrder.node_id = 0
+        this.headOrder.node_name = 0
+        this.headOrder.node_tip = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -300,11 +252,9 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        SearchSubSystem: this.subSystem,
-        SearchCode: this.eqpCode,
-        SearchType: this.eqpType,
-        SearchLocation: this.area[l],
-        SearchLocationBy: l
+        nodeId: this.parm.nodeId,
+        nodeName: this.parm.nodeName,
+        nodeTip: this.parm.nodeTip
       }
       api.getPidCount(parm).then(res => {
         this.loading = false

@@ -47,12 +47,20 @@ namespace MSS.API.Dao.Implement
                 left join user u2 on a.updated_by=u2.id 
                  ");
                 StringBuilder whereSql = new StringBuilder();
-                //whereSql.Append(" WHERE ai.ProcessInstanceID = '" + parm.ProcessInstanceID + "'");
+                whereSql.Append(" WHERE 1 = 1 ");
 
-                //if (parm.AppName != null)
-                //{
-                //    whereSql.Append(" and ai.AppName like '%" + parm.AppName.Trim() + "%'");
-                //}
+                if (!string.IsNullOrEmpty(parm.nodeId))
+                {
+                    whereSql.Append(" and a.node_id like '%" + parm.nodeId.Trim() + "%'");
+                }
+                if (!string.IsNullOrEmpty(parm.nodeName))
+                {
+                    whereSql.Append(" and a.node_name like '%" + parm.nodeName.Trim() + "%'");
+                }
+                if (!string.IsNullOrEmpty(parm.nodeTip))
+                {
+                    whereSql.Append(" and a.node_tip like '%" + parm.nodeTip.Trim() + "%'");
+                }
 
                 sql.Append(whereSql);
                 //验证是否有参与到流程中
