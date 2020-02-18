@@ -3,46 +3,85 @@ using System.Collections.Generic;
 using System.Text;
 using Dapper;
 using Dapper.FluentMap.Mapping;
+using MSS.API.Common.Utility;
+
 namespace MSS.API.Model.Data
 {
-    public class Equipment:BaseEntity
+    public class Equipment
     {
+        [Info("设备编码","eqp_code", 0)]
         public string Code { get; set; }
+        [Info("设备名称","eqp_name", 1)]
         public string Name { get; set; }
+        [Info("设备类型ID","eqp_type", 2)]
         public int Type { get; set; }
         public string TName { get; set; }
+        [Info("设备资产编号", "eqp_asset_number", 3)]
         public string AssetNo { get; set; }
+        [Info("设备规格型号", "eqp_model", 4)]
         public string Model { get; set; }
+        [Info("子系统ID", "sub_system", 5)]
         public int SubSystem { get; set; }
         public string SubSystemName { get; set; }
+        [Info("管辖班组ID","team", 6)]
         public int Team { get; set; }
+        [Info("管辖班组级联路径","team_path", 7,false)]
         public string TeamPath { get; set; }
+        [Info("所属公司ID","top_org", 8)]
         public int TopOrg { get; set; }
+        [Info("所属线路ID","line", 9)]
         public int Line { get; set; }
         public string LineName { get; set; }
         public string TeamName { get; set; }
+        [Info("设备条码", "bar_code", 10)]
         public string BarCode { get; set; }
+        [Info("设备概述", "discription", 11)]
         public string Desc { get; set; }
+        [Info("供应商ID", "supplier", 12)]
         public int? Supplier { get; set; }
         public string SupplierName { get; set; }
+        [Info("制造商ID", "manufacturer", 13)]
         public int? Manufacturer { get; set; }
         public string ManufacturerName { get; set; }
+        [Info("设备序列号", "serial_number", 14)]
         public string SerialNo { get; set; }
+        [Info("额定电压", "rated_voltage", 15)]
         public double? RatedVoltage { get; set; }
+        [Info("额定电流", "rated_current", 16)]
         public double? RatedCurrent { get; set; }
+        [Info("额定功率", "rated_power", 17)]
         public double? RatedPower { get; set; }
+        [Info("安装位置ID", "location", 18)]
         public int Location { get; set; }
         /// <summary>
         /// 哪张表的位置ID
         /// </summary>
+        [Info("安装站区ID", "location_by", 19)]
         public int LocationBy { get; set; }
+        [Info("安装站区级联路径", "location_path", 20,false)]
         public string LocationPath { get; set; }
         public string LocationName { get; set; }
+        [Info("上线日期", "online_date", 21)]
         public DateTime Online { get; set; }
+        [Info("使用期限", "life", 22)]
         public int? Life { get; set; }
+        [Info("中修次数", "medium_repair", 23)]
         public int MediumRepair { get; set; }
+        [Info("大修次数", "large_repair", 24)]
         public int LargeRepair { get; set; }
+        [Info("再次上线日期", "online_again", 25)]
         public DateTime? OnlineAgain { get; set; }
+        public int ID { get; set; }
+        [Info("创建人ID", "created_by", 27, false)]
+        public int CreatedBy { get; set; }
+        [Info("创建时间", "created_time", 26,false)]
+        public DateTime CreatedTime { get; set; }
+        [Info("更信人ID", "updated_by", 29, false)]
+        public int UpdatedBy { get; set; }
+        [Info("更新时间", "updated_time", 28, false)]
+        public DateTime UpdatedTime { get; set; }
+        [Info("逻辑删除标志", "is_del", 30, false)]
+        public int IsDel { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
         /// <summary>

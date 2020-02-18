@@ -65,6 +65,10 @@ const routes = [
           }
         ]
       }, {
+        path: 'logImportExcel',
+        name: 'LogImportExcel',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/logImportExcel/Index.vue')
+      }, {
         path: 'log',
         name: 'Log',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/log/Index.vue')
@@ -117,6 +121,23 @@ const routes = [
             path: 'addActionGroup/:mark?/:id?',
             name: 'AddActionGroup',
             component: () => import(/* webpackChunkName: "system" */ '@/views/system/actionGroup/children/AddActionGroup.vue')
+          }
+        ]
+      }, {
+        path: 'importExcelConfig',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/importExcelConfig/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeImportExcelConfigList',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/importExcelConfig/children/SeeConfigList.vue')
+          }, {
+            path: 'addImportExcelConfig/:mark?/:id?',
+            name: 'AddImportExcelConfig',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/importExcelConfig/children/AddConfig.vue')
           }
         ]
       }, {

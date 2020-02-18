@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http;
 using MSS.API.Common.Utility;
 using System.IO;
 using MSS.Common.Consul;
+using System.Data;
+using MSS.API.Dao.Implement;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -25,17 +27,81 @@ namespace MSS.API.Core.V1.Business
         private readonly IEquipmentRepo<Equipment> _eqpRepo;
         private readonly IUploadFileRepo<UploadFile> _uploadFileRepo;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
+        private readonly IImportExcelConfigRepo<ImportExcelConfig> _importExcelConfigRepo;
 
         private readonly int userID;
 
         public EquipmentService(IEquipmentRepo<Equipment> eqpRepo, IAuthHelper auth, 
-            IServiceDiscoveryProvider consulServiceProvider, IUploadFileRepo<UploadFile> uploadFileRepo)
+            IServiceDiscoveryProvider consulServiceProvider,
+            IImportExcelConfigRepo<ImportExcelConfig> importExcelConfigRepo, 
+            IUploadFileRepo<UploadFile> uploadFileRepo)
         {
             //_logger = logger;
             _eqpRepo = eqpRepo;
+            _importExcelConfigRepo = importExcelConfigRepo;
             _consulServiceProvider = consulServiceProvider;
             _uploadFileRepo = uploadFileRepo;
             userID = auth.GetUserId();
+        }
+        public async Task<ApiResult> Import(IFormFile file)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                ImportExcelConfig oneConfig = await _importExcelConfigRepo.GetByFileName(fileName);
+                ImportExcelClass oneClass = await _importExcelConfigRepo.GetClassByID(oneConfig.ClassID);
+                ImportExcelHelper importExcelHelper = new ImportExcelHelper(oneClass.FullName, oneClass.AssemblyName);
+                string[] config = oneConfig.Config.Split(',');
+                string[] required = oneConfig.Required.Split(',');
+                string errMsg = "";
+                ImportExcelLog log = new ImportExcelLog();
+                DataTable dt = importExcelHelper.GetData(file, config, required,userID, ref log, ref errMsg);
+                DateTime now = DateTime.Now;
+                foreach (DataRow row in dt.Rows)
+                {
+                    foreach (DataColumn col in dt.Columns)
+                    {
+                        //没有导入的非字符串字段需要默认值
+                        if (row[col].ToString() == "")
+                        {
+                            string typeName= col.DataType.Name;
+                            switch (typeName)
+                            {
+                                case "Int32":
+                                case "Double":
+                                    row[col] = 0;
+                                    break;
+                                case "DateTime":
+                                    row[col] = new DateTime(1970,1,1);
+                                    break;
+                            }
+                        }
+                    }
+                    //系统赋值
+                    row["created_by"] = userID;
+                    row["updated_by"] = userID;
+                    row["created_time"] = now;
+                    row["updated_time"] = now;
+                    row["is_del"] = 0;
+                }
+                log.CreatedBy = userID;
+                log.CreatedTime = now;
+                dt.TableName = "equipment_copy";
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    ret.data = _importExcelConfigRepo.BulkLoad(dt);
+                    await _importExcelConfigRepo.SaveLog(log);
+                    scope.Complete();
+                }
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
         }
 
         public async Task<ApiResult> Save(Equipment eqp)

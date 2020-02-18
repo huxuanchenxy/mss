@@ -22,7 +22,13 @@ namespace MSS.API.Core.V1.Controllers
             _eqpService = eqpService;
 
         }
-
+        [HttpPost("Import")]
+        [RequestSizeLimit(52428800)]
+        public ActionResult Import(IFormFile file)
+        {
+            var ret = _eqpService.Import(file);
+            return Ok(ret.Result);
+        }
         [HttpPost]
         public ActionResult Save(Equipment eqp)
         {
