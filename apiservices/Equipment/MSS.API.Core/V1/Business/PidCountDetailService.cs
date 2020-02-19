@@ -1,40 +1,38 @@
 ﻿using MSS.API.Common;
 using MSS.API.Common.Utility;
-using MSS.API.Dao.Implement;
-using MSS.API.Model.Data;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using MSS.API.Model.Data;
+using MSS.API.Dao.Implement;
 
 
-// Coded By admin 2020/2/17 14:25:01
+// Coded By admin 2020/2/19 9:52:49
 namespace MSS.API.Core.V1.Business
 {
-    public interface IPidCountService
+    public interface IPidCountDetailService
     {
-        Task<ApiResult> GetPageList(PidCountParm parm);
-        Task<ApiResult> Save(PidCount obj);
-        Task<ApiResult> Update(PidCount obj);
+        Task<ApiResult> GetPageList(PidCountDetailParm parm);
+        Task<ApiResult> Save(PidCountDetail obj);
+        Task<ApiResult> Update(PidCountDetail obj);
         Task<ApiResult> Delete(string ids);
         Task<ApiResult> GetByID(int id);
     }
 
-    public class PidCountService : IPidCountService
+    public class PidCountDetailService : IPidCountDetailService
     {
-        private readonly IPidCountRepo<PidCount> _repo;
+        private readonly IPidCountDetailRepo<PidCountDetail> _repo;
         private readonly IAuthHelper _authhelper;
         private readonly int _userID;
-        private readonly IPidCountDetailService _serviceDetail;
 
-        public PidCountService(IPidCountRepo<PidCount> repo, IAuthHelper authhelper,IPidCountDetailService serviceDetail)
+        public PidCountDetailService(IPidCountDetailRepo<PidCountDetail> repo, IAuthHelper authhelper)
         {
             _repo = repo;
             _authhelper = authhelper;
             _userID = _authhelper.GetUserId();
-            _serviceDetail = serviceDetail;
         }
 
-        public async Task<ApiResult> GetPageList(PidCountParm parm)
+        public async Task<ApiResult> GetPageList(PidCountDetailParm parm)
         {
             ApiResult ret = new ApiResult();
             try
@@ -54,7 +52,7 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<ApiResult> Save(PidCount obj)
+        public async Task<ApiResult> Save(PidCountDetail obj)
         {
             ApiResult ret = new ApiResult();
             try
@@ -64,7 +62,6 @@ namespace MSS.API.Core.V1.Business
                 obj.CreatedTime = dt;
                 obj.UpdatedBy = _userID;
                 obj.CreatedBy = _userID;
-                obj.RemainCount = obj.CapacityCount - obj.UsedCount;
                 ret.data = await _repo.Save(obj);
                 ret.code = Code.Success;
                 return ret;
@@ -77,33 +74,18 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Update(PidCount obj)
+        public async Task<ApiResult> Update(PidCountDetail obj)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                PidCount et = await _repo.GetByID(obj.ID);
+                PidCountDetail et = await _repo.GetByID(obj.ID);
                 if (et != null)
                 {
                     DateTime dt = DateTime.Now;
                     obj.UpdatedTime = dt;
                     obj.UpdatedBy = _userID;
-                    obj.RemainCount = obj.CapacityCount - obj.UsedCount;
                     ret.data = await _repo.Update(obj);
-                    PidCountDetail obj1 = new PidCountDetail() { PidCountId = obj.ID,
-                     CapacityCountOld = et.CapacityCount,
-                     CapacityCountNew = obj.CapacityCount,
-                     UsedCountOld = et.UsedCount,
-                     UsedCountNew = obj.UsedCount,
-                     RemainCountOld = et.RemindCount,
-                     RemainCountNew = obj.RemindCount,
-                     RemindCountOld = et.RemindCount,
-                     RemindCountNew = obj.RemindCount,
-                     CreatedTime = dt,
-                     CreatedBy = _userID,
-                     UpdatedTime = dt,
-                     UpdatedBy = _userID};
-                    await _serviceDetail.Save(obj1);
                     ret.code = Code.Success;
                 }
                 else
@@ -143,7 +125,7 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                PidCount obj = await _repo.GetByID(id);
+                PidCountDetail obj = await _repo.GetByID(id);
                 ret.data = obj;
                 ret.code = Code.Success;
                 return ret;

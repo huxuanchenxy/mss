@@ -28,6 +28,7 @@ namespace MSS.API.Dao
             services.AddTransient<IEquipmentRepairHistoryRepo<EquipmentRepairHistory>, EquipmentRepairHistoryRepo>();
             services.AddTransient<IPidTableRepo<PidTable>, PidTableRepo>();
             services.AddTransient<IPidCountRepo<PidCount>, PidCountRepo>();
+            services.AddTransient<IPidCountDetailRepo<PidCountDetail>,PidCountDetailRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -41,6 +42,7 @@ namespace MSS.API.Dao
                 config.AddMap(new EquipmentRepairHistoryMap());
                 config.AddMap(new PidTableMap());
                 config.AddMap(new PidCountMap());
+                config.AddMap(new PidCountDetailMap());
             });
             return services;
         }

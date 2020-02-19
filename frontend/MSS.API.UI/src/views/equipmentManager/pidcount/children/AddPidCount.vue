@@ -195,8 +195,6 @@ export default {
           }
         }).catch(err => console.log(err))
       } else if (this.isShow === 'edit') {
-        console.log('aaa')
-        console.log(this.editObjID)
         obj.ID = this.editObjID
         // 修改
         api.updatePidCount(obj).then(res => {
