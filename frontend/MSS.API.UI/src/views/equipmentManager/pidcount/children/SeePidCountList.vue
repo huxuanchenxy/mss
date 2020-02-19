@@ -4,9 +4,7 @@
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
-      <h2 class="title">
-        <!-- <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }} -->
-      </h2>
+      <title-module></title-module>
     </div>
     <div class="box">
       <!-- 搜索框 -->
@@ -137,10 +135,12 @@ import XButton from '@/components/button'
 // import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
 // import apiArea from '@/api/AreaApi.js'
+import TitleModule from '@/components/TitleModule'
 export default {
   name: 'SeePidCountList',
   components: {
-    XButton
+    XButton,
+    'title-module': TitleModule
   },
   data () {
     return {
