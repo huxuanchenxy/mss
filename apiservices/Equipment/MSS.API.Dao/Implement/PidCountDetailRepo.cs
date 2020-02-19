@@ -29,22 +29,27 @@ namespace MSS.API.Dao.Implement
 
                 StringBuilder sql = new StringBuilder();
                 sql.Append($@"  SELECT 
-                id,
-                pid_count_id,
-                capacity_count_old,
-                capacity_count_new,
-                remain_count_old,
-                remain_count_new,
-                used_count_old,
-                used_count_new,
-                remind_count_old,
-                remind_count_new,
-                created_time,
-                created_by,
-                updated_time,updated_by FROM pid_count_detail
+                a.id,
+                a.pid_count_id,
+                a.capacity_count_old,
+                a.capacity_count_new,
+                a.remain_count_old,
+                a.remain_count_new,
+                a.used_count_old,
+                a.used_count_new,
+                a.remind_count_old,
+                a.remind_count_new,
+                a.created_time,
+                a.created_by,
+                a.updated_time,a.updated_by
+                ,u1.user_name as created_name
+                ,u2.user_name as updated_name
+                FROM pid_count_detail a
+                left join user u1 on a.created_by=u1.id 
+                left join user u2 on a.updated_by=u2.id
                  ");
                 StringBuilder whereSql = new StringBuilder();
-                //whereSql.Append(" WHERE ai.ProcessInstanceID = '" + parm.ProcessInstanceID + "'");
+                whereSql.Append(" WHERE a.pid_count_id = '" + parm.PidCountId + "'");
 
                 //if (parm.AppName != null)
                 //{
@@ -63,7 +68,7 @@ namespace MSS.API.Dao.Implement
 
                 var data = await c.QueryAsync<PidCountDetail>(sql.ToString());
                 var total = data.ToList().Count;
-                sql.Append(" order by " + parm.sort + " " + parm.order)
+                sql.Append(" order by a." + parm.sort + " " + parm.order)
                 .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
                 var ets = await c.QueryAsync<PidCountDetail>(sql.ToString());
 

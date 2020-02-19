@@ -23,7 +23,12 @@ export default {
   getEqpAll: () => { return axios.get(`${api}/Equipment/All`).then(res => res.data) },
 
   getPidCount: parm => { return axios.get(`${api}/PidCount/GetPageList`, {params: parm}).then(res => res.data) },
+  addPidCount: parm => { return axios.post(`${api}/PidCount`, parm).then(res => res.data) },
+  getPidCountByID: id => { return axios.get(`${api}/PidCount/${id}`).then(res => res.data) },
+  updatePidCount: parm => { return axios.put(`${api}/PidCount`, parm).then(res => res.data) },
   getFirm: parm => { return axios.get(`${api}/Firm`, {params: parm}).then(res => res.data) },
+  getPidCountDetail: parm => { return axios.get(`${api}/PidCountDetail/GetPageList`, {params: parm}).then(res => res.data) },
+
   getFirmByID: id => { return axios.get(`${api}/Firm/${id}`).then(res => res.data) },
   addFirm: parm => { return axios.post(`${api}/Firm`, parm).then(res => res.data) },
   updateFirm: parm => { return axios.put(`${api}/Firm`, parm).then(res => res.data) },

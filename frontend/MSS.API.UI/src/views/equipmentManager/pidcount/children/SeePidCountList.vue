@@ -242,10 +242,6 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
-      let l = this.area.length - 1
-      if (l === -1) {
-        l = ''
-      }
       let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
@@ -257,7 +253,6 @@ export default {
       }
       api.getPidCount(parm).then(res => {
         this.loading = false
-        console.log(res)
         res.data.rows.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
         })
@@ -310,10 +305,9 @@ export default {
         })
       } else {
         this.$router.push({
-          name: 'DetailEqp',
+          name: 'DetailPidCount',
           params: {
-            id: this.editObjID[0],
-            sourceName: 'SeePidCountList'
+            pidcountid: this.editObjID[0]
           }
         })
       }

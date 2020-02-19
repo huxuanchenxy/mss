@@ -65,7 +65,7 @@
               <div class="inp-wrap">
                 <span class="text">剩余数量</span>
                 <div class="inp">
-                  <el-input placeholder="请输入剩余数量" v-model="remainCount.text" @keyup.native="validateInputNull(remainCount)"></el-input>
+                  <el-input disabled placeholder="请输入剩余数量" v-model="remainCount.text" @keyup.native="validateInputNull(remainCount)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ remainCount.tips }}</p>

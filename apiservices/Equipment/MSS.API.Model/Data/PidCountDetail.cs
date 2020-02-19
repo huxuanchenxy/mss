@@ -7,7 +7,7 @@ namespace MSS.API.Model.Data
 {
     public class PidCountDetailParm : BaseQueryParm
     {
-
+        public int PidCountId { get; set; }
     }
     public class PidCountDetailPageView
     {
@@ -26,6 +26,8 @@ namespace MSS.API.Model.Data
         public long UsedCountNew { get; set; }
         public long RemindCountOld { get; set; }
         public long RemindCountNew { get; set; }
+        public string UpdatedName { get; set; }
+        public string CreatedName { get; set; }
     }
 
     public class PidCountDetailMap : EntityMap<PidCountDetail>
@@ -46,6 +48,8 @@ namespace MSS.API.Model.Data
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.UpdatedTime).ToColumn("updated_time");
             Map(o => o.UpdatedBy).ToColumn("updated_by");
+            Map(o => o.UpdatedName).ToColumn("updated_name");
+            Map(o => o.CreatedName).ToColumn("created_name");
         }
     }
 
