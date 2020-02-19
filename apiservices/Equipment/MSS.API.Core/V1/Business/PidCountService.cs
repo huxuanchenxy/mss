@@ -62,6 +62,7 @@ namespace MSS.API.Core.V1.Business
                 obj.CreatedTime = dt;
                 obj.UpdatedBy = _userID;
                 obj.CreatedBy = _userID;
+                obj.RemainCount = obj.CapacityCount - obj.UsedCount;
                 ret.data = await _repo.Save(obj);
                 ret.code = Code.Success;
                 return ret;
@@ -85,6 +86,7 @@ namespace MSS.API.Core.V1.Business
                     DateTime dt = DateTime.Now;
                     obj.UpdatedTime = dt;
                     obj.UpdatedBy = _userID;
+                    obj.RemainCount = obj.CapacityCount - obj.UsedCount;
                     ret.data = await _repo.Update(obj);
                     ret.code = Code.Success;
                 }
