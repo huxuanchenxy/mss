@@ -250,12 +250,13 @@ export default {
       if (this.Conn) {
         this.Conn.close()
       }
-      // let ip = 'http://localhost:3851/eventHub'
-      let ip = hub
+      let ip = 'http://localhost:8087/eventHub'
+      // let ip = hub
       var connection = new signalR.HubConnectionBuilder().withUrl(ip,
         { accessTokenFactory: () => token }).build()
 
       connection.on('RecieveMsg', function (message) {
+        console.log('eventhub:')
         console.log(message)
         if (!thisObj.bMsgShrink && message.msg !== 'off') {
           thisObj.startTimer()

@@ -7,42 +7,43 @@ using System.Net;
 using System.Threading.Tasks;
 
 
-// Coded By admin 2020/2/17 14:25:01
+// Coded By admin 2020/2/20 14:54:46
 namespace MSS.API.Core.V1.Business
 {
-    public interface IPidCountService
+    public interface INotificationPidcountService
     {
-        Task<ApiResult> GetPageList(PidCountParm parm);
-        Task<ApiResult> Save(PidCount obj);
-        Task<ApiResult> Update(PidCount obj);
+        Task<ApiResult> GetPageList(NotificationPidcountParm parm);
+        Task<ApiResult> Save(NotificationPidcount obj);
+        Task<ApiResult> Update(NotificationPidcount obj);
         Task<ApiResult> Delete(string ids);
         Task<ApiResult> GetByID(int id);
     }
 
-    public class PidCountService : IPidCountService
+    public class NotificationPidcountService : INotificationPidcountService
     {
-        private readonly IPidCountRepo<PidCount> _repo;
+        private readonly INotificationPidcountRepo<NotificationPidcount> _repo;
         private readonly IAuthHelper _authhelper;
         private readonly int _userID;
-        private readonly IPidCountDetailService _serviceDetail;
-        private readonly INotificationPidcountService _serviceNotice;
 
-        public PidCountService(IPidCountRepo<PidCount> repo, IAuthHelper authhelper, IPidCountDetailService serviceDetail, INotificationPidcountService serviceNotice)
+        public NotificationPidcountService(INotificationPidcountRepo<NotificationPidcount> repo, IAuthHelper authhelper)
         {
             _repo = repo;
             _authhelper = authhelper;
             _userID = _authhelper.GetUserId();
-            _serviceDetail = serviceDetail;
-            _serviceNotice = serviceNotice;
         }
 
-        public async Task<ApiResult> GetPageList(PidCountParm parm)
+        public async Task<ApiResult> GetPageList(NotificationPidcountParm parm)
         {
             ApiResult ret = new ApiResult();
             try
             {
                 //parm.UserID = _userID;
                 //parm.UserID = 40;
+                parm.page = 1;
+                parm.rows = 100;
+                parm.sort = "id";
+                parm.order = "asc";
+                parm.status = 0;
                 var data = await _repo.GetPageList(parm);
                 ret.code = Code.Success;
                 ret.data = data;
@@ -56,7 +57,7 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
-        public async Task<ApiResult> Save(PidCount obj)
+        public async Task<ApiResult> Save(NotificationPidcount obj)
         {
             ApiResult ret = new ApiResult();
             try
@@ -66,7 +67,6 @@ namespace MSS.API.Core.V1.Business
                 obj.CreatedTime = dt;
                 obj.UpdatedBy = _userID;
                 obj.CreatedBy = _userID;
-                obj.RemainCount = obj.CapacityCount - obj.UsedCount;
                 ret.data = await _repo.Save(obj);
                 ret.code = Code.Success;
                 return ret;
@@ -79,51 +79,18 @@ namespace MSS.API.Core.V1.Business
             }
         }
 
-        public async Task<ApiResult> Update(PidCount obj)
+        public async Task<ApiResult> Update(NotificationPidcount obj)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                PidCount et = await _repo.GetByID(obj.ID);
+                NotificationPidcount et = await _repo.GetByID(obj.ID);
                 if (et != null)
                 {
                     DateTime dt = DateTime.Now;
                     obj.UpdatedTime = dt;
                     obj.UpdatedBy = _userID;
-                    obj.RemainCount = obj.CapacityCount - obj.UsedCount;
                     ret.data = await _repo.Update(obj);
-                    PidCountDetail obj1 = new PidCountDetail()
-                    {
-                        PidCountId = obj.ID,
-                        CapacityCountOld = et.CapacityCount,
-                        CapacityCountNew = obj.CapacityCount,
-                        UsedCountOld = et.UsedCount,
-                        UsedCountNew = obj.UsedCount,
-                        RemainCountOld = et.RemindCount,
-                        RemainCountNew = obj.RemindCount,
-                        RemindCountOld = et.RemindCount,
-                        RemindCountNew = obj.RemindCount,
-                        CreatedTime = dt,
-                        CreatedBy = _userID,
-                        UpdatedTime = dt,
-                        UpdatedBy = _userID
-                    };
-                    await _serviceDetail.Save(obj1);
-                    //判断预警
-                    if (obj.UsedCount > obj.RemindCount)
-                    {
-                        await _serviceNotice.Save(new NotificationPidcount()
-                        {
-                            PidCountId = obj.ID,
-                            PidCountName = obj.NodeName,
-                            Content = "超过了预设的点位容量" + obj.RemindCount + "个点"
-                            , IsDel = false, CreatedTime = dt,
-                            CreatedBy  = _userID,
-                            UpdatedTime = dt,
-                            UpdatedBy = _userID,
-                            Status = 0
-                        });
-                    }
                     ret.code = Code.Success;
                 }
                 else
@@ -163,7 +130,7 @@ namespace MSS.API.Core.V1.Business
             ApiResult ret = new ApiResult();
             try
             {
-                PidCount obj = await _repo.GetByID(id);
+                NotificationPidcount obj = await _repo.GetByID(id);
                 ret.data = obj;
                 ret.code = Code.Success;
                 return ret;

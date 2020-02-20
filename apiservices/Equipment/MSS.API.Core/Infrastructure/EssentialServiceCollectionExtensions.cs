@@ -30,6 +30,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IPidTableService, PidTableService>();
             services.AddTransient<IPidCountService,PidCountService>();
             services.AddTransient<IPidCountDetailService,PidCountDetailService>();
+            services.AddTransient<INotificationPidcountService,NotificationPidcountService>();
             return services;
         }
     }
