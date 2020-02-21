@@ -40,7 +40,7 @@ namespace MSS.API.Dao.Implement
                 updated_time,is_del FROM notification_pidcount
                  ");
                 StringBuilder whereSql = new StringBuilder();
-                whereSql.Append(" WHERE 1 = 1 ");
+                whereSql.Append(" WHERE is_del = 0 ");
 
                 if (parm.status != -1)
                 {

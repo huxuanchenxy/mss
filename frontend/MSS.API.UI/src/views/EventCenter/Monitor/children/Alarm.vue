@@ -210,7 +210,7 @@
                     <div class="content">{{ item.content }}</div>
                     <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
                     <div class="number">
-                      <li @click="confirmNotification(item.id)"><x-button>确认</x-button></li>
+                      <li @click="confirmNotificationPidcount(item.id)"><x-button>确认</x-button></li>
                     </div>
                   </div>
                 </li>
@@ -348,6 +348,12 @@ export default {
     },
     confirmNotification (id) {
       api.deleteNotification(id).then(res => {
+        if (res.code === ApiRESULT.Success) {
+        }
+      }).catch(err => console.log(err))
+    },
+    confirmNotificationPidcount (id) {
+      api.deleteNotificationPidcount(id).then(res => {
         if (res.code === ApiRESULT.Success) {
         }
       }).catch(err => console.log(err))
