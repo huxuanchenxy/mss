@@ -124,6 +124,13 @@ export default {
         count: 0,
         tooptip_content: '',
         tooptip_disable: true
+      }, {
+        type: 'notificationpidcount',
+        title: '点位预警',
+        state: '',
+        count: 0,
+        tooptip_content: '',
+        tooptip_disable: true
       }
       ],
       activeColor: '#f91333',
@@ -138,6 +145,7 @@ export default {
     this.getAlarm()
     this.getWarnning()
     this.getNotification()
+    this.getNotificationpidcount()
   },
   methods: {
     refresh (type) {
@@ -150,6 +158,9 @@ export default {
           break
         case 'notification':
           this.getNotification()
+          break
+        case 'notificationpidcount':
+          this.getNotificationpidcount()
           break
       }
     },
@@ -173,6 +184,18 @@ export default {
           if ((count + '').length > 6) {
             this.EventTypeList[2].tooptip_disable = false
             this.EventTypeList[2].tooptip_content = `有${count}通知事件`
+          }
+        }
+      }).catch(err => console.log(err))
+    },
+    getNotificationpidcount () {
+      apiEvent.getAllNotificationPidcount().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          let count = res.data.rows.length
+          this.EventTypeList[3].count = count
+          if ((count + '').length > 6) {
+            this.EventTypeList[3].tooptip_disable = false
+            this.EventTypeList[3].tooptip_content = `有${count}点位预警事件`
           }
         }
       }).catch(err => console.log(err))
@@ -250,11 +273,11 @@ export default {
       if (this.Conn) {
         this.Conn.close()
       }
-      let ip = 'http://localhost:8087/eventHub'
-      // let ip = hub
+      // let ip = 'http://localhost:8087/eventHub'
+      let ip = hub
       var connection = new signalR.HubConnectionBuilder().withUrl(ip,
         { accessTokenFactory: () => token }).build()
-
+      // thisObj.startTimer()
       connection.on('RecieveMsg', function (message) {
         console.log('eventhub:')
         console.log(message)
@@ -267,8 +290,10 @@ export default {
           thisObj.refresh('alarm')
         } else if (message.type === 1) {
           thisObj.refresh('warnning')
-        } else {
+        } else if (message.type === 2) {
           thisObj.refresh('notification')
+        } else if (message.type === 3) {
+          thisObj.refresh('notificationpidcount')
         }
         Bus.$emit('monitor', message)
       })

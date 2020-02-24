@@ -89,6 +89,13 @@ namespace MSS.API.Core.EventServer
                 .StartNow()
                 .Build();
             await _scheduler.ScheduleJob(job_notification, trigger_notification);
+            //点位预警提醒
+            IJobDetail job_notificationpidcount = JobBuilder.Create<NotificationPidCountJob>()
+                .Build();
+            ITrigger trigger_notificationpidcount = TriggerBuilder.Create()
+                .StartNow()
+                .Build();
+            await _scheduler.ScheduleJob(job_notificationpidcount, trigger_notificationpidcount);
 
             // 报警事件监听任务
             IJobDetail job_alarm = JobBuilder.Create<AlarmJob>()
