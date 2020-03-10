@@ -266,6 +266,9 @@ export default {
       if (this.newMsg.type === 2 && this.activeName === 'notification') {
         this.getNotification()
       }
+      if (this.newMsg.type === 3 && this.activeName === 'notificationpidcount') {
+        this.getNotificationPidcount()
+      }
     }
   },
   activated () {
@@ -328,9 +331,9 @@ export default {
       }).catch(err => console.log(err))
     },
     getNotificationPidcount () {
-      // this.loading = true
+      this.loading = true
       api.getAllNotificationPidcount().then(res => {
-        // this.loading = false
+        this.loading = false
         if (res.code === ApiRESULT.Success) {
           this.NotificationPidCountList = res.data.rows
         }
@@ -355,6 +358,7 @@ export default {
     confirmNotificationPidcount (id) {
       api.deleteNotificationPidcount(id).then(res => {
         if (res.code === ApiRESULT.Success) {
+          this.getNotificationPidcount()
         }
       }).catch(err => console.log(err))
     }
