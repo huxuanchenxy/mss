@@ -28,6 +28,8 @@ namespace MSS.API.Model.Data
         public long RemindCount { get; set; }
         public string UpdatedName { get; set; }
         public string CreatedName { get; set; }
+        public string DetailContent { get; set; }
+        public int NodeKey { get; set; }
     }
 
     public class PidCountMap : EntityMap<PidCount>
@@ -48,6 +50,7 @@ namespace MSS.API.Model.Data
             Map(o => o.UpdatedBy).ToColumn("updated_by");
             Map(o => o.UpdatedName).ToColumn("updated_name");
             Map(o => o.CreatedName).ToColumn("created_name");
+            Map(o => o.NodeKey).ToColumn("node_key");
         }
     }
 

@@ -53,28 +53,13 @@
           <i :class="[{ 'el-icon-d-caret': headOrder.node_tip === 0 }, { 'el-icon-caret-top': headOrder.node_tip === 1 }, { 'el-icon-caret-bottom': headOrder.node_tip === 2 }]"></i>
         </li> -->
         <li class="list number c-pointer">
-          点位容量(旧)
+          事件类型
         </li>
         <li class="list number c-pointer">
-          点位容量(新)
+          影响数量
         </li>
         <li class="list number c-pointer">
-          使用数量(旧)
-        </li>
-        <li class="list number c-pointer">
-          使用数量(新)
-        </li>
-        <li class="list number c-pointer">
-          剩余数量(旧)
-        </li>
-        <li class="list number c-pointer">
-          剩余数量(新)
-        </li>
-        <li class="list number c-pointer">
-          预警上限(旧)
-        </li>
-        <li class="list number c-pointer">
-          预警上限(新)
+          事件描述
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
@@ -93,14 +78,9 @@
                 <div class="checkbox">
                   <input type="checkbox" v-model="editObjID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.capacityCountOld }}</div>
-                <div class="number">{{ item.capacityCountNew }}</div>
-                <div class="number">{{ item.usedCountOld }}</div>
-                <div class="number">{{ item.usedCountNew }}</div>
-                <div class="number">{{ item.remainCountOld }}</div>
-                <div class="number">{{ item.remainCountNew }}</div>
-                <div class="number">{{ item.remindCountOld }}</div>
-                <div class="number">{{ item.remindCountNew }}</div>
+                <div class="number">{{ item.detailType }}</div>
+                <div class="number">{{ item.ccc }}</div>
+                <div class="number">{{ item.detailContent }}</div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
                 <div class="last-maintainer">{{ item.updatedName }}</div>
               </div>
@@ -140,6 +120,7 @@
 <script>
 import { transformDate } from '@/common/js/utils.js'
 // import { dictionary } from '@/common/js/dictionary.js'
+import PidCountEnum from './PidCountEnum'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 // import apiAuth from '@/api/authApi'
@@ -254,6 +235,11 @@ export default {
         console.log(res)
         res.data.rows.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
+          item.detailType = PidCountEnum.detailType[item.detailType]
+          item.ccc = item.countNew - item.countOld
+          if (item.ccc > 0) {
+            item.ccc = '+' + item.ccc
+          }
         })
         this.EqpList = res.data.rows
         this.total = res.data.total

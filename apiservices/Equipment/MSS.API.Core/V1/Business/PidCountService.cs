@@ -92,23 +92,58 @@ namespace MSS.API.Core.V1.Business
                     obj.UpdatedBy = _userID;
                     obj.RemainCount = obj.CapacityCount - obj.UsedCount;
                     ret.data = await _repo.Update(obj);
-                    PidCountDetail obj1 = new PidCountDetail()
+                    int detailtype = 0;
+                    int countold = 0;
+                    int countnew = 0;
+                    if (et.CapacityCount != obj.CapacityCount)
                     {
-                        PidCountId = obj.ID,
-                        CapacityCountOld = et.CapacityCount,
-                        CapacityCountNew = obj.CapacityCount,
-                        UsedCountOld = et.UsedCount,
-                        UsedCountNew = obj.UsedCount,
-                        RemainCountOld = et.RemindCount,
-                        RemainCountNew = obj.RemindCount,
-                        RemindCountOld = et.RemindCount,
-                        RemindCountNew = obj.RemindCount,
-                        CreatedTime = dt,
-                        CreatedBy = _userID,
-                        UpdatedTime = dt,
-                        UpdatedBy = _userID
-                    };
-                    await _serviceDetail.Save(obj1);
+                        if (et.CapacityCount < obj.CapacityCount)
+                        {
+                            detailtype = 1;//新增点位
+                        }
+                        else
+                        {
+                            detailtype = 2;//减少点位
+                        }
+                        PidCountDetail obj1 = new PidCountDetail()
+                        {
+                            PidCountId = obj.ID,
+                            CountOld = et.CapacityCount,
+                            CountNew = obj.CapacityCount,
+                            DetailType = detailtype,
+                            DetailContent = obj.DetailContent,
+                            CreatedTime = dt,
+                            CreatedBy = _userID,
+                            UpdatedTime = dt,
+                            UpdatedBy = _userID
+                        };
+                        await _serviceDetail.Save(obj1);
+                    }
+                    if (et.UsedCount != obj.UsedCount)
+                    {
+                        if (et.UsedCount < obj.UsedCount)
+                        {
+                            detailtype = 3;//分配点位
+                        }
+                        else
+                        {
+                            detailtype = 4;//释放点位
+                        }
+                        PidCountDetail obj1 = new PidCountDetail()
+                        {
+                            PidCountId = obj.ID,
+                            CountOld = et.UsedCount,
+                            CountNew = obj.UsedCount,
+                            DetailType = detailtype,
+                            DetailContent = obj.DetailContent,
+                            CreatedTime = dt,
+                            CreatedBy = _userID,
+                            UpdatedTime = dt,
+                            UpdatedBy = _userID
+                        };
+                        await _serviceDetail.Save(obj1);
+                    }
+
                     //判断预警
                     if (obj.UsedCount > obj.RemindCount)
                     {

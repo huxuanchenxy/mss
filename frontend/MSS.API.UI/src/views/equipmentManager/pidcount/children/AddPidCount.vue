@@ -29,7 +29,14 @@
               <div class="inp-wrap">
                 <span class="text">车站名称<em class="validate-mark">*</em></span>
                 <div class="inp">
-                  <el-input placeholder="请输入车站名称" v-model="nodeName.text" @keyup.native="validateInput(nodeName)"></el-input>
+                  <el-select v-model="nodeKey.text" placeholder="请选择" filterable clearable>
+                      <el-option
+                      v-for="item in AreaList"
+                      :key="item.id"
+                      :value="item.id"
+                      :label="item.areaName">
+                      </el-option>
+                    </el-select>
                 </div>
               </div>
               <p class="validate-tips">{{ nodeName.tips }}</p>
@@ -65,7 +72,7 @@
               <div class="inp-wrap">
                 <span class="text">剩余数量</span>
                 <div class="inp">
-                  <el-input disabled placeholder="请输入剩余数量" v-model="remainCount.text" @keyup.native="validateInputNull(remainCount)"></el-input>
+                  <el-input disabled placeholder="无需输入" v-model="remainCount.text" @keyup.native="validateInputNull(remainCount)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ remainCount.tips }}</p>
@@ -80,6 +87,14 @@
               <p class="validate-tips">{{ remindCount.tips }}</p>
             </li>
           </ul>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">描述<em class="validate-mark">*</em></span>
+            <el-input type="textarea" class="textareaPidCountContent" style="padding-left: 5.4%;padding-top: 2%;"
+                    v-model="detailContent.text"
+                    placeholder="请输入内容"
+                    @keyup.native="validateInputNull(detailContent)"></el-input>
+            <p class="validate-tips">{{ detailContent.tips }}</p>
         </div>
         <div class="btn-enter">
           <x-button class="close">
@@ -98,6 +113,7 @@ import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpt
 // import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
+import areaapi from '@/api/AreaApi'
 export default {
   name: 'AddPidCount',
   components: {
@@ -143,10 +159,20 @@ export default {
       desc: {
         text: '',
         tips: ''
-      }
+      },
+      detailContent: {
+        text: '',
+        tips: ''
+      },
+      nodeKey: {
+        text: '',
+        tips: ''
+      },
+      AreaList: []
     }
   },
   created () {
+    this.showArea()
     if (this.isShow === 'add') {
       this.loading = false
       this.title = '| 添加记录'
@@ -165,14 +191,20 @@ export default {
         })
         return
       }
+      let objarea = {}
+      objarea = this.AreaList.find((item) => {
+        return item.id === this.nodeKey.text
+      })
       let obj = {
         nodeId: this.nodeId.text,
-        nodeName: this.nodeName.text,
+        nodeName: objarea.areaName,
         nodeTip: this.nodeTip.text,
         capacityCount: this.capacityCount.text,
         usedCount: this.usedCount.text,
-        remainCount: this.remainCount.text,
-        remindCount: this.remindCount.text
+        remainCount: Number(this.remainCount.text),
+        remindCount: this.remindCount.text,
+        detailContent: this.detailContent.text,
+        nodeKey: this.nodeKey.text
       }
       if (this.isShow === 'add') {
         // 添加
@@ -225,6 +257,7 @@ export default {
         this.nodeId.text = _res.nodeId
         this.nodeName.text = _res.nodeName
         this.nodeTip.text = _res.nodeTip
+        this.nodeKey.text = _res.nodeKey
         // this.teamPath.text = strToIntArr(_res.teamPath)
         this.capacityCount.text = nullToEmpty(_res.capacityCount)
         this.usedCount.text = nullToEmpty(_res.usedCount)
@@ -286,13 +319,27 @@ export default {
 
     validateAll () {
       if (!this.validateInput(this.nodeId)) return false
-      if (!this.validateInput(this.nodeName)) return false
+      // if (!this.validateInput(this.nodeName)) return false
       if (!this.validateInput(this.nodeTip)) return false
       if (!this.validateNumber(this.capacityCount)) return false
-      if (!this.validateNumber(this.remainCount)) return false
+      // if (!this.validateNumber(this.remainCount)) return false
       if (!this.validateNumber(this.usedCount)) return false
-      if (!this.validateNumber(this.remainCount)) return false
+      if (!this.validateNumber(this.remindCount)) return false
       return true
+    },
+    showArea () {
+      let parm = {
+        order: 'asc',
+        sort: 'id',
+        rows: 100,
+        page: 1,
+        searchName: '',
+        searchType: 9
+      }
+      areaapi.GetBigAreaQueryPageByParm(parm).then(res => {
+        // this.loading = false
+        this.AreaList = res.data
+      }).catch(err => console.log(err))
     }
   },
   mounted () {
@@ -341,6 +388,10 @@ export default {
         // justify-content: flex-end;
       }
     }
+    .list2{
+      width: 100%;
+      margin-top: PXtoEm(25);
+    }
     .upload-list{
       margin-top: PXtoEm(25);
       margin-bottom: PXtoEm(25);
@@ -383,5 +434,16 @@ export default {
       cursor: pointer;
     }
   }
+}
+</style>
+<style>
+.textareaPidCountContent
+{
+    display: inline-block;
+    width: 86%;
+    vertical-align: bottom;
+    font-size: 14px;
+    padding-left: 5.4%;
+    padding-top: 2%;
 }
 </style>

@@ -29,7 +29,7 @@ namespace MSS.API.Dao.Implement
 
                 StringBuilder sql = new StringBuilder();
                 sql.Append($@"  SELECT 
-                a.id,
+                a.id,a.node_key,
                 a.node_id,
                 a.node_name,
                 a.node_tip,
@@ -91,7 +91,7 @@ namespace MSS.API.Dao.Implement
             {
                 string sql = $@" INSERT INTO `pid_count`(
                     
-                    node_id,
+                    node_id,node_key,
                     node_name,
                     node_tip,
                     capacity_count,
@@ -104,7 +104,7 @@ namespace MSS.API.Dao.Implement
                     updated_by
                 ) VALUES 
                 (
-                    @NodeId,
+                    @NodeId,@NodeKey,
                     @NodeName,
                     @NodeTip,
                     @CapacityCount,
@@ -140,7 +140,7 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.ExecuteAsync($@" UPDATE pid_count set 
                     
-                    node_id=@NodeId,
+                    node_id=@NodeId,node_key=@NodeKey,
                     node_name=@NodeName,
                     node_tip=@NodeTip,
                     capacity_count=@CapacityCount,
