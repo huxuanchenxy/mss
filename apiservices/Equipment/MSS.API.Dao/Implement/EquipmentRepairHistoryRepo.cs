@@ -28,7 +28,7 @@ namespace MSS.API.Dao.Implement
                 try
                 {
                     sql = " insert into equipment_repair_history " +
-                        " values (0,@Trouble,@Eqp,@EqpPath,@Desc,@IsAllUpdated, " +
+                        " values (0,@Trouble,@Eqp,@EqpPath,@Desc,@PMType,@ReplaceType, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, equipmentRepairHistory, trans);
@@ -73,8 +73,8 @@ namespace MSS.API.Dao.Implement
                 try
                 {
                     sql = " update equipment_repair_history " +
-                        " set trouble=@Trouble,eqp=@Eqp,eqp_path=@EqpPath,`desc`=@Desc,is_all_update=@IsAllUpdate, " +
-                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id";
+                        " set trouble=@Trouble,eqp=@Eqp,eqp_path=@EqpPath,`desc`=@Desc,pm_type=@PMType, " +
+                        " replace_type=@ReplaceType,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id";
                     int result = await c.ExecuteAsync(sql, equipmentRepairHistory,trans);
                     if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))
                     {
@@ -127,11 +127,13 @@ namespace MSS.API.Dao.Implement
                 erhv.rows = new List<EquipmentRepairHistory>();
                 erhv.total = 0;
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,e.eqp_name,t.code,u1.user_name as created_name,")
-                .Append("e.eqp_code,u2.user_name as updated_name ")
+                sql.Append("SELECT a.*,e.eqp_name,u1.user_name as created_name,")
+                .Append("e.eqp_code,u2.user_name as updated_name,dt.name as pmName,dt1.name as rName ")
                 .Append(" FROM equipment_repair_history a ")
                 .Append(" left join equipment e on a.eqp=e.id ")
-                .Append(" left join trouble_report t on a.trouble=t.id ")
+                .Append(" left join dictionary_tree dt on dt.id=a.pm_type ")
+                .Append(" left join dictionary_tree dt1 on dt1.id=a.replace_type ")
+                //.Append(" left join trouble_report t on a.trouble=t.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();

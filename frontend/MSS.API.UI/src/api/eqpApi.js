@@ -1,7 +1,7 @@
 import axios from './interceptors'
-// let api = 'http://localhost:3851/api/v1'
+let api = 'http://localhost:3851/api/v1'
 // let api = 'http://localhost:8084/api/v1'
-let api = 'http://10.89.36.154:5801/eqpapi'
+// let api = 'http://10.89.36.154:5801/eqpapi'
 export default {
   getEqpType: parm => { return axios.get(`${api}/EquipmentType`, {params: parm}).then(res => res.data) },
   getEqpTypeByID: id => { return axios.get(`${api}/EquipmentType/${id}`).then(res => res.data) },
