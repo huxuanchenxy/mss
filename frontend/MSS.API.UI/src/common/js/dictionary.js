@@ -12,7 +12,8 @@ export const dictionary = {
   pmStatus: 176,
   pmMajor: 180,
   pmLevel: 185,
-  troubleChartType: 191
+  troubleChartType: 191,
+  healthType: 198
 }
 
 export const troubleOperation = {
@@ -108,4 +109,13 @@ export const eqpHistoryType = {
   secondWork: 44,
   change: 157,
   maintenance: 189
+}
+
+export const healthType = {
+  trouble: 199,
+  pm: 200,
+  time: 201,
+  mediumPM: 202,
+  majorPM: 203,
+  eqpReplace: 204
 }

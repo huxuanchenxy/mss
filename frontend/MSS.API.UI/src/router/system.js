@@ -73,6 +73,24 @@ const routes = [
         name: 'Log',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/log/Index.vue')
       }, {
+        path: 'healthConfig',
+        name: 'HealthConfig',
+        component: () => import(/* webpackChunkName: "system" */ '@/views/system/healthConfig/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list/:id?',
+            name: 'SeeHealthConfig',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/healthConfig/children/SeeHealthConfigList.vue')
+          }, {
+            path: 'addHealthConfig/:mark?/:id?',
+            name: 'AddHealthConfig',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/healthConfig/children/AddHealthConfig.vue')
+          }
+        ]
+      }, {
         path: 'organization',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/organization/Index.vue'),
         children: [

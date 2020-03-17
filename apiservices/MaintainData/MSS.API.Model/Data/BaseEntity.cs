@@ -103,4 +103,9 @@ namespace MSS.API.Model.Data
         UnFinished = 155,
         UnRepaired72 = 156
     }
+
+    public static class Dictionary
+    {
+        public const int TROUBLELEVEL = 126;
+    }
 }

@@ -18,7 +18,10 @@ namespace MSS.API.Dao.Interface
         Task<string> GetNodeCodeByID(int id);
         Task<string> GetLastNumByDate(DateTime dt);
         Task<int> GetOrgNodeByUser(int id);
+
+        Task<int> SaveTroubleEqp(TroubleEqp troubleEqp);
         Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0, int orgNode = 0);
+        Task<List<TroubleEqp>> ListEqpIDByTroubles(string[] troubles);
         Task<int> UpdateTroubleEqp(List<TroubleEqp> troubleEqp);
         Task<List<int>> ListOrgTopByTrouble(int trouble);
         Task<List<TroubleHistory>> ListOperationByTroubles(IEnumerable<int> trouble);
@@ -33,5 +36,7 @@ namespace MSS.API.Dao.Interface
         Task<int> UpdateDeal(TroubleDeal troubleDeal);
         Task<List<TroubleDeal>> ListDealByTrouble(int trouble, int topOrg = 0);
         Task<int> UpdateDealResult(int id, int userID, TroubleStatus status, TroubleOperation operation, string unpassReason = "");
+
+        Task<int> SaveUploadFile(UploadFileRelation uploadFileRelation);
     }
 }

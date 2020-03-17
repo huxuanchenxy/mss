@@ -31,4 +31,24 @@ namespace MSS.API.Model.Data
             Map(o => o.entity_id).ToColumn("entity_id");
         }
     }
+
+    public class UploadFileRelation
+    {
+        public int ID { get; set; }
+        public int Entity { get; set; }
+        public int File { get; set; }
+        public int Type { get; set; }
+        public int SystemResource { get; set; }
+    }
+
+    public class UploadFileRelationMap : EntityMap<UploadFileRelation>
+    {
+        public UploadFileRelationMap()
+        {
+            Map(o => o.File).ToColumn("file_id");
+            Map(o => o.Entity).ToColumn("entity_id");
+            Map(o => o.Type).ToColumn("type");
+            Map(o => o.SystemResource).ToColumn("system_resource");
+        }
+    }
 }

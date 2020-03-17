@@ -19,12 +19,12 @@
             <span class="text">导入表字段</span>
             <div class="inp">
               <!--:headers="uploadHeaders"-->
-              <!--http://10.89.36.154:5801/workflowApi/ImportExcelConfig/GetExcelField-->
+              <!--http://10.89.36.154:5801/eqpapi/ImportExcelConfig/GetExcelField-->
               <!--http://localhost:3851/api/v1/ImportExcelConfig/GetExcelField-->
               <el-upload
                 :disabled="isShow==='detail'"
-                action="http://10.89.36.154:5801/workflowApi/ImportExcelConfig/GetExcelField"
-                uploadHeaders
+                action="http://10.89.36.154:5801/eqpapi/ImportExcelConfig/GetExcelField"
+                :headers="uploadHeaders"
                 :multiple="false"
                 accept=".xls,.xlsx"
                 :show-file-list="false"
@@ -138,7 +138,6 @@ export default {
       let required = ''
       for (let i = 0; i < this.configList.length; i++) {
         let item = this.configList[i]
-        debugger
         if (item.config === undefined) {
           this.$message({
             message: '匹配内容字段必选',

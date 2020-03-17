@@ -1,6 +1,6 @@
 import axios from './interceptors'
-let api = 'http://10.89.36.154:5801/maintainapi'
-// let api = 'http://localhost:3851/api/v1'
+// let api = 'http://10.89.36.154:5801/maintainapi'
+let api = 'http://localhost:3851/api/v1'
 export default {
   getAllUsers: () => { return {} },
   Save: data => { return axios.post(`${api}/DeviceMaintainReg/Save`, data).then(res => res.data) },
@@ -31,5 +31,12 @@ export default {
   getTroubleReportByStatus: status => { return axios.get(`${api}/TroubleReport/ListByStatus/${status}`).then(res => res.data) },
 
   saveTroubleDeal: parm => { return axios.post(`${api}/TroubleReport/SaveDeal`, parm).then(res => res.data) },
-  getDealByID: (id, orgTop) => { return axios.get(`${api}/TroubleReport/GetDealByID/${id}/${orgTop}`).then(res => res.data) }
+  getDealByID: (id, orgTop) => { return axios.get(`${api}/TroubleReport/GetDealByID/${id}/${orgTop}`).then(res => res.data) },
+
+  getHealthConfig: parm => { return axios.get(`${api}/HealthConfig`, {params: parm}).then(res => res.data) },
+  getHealthConfigByTroubleLevel: troubleLevel => { return axios.get(`${api}/HealthConfig/${troubleLevel}`).then(res => res.data) },
+  getHealthConfigByType: type => { return axios.get(`${api}/HealthConfig/GetByType/${type}`).then(res => res.data) },
+  addHealthConfig: parm => { return axios.post(`${api}/HealthConfig`, parm).then(res => res.data) },
+  updateHealthConfig: parm => { return axios.put(`${api}/HealthConfig`, parm).then(res => res.data) },
+  delHealthConfig: ids => { return axios.delete(`${api}/HealthConfig/${ids}`).then(res => res.data) }
 }

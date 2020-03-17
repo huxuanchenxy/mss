@@ -68,10 +68,10 @@
         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
         <li class="list">
           <!--:headers="uploadHeaders"-->
-          <!--http://10.89.36.154:5801/workflowApi/Equipment/Import-->
+          <!--http://10.89.36.154:5801/eqpapi/Equipment/Import-->
           <!--http://localhost:3851/api/v1/Equipment/Import-->
           <el-upload
-            action="http://10.89.36.154:5801/workflowApi/Equipment/Import"
+            action="http://10.89.36.154:5801/eqpapi/Equipment/Import"
             :headers="uploadHeaders"
             :multiple="false"
             accept=".xls,.xlsx"

@@ -69,7 +69,7 @@
       <ul class="content-header">
         <li class="list number"></li>
         <li class="list name c-pointer" @click="changeOrder('operation_id')">
-          调整流水号
+          盘点流水号
           <i :class="[{ 'el-icon-d-caret': headOrder.operation_id === 0 }, { 'el-icon-caret-top': headOrder.operation_id === 1 }, { 'el-icon-caret-bottom': headOrder.operation_id === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('reason')">
@@ -141,7 +141,7 @@ export default {
         delete: false,
         update: false
       },
-      title: ' | 物资调整',
+      title: ' | 物资盘点',
       reason: '',
       reasonList: [],
       warehouse: '',
@@ -250,7 +250,7 @@ export default {
     detail () {
       if (this.editStockMoveID === '') {
         this.$message({
-          message: '请选择需要查看的调整流水号',
+          message: '请选择需要查看的盘点流水号',
           type: 'warning'
         })
       } else {
