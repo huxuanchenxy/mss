@@ -147,11 +147,12 @@ namespace MSS.API.Core.V1.Business
                     //判断预警
                     if (obj.UsedCount > obj.RemindCount)
                     {
+                        long _cont = obj.UsedCount - obj.RemindCount;
                         await _serviceNotice.Save(new NotificationPidcount()
                         {
                             PidCountId = obj.ID,
                             PidCountName = obj.NodeName,
-                            Content = "超过了预设的点位容量" + obj.RemindCount + "个点"
+                            Content = "超过了预设的点位容量 " + _cont + " 个点"
                             , IsDel = false, CreatedTime = dt,
                             CreatedBy  = _userID,
                             UpdatedTime = dt,
