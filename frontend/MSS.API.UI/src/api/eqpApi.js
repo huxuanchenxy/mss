@@ -41,6 +41,7 @@ export default {
   getUploadCascaderByIDs: ids => { return axios.get(`${api}/Upload/Cascader/${ids}`).then(res => res.data) },
   getUploadFileByEqp: id => { return axios.get(`${api}/Upload/ListByEqp/${id}`).then(res => res.data) },
   addUploadFileRelation: list => { return axios.post(`${api}/Upload/SaveList`, list).then(res => res.data) },
+  fileIsExist: id => { return axios.get(`${api}/Upload/FileIsExist/${id}`).then(res => res.data) },
 
   downloadFile: id => { return axios({method: 'post', url: `${api}/Upload/Download/${id}`, responseType: 'blob'}).then(res => res) },
 
@@ -50,5 +51,16 @@ export default {
   getEqpRepairByID: id => { return axios.get(`${api}/EquipmentRepairHistory/${id}`).then(res => res.data) },
   addEqpRepair: parm => { return axios.post(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
   updateEqpRepair: parm => { return axios.put(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
-  delEqpRepair: ids => { return axios.delete(`${api}/EquipmentRepairHistory/${ids}`).then(res => res.data) }
+  delEqpRepair: ids => { return axios.delete(`${api}/EquipmentRepairHistory/${ids}`).then(res => res.data) },
+
+  getImportExcelConfig: parm => { return axios.get(`${api}/ImportExcelConfig`, {params: parm}).then(res => res.data) },
+  getImportExcelConfigByID: id => { return axios.get(`${api}/ImportExcelConfig/${id}`).then(res => res.data) },
+  addImportExcelConfig: parm => { return axios.post(`${api}/ImportExcelConfig`, parm).then(res => res.data) },
+  updateImportExcelConfig: parm => { return axios.put(`${api}/ImportExcelConfig`, parm).then(res => res.data) },
+  delImportExcelConfig: ids => { return axios.delete(`${api}/ImportExcelConfig/${ids}`).then(res => res.data) },
+
+  getImportExcelClass: () => { return axios.get(`${api}/ImportExcelConfig/ListClass`).then(res => res.data) },
+  getPropertyByClass: id => { return axios.get(`${api}/ImportExcelConfig/ListPropertyByClass/${id}`).then(res => res.data) },
+
+  getImportExcelLog: parm => { return axios.get(`${api}/ImportExcelConfig/ListLogByParm`, {params: parm}).then(res => res.data) }
 }

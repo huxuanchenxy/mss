@@ -237,7 +237,7 @@ namespace MSS.API.Core.V1.Business
                         eqp.CreatedTime = DateTime.Now;
                         eqp.UpdatedBy = 1;
                         eqp.UpdatedTime = DateTime.Now;
-                        eqp.IsDel = false;
+                        eqp.IsDel = 0;
 
                         await _eqpRepo.Save(eqp);
                     }

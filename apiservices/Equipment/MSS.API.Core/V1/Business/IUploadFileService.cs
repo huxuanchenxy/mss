@@ -22,5 +22,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> ListByEqp(int id);
         Task<ApiResult> ListAll();
         Task<ApiResult> CascaderByIDs(string ids);
+
+        Task<ApiResult> FileIsExist(int id);
     }
 }

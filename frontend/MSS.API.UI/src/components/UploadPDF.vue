@@ -239,19 +239,28 @@ export default {
     },
     preview (item) {
       let arr = item.name.split('.')
-      let extTmp = arr[arr.length - 1]
-      if (arr[arr.length - 1].toLowerCase() === 'pdf') {
-        if (item.status === 'success') {
-          if (item.url.indexOf('blob:') !== -1) {
-            this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+      let extTmp = arr[arr.length - 1].toLowerCase()
+      if (arr[arr.length - 1] === 'pdf') {
+        api.fileIsExist(item.id).then(res => {
+          if (res.data) {
+            if (item.status === 'success') {
+              if (item.url.indexOf('blob:') !== -1) {
+                this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+              } else {
+                this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+              }
+            } else {
+              this.previewUrl = PDF_BLOB_VIEW_URL + item.url
+            }
+            this.isVedio = false
+            this.centerDialogVisible = true
           } else {
-            this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+            this.$message({
+              message: '未找到所要查看的文件',
+              type: 'warning'
+            })
           }
-        } else {
-          this.previewUrl = PDF_BLOB_VIEW_URL + item.url
-        }
-        this.isVedio = false
-        this.centerDialogVisible = true
+        }).catch(err => console.log(err))
       } else if (extTmp === 'mp4' || extTmp === 'avi' || extTmp === 'flv' || extTmp === 'rmvb' || extTmp === 'ogg') {
         this.previewUrl = FILE_SERVER_PATH + item.url
         this.isVedio = true

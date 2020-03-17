@@ -22,6 +22,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IWorkingApplicationService, WorkingApplicationService>();
             services.AddTransient<ITroubleReportService, TroubleReportService>();
             services.AddTransient<IEmergencyPlanService, EmergencyPlanService>();
+            services.AddTransient<IHealthConfigService, HealthConfigService>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
             return services;

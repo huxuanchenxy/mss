@@ -147,5 +147,13 @@ export const btn = {
     save: 167,
     delete: 168,
     update: 169
+  },
+  importExcelConfig: {
+    save: 172,
+    delete: 173,
+    update: 174
+  },
+  healthConfig: {
+    update: 177
   }
 }

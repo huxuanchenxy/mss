@@ -133,7 +133,8 @@ namespace MSS.Platform.Workflow.WebApi.Data
         /// <returns></returns>
         public int BulkLoad(DataTable table)
         {
-            ToCsv(table);
+            ImportExcelHelper h = new ImportExcelHelper();
+            h.ToCsv(table);
             var columns = table.Columns.Cast<DataColumn>().Select(colum => colum.ColumnName).ToList();
             MySqlBulkLoader bulk = new MySqlBulkLoader(con)
             {
@@ -348,33 +349,6 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     return new List<QueryItem>();
                 }
             });
-        }
-
-        private void ToCsv(DataTable table)
-        {
-            //以半角逗号（即,）作分隔符，列为空也要表达其存在。
-            //列内容如存在半角逗号（即,）则用半角引号（即""）将该字段值包含起来。
-            //列内容如存在半角引号（即"）则应替换成半角双引号（""）转义，并用半角引号（即""）将该字段值包含起来。
-            StringBuilder sb = new StringBuilder();
-            DataColumn colum;
-            foreach (DataRow row in table.Rows)
-            {
-                for (int i = 0; i < table.Columns.Count; i++)
-                {
-                    colum = table.Columns[i];
-                    if (i != 0) sb.Append(",");
-                    if (colum.DataType == typeof(string) && row[colum].ToString().Contains(","))
-                    {
-                        sb.Append("\"" + row[colum].ToString().Replace("\"", "\"\"") + "\"");
-                    }
-                    else sb.Append(row[colum].ToString());
-                }
-                sb.AppendLine();
-            }
-            using (ShareFolderHelper helper = new ShareFolderHelper("test", "yfzx.2019", FilePath.CSVPATH + table.TableName + ".csv"))
-            {
-                File.WriteAllText(FilePath.CSVPATH + table.TableName + ".csv", sb.ToString());
-            }
         }
     }
 }

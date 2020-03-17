@@ -11,6 +11,7 @@ namespace MSS.API.Core.V1.Business
 {
     public interface IEquipmentService
     {
+        Task<ApiResult> Import(IFormFile file);
         Task<ApiResult> Save(Equipment eqp);
         Task<ApiResult> Update(Equipment eqp);
         Task<ApiResult> Delete(string ids);
