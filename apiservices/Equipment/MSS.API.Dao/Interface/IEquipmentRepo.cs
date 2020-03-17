@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MSS.API.Dao.Interface
 {
-    public interface IEquipmentRepo<T> where T:BaseEntity
+    public interface IEquipmentRepo<T>
     {
         Task<Equipment> Save(Equipment eqp);
         Task<int> Update(Equipment eqp);

@@ -101,6 +101,17 @@ namespace MSS.API.Common
             Expiration = 45
         }
 
+        public enum HealthType
+        {
+            Trouble= 199,
+            PM= 200,
+            Time= 201,
+            MediumPM= 202,
+            MajorPM= 203,
+            EqpReplace= 204
+        }
+
+        public const double HEATHFULLVAL = 100;
     }
 
     public enum OrgType

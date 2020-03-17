@@ -335,7 +335,7 @@ export default {
               this.title = '| 物资发送过账 | '
               break
             case this.operationType.adjust:
-              this.title = '| 物资调整过账 | '
+              this.title = '| 物资盘点过账 | '
               break
             case this.operationType.move:
               this.title = '| 物资移库过账 | '

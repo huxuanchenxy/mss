@@ -66,6 +66,21 @@
         <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
         <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
+        <li class="list">
+          <!--:headers="uploadHeaders"-->
+          <!--http://10.89.36.154:5801/eqpapi/Equipment/Import-->
+          <!--http://localhost:3851/api/v1/Equipment/Import-->
+          <el-upload
+            action="http://10.89.36.154:5801/eqpapi/Equipment/Import"
+            :headers="uploadHeaders"
+            :multiple="false"
+            accept=".xls,.xlsx"
+            :show-file-list="false"
+            :before-upload="beforeUpload"
+            :on-success="onSuccess">
+            <el-button size="small" type="primary" class="import-btn" :loading="loading">导入</el-button>
+          </el-upload>
+        </li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -178,6 +193,7 @@ export default {
         children: 'children'
       },
       title: ' | 设备定义',
+      uploadHeaders: {Authorization: ''},
       eqpCode: '',
       subSystem: '',
       subSystemList: [],
@@ -248,6 +264,12 @@ export default {
     apiArea.SelectConfigAreaData().then(res => {
       this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
+  },
+  mounted () {
+    let token = window.sessionStorage.getItem('token')
+    if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
+      this.uploadHeaders.Authorization = `Bearer ${token}`
+    }
   },
   activated () {
     this.searchResult(this.currentPage)
@@ -437,6 +459,40 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
+    },
+
+    beforeUpload (file) {
+      if (file.size > 52428800) {
+        this.$message({
+          message: '单个文件不允许超过50M',
+          type: 'warning'
+        })
+        return false
+      } else {
+        let arr = file.name.split('.')
+        let extTmp = arr[arr.length - 1]
+        if (extTmp !== 'xls' && extTmp !== 'xlsx') {
+          this.$message({
+            message: '不支持非excel的文件类型',
+            type: 'warning'
+          })
+          return false
+        }
+        // this.fileName = file.name.slice(0, file.name.length - extTmp.length - 1)
+      }
+    },
+    onSuccess (response, file, fileList) {
+      if (response.code === 0) {
+        this.$message({
+          message: '导入成功',
+          type: 'success'
+        })
+      } else {
+        this.$message({
+          message: response.msg,
+          type: 'error'
+        })
+      }
     }
   }
 }
@@ -545,6 +601,15 @@ $con-height: $content-height - 145 - 56;
 
   .state{
     width: 5%;
+  }
+}
+.import-btn{
+  border-color: #979797!important;
+  background: none!important;
+  font-size: 13.3333px!important;
+  &:hover{
+    border-color: #979797!important;
+    background: none!important;
   }
 }
 </style>

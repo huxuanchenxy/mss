@@ -15,6 +15,7 @@ using MSS.API.Common.Utility;
 using Microsoft.Extensions.Caching.Distributed;
 using MSS.Common.Consul;
 using static MSS.API.Common.MyDictionary;
+using MSS.API.Dao.Implement;
 
 namespace MSS.API.Core.V1.Business
 {
@@ -40,15 +41,24 @@ namespace MSS.API.Core.V1.Business
         private readonly IEqpHistoryRepo<EqpHistory> _eqpHistoryRepo;
         private readonly int _userID;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
+        private readonly IHealthHistoryRepo<HealthHistory> _healthHistoryRepo;
+        private readonly IHealthRepo<Health> _healthRepo;
+        private readonly IHealthConfigRepo<HealthConfig> _healthConfigRepo;
 
         public TroubleReportService(ITroubleReportRepo<TroubleReport> troubleReportRepo,
             IEqpHistoryRepo<EqpHistory> eqpHistoryRepo, IAuthHelper authhelper, 
-            IServiceDiscoveryProvider consulServiceProvider)
+            IServiceDiscoveryProvider consulServiceProvider,
+            IHealthHistoryRepo<HealthHistory> healthHistoryRepo,
+            IHealthRepo<Health> healthRepo,
+            IHealthConfigRepo<HealthConfig> healthConfigRepo)
         {
             _troubleReportRepo = troubleReportRepo;
             _eqpHistoryRepo = eqpHistoryRepo;
             _userID = authhelper.GetUserId();
             _consulServiceProvider = consulServiceProvider;
+            _healthHistoryRepo = healthHistoryRepo;
+            _healthRepo = healthRepo;
+            _healthConfigRepo = healthConfigRepo;
         }
         #region 调度员/值班员接口 未接报、未处理、未修复、未完结、七十二小时外未修复的数量统计
         public async Task<ApiResult> GetNoByStatus(AttandenceStatus attandenceStatus)
@@ -279,6 +289,40 @@ namespace MSS.API.Core.V1.Business
                 {
                     if (operation == TroubleOperation.CancelTrouble)
                     {
+                        List<TroubleEqp> troubleEqps = await _troubleReportRepo.ListEqpIDByTroubles(ids.Split(','));
+                        List<int> eqpIDs = troubleEqps.Select(a => a.Eqp).Distinct().ToList();
+                        List<Equipment> eqpInfos = await _healthConfigRepo.GetEqpTypeByEqps(eqpIDs);
+                        List<int> eqpTypes = eqpInfos.Select(a => a.Type).Distinct().ToList();
+                        List<HealthConfig> configs = await _healthConfigRepo.GetValByCon((int)HealthType.Trouble, eqpTypes);
+                        List<Health> health = await _healthRepo.ListEqp(eqpIDs);
+                        Health h = new Health();
+                        h.CreatedBy = _userID;
+                        h.CreatedTime = dt;
+                        h.UpdatedBy = _userID;
+                        h.UpdatedTime = dt;
+                        h.Type = (int)HealthType.Trouble;
+                        HealthHistory hh = new HealthHistory();
+                        hh.CreatedBy = _userID;
+                        hh.CreatedTime = dt;
+                        hh.Type = (int)HealthType.Trouble;
+                        //考虑到多个故障包含同一个设备，这种情况就需要多减几次
+                        foreach (TroubleEqp te in troubleEqps)
+                        {
+                            h.Eqp = te.Eqp;
+                            hh.Eqp = h.Eqp;
+                            h.CorrelationID = te.Trouble;
+                            h.TroubleLevel = te.TroubleLevel;
+                            hh.CorrelationID = te.Trouble;
+                            hh.TroubleLevel = te.TroubleLevel;
+                            bool? isInsert = GetHealthVal(false, eqpInfos, configs,ref health, ref h);
+                            hh.Val = h.Val;
+                            hh.EqpType = h.EqpType;
+                            if (isInsert == false)
+                            {
+                                await _healthRepo.Update(h);
+                                await _healthHistoryRepo.Save(hh);
+                            }
+                        }
                         await _troubleReportRepo.SaveHistory(ths);
                     }
                     else
@@ -293,7 +337,7 @@ namespace MSS.API.Core.V1.Business
                     {
                         await _troubleReportRepo.UpdateDealResult(thTmp.Trouble, _userID, status, operation, content);
                     }
-                    ret.data = await _troubleReportRepo.UpdateStatus(ids.Split(), _userID, status, operation);
+                    ret.data = await _troubleReportRepo.UpdateStatus(ids.Split(','), _userID, status, operation);
                     scope.Complete();
                 }
             }
@@ -331,7 +375,79 @@ namespace MSS.API.Core.V1.Business
                     tmp = reportDate + "001";
                 }
                 troubleReport.Code = orgCode + lineCode + tmp;
-                ret.data = await _troubleReportRepo.Save(troubleReport);
+                List<TroubleEqp> troubleEqp = JsonConvert.DeserializeObject<List<TroubleEqp>>(troubleReport.Eqps);
+                List<int> eqpIDs = troubleEqp.Select(a=>a.Eqp).ToList();
+                List<Equipment> eqps =await _healthConfigRepo.GetEqpTypeByEqps(eqpIDs);
+                List<int> eqpTypes = eqps.Select(a => a.Type).Distinct().ToList();
+                List<HealthConfig> configs = await _healthConfigRepo.GetValByCon((int)HealthType.Trouble, eqpTypes);
+                List<Health> health = await _healthRepo.ListEqp(eqpIDs);
+                using (TransactionScope ts=new TransactionScope())
+                {
+                    TroubleReport tr= await _troubleReportRepo.Save(troubleReport);
+                    foreach (var item in troubleEqp)
+                    {
+                        item.Trouble = tr.ID;
+                        await _troubleReportRepo.SaveTroubleEqp(item);
+                    }
+                    if (!string.IsNullOrWhiteSpace(troubleReport.UploadFiles))
+                    {
+                        List<object> objs = new List<object>();
+                        JArray jobj = JsonConvert.DeserializeObject<JArray>(troubleReport.UploadFiles);
+                        foreach (var obj in jobj)
+                        {
+                            foreach (var item in obj["ids"].ToString().Split(','))
+                            {
+                                UploadFileRelation upload = new UploadFileRelation();
+                                upload.Entity = tr.ID;
+                                upload.File = Convert.ToInt32(item);
+                                upload.Type = Convert.ToInt32(obj["type"]);
+                                upload.SystemResource = (int)SystemResource.TroubleReport;
+                                await _troubleReportRepo.SaveUploadFile(upload);
+                            }
+                        }
+                    }
+                    TroubleHistory history = new TroubleHistory();
+                    history.Trouble = tr.ID;
+                    history.OrgTop = 0;
+                    history.Operation = TroubleOperation.NewTrouble;
+                    history.Content = troubleReport.Code;
+                    history.CreatedBy = _userID;
+                    history.CreatedTime = dt;
+                    await _troubleReportRepo.SaveHistory(history);
+                    Health h = new Health();
+                    h.CorrelationID = tr.ID;
+                    h.CreatedBy = _userID;
+                    h.CreatedTime = dt;
+                    h.UpdatedBy = _userID;
+                    h.UpdatedTime = dt;
+                    h.Type = (int)HealthType.Trouble;
+                    h.TroubleLevel = tr.Level;
+                    HealthHistory hh = new HealthHistory();
+                    hh.CorrelationID = tr.ID;
+                    hh.CreatedBy = _userID;
+                    hh.CreatedTime = dt;
+                    hh.Type=(int)HealthType.Trouble;
+                    hh.TroubleLevel = tr.Level;
+                    foreach (var item in eqpIDs)
+                    {
+                        h.Eqp = item;
+                        hh.Eqp = h.Eqp;
+                        bool? isInsert = GetHealthVal(true,eqps,configs,ref health, ref h);
+                        hh.Val = h.Val;
+                        hh.EqpType = h.EqpType;
+                        if (isInsert==true)
+                        {
+                            await _healthRepo.Save(h);
+                            await _healthHistoryRepo.Save(hh);
+                        }
+                        else if (isInsert == false)
+                        {
+                            await _healthRepo.Update(h);
+                            await _healthHistoryRepo.Save(hh);
+                        }
+                    }
+                    ts.Complete();
+                }
             }
             catch (Exception ex)
             {
@@ -341,6 +457,52 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
+        /// <summary>
+        /// 计算当前健康度
+        /// </summary>
+        /// <param name="isNew">故障报警/取消故障报警</param>
+        /// <param name="eqpTypes">所有故障设备的设备类型列表</param>
+        /// <param name="configs">设备类型和故障对应的健康度配置列表</param>
+        /// <param name="health">当前设备的健康度</param>
+        /// <param name="h">所要更新的设备的健康度</param>
+        /// <returns></returns>
+        private bool? GetHealthVal(bool isNew,List<Equipment> eqpTypes,
+            List<HealthConfig> configs,ref List<Health> health, ref Health h)
+        {
+            int? troubleLevel = h.TroubleLevel;
+            int eqp = h.Eqp;
+            if (h.TroubleLevel == null) return null;
+            int eqpType = eqpTypes.Where(a => a.ID == eqp).Select(a => a.Type).FirstOrDefault();
+            double? val = configs.Where(a => a.EqpType == eqpType && a.TroubleLevel== troubleLevel).Select(a => a.Val).FirstOrDefault();
+            if (val == null) return null;
+            var hasEqp = health.Where(a => a.Eqp == eqp);
+            double beforeVal = HEATHFULLVAL;
+            double diff = configs.Where(a => a.EqpType == eqpType && a.TroubleLevel == troubleLevel)
+                .Select(a => a.Val).FirstOrDefault();
+            h.EqpType = eqpType;
+            if (hasEqp.Count()>0)
+            {
+                var tmp = hasEqp.FirstOrDefault();
+                h.ID = tmp.ID;
+                beforeVal = tmp.Val;
+                if (isNew)
+                {
+                    h.Val = beforeVal - diff;
+                }
+                else
+                {
+                    h.Val = beforeVal + diff;
+                    if (h.Val > HEATHFULLVAL) h.Val = HEATHFULLVAL;
+                }
+                hasEqp.FirstOrDefault().Val = h.Val;
+                return false;
+            }
+            else
+            {
+                h.Val = beforeVal - diff;
+                return true;
+            }
+        }
         public async Task<ApiResult> GetByID(int id)
         {
             ApiResult ret = new ApiResult();
@@ -450,7 +612,90 @@ namespace MSS.API.Core.V1.Business
                     }
                     troubleReport.Code = orgCode + lineCode + tmp;
                 }
-                ret.data = await _troubleReportRepo.Update(troubleReport,th);
+                //健康度
+                //先判断设备和故障等级有没有修改
+                List<TroubleEqp> troubleEqp = JsonConvert.DeserializeObject<List<TroubleEqp>>(troubleReport.Eqps);
+                List<int> eqpIDs = troubleEqp.Select(a => a.Eqp).OrderBy(a=>a).ToList();
+                List<TroubleEqp> oldTroubleEqp = await _troubleReportRepo.ListEqpIDByTroubles(new string[] { troubleReport.ID.ToString() });
+                List<int> oldEqpIDs = oldTroubleEqp.Select(a => a.Eqp).OrderBy(a => a).ToList();
+                if (!oldEqpIDs.SequenceEqual(eqpIDs) || oldtr.Level!= troubleReport.Level)
+                {
+                    List<int> eqpIDAll = eqpIDs.Union(oldEqpIDs).ToList();
+                    List<Equipment> eqpInfos = await _healthConfigRepo.GetEqpTypeByEqps(eqpIDAll);
+                    List<int> eqpTypes = eqpInfos.Select(a => a.Type).Distinct().ToList();
+                    List<HealthConfig> configs = await _healthConfigRepo.GetValByCon((int)HealthType.Trouble, eqpTypes);
+                    List<Health> health = await _healthRepo.ListEqp(eqpIDAll);
+                    using (TransactionScope ts=new TransactionScope())
+                    {
+                        //按取消逻辑恢复修改前的设备健康度
+                        Health h = new Health();
+                        h.CreatedBy = _userID;
+                        h.CreatedTime = dt;
+                        h.UpdatedBy = _userID;
+                        h.UpdatedTime = dt;
+                        h.Type = (int)HealthType.Trouble;
+                        HealthHistory hh = new HealthHistory();
+                        hh.CreatedBy = _userID;
+                        hh.CreatedTime = dt;
+                        hh.Type = (int)HealthType.Trouble;
+                        foreach (int eqpID in oldEqpIDs)
+                        {
+                            h.Eqp = eqpID;
+                            hh.Eqp = eqpID;
+                            var tmp = oldTroubleEqp.Where(a => a.Eqp == eqpID).FirstOrDefault();
+                            h.CorrelationID = tmp.Trouble;
+                            h.TroubleLevel = tmp.TroubleLevel;
+                            hh.CorrelationID = tmp.Trouble;
+                            hh.TroubleLevel = tmp.TroubleLevel;
+                            bool? isInsert = GetHealthVal(false, eqpInfos, configs, ref health, ref h);
+                            hh.Val = h.Val;
+                            hh.EqpType = h.EqpType;
+                            if (isInsert == false)
+                            {
+                                await _healthRepo.Update(h);
+                                await _healthHistoryRepo.Save(hh);
+                            }
+                        }
+                        //按添加逻辑更新设备健康度
+                        Health h1 = new Health();
+                        h1.CreatedBy = _userID;
+                        h1.CreatedTime = dt;
+                        h1.UpdatedBy = _userID;
+                        h1.UpdatedTime = dt;
+                        h1.Type = (int)HealthType.Trouble;
+                        HealthHistory hh1 = new HealthHistory();
+                        hh1.CreatedBy = _userID;
+                        hh1.CreatedTime = dt;
+                        hh1.Type = (int)HealthType.Trouble;
+                        foreach (int eqpID in eqpIDs)
+                        {
+                            h1.Eqp = eqpID;
+                            hh1.Eqp = eqpID;
+                            var tmp = troubleEqp.Where(a => a.Eqp == eqpID).FirstOrDefault();
+                            h1.CorrelationID = tmp.Trouble;
+                            h1.TroubleLevel = troubleReport.Level;
+                            hh1.CorrelationID = tmp.Trouble;
+                            hh1.TroubleLevel = troubleReport.Level;
+                            bool? isInsert = GetHealthVal(true, eqpInfos, configs, ref health, ref h1);
+                            hh1.Val = h1.Val;
+                            hh1.EqpType = h1.EqpType;
+                            if (isInsert == false)
+                            {
+                                await _healthRepo.Update(h1);
+                                await _healthHistoryRepo.Save(hh1);
+                            }
+                            else if (isInsert == true)
+                            {
+                                await _healthRepo.Save(h1);
+                                await _healthHistoryRepo.Save(hh1);
+                            }
+                        }
+                        ts.Complete();
+                    }
+                    
+                }
+                //应该和健康度合在一个事务里
+                ret.data = await _troubleReportRepo.Update(troubleReport, th);
             }
             catch (Exception ex)
             {

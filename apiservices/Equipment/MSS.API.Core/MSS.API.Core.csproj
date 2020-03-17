@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ConsolLogs\**" />
+    <Content Remove="ConsolLogs\**" />
+    <EmbeddedResource Remove="ConsolLogs\**" />
+    <None Remove="ConsolLogs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.60.6" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />

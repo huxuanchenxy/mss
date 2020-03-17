@@ -145,7 +145,7 @@ namespace MSS.API.Dao.Implement
                 }
                 sql += " where id in @ids";
                 int ret = await c.ExecuteAsync(sql,
-                    new { ids, userID, time = DateTime.Now, status, operation});
+                    new { status,operation,userID,time = DateTime.Now,ids});
                 return ret;
             });
         }
@@ -208,80 +208,88 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql;
-                IDbTransaction trans = c.BeginTransaction();
-                try
-                {
-                    sql = " insert into trouble_report " +
+                string sql = " insert into trouble_report " +
                         " values (0,@Code,@HappeningTime,@ReportedTime,@Line,@StartLocation,@StartLocationBy,@StartLocationPath, " +
                         " @EndLocation,@EndLocationBy,@UrgentRepairOrder,@Level,@ReportedCompany,@ReportedCompanyPath,@ReportedBy," +
                         " @Desc,@Status,@LastOperation,@ChartType,@ChartTypePath,@CreatedBy,@CreatedTime,@AcceptedTime,@UpdatedTime,@UpdatedBy); ";
-                    sql += "SELECT LAST_INSERT_ID()";
-                    int newid = await c.QueryFirstOrDefaultAsync<int>(sql, troubleReport, trans);
-                    troubleReport.ID = newid;
-                    List<TroubleEqp> eqps = JsonConvert.DeserializeObject<List<TroubleEqp>>(troubleReport.Eqps);
-                    foreach (var item in eqps)
-                    {
-                        item.Trouble = newid;
-                    }
-                    sql = "insert into trouble_eqp values (0,@Trouble,@Org,@Eqp,null,null,null,null)";
-                    int ret = await c.ExecuteAsync(sql, eqps, trans);
-                    if (!string.IsNullOrWhiteSpace(troubleReport.UploadFiles))
-                    {
-                        List<object> objs = new List<object>();
-                        JArray jobj = JsonConvert.DeserializeObject<JArray>(troubleReport.UploadFiles);
-                        foreach (var obj in jobj)
-                        {
-                            foreach (var item in obj["ids"].ToString().Split(','))
-                            {
-                                objs.Add(new
-                                {
-                                    ePlanID = newid,
-                                    fileID = Convert.ToInt32(item),
-                                    type = Convert.ToInt32(obj["type"]),
-                                    systemResource = (int)SystemResource.TroubleReport
-                                });
-                            }
-                        }
-                        sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
-                        ret = await c.ExecuteAsync(sql, objs, trans);
-                    }
+                sql += "SELECT LAST_INSERT_ID()";
+                int newid = await c.QueryFirstOrDefaultAsync<int>(sql, troubleReport);
+                troubleReport.ID = newid;
+                return troubleReport;
+                //string sql;
+                //IDbTransaction trans = c.BeginTransaction();
+                //try
+                //{
+                //    sql = " insert into trouble_report " +
+                //        " values (0,@Code,@HappeningTime,@ReportedTime,@Line,@StartLocation,@StartLocationBy,@StartLocationPath, " +
+                //        " @EndLocation,@EndLocationBy,@UrgentRepairOrder,@Level,@ReportedCompany,@ReportedCompanyPath,@ReportedBy," +
+                //        " @Desc,@Status,@LastOperation,@ChartType,@ChartTypePath,@CreatedBy,@CreatedTime,@AcceptedTime,@UpdatedTime,@UpdatedBy); ";
+                //    sql += "SELECT LAST_INSERT_ID()";
+                //    int newid = await c.QueryFirstOrDefaultAsync<int>(sql, troubleReport, trans);
+                //    troubleReport.ID = newid;
+                //    List<TroubleEqp> eqps = JsonConvert.DeserializeObject<List<TroubleEqp>>(troubleReport.Eqps);
+                //    foreach (var item in eqps)
+                //    {
+                //        item.Trouble = newid;
+                //    }
+                //    sql = "insert into trouble_eqp values (0,@Trouble,@Org,@Eqp,null,null,null,null)";
+                //    int ret = await c.ExecuteAsync(sql, eqps, trans);
+                //    if (!string.IsNullOrWhiteSpace(troubleReport.UploadFiles))
+                //    {
+                //        List<object> objs = new List<object>();
+                //        JArray jobj = JsonConvert.DeserializeObject<JArray>(troubleReport.UploadFiles);
+                //        foreach (var obj in jobj)
+                //        {
+                //            foreach (var item in obj["ids"].ToString().Split(','))
+                //            {
+                //                objs.Add(new
+                //                {
+                //                    ePlanID = newid,
+                //                    fileID = Convert.ToInt32(item),
+                //                    type = Convert.ToInt32(obj["type"]),
+                //                    systemResource = (int)SystemResource.TroubleReport
+                //                });
+                //            }
+                //        }
+                //        sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
+                //        ret = await c.ExecuteAsync(sql, objs, trans);
+                //    }
 
-                    sql = " insert into trouble_deal " +
-                        " values (0,@Trouble,@OrgTop,@DealBy,@ArrivedTime,@FinishedTime,@Process,@SparePartsReplace, " +
-                        " @RepairEvaluation,@RepairReason,@IsSure,@UnpassReason,@SureBy,@SureTime," +
-                        " @CreatedBy,@CreatedTime,@UpdateBy,@UpdateTime)";
-                    //以后需要改成子状态，显示的时候也多个子状态一起显示
-                    //TroubleDeal troubleDeal = new TroubleDeal();
-                    //foreach (var item in eqps.Select(a=>a.Org).Distinct())
-                    //{
-                    //    troubleDeal.Trouble = newid;
-                    //    troubleDeal.OrgTop = item;
+                //    sql = " insert into trouble_deal " +
+                //        " values (0,@Trouble,@OrgTop,@DealBy,@ArrivedTime,@FinishedTime,@Process,@SparePartsReplace, " +
+                //        " @RepairEvaluation,@RepairReason,@IsSure,@UnpassReason,@SureBy,@SureTime," +
+                //        " @CreatedBy,@CreatedTime,@UpdateBy,@UpdateTime)";
+                //    //以后需要改成子状态，显示的时候也多个子状态一起显示
+                //    //TroubleDeal troubleDeal = new TroubleDeal();
+                //    //foreach (var item in eqps.Select(a=>a.Org).Distinct())
+                //    //{
+                //    //    troubleDeal.Trouble = newid;
+                //    //    troubleDeal.OrgTop = item;
 
-                    //}
-                    //await c.QueryFirstOrDefaultAsync<int>(sql, troubleDeal);
+                //    //}
+                //    //await c.QueryFirstOrDefaultAsync<int>(sql, troubleDeal);
 
-                    sql = "insert into trouble_history " +
-                    " values (0,@trouble,@OrgTop,@operation,@content,@user,@time)";
-                    object myObj = new
-                    {
-                        trouble = newid,
-                        OrgTop=0,
-                        operation = TroubleOperation.NewTrouble,
-                        content = troubleReport.Code,
-                        user = troubleReport.CreatedBy,
-                        time=troubleReport.CreatedTime
-                    };
-                    ret = await c.ExecuteAsync(sql, myObj, trans);
-                    trans.Commit();
+                //    sql = "insert into trouble_history " +
+                //    " values (0,@trouble,@OrgTop,@operation,@content,@user,@time)";
+                //    object myObj = new
+                //    {
+                //        trouble = newid,
+                //        OrgTop=0,
+                //        operation = TroubleOperation.NewTrouble,
+                //        content = troubleReport.Code,
+                //        user = troubleReport.CreatedBy,
+                //        time=troubleReport.CreatedTime
+                //    };
+                //    ret = await c.ExecuteAsync(sql, myObj, trans);
+                //    trans.Commit();
 
-                    return troubleReport;
-                }
-                catch (Exception ex)
-                {
-                    trans.Rollback();
-                    throw new Exception(ex.ToString());
-                }
+                //    return troubleReport;
+                //}
+                //catch (Exception ex)
+                //{
+                //    trans.Rollback();
+                //    throw new Exception(ex.ToString());
+                //}
             });
         }
         public async Task<List<TroubleReport>> ListAll()
@@ -394,6 +402,14 @@ namespace MSS.API.Dao.Implement
         #endregion
 
         #region trouble_eqp
+        public async Task<int> SaveTroubleEqp(TroubleEqp troubleEqp)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "insert into trouble_eqp values (0,@Trouble,@Org,@Eqp,@OrgNode,@OrgPath,@AssignedBy,@AssignedTime)";
+                return await c.ExecuteAsync(sql, troubleEqp);
+            });
+        }
         public async Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0,int orgNode=0)
         {
             return await WithConnection(async c =>
@@ -412,6 +428,24 @@ namespace MSS.API.Dao.Implement
                 }
                 var ret = await c.QueryAsync<TroubleEqp>(sql);
                 if (ret.Count()>0)
+                {
+                    return ret.ToList();
+                }
+                else
+                {
+                    return new List<TroubleEqp>();
+                }
+            });
+        }
+        public async Task<List<TroubleEqp>> ListEqpIDByTroubles(string[] troubles)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select a.*,tr.level from trouble_eqp a " +
+                " left join trouble_report tr on tr.id=a.trouble "+
+                " where a.trouble in @troubles";
+                var ret = await c.QueryAsync<TroubleEqp>(sql,new { troubles });
+                if (ret.Count() > 0)
                 {
                     return ret.ToList();
                 }
@@ -545,7 +579,7 @@ namespace MSS.API.Dao.Implement
                         " set org_top=@OrgTop,deal_by=@DealBy,arrived_time=@ArrivedTime," +
                         " finished_time=@FinishedTime,process=@Process,spareparts_replace=@SparePartsReplace, " +
                         " repair_evaluation=@RepairEvaluation,repair_reason=@RepairReason," +
-                        " update_by=@UpdateBy,update_time=@UpdateTime ";
+                        " update_by=@UpdateBy,update_time=@UpdateTime where id=@ID";
                 return await c.ExecuteAsync(sql, troubleDeal);
             });
         }
@@ -598,6 +632,17 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        #endregion
+
+        #region 
+        public async Task<int> SaveUploadFile(UploadFileRelation uploadFileRelation)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = "insert into upload_file_relation values (0,@Entity,@File,@Type,@SystemResource)";
+                return await c.ExecuteAsync(sql, uploadFileRelation);
+            });
+        }
         #endregion
     }
 }         
