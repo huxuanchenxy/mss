@@ -32,20 +32,30 @@ namespace MSS.API.Core.EventServer
                     bool ret = _queues.AlarmQueue.TryDequeue(out msg);
                     if (ret)
                     {
-                        string value = _cache.GetString(RedisKeyPrefix.Eqp + msg.eqp.ID);
-                        if (value != null)
+                        if (msg.type != MssEventType.NotificationPidCount)
                         {
-                            int topOrg = int.Parse(value);
-                            string users_str = _cache.GetString(RedisKeyPrefix.Org + topOrg);
-                            if (users_str != null)
+                            string value = _cache.GetString(RedisKeyPrefix.Eqp + msg.eqp.ID);
+                            if (value != null)
                             {
-                                string[] idstrs = users_str.Split(',');
-                                await _eventHubContext.Clients.Users(idstrs).RecieveMsg(msg);
+                                int topOrg = int.Parse(value);
+                                string users_str = _cache.GetString(RedisKeyPrefix.Org + topOrg);
+                                if (users_str != null)
+                                {
+                                    string[] idstrs = users_str.Split(',');
+                                    await _eventHubContext.Clients.Users(idstrs).RecieveMsg(msg);
+                                }
+                                // 发送管理员组
+                                await _eventHubContext.Clients.Groups(RedisKeyPrefix.SuperGroup)
+                                    .RecieveMsg(msg);
                             }
+                        }
+                        else
+                        {
                             // 发送管理员组
                             await _eventHubContext.Clients.Groups(RedisKeyPrefix.SuperGroup)
                                 .RecieveMsg(msg);
                         }
+                        
                     }
                 }
                 catch (Exception ex)

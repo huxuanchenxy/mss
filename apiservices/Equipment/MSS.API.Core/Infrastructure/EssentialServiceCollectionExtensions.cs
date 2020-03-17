@@ -28,6 +28,10 @@ namespace MSS.API.Core.Infrastructure
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
             services.AddTransient<IServiceDiscoveryProvider, ConsulServiceProvider>();
+            services.AddTransient<IPidTableService, PidTableService>();
+            services.AddTransient<IPidCountService,PidCountService>();
+            services.AddTransient<IPidCountDetailService,PidCountDetailService>();
+            services.AddTransient<INotificationPidcountService,NotificationPidcountService>();
             return services;
         }
     }

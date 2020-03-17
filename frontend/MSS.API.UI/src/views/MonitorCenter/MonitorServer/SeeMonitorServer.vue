@@ -18,7 +18,7 @@
         <div class="search-btn" @click="searchRes">
         </div>
       </div>
-                        <ul class="con-padding-horizontal btn-group">
+      <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="refreshpage"><x-button>刷新</x-button></li>
       </ul>
     </div>
