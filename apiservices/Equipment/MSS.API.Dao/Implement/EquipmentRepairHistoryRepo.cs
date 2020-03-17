@@ -28,7 +28,7 @@ namespace MSS.API.Dao.Implement
                 try
                 {
                     sql = " insert into equipment_repair_history " +
-                        " values (0,@Trouble,@Eqp,@EqpPath,@Desc, " +
+                        " values (0,@Trouble,@Eqp,@EqpPath,@Desc,@IsAllUpdated, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, equipmentRepairHistory, trans);
@@ -73,7 +73,7 @@ namespace MSS.API.Dao.Implement
                 try
                 {
                     sql = " update equipment_repair_history " +
-                        " set trouble=@Trouble,eqp=@Eqp,eqp_path=@EqpPath,`desc`=@Desc, " +
+                        " set trouble=@Trouble,eqp=@Eqp,eqp_path=@EqpPath,`desc`=@Desc,is_all_update=@IsAllUpdate, " +
                         " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id";
                     int result = await c.ExecuteAsync(sql, equipmentRepairHistory,trans);
                     if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))

@@ -14,6 +14,7 @@ namespace MSS.API.Model.Data
         public string EqpName { get; set; }
         public string EqpPath { get; set; }
         public string Desc { get; set; }
+        public int IsAllUpdate { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
         public int? Type { get; set; }
@@ -28,6 +29,7 @@ namespace MSS.API.Model.Data
             Map(o => o.EqpName).ToColumn("eqp_name");
             Map(o => o.EqpPath).ToColumn("eqp_path");
             Map(o => o.Desc).ToColumn("description");
+            Map(o => o.IsAllUpdate).ToColumn("is_all_update");
 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedName).ToColumn("created_name");
