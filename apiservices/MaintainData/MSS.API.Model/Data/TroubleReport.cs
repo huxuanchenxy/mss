@@ -149,6 +149,7 @@ namespace MSS.API.Model.Data
         public int? AssignedBy { get; set; }
         public string AssignedByName { get; set; }
         public DateTime? AssignedTime { get; set; }
+        public int TroubleLevel { get; set; }
     }
 
     public class TroubleEqpMap : EntityMap<TroubleEqp>
@@ -164,6 +165,7 @@ namespace MSS.API.Model.Data
             Map(o => o.AssignedTime).ToColumn("assigned_time");
             Map(o => o.OrgPath).ToColumn("org_path");
             Map(o => o.OrgPathTmp).ToColumn("team_path");
+            Map(o => o.TroubleLevel).ToColumn("level");
         }
     }
 

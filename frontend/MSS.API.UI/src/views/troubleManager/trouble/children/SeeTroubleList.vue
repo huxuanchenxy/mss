@@ -331,7 +331,12 @@ export default {
       }
     },
     isNewTrouble () {
-      return this.troubleListByID[this.editTroubleID].status === troubleStatus.newTrouble
+      for (let i = 0; i < this.editTroubleID.length; i++) {
+        if (this.troubleListByID[this.editTroubleID[i]].status !== troubleStatus.newTrouble) {
+          return false
+        }
+      }
+      return true
     },
     // 取消报修故障
     remove () {

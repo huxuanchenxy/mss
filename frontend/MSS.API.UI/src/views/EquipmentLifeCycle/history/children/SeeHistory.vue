@@ -224,8 +224,17 @@ export default {
     },
     preview (item) {
       if (isPreview(item.id, item.name)) {
-        this.centerDialogVisible = true
-        this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+        apiEqp.fileIsExist(item.id).then(res => {
+          if (res.data) {
+            this.previewUrl = PDF_UPLOADED_VIEW_URL + item.url
+            this.centerDialogVisible = true
+          } else {
+            this.$message({
+              message: '未找到所要查看的文件',
+              type: 'warning'
+            })
+          }
+        }).catch(err => console.log(err))
       }
     },
     eqpDetail () {

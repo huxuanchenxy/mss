@@ -13,15 +13,17 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="name">设备类型名称</label>
+            <label for="name">导入文件名</label>
             <div class="inp">
-              <el-input v-model.trim="eqpTypeName" placeholder="请输入设备类型名称"></el-input>
+              <el-input v-model.trim="fileName" placeholder="请输入导入文件名"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="name">设备类型描述</label>
+            <label for="">匹配内容</label>
             <div class="inp">
-              <el-input v-model.trim="description" placeholder="请输入设备类型描述"></el-input>
+              <el-select v-model="matchedClass" placeholder="请选择">
+                <el-option v-for="item in classList" :key="item.key" :value="item.id" :label="item.showName"></el-option>
+              </el-select>
             </div>
           </div>
         </div>
@@ -30,31 +32,28 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
-        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
-        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
+        <li class="list">
+          <x-button :disabled="btn.save">
+            <router-link :to="{ name: 'AddImportExcelConfig', params: { mark: 'add' } }">添加</router-link>
+          </x-button>
+        </li>
+        <li class="list" @click="remove" :disabled="btn.delete"><x-button>删除</x-button></li>
+        <li class="list" @click="edit('edit')" :disabled="btn.update"><x-button>修改</x-button></li>
+        <li class="list" @click="edit('detail')" ><x-button>查看明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list number c-pointer" @click="changeOrder('id')">
-          编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
-        </li>
-        <li class="list name c-pointer" @click="changeOrder('type_name')">
-          名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.type_name === 0 }, { 'el-icon-caret-top': headOrder.type_name === 1 }, { 'el-icon-caret-bottom': headOrder.type_name === 2 }]"></i>
-        </li>
-        <li class="list name">型号</li>
-        <li class="list url">描述</li>
-        <li class="list upload-cascader">上传文件</li>
+        <li class="list number">导入文件名</li>
+        <li class="list number">匹配内容</li>
+        <li class="list content">导入字段</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_by')">
+        <li class="list last-maintainer c-pointer" @click="changeOrder('updated_by')">
           最后更新人
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
@@ -62,27 +61,16 @@
       <div class="scroll">
         <el-scrollbar>
           <ul class="list-wrap">
-            <li class="list" v-for="item in eqpTypeList" :key="item.key">
+            <li class="list" v-for="(item) in importExcelConfigList" :key="item.key">
               <div class="list-content">
                 <div class="checkbox">
-                  <input type="checkbox" v-model="editEqpTypeID" :value="item.id" @change="emitEditID">
+                  <input type="checkbox" v-model="editID" :value="item.id" @change="emitEditID">
                 </div>
-                <div class="number">{{ item.id }}</div>
-                <div class="name word-break">
-                  <router-link :to="{ name: 'SeeEqpList', params: { id: item.id } }">{{ item.tName }}</router-link>
-                </div>
-                <div class="name word-break">{{ item.model }}</div>
-                <div class="url word-break">{{ item.desc }}</div>
-                <div class="upload-cascader">
-                  <el-cascader clearable
-                    v-show="item.uploadFileArr.length != 0"
-                    @change="preview"
-                    :show-all-levels="false"
-                    :options="item.uploadFileArr">
-                  </el-cascader>
-                </div>
-                <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
-                <div class="last-update-time word-break">{{ item.updatedName }}</div>
+                <div class="number">{{ item.fileName }}</div>
+                <div class="number">{{ item.classShow }}</div>
+                <div class="content">{{ item.field }}</div>
+                <div class="last-update-time color-white">{{ item.updatedTime }}</div>
+                <div class="last-maintainer">{{ item.updatedName }}</div>
               </div>
             </li>
           </ul>
@@ -115,23 +103,16 @@
         <el-button v-else @click="dialogVisible.isShow = false" :class="{ on: !dialogVisible.btn }">知道了</el-button>
       </template>
     </el-dialog>
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
-    </el-dialog>
   </div>
 </template>
 <script>
-import { transformDate, PDF_UPLOADED_VIEW_URL } from '@/common/js/utils.js'
-import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
+import { transformDate } from '@/common/js/utils.js'
+// import { dictionary } from '@/common/js/dictionary.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 export default {
-  name: 'SeeEqpTypeList',
+  name: 'SeeImportExcelConfigList',
   components: {
     XButton
   },
@@ -142,33 +123,30 @@ export default {
         delete: false,
         update: false
       },
-      title: ' | 设备类型定义',
-      eqpTypeName: '',
-      description: '',
-      eqpTypeList: [],
-      editEqpTypeID: [],
+      title: ' | Excel导入配置',
+      fileName: '',
+      matchedClass: '',
+      classList: [],
+      importExcelConfigList: [],
+      editID: [],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
       loading: false,
       currentSort: {
-        sort: 'ID',
+        sort: 'id',
         order: 'asc'
       },
       dialogVisible: {
         isShow: false,
+        text: '',
         // true 为两个按钮，false 为一个按钮
         btn: true
       },
       headOrder: {
-        id: 1,
-        type_name: 0,
         updated_time: 0,
         updated_by: 0
-      },
-      centerDialogVisible: false,
-      uploadFile: {},
-      previewUrl: ''
+      }
     }
   },
   created () {
@@ -176,16 +154,22 @@ export default {
     if (!user.is_super) {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.save = !actions.some((item, index) => {
-        return item.actionID === btn.eqpType.save
+        return item.actionID === btn.importExcelConfig.save
       })
       this.btn.delete = !actions.some((item, index) => {
-        return item.actionID === btn.eqpType.delete
+        return item.actionID === btn.importExcelConfig.delete
       })
       this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.eqpType.update
+        return item.actionID === btn.importExcelConfig.update
       })
     }
+    // this.$emit('title', '| 配置别')
     this.init()
+
+    // 导入数据库列表
+    api.getImportExcelClass().then(res => {
+      this.classList = res.data
+    }).catch(err => console.log(err))
   },
   activated () {
     this.searchResult(this.currentPage)
@@ -197,28 +181,9 @@ export default {
       this.currentPage = 1
       // this.searchResult(1)
     },
-    preview (val) {
-      let id = val[val.length - 1]
-      if (isPreview(id, this.uploadFile[id].label)) {
-        api.fileIsExist(id).then(res => {
-          if (res.data) {
-            this.previewUrl = PDF_UPLOADED_VIEW_URL + this.uploadFile[id].url
-            this.centerDialogVisible = true
-          } else {
-            this.$message({
-              message: '未找到所要查看的文件',
-              type: 'warning'
-            })
-          }
-        }).catch(err => console.log(err))
-      }
-      // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
-    },
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.id = 0
-        this.headOrder.type_name = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -239,90 +204,65 @@ export default {
     searchResult (page) {
       this.currentPage = page
       this.loading = true
-      api.getEqpType({
+      let parm = {
         order: this.currentSort.order,
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        searchName: this.eqpTypeName,
-        searchDesc: this.description
-      }).then(res => {
+        searchName: this.fileName,
+        searchClass: this.matchedClass
+      }
+      api.getImportExcelConfig(parm).then(res => {
         this.loading = false
-        if (res.data.total === 0) {
-          this.eqpTypeList = []
-        } else {
-          res.data.rows.map(item => {
-            item.updatedTime = transformDate(item.updatedTime)
-            if (item.uploadFiles !== null) {
-              item.uploadFileArr = JSON.parse(item.uploadFiles)
-              item.uploadFileArr.map(val => {
-                val.children.map(item => {
-                  this.uploadFile[item.value] = item
-                })
-              })
-            } else {
-              item.uploadFileArr = []
-            }
-          })
-          this.eqpTypeList = res.data.rows
-        }
+        res.data.rows.map(item => {
+          item.updatedTime = transformDate(item.updatedTime)
+        })
+        this.importExcelConfigList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
     },
-    add () {
-      // 判断权限，符合则允许跳转
-      this.$router.push({name: 'AddEqpType', query: { type: 'Add' }})
-    },
-    // 修改设备类型
-    edit () {
-      if (!this.editEqpTypeID.length) {
+
+    // 修改配置
+    edit (mark) {
+      if (!this.editID.length) {
         this.$message({
-          message: '请选择修改操作的设备类型',
+          message: '请选择需要操作的配置',
           type: 'warning'
         })
-      } else if (this.editEqpTypeID.length > 1) {
+      } else if (this.editID.length > 1) {
         this.$message({
-          message: '修改的设备类型不能超过1个',
+          message: '操作的配置不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
-          name: 'AddEqpType',
-          query: {
-            id: this.editEqpTypeID[0],
-            type: 'edit'
+          name: 'AddImportExcelConfig',
+          params: {
+            id: this.editID[0],
+            mark: mark
           }
         })
       }
     },
 
-    // 删除设备类型
+    // 删除配置
     remove () {
-      if (!this.editEqpTypeID.length) {
+      if (!this.editID.length) {
         this.$message({
-          message: '请选择需删除作的设备类型',
+          message: '请选择需要删除的配置',
           type: 'warning'
         })
       } else {
         this.dialogVisible.isShow = true
         this.dialogVisible.btn = true
-        this.dialogVisible.text = '确定删除该条设备类型信息?'
+        this.dialogVisible.text = '确定删除该条配置信息?'
       }
     },
-
-    // 搜索功能
-    searchRes () {
-      this.$emit('title', '| 设备类型定义')
-      this.loading = true
-      this.init()
-      this.searchResult(1)
-    },
-
     // 弹框确认是否删除
     dialogEnter () {
-      api.delEqpType(this.editEqpTypeID.join(',')).then(res => {
+      api.delImportExcelConfig(this.editID.join(',')).then(res => {
         if (res.code === 0) {
-          this.editEqpTypeID = []
+          this.editID = []
           this.$message({
             message: '删除成功',
             type: 'success'
@@ -331,7 +271,7 @@ export default {
           this.searchResult(1)
         } else {
           this.$message({
-            message: '删除失败，' + res.msg,
+            message: res.msg,
             type: 'error'
           })
         }
@@ -339,15 +279,22 @@ export default {
         this.dialogVisible.isShow = false
       }).catch(err => console.log(err))
     },
+    // 搜索功能
+    searchRes () {
+      // this.$emit('title', '| 配置')
+      this.loading = true
+      this.init()
+      this.searchResult(1)
+    },
 
-    // 获取修改设备类型id
+    // 获取修改配置id
     emitEditID () {
-      this.$emit('editEqpTypeID', this.editEqpTypeID)
+      this.$emit('editID', this.editID)
     },
 
     // 全选
     checkAll () {
-      this.bCheckAll ? this.eqpTypeList.map(val => this.editEqpTypeID.push(val.id)) : this.editEqpTypeID = []
+      this.bCheckAll ? this.importExcelConfigList.map(val => this.editID.push(val.id)) : this.editID = []
       this.emitEditID()
     },
 
@@ -363,14 +310,12 @@ export default {
     prevPage (val) {
       this.bCheckAll = false
       this.checkAll()
-      this.currentPage = val
     },
 
     // 下一页
     nextPage (val) {
       this.bCheckAll = false
       this.checkAll()
-      this.currentPage = val
     }
   }
 }
@@ -413,6 +358,10 @@ $con-height: $content-height - 145 - 56;
       justify-content: space-between;
       align-items: center;
       padding: PXtoEm(15) PXtoEm(24);
+
+      div{
+        word-break: break-all;
+      }
     }
 
     .left-title{
@@ -452,17 +401,20 @@ $con-height: $content-height - 145 - 56;
     }
   }
 
-  .number{
-    width: 6%;
-  }
-
+  .number,
   .name,
   .btn-wrap{
     width: 8%;
   }
 
+  .name{
+    a{
+      color: #42abfd;
+    }
+  }
+
   .last-update-time{
-    width: 10%;
+    width: 15%;
     color: $color-content-text;
   }
 
@@ -470,37 +422,8 @@ $con-height: $content-height - 145 - 56;
     width: 10%;
   }
 
-  .upload-cascader{
-    width: 13%;
-  }
-
-  .url{
-    width: 10%;
-  }
-
-  .menuOrder{
-    width: 10%;
-  }
-}
-
-// 图片
-.pdf-btn{
-  display: flex;
-  justify-content: center;
-  .box{
-    position: relative;
-    width: 60px;
-    height: 30px;
-    text-align: center;
-    line-height: 30px;
-    cursor: pointer;
-
-    &:before{
-      content: "\e6cc";
-      font-size: 28px;
-      font-family: "iconfont";
-      color: #D8D8D8;
-    }
+  .content{
+    width: 45%;
   }
 }
 </style>

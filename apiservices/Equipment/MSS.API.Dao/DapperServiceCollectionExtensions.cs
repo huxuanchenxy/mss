@@ -8,6 +8,8 @@ using System.Text;
 using MSS.API.Dao.Interface;
 using MSS.API.Dao.Implement;
 using Dapper.FluentMap;
+using MSS.API.Common.Utility;
+
 namespace MSS.API.Dao
 {
     public static class DapperServiceCollectionExtensions
@@ -26,10 +28,7 @@ namespace MSS.API.Dao
             services.AddTransient<IUploadFileRepo<UploadFile>, UploadFileRepo>();
             services.AddTransient<IEquipmentConfigRepo<EquipmentConfig>, EquipmentConfigRepo>();
             services.AddTransient<IEquipmentRepairHistoryRepo<EquipmentRepairHistory>, EquipmentRepairHistoryRepo>();
-            services.AddTransient<IPidTableRepo<PidTable>, PidTableRepo>();
-            services.AddTransient<IPidCountRepo<PidCount>, PidCountRepo>();
-            services.AddTransient<IPidCountDetailRepo<PidCountDetail>,PidCountDetailRepo>();
-            services.AddTransient<INotificationPidcountRepo<NotificationPidcount>,NotificationPidcountRepo>();
+            services.AddTransient<IImportExcelConfigRepo<ImportExcelConfig>, ImportExcelConfigRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -41,10 +40,10 @@ namespace MSS.API.Dao
                 config.AddMap(new EquipmentConfigMap());
                 config.AddMap(new UploadFileRelationMap());
                 config.AddMap(new EquipmentRepairHistoryMap());
-                config.AddMap(new PidTableMap());
-                config.AddMap(new PidCountMap());
-                config.AddMap(new PidCountDetailMap());
-                config.AddMap(new NotificationPidcountMap());
+
+                config.AddMap(new ImportExcelLogMap());
+                config.AddMap(new ImportExcelConfigMap());
+                config.AddMap(new ImportExcelClassMap());
             });
             return services;
         }
