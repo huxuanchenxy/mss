@@ -80,6 +80,7 @@ namespace MSS.API.Core
             services.AddTransient<WarningJob>();
             // 设备维修通知任务
             services.AddTransient<NotificationJob>();
+            services.AddTransient<NotificationPidCountJob>();
             // 报警事件监听任务
             services.AddTransient<AlarmJob>();
             services.AddTransient<InitPidTableJob>();

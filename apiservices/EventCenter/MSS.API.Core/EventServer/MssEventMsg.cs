@@ -11,6 +11,8 @@ namespace MSS.API.Core.EventServer
 
         [Description("通知消息")]
         Notification = 2,
+        [Description("点位预警")]
+        NotificationPidCount = 3,
     }
 
     public class MssEventMsg

@@ -186,6 +186,38 @@
             </el-scrollbar>
           </div>
         </el-tab-pane>
+        <el-tab-pane class="pane-height pane-notification" label="点位预警" name="notificationpidcount">
+          <ul class="content-header">
+            <li class="list number">
+              车站
+            </li>
+            <li class="list content">
+              内容
+            </li>
+            <li class="list last-update-time">
+              发生时间
+            </li>
+            <li class="list number">
+              操作
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="(item) in NotificationPidCountList" :key="item.key">
+                  <div class="list-content">
+                    <div class="content">{{ item.pidCountName }}</div>
+                    <div class="content">{{ item.content }}</div>
+                    <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
+                    <div class="number">
+                      <li @click="confirmNotificationPidcount(item.id)"><x-button>确认</x-button></li>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </el-scrollbar>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -208,6 +240,7 @@ export default {
       AlarmList2: [],
       WarnList: [],
       NotificationList: [],
+      NotificationPidCountList: [],
       activeName: 'alarm',
       timer: null,
       newMsg: null
@@ -232,6 +265,9 @@ export default {
       }
       if (this.newMsg.type === 2 && this.activeName === 'notification') {
         this.getNotification()
+      }
+      if (this.newMsg.type === 3 && this.activeName === 'notificationpidcount') {
+        this.getNotificationPidcount()
       }
     }
   },
@@ -271,6 +307,9 @@ export default {
         case 'notification':
           this.getNotification()
           break
+        case 'notificationpidcount':
+          this.getNotificationPidcount()
+          break
       }
     },
     getWarnning () {
@@ -291,6 +330,15 @@ export default {
         }
       }).catch(err => console.log(err))
     },
+    getNotificationPidcount () {
+      this.loading = true
+      api.getAllNotificationPidcount().then(res => {
+        this.loading = false
+        if (res.code === ApiRESULT.Success) {
+          this.NotificationPidCountList = res.data.rows
+        }
+      }).catch(err => console.log(err))
+    },
     getAlarm () {
       // this.loading = true
       api.getAlarm().then(res => {
@@ -304,6 +352,13 @@ export default {
     confirmNotification (id) {
       api.deleteNotification(id).then(res => {
         if (res.code === ApiRESULT.Success) {
+        }
+      }).catch(err => console.log(err))
+    },
+    confirmNotificationPidcount (id) {
+      api.deleteNotificationPidcount(id).then(res => {
+        if (res.code === ApiRESULT.Success) {
+          this.getNotificationPidcount()
         }
       }).catch(err => console.log(err))
     }
