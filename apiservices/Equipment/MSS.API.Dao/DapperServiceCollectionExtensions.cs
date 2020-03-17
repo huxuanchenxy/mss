@@ -29,6 +29,10 @@ namespace MSS.API.Dao
             services.AddTransient<IEquipmentConfigRepo<EquipmentConfig>, EquipmentConfigRepo>();
             services.AddTransient<IEquipmentRepairHistoryRepo<EquipmentRepairHistory>, EquipmentRepairHistoryRepo>();
             services.AddTransient<IImportExcelConfigRepo<ImportExcelConfig>, ImportExcelConfigRepo>();
+            services.AddTransient<IPidTableRepo<PidTable>, PidTableRepo>();
+            services.AddTransient<IPidCountRepo<PidCount>, PidCountRepo>();
+            services.AddTransient<IPidCountDetailRepo<PidCountDetail>,PidCountDetailRepo>();
+            services.AddTransient<INotificationPidcountRepo<NotificationPidcount>,NotificationPidcountRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -44,6 +48,10 @@ namespace MSS.API.Dao
                 config.AddMap(new ImportExcelLogMap());
                 config.AddMap(new ImportExcelConfigMap());
                 config.AddMap(new ImportExcelClassMap());
+                config.AddMap(new PidTableMap());
+                config.AddMap(new PidCountMap());
+                config.AddMap(new PidCountDetailMap());
+                config.AddMap(new NotificationPidcountMap());
             });
             return services;
         }

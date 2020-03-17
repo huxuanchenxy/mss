@@ -44,7 +44,12 @@
             </div>
             <p class="validate-tips">{{ trouble.tips }}</p>
           </li>
-          <li class="list"/>
+          <li class="list">
+            <span class="text"></span>
+            <div class="inp">
+              <el-radio v-model="isAllUpdate" label="1">是否整机更换</el-radio>
+            </div>
+          </li>
         </ul>
         <div class="con-padding-horizontal cause">
           <span class="lable">过程描述<em class="validate-mark">*(500字以内)</em></span>
@@ -87,6 +92,7 @@ export default {
         value: 'id',
         children: 'children'
       },
+      isAllUpdate: '0',
       eqpRepairID: '',
       trouble: {text: '', tips: ''},
       troubleList: [],
@@ -126,6 +132,7 @@ export default {
           let data = res.data
           this.eqpSelected.text = strToIntArr(data.eqpPath)
           this.trouble.text = data.trouble
+          this.isAllUpdate = data.isAllUpdate + ''
           this.desc.text = nullToEmpty(data.desc)
           this.fileIDs = data.uploadFiles
         }
@@ -186,6 +193,7 @@ export default {
         eqpPath: this.eqpSelected.text.join(','),
         trouble: this.trouble.text,
         desc: this.desc.text,
+        isAllUpdate: this.isAllUpdate,
         Type: this.systemResource,
         UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
@@ -441,5 +449,9 @@ export default {
     flex: 1;
     width: auto;
   }
+}
+/deep/
+.el-radio__label{
+  color: $color-white
 }
 </style>
