@@ -47,7 +47,7 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="">预警上限:</label>
+            <label for="">预警线:</label>
             <div class="inp">
               <span>{{remindCount}}</span>
             </div>

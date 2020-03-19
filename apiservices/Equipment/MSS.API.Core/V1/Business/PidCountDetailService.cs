@@ -95,6 +95,8 @@ namespace MSS.API.Core.V1.Business
 
                     et.RemainCount = et.CapacityCount - et.UsedCount;
                     ret.data = await _repo.Save(obj);
+                    et.UpdatedTime = dt;
+                    et.UpdatedBy = _userID;
                     await _repoPidCount.Update(et);
 
                     //判断预警

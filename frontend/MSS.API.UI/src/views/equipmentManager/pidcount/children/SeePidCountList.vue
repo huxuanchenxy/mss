@@ -65,7 +65,7 @@
           剩余数量
         </li>
         <li class="list number c-pointer">
-          预警上限
+          预警线
         </li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
