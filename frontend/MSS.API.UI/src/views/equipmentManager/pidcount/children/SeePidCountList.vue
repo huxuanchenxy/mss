@@ -11,15 +11,21 @@
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="">节点编号</label>
+            <label for="">车站编号</label>
             <div class="inp">
-              <el-input clearable v-model.trim="parm.nodeId" placeholder="请输入节点编号"></el-input>
+              <el-input clearable v-model.trim="parm.nodeId" placeholder="请输入车站编号"></el-input>
             </div>
           </div>
           <div class="input-group">
-            <label for="">节点名称</label>
+            <label for="">车站名称</label>
             <div class="inp">
-              <el-input clearable v-model.trim="parm.nodeName" placeholder="请输入节点名称"></el-input>
+              <el-input clearable v-model.trim="parm.nodeName" placeholder="请输入车站名称"></el-input>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">车站缩写</label>
+            <div class="inp">
+              <el-input clearable v-model.trim="parm.nodeTip" placeholder="请输入车站缩写"></el-input>
             </div>
           </div>
         </div>
@@ -28,9 +34,9 @@
         </div>
       </div>
       <ul class="con-padding-horizontal btn-group">
-        <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
-        <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
-        <li class="list" @click="detail"><x-button>查看明细</x-button></li>
+        <li class="list" @click="add"><x-button :disabled="btn.save">添加车站记录</x-button></li>
+        <li class="list" @click="edit"><x-button :disabled="btn.update">修改车站记录</x-button></li>
+        <li class="list" @click="detail"><x-button>查看点位资源明细</x-button></li>
       </ul>
     </div>
     <!-- 内容 -->
@@ -289,20 +295,21 @@ export default {
     detail () {
       if (!this.editObjID.length) {
         this.$message({
-          message: '请选择需要查看的设备',
+          message: '请选择需要查看的记录',
           type: 'warning'
         })
       } else if (this.editObjID.length > 1) {
         this.$message({
-          message: '查看的设备不能超过1个',
+          message: '查看的记录不能超过1个',
           type: 'warning'
         })
       } else {
         this.$router.push({
           name: 'DetailPidCount',
-          params: {
-            pidcountid: this.editObjID[0]
-          }
+          query: { pidcountid: this.editObjID[0] }
+          // params: {
+          //   pidcountid: this.editObjID[0]
+          // }
         })
       }
     },

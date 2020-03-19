@@ -4,30 +4,52 @@
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
-      <h2 class="title">
-        <!-- <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }} -->
-      </h2>
+      <title-module></title-module>
     </div>
     <div class="box">
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
           <div class="input-group">
-            <label for="">车站编号</label>
-            <div class="inp">
-              <el-input  disabled v-model.trim="nodeId" placeholder=""></el-input>
+            <label for="">车站编号:</label>
+            <div class="inp" style="width:65px">
+              <span>{{nodeId}}</span>
             </div>
           </div>
           <div class="input-group">
-            <label for="">车站名称</label>
+            <label for="">车站名称:</label>
             <div class="inp">
-              <el-input disabled v-model.trim="nodeName" placeholder=""></el-input>
+              <span>{{nodeName}}</span>
             </div>
           </div>
           <div class="input-group">
-            <label for="">车站缩写</label>
+            <label for="">车站缩写:</label>
+            <div class="inp" style="width:80px">
+              <span>{{nodeTip}}</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">点位容量:</label>
             <div class="inp">
-              <el-input disabled v-model.trim="nodeTip" placeholder=""></el-input>
+              <span>{{capacityCount}}</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">使用数量:</label>
+            <div class="inp">
+              <span>{{usedCount}}</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">剩余数量:</label>
+            <div class="inp">
+              <span>{{remainCount}}</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">预警上限:</label>
+            <div class="inp">
+              <span>{{remindCount}}</span>
             </div>
           </div>
         </div>
@@ -35,23 +57,26 @@
           <x-button ><router-link :to="{name:'SeePidCountList'}">返回</router-link></x-button>
         </div>
       </div>
+      <ul class="con-padding-horizontal btn-group">
+        <li class="list"><span>填写点位变化情况:</span></li>
+        <li class="list">
+                    <el-select v-model="detailType.text" placeholder="请选择事件类型" filterable clearable>
+                      <el-option
+                      v-for="item in detailTypeList"
+                      :key="item.key"
+                      :value="item.key"
+                      :label="item.value">
+                      </el-option>
+                    </el-select>
+        </li>
+        <li class="list"><el-input v-model.trim="changeCount" placeholder="请输入数字"></el-input></li>
+        <li class="list"><el-input v-model.trim="detailContent.text" placeholder="请填写描述" style="width: 350px;"></el-input></li>
+        <li class="list" @click="add"><x-button>提交</x-button></li>
+      </ul>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <!-- <li class="list number c-pointer" @click="changeOrder('node_id')">
-          车站编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.node_id === 0 }, { 'el-icon-caret-top': headOrder.node_id === 1 }, { 'el-icon-caret-bottom': headOrder.node_id === 2 }]"></i>
-        </li>
-        <li class="list name c-pointer" @click="changeOrder('node_name')">
-          车站名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.node_name === 0 }, { 'el-icon-caret-top': headOrder.node_name === 1 }, { 'el-icon-caret-bottom': headOrder.node_name === 2 }]"></i>
-        </li>
-        <li class="list number c-pointer" @click="changeOrder('node_tip')">
-          车站缩写
-          <i :class="[{ 'el-icon-d-caret': headOrder.node_tip === 0 }, { 'el-icon-caret-top': headOrder.node_tip === 1 }, { 'el-icon-caret-bottom': headOrder.node_tip === 2 }]"></i>
-        </li> -->
         <li class="list number c-pointer">
           事件类型
         </li>
@@ -75,9 +100,6 @@
           <ul class="list-wrap">
             <li class="list" v-for="(item) in EqpList" :key="item.key">
               <div class="list-content">
-                <div class="checkbox">
-                  <input type="checkbox" v-model="editObjID" :value="item.id" @change="emitEditID">
-                </div>
                 <div class="number">{{ item.detailType }}</div>
                 <div class="number">{{ item.ccc }}</div>
                 <div class="number">{{ item.detailContent }}</div>
@@ -125,11 +147,12 @@ import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 // import apiAuth from '@/api/authApi'
 import api from '@/api/eqpApi'
-// import apiArea from '@/api/AreaApi.js'
+import TitleModule from '@/components/TitleModule'
 export default {
   name: 'DetailPidCount',
   components: {
-    XButton
+    XButton,
+    'title-module': TitleModule
   },
   data () {
     return {
@@ -141,13 +164,44 @@ export default {
       parm: {
         pidCountId: 0
       },
-      title: ' | 点位资源',
-      pidCountId: this.$route.params.pidcountid,
+      title: ' | 点位资源变动详情',
+      pidCountId: this.$route.query.pidcountid,
       nodeId: '',
       nodeName: '',
       nodeTip: '',
+      capacityCount: '',
+      usedCount: '',
+      remainCount: '',
+      remindCount: '',
       EqpList: [],
       editObjID: [],
+      changeCount: '',
+      detailType: {
+        text: '',
+        tips: ''
+      },
+      detailContent: {
+        text: '',
+        tips: ''
+      },
+      detailTypeList: [
+        {
+          key: 1,
+          value: '新增点位'
+        },
+        {
+          key: 2,
+          value: '减少点位'
+        },
+        {
+          key: 3,
+          value: '分配点位'
+        },
+        {
+          key: 4,
+          value: '释放点位'
+        }
+      ],
       bCheckAll: false,
       total: 0,
       currentPage: 1,
@@ -185,8 +239,8 @@ export default {
         return item.actionID === btn.eqp.update
       })
     }
-    if (this.$route.params.pidcountid !== '' && this.$route.params.pidcountid !== null) {
-      this.pidCountId = this.$route.params.pidcountid
+    if (this.$route.query.pidcountid !== '' && this.$route.query.pidcountid !== null) {
+      this.pidCountId = this.$route.query.pidcountid
     }
     this.init()
   },
@@ -250,16 +304,42 @@ export default {
         this.nodeId = _res.nodeId
         this.nodeName = _res.nodeName
         this.nodeTip = _res.nodeTip
+        this.capacityCount = _res.capacityCount
+        this.usedCount = _res.usedCount
+        this.remainCount = _res.remainCount
+        this.remindCount = _res.remindCount
       }).catch(err => console.log(err))
     },
 
     add () {
-      this.$router.push({
-        name: 'AddPidCount',
-        params: {
-          mark: 'add'
+      // this.$router.push({
+      //   name: 'AddPidCountDetail',
+      //   params: {
+      //     mark: 'add'
+      //   }
+      // })
+      let obj = {
+        pidCountId: this.pidCountId,
+        changeCount: this.changeCount,
+        detailType: this.detailType.text,
+        detailContent: this.detailContent.text
+      }
+      api.addPidCountDetail(obj).then(res => {
+        if (res.code === 0) {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+          this.searchResult(1)
+          this.changeCount = ''
+          this.detailContent.text = ''
+        } else {
+          this.$message({
+            message: res.msg === '' ? '提交失败' : res.msg,
+            type: 'error'
+          })
         }
-      })
+      }).catch(err => console.log(err))
     },
     // 修改设备
     edit () {
@@ -488,4 +568,23 @@ $con-height: $content-height - 145 - 56;
     width: 5%;
   }
 }
+</style>
+<style>
+.textareaPidCountContent
+{
+    display: inline-block;
+    width: 86%;
+    vertical-align: bottom;
+    font-size: 14px;
+    padding-left: 5.4%;
+    padding-top: 2%;
+}
+/* .el-input__inner {
+    width: 220px;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 1px;
+    outline: medium;
+} */
 </style>

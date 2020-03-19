@@ -9,52 +9,36 @@
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
       <x-button class="active">
-        <router-link :to="{name:'SeePidCountList'}">返回</router-link>
+        <router-link :to="{name:'DetailPidCount'}">返回</router-link>
       </x-button>
     </div>
     <div class="scroll">
       <el-scrollbar>
         <div class="con-padding-horizontal operation">
+            <div class="input-group">
+              <label for="">车站编号</label>
+              <div class="inp">
+                <el-input  disabled v-model.trim="nodeId" placeholder=""></el-input>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="">车站名称</label>
+              <div class="inp">
+                <el-input disabled v-model.trim="nodeName" placeholder=""></el-input>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="">车站缩写</label>
+              <div class="inp">
+                <el-input disabled v-model.trim="nodeTip" placeholder=""></el-input>
+              </div>
+            </div>
           <ul class="input-group">
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">车站编号<em class="validate-mark">*</em></span>
-                <div class="inp">
-                  <el-input placeholder="请输入车站编号" v-model="nodeId.text" @keyup.native="validateInput(nodeId)"></el-input>
-                </div>
-              </div>
-              <p class="validate-tips">{{ nodeId.tips }}</p>
-            </li>
             <li class="list" >
               <div class="inp-wrap">
-                <span class="text">车站名称<em class="validate-mark">*</em></span>
+                <span class="text">点位容量<em class="validate-mark">*</em></span>
                 <div class="inp">
-                  <el-select v-model="nodeKey.text" placeholder="请选择" filterable clearable>
-                      <el-option
-                      v-for="item in AreaList"
-                      :key="item.id"
-                      :value="item.id"
-                      :label="item.areaName">
-                      </el-option>
-                    </el-select>
-                </div>
-              </div>
-              <p class="validate-tips">{{ nodeName.tips }}</p>
-            </li>
-            <li class="list">
-              <div class="inp-wrap">
-                <span class="text">车站缩写<em class="validate-mark">*</em></span>
-                <div class="inp">
-                  <el-input placeholder="请输入车站缩写" v-model="nodeTip.text" @keyup.native="validateInput(nodeTip)"></el-input>
-                </div>
-              </div>
-              <p class="validate-tips">{{ nodeTip.tips }}</p>
-            </li>
-            <li class="list" >
-              <div class="inp-wrap">
-                <span class="text">点位容量</span>
-                <div class="inp">
-                  <el-input disabled placeholder="无需输入" v-model="capacityCount.text" @keyup.native="validateInput(capacityCount)"></el-input>
+                  <el-input placeholder="请输入点位容量" v-model="capacityCount.text" @keyup.native="validateInput(capacityCount)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ capacityCount.tips }}</p>
@@ -63,7 +47,7 @@
               <div class="inp-wrap">
                 <span class="text">已使用数量</span>
                 <div class="inp">
-                  <el-input disabled placeholder="无需输入" v-model="usedCount.text" @keyup.native="validateInputNull(usedCount)"></el-input>
+                  <el-input placeholder="请输入已使用数量" v-model="usedCount.text" @keyup.native="validateInputNull(usedCount)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ usedCount.tips }}</p>
@@ -87,6 +71,14 @@
               <p class="validate-tips">{{ remindCount.tips }}</p>
             </li>
           </ul>
+        </div>
+        <div class="con-padding-horizontal cause">
+            <span class="lable">描述<em class="validate-mark">*</em></span>
+            <el-input type="textarea" class="textareaPidCountContent" style="padding-left: 5.4%;padding-top: 2%;"
+                    v-model="detailContent.text"
+                    placeholder="请输入内容"
+                    @keyup.native="validateInputNull(detailContent)"></el-input>
+            <p class="validate-tips">{{ detailContent.tips }}</p>
         </div>
         <div class="btn-enter">
           <x-button class="close">
@@ -167,10 +159,10 @@ export default {
     this.showArea()
     if (this.isShow === 'add') {
       this.loading = false
-      this.title = '| 添加车站记录'
+      this.title = '| 添加点位资源数量记录'
     } else if (this.isShow === 'edit') {
       this.loading = true
-      this.title = '| 修改车站记录'
+      this.title = '| 修改记录'
       this.getObj()
     }
   },
@@ -195,13 +187,11 @@ export default {
         usedCount: this.usedCount.text,
         remainCount: Number(this.remainCount.text),
         remindCount: this.remindCount.text,
+        detailContent: this.detailContent.text,
         nodeKey: this.nodeKey.text
       }
       if (this.isShow === 'add') {
         // 添加
-        obj.capacityCount = 0
-        obj.usedCount = 0
-        obj.remainCount = 0
         api.addPidCount(obj).then(res => {
           if (res.code === 0) {
             this.$message({
@@ -315,9 +305,9 @@ export default {
       if (!this.validateInput(this.nodeId)) return false
       // if (!this.validateInput(this.nodeName)) return false
       if (!this.validateInput(this.nodeTip)) return false
-      // if (!this.validateNumber(this.capacityCount)) return false
+      if (!this.validateNumber(this.capacityCount)) return false
       // if (!this.validateNumber(this.remainCount)) return false
-      // if (!this.validateNumber(this.usedCount)) return false
+      if (!this.validateNumber(this.usedCount)) return false
       if (!this.validateNumber(this.remindCount)) return false
       return true
     },
@@ -428,5 +418,16 @@ export default {
       cursor: pointer;
     }
   }
+}
+</style>
+<style>
+.textareaPidCountContent
+{
+    display: inline-block;
+    width: 86%;
+    vertical-align: bottom;
+    font-size: 14px;
+    padding-left: 5.4%;
+    padding-top: 2%;
 }
 </style>

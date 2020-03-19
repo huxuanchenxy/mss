@@ -24,12 +24,16 @@ namespace MSS.API.Core.V1.Business
         private readonly IPidCountDetailRepo<PidCountDetail> _repo;
         private readonly IAuthHelper _authhelper;
         private readonly int _userID;
+        private readonly IPidCountRepo<PidCount> _repoPidCount;
+        private readonly INotificationPidcountService _serviceNotice;
 
-        public PidCountDetailService(IPidCountDetailRepo<PidCountDetail> repo, IAuthHelper authhelper)
+        public PidCountDetailService(IPidCountDetailRepo<PidCountDetail> repo, IAuthHelper authhelper, IPidCountRepo<PidCount> repoPidCount, INotificationPidcountService serviceNotice)
         {
             _repo = repo;
             _authhelper = authhelper;
             _userID = _authhelper.GetUserId();
+            _repoPidCount = repoPidCount;
+            _serviceNotice = serviceNotice;
         }
 
         public async Task<ApiResult> GetPageList(PidCountDetailParm parm)
@@ -62,7 +66,56 @@ namespace MSS.API.Core.V1.Business
                 obj.CreatedTime = dt;
                 obj.UpdatedBy = _userID;
                 obj.CreatedBy = _userID;
-                ret.data = await _repo.Save(obj);
+                PidCount et = await _repoPidCount.GetByID(obj.PidCountId);
+                if (et != null)
+                {
+                    if (obj.DetailType == 1)
+                    {
+                        obj.CountOld = et.CapacityCount;
+                        obj.CountNew = et.CapacityCount + obj.ChangeCount;
+                        et.CapacityCount = obj.CountNew;
+                    }
+                    else if (obj.DetailType == 2)
+                    {
+                        obj.CountOld = et.CapacityCount;
+                        obj.CountNew = et.CapacityCount - obj.ChangeCount;
+                        et.CapacityCount = obj.CountNew;
+                    }
+                    else if (obj.DetailType == 3) {
+                        obj.CountOld = et.UsedCount;
+                        obj.CountNew = et.UsedCount + obj.ChangeCount;
+                        et.UsedCount = obj.CountNew;
+                    }
+                    else if (obj.DetailType == 4)
+                    {
+                        obj.CountOld = et.UsedCount;
+                        obj.CountNew = et.UsedCount - obj.ChangeCount;
+                        et.UsedCount = obj.CountNew;
+                    }
+
+                    et.RemainCount = et.CapacityCount - et.UsedCount;
+                    ret.data = await _repo.Save(obj);
+                    await _repoPidCount.Update(et);
+
+                    //判断预警
+                    if (et.UsedCount > et.RemindCount)
+                    {
+                        long _cont = et.UsedCount - et.RemindCount;
+                        await _serviceNotice.Save(new NotificationPidcount()
+                        {
+                            PidCountId = et.ID,
+                            PidCountName = et.NodeName,
+                            Content = "超过了预设的点位容量 " + _cont + " 个点",
+                            IsDel = false,
+                            CreatedTime = dt,
+                            CreatedBy = _userID,
+                            UpdatedTime = dt,
+                            UpdatedBy = _userID,
+                            Status = 0
+                        });
+                    }
+                }
+                
                 ret.code = Code.Success;
                 return ret;
             }

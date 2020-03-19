@@ -145,6 +145,10 @@ const routes = [
             path: 'detail',
             name: 'DetailPidCount',
             component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidcount/children/DetailPidCount.vue')
+          }, {
+            path: 'adddetail',
+            name: 'AddPidCountDetail',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidcount/children/AddPidCountDetail.vue')
           }
         ]
       }
