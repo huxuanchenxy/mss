@@ -15,6 +15,7 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetPageList(NotificationPidcountParm parm);
         Task<ApiResult> Save(NotificationPidcount obj);
         Task<ApiResult> Update(NotificationPidcount obj);
+        Task<ApiResult> UpdateOtherPidCount(NotificationPidcount obj);
         Task<ApiResult> Delete(string ids);
         Task<ApiResult> GetByID(int id);
     }
@@ -91,6 +92,35 @@ namespace MSS.API.Core.V1.Business
                     obj.UpdatedTime = dt;
                     obj.UpdatedBy = _userID;
                     ret.data = await _repo.Update(obj);
+                    ret.code = Code.Success;
+                }
+                else
+                {
+                    ret.code = Code.DataIsnotExist;
+                    ret.msg = "所要修改的数据不存在";
+                }
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
+        public async Task<ApiResult> UpdateOtherPidCount(NotificationPidcount obj)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                NotificationPidcount et = await _repo.GetByID(obj.ID);
+                if (et != null)
+                {
+                    DateTime dt = DateTime.Now;
+                    obj.UpdatedTime = dt;
+                    obj.UpdatedBy = _userID;
+                    ret.data = await _repo.UpdateOtherPidCount(obj);
                     ret.code = Code.Success;
                 }
                 else

@@ -13,6 +13,7 @@ namespace MSS.API.Dao.Implement
     {
         Task<NotificationPidcountPageView> GetPageList(NotificationPidcountParm param);
         Task<NotificationPidcount> Save(NotificationPidcount obj);
+        Task<int> UpdateOtherPidCount(NotificationPidcount obj);
         Task<NotificationPidcount> GetByID(long id);
         Task<int> Update(NotificationPidcount obj);
         Task<int> Delete(string[] ids, int userID);
@@ -125,12 +126,23 @@ namespace MSS.API.Dao.Implement
                     pid_count_name=@PidCountName,
                     content=@Content,
                     status=@Status,
-                    created_by=@CreatedBy,
-                    created_time=@CreatedTime,
                     updated_by=@UpdatedBy,
                     updated_time=@UpdatedTime,
                     is_del=@IsDel
                  where id=@Id", obj);
+                return result;
+            });
+        }
+
+        public async Task<int> UpdateOtherPidCount(NotificationPidcount obj)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.ExecuteAsync($@" UPDATE notification_pidcount set 
+                    status=@Status,
+                    updated_by=@UpdatedBy,
+                    updated_time=@UpdatedTime
+                 where pid_count_id=@PidCountId", obj);
                 return result;
             });
         }
