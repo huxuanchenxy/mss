@@ -19,6 +19,7 @@
               <div class="inp">
                 <el-cascader class="cascader_width"
                   filterable
+                  :disabled="!isAdd"
                   :props="defaultParams"
                   :show-all-levels="false"
                   :options="eqpList"
@@ -29,6 +30,32 @@
             <p class="validate-tips">{{ eqpSelected.tips }}</p>
           </li>
           <li class="list">
+            <div class="inp-wrap">
+              <span class="text">维修类型<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-select v-model="pmType.text" filterable placeholder="请选择维修类型" :disabled="!isAdd" @change="validateSelect(pmType)">
+                  <el-option label="中修" value="40"/>
+                  <el-option label="大修" value="41"/>
+                </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ pmType.tips }}</p>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">更换类型<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-select v-model="replaceType.text" filterable placeholder="请选择更换类型" :disabled="!isAdd" @change="validateSelect(replaceType)">
+                  <el-option label="无更换" value="0"/>
+                  <el-option label="部分更换" value="157"/>
+                  <el-option label="整件更换" value="205"/>
+                </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ replaceType.tips }}</p>
+          </li>
+          <li class="list"/>
+          <!--<li class="list" v-show="false">
             <div class="inp-wrap">
               <span class="text">故障编号<em class="validate-mark">*</em></span>
               <div class="inp">
@@ -43,13 +70,7 @@
               </div>
             </div>
             <p class="validate-tips">{{ trouble.tips }}</p>
-          </li>
-          <li class="list">
-            <span class="text"></span>
-            <div class="inp">
-              <el-radio v-model="isAllUpdate" label="1">是否整机更换</el-radio>
-            </div>
-          </li>
+          </li>-->
         </ul>
         <div class="con-padding-horizontal cause">
           <span class="lable">过程描述<em class="validate-mark">*(500字以内)</em></span>
@@ -75,8 +96,7 @@ import { systemResource } from '@/common/js/dictionary.js'
 import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import MyUploadPDF from '@/components/UploadPDF'
 import XButton from '@/components/button'
-import apiMain from '@/api/DeviceMaintainRegApi.js'
-import api from '@/api/eqpApi'
+import api from '@/api/DeviceMaintainRegApi.js'
 export default {
   name: 'AddEqpRepair',
   components: {
@@ -86,16 +106,19 @@ export default {
   data () {
     return {
       loading: false,
+      isAdd: true,
       title: '| 添加维修过程记录',
       defaultParams: {
         label: 'name',
         value: 'id',
         children: 'children'
       },
-      isAllUpdate: '0',
       eqpRepairID: '',
-      trouble: {text: '', tips: ''},
-      troubleList: [],
+      // 履历类型中提取这四种类型，由于部分更换比较重要，但健康度实在无法计算，所以只能分为维修类型和更换类型
+      pmType: {text: '', tips: ''},
+      replaceType: {text: '', tips: ''},
+      // trouble: {text: '', tips: ''},
+      // troubleList: [],
       desc: {text: '', tips: ''},
       eqpSelected: {text: [], tips: ''},
       eqpList: [],
@@ -112,15 +135,16 @@ export default {
       this.fileIDsEdit = ids
     },
     init () {
-      this.eqpRepairID = this.$route.query.id
-      apiMain.getAllTroubleReport().then(res => {
-        this.troubleList = res.data
-      }).catch(err => console.log(err))
+      // apiMain.getAllTroubleReport().then(res => {
+      //   this.troubleList = res.data
+      // }).catch(err => console.log(err))
       // 设备加载
-      apiMain.GetEqpByTypeAndLine(0).then(res => {
+      api.GetEqpByTypeAndLine(0).then(res => {
         this.eqpList = res.data
       }).catch(err => console.log(err))
       if (this.$route.query.type !== 'Add') {
+        this.isAdd = false
+        this.eqpRepairID = this.$route.query.id
         this.title = '| 修改维修过程记录'
         this.loading = true
         this.getEqpRepair()
@@ -131,8 +155,9 @@ export default {
         if (res.code === 0) {
           let data = res.data
           this.eqpSelected.text = strToIntArr(data.eqpPath)
-          this.trouble.text = data.trouble
-          this.isAllUpdate = data.isAllUpdate + ''
+          // this.trouble.text = data.trouble
+          this.pmType.text = data.pmType + ''
+          this.replaceType.text = data.replaceType + ''
           this.desc.text = nullToEmpty(data.desc)
           this.fileIDs = data.uploadFiles
         }
@@ -156,7 +181,7 @@ export default {
       return validateInputCommon(this.desc)
     },
     validateInputAll () {
-      if (!this.validateInputRange() || !this.validateSelect(this.trouble)) {
+      if (!this.validateInputRange() || !this.validateSelect(this.pmType) || !this.validateSelect(this.replaceType)) {
         return false
       }
       return true
@@ -191,9 +216,10 @@ export default {
       let eqpRepair = {
         eqp: eqp,
         eqpPath: this.eqpSelected.text.join(','),
-        trouble: this.trouble.text,
+        // trouble: this.trouble.text,
         desc: this.desc.text,
-        isAllUpdate: this.isAllUpdate,
+        pmType: this.pmType.text,
+        replaceType: this.replaceType.text,
         Type: this.systemResource,
         UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
@@ -449,9 +475,5 @@ export default {
     flex: 1;
     width: auto;
   }
-}
-/deep/
-.el-radio__label{
-  color: $color-white
 }
 </style>
