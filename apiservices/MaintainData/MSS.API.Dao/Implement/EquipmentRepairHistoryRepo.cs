@@ -15,6 +15,15 @@ using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Implement
 {
+    public interface IEquipmentRepairHistoryRepo<T> where T : BaseEntity
+    {
+        Task<EquipmentRepairHistory> Save(EquipmentRepairHistory equipmentRepairHistory);
+        Task<int> Update(EquipmentRepairHistory equipmentRepairHistory);
+        Task<int> Delete(string[] ids);
+        Task<EquipmentRepairHistoryView> GetPageByParm(EquipmentRepairHistoryQueryParm parm);
+        Task<EquipmentRepairHistory> GetByID(int id);
+    }
+
     public class EquipmentRepairHistoryRepo : BaseRepo, IEquipmentRepairHistoryRepo<EquipmentRepairHistory>
     {
         public EquipmentRepairHistoryRepo(DapperOptions options) : base(options) { }
@@ -24,43 +33,43 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql;
-                IDbTransaction trans = c.BeginTransaction();
-                try
+                //IDbTransaction trans = c.BeginTransaction();
+                //try
                 {
                     sql = " insert into equipment_repair_history " +
                         " values (0,@Trouble,@Eqp,@EqpPath,@Desc,@PMType,@ReplaceType, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
                     sql += "SELECT LAST_INSERT_ID()";
-                    int newid = await c.QueryFirstOrDefaultAsync<int>(sql, equipmentRepairHistory, trans);
+                    int newid = await c.QueryFirstOrDefaultAsync<int>(sql, equipmentRepairHistory);
                     equipmentRepairHistory.ID = newid;
-                    if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))
-                    {
-                        List<object> objs = new List<object>();
-                        JArray jobj = JsonConvert.DeserializeObject<JArray>(equipmentRepairHistory.UploadFiles);
-                        foreach (var obj in jobj)
-                        {
-                            foreach (var item in obj["ids"].ToString().Split(','))
-                            {
-                                objs.Add(new
-                                {
-                                    eqpRepairID = newid,
-                                    fileID = Convert.ToInt32(item),
-                                    type = Convert.ToInt32(obj["type"]),
-                                    systemResource = (int)SystemResource.EqpRepair
-                                });
-                            }
-                        }
-                        sql = "insert into upload_file_relation values (0,@eqpRepairID,@fileID,@type,@systemResource)";
-                        int ret = await c.ExecuteAsync(sql, objs, trans);
-                    }
-                    trans.Commit();
+                    //if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))
+                    //{
+                    //    List<object> objs = new List<object>();
+                    //    JArray jobj = JsonConvert.DeserializeObject<JArray>(equipmentRepairHistory.UploadFiles);
+                    //    foreach (var obj in jobj)
+                    //    {
+                    //        foreach (var item in obj["ids"].ToString().Split(','))
+                    //        {
+                    //            objs.Add(new
+                    //            {
+                    //                eqpRepairID = newid,
+                    //                fileID = Convert.ToInt32(item),
+                    //                type = Convert.ToInt32(obj["type"]),
+                    //                systemResource = (int)SystemResource.EqpRepair
+                    //            });
+                    //        }
+                    //    }
+                    //    sql = "insert into upload_file_relation values (0,@eqpRepairID,@fileID,@type,@systemResource)";
+                    //    int ret = await c.ExecuteAsync(sql, objs, trans);
+                    //}
+                    //trans.Commit();
                     return equipmentRepairHistory;
                 }
-                catch (Exception ex)
-                {
-                    trans.Rollback();
-                    throw new Exception(ex.ToString());
-                }
+                //catch (Exception ex)
+                //{
+                //    trans.Rollback();
+                //    throw new Exception(ex.ToString());
+                //}
             });
         }
 
@@ -138,9 +147,13 @@ namespace MSS.API.Dao.Implement
                 .Append(" left join user u2 on a.updated_by=u2.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
                 //whereSql.Append(" WHERE a.is_del=" + (int)IsDeleted.no);
-                if (parm.Trouble!=null)
+                if (parm.PMType!=null)
                 {
-                    whereSql.Append(" and a.trouble =" + parm.Trouble);
+                    whereSql.Append(" and a.pm_type =" + parm.PMType);
+                }
+                if (parm.ReplaceType != null)
+                {
+                    whereSql.Append(" and a.replace_type =" + parm.ReplaceType);
                 }
                 if (parm.Eqp != null)
                 {

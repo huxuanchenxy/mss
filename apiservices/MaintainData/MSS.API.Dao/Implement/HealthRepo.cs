@@ -22,6 +22,7 @@ namespace MSS.API.Dao.Implement
         Task<HealthView> GetPageByParm(HealthQueryParm parm);
 
         Task<List<Health>> ListEqp(List<int> eqps);
+        Task<List<Health>> ListAll();
     }
 
     public class HealthRepo : BaseRepo, IHealthRepo<Health>
@@ -34,7 +35,7 @@ namespace MSS.API.Dao.Implement
             {
                 string sql = " insert into health " +
                         " values (0,@Eqp,@Type,@EqpType,@TroubleLevel,@CorrelationID," +
-                        "@Val,@CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
+                        "@Val,@IsRepaired,@CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
                 return await c.ExecuteAsync(sql, health);
             });
         }
@@ -44,7 +45,7 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 string sql = " update health " +
-                        " set eqp=@Eqp,type=@Type,eqp_type=@EqpType," +
+                        " set eqp=@Eqp,type=@Type,eqp_type=@EqpType,is_repaired=@IsRepaired," +
                         "trouble_level=@TroubleLevel,correlation_id=@CorrelationID," +
                         " val=@Val,updated_by=@UpdatedBy,updated_time=@UpdatedTime where id=@ID";
                 return await c.ExecuteAsync(sql, health);
@@ -57,11 +58,10 @@ namespace MSS.API.Dao.Implement
             {
                 StringBuilder sql = new StringBuilder();
                 sql.Append("SELECT a.*,u1.user_name as cname,u2.user_name, ")
-                .Append(" dt.name as troubleLevelName,et.type_name,d.name ")
+                .Append(" e.eqp_name,d.name ")
                 .Append(" FROM health a ")
-                .Append(" left join dictionary_tree dt on a.trouble_level=dt.id ")
                 .Append(" left join dictionary_tree d on a.type=d.id ")
-                .Append(" left join equipment_type et on a.eqp_type=et.id ")
+                .Append(" left join equipment e on a.eqp=e.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id ");
                 StringBuilder whereSql = new StringBuilder();
@@ -80,7 +80,7 @@ namespace MSS.API.Dao.Implement
                 HealthView ret = new HealthView();
                 ret.rows= (await c.QueryAsync<Health>(sql.ToString())).ToList();
                 ret.total = await c.QueryFirstOrDefaultAsync<int>(
-                    "select count(*) from health_config a " + whereSql.ToString());
+                    "select count(*) from health a " + whereSql.ToString());
                 return ret;
             });
         }
@@ -101,5 +101,22 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
+
+        public async Task<List<Health>> ListAll()
+        {
+            return await WithConnection(async c =>
+            {
+                var tmp = await c.QueryAsync<Health>("SELECT * from health");
+                if (tmp.Count() > 0)
+                {
+                    return tmp.ToList();
+                }
+                else
+                {
+                    return new List<Health>();
+                }
+            });
+        }
+
     }
 }

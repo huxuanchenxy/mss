@@ -22,6 +22,7 @@ namespace MSS.API.Dao.Interface
         Task<int> SaveTroubleEqp(TroubleEqp troubleEqp);
         Task<List<TroubleEqp>> ListEqpByTrouble(int trouble,int topOrg=0, int orgNode = 0);
         Task<List<TroubleEqp>> ListEqpIDByTroubles(string[] troubles);
+        Task<List<TroubleEqp>> ListEqpIDByUser(int userID, int trouble);
         Task<int> UpdateTroubleEqp(List<TroubleEqp> troubleEqp);
         Task<List<int>> ListOrgTopByTrouble(int trouble);
         Task<List<TroubleHistory>> ListOperationByTroubles(IEnumerable<int> trouble);

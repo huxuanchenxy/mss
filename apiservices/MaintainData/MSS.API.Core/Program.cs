@@ -8,9 +8,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using Quartz;
+using Quartz.Impl;
+using MSS.API.Core.Job;
+using Quartz.Spi;
 
 namespace MSS.API.Core
 {
+
     public class Program
     {
         //public static void Main(string[] args)
@@ -24,6 +29,7 @@ namespace MSS.API.Core
 
         public static void Main(string[] args)
         {
+            //RunJob().GetAwaiter().GetResult();
             BuildWebHost(args).Run();
         }
 

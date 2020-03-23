@@ -98,7 +98,8 @@ namespace MSS.API.Common
             SecondWork = 44,
             Change = 157,
             Maintenance = 189,
-            Expiration = 45
+            Expiration = 45,
+            AllChange = 205
         }
 
         public enum HealthType
@@ -112,6 +113,8 @@ namespace MSS.API.Common
         }
 
         public const double HEATHFULLVAL = 100;
+        //程序自动更新数据库表时的创建更新人，目前仅在每天健康度衰减时使用
+        public const int SYSTEM = 0;
     }
 
     public enum OrgType
