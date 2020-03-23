@@ -149,7 +149,7 @@ namespace MSS.API.Model.Data
         public int? AssignedBy { get; set; }
         public string AssignedByName { get; set; }
         public DateTime? AssignedTime { get; set; }
-        public int TroubleLevel { get; set; }
+        public int? TroubleLevel { get; set; }
     }
 
     public class TroubleEqpMap : EntityMap<TroubleEqp>
@@ -204,7 +204,7 @@ namespace MSS.API.Model.Data
         public int OrgTop { get; set; }
         public string OrgTopName { get; set; }
         public string Code { get; set; }
-        public int? DealBy { get; set; }
+        public int DealBy { get; set; }
         public string DealByName { get; set; }
         public DateTime? ArrivedTime { get; set; }
         public DateTime? FinishedTime { get; set; }

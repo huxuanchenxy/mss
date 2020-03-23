@@ -314,7 +314,7 @@ namespace MSS.API.Core.V1.Business
                             h.TroubleLevel = te.TroubleLevel;
                             hh.CorrelationID = te.Trouble;
                             hh.TroubleLevel = te.TroubleLevel;
-                            bool? isInsert = GetHealthVal(false, eqpInfos, configs,ref health, ref h);
+                            bool? isInsert = GetHealthVal("troubleCancel", eqpInfos, configs,ref health, ref h);
                             hh.Val = h.Val;
                             hh.EqpType = h.EqpType;
                             if (isInsert == false)
@@ -432,7 +432,7 @@ namespace MSS.API.Core.V1.Business
                     {
                         h.Eqp = item;
                         hh.Eqp = h.Eqp;
-                        bool? isInsert = GetHealthVal(true,eqps,configs,ref health, ref h);
+                        bool? isInsert = GetHealthVal("troubleAdd", eqps,configs,ref health, ref h);
                         hh.Val = h.Val;
                         hh.EqpType = h.EqpType;
                         if (isInsert==true)
@@ -466,8 +466,9 @@ namespace MSS.API.Core.V1.Business
         /// <param name="health">当前设备的健康度</param>
         /// <param name="h">所要更新的设备的健康度</param>
         /// <returns></returns>
-        private bool? GetHealthVal(bool isNew,List<Equipment> eqpTypes,
-            List<HealthConfig> configs,ref List<Health> health, ref Health h)
+        private bool? GetHealthVal(string type,List<Equipment> eqpTypes,
+            List<HealthConfig> configs,ref List<Health> health, ref Health h,
+            List<HealthConfig> recover=null)
         {
             int? troubleLevel = h.TroubleLevel;
             int eqp = h.Eqp;
@@ -485,15 +486,19 @@ namespace MSS.API.Core.V1.Business
                 var tmp = hasEqp.FirstOrDefault();
                 h.ID = tmp.ID;
                 beforeVal = tmp.Val;
-                if (isNew)
+                switch (type)
                 {
-                    h.Val = beforeVal - diff;
+                    case "troubleAdd":
+                        h.Val = beforeVal - diff;
+                        break;
+                    case "troubleCancel":
+                        h.Val = beforeVal + diff;
+                        break;
+                    case "troubleRecover":
+                        if (recover.Count>0) h.Val = beforeVal + diff * recover.FirstOrDefault().Val/100;
+                        break;
                 }
-                else
-                {
-                    h.Val = beforeVal + diff;
-                    if (h.Val > HEATHFULLVAL) h.Val = HEATHFULLVAL;
-                }
+                if (h.Val > HEATHFULLVAL) h.Val = HEATHFULLVAL;
                 hasEqp.FirstOrDefault().Val = h.Val;
                 return false;
             }
@@ -647,7 +652,7 @@ namespace MSS.API.Core.V1.Business
                             h.TroubleLevel = tmp.TroubleLevel;
                             hh.CorrelationID = tmp.Trouble;
                             hh.TroubleLevel = tmp.TroubleLevel;
-                            bool? isInsert = GetHealthVal(false, eqpInfos, configs, ref health, ref h);
+                            bool? isInsert = GetHealthVal("troubleCancel", eqpInfos, configs, ref health, ref h);
                             hh.Val = h.Val;
                             hh.EqpType = h.EqpType;
                             if (isInsert == false)
@@ -676,7 +681,7 @@ namespace MSS.API.Core.V1.Business
                             h1.TroubleLevel = troubleReport.Level;
                             hh1.CorrelationID = tmp.Trouble;
                             hh1.TroubleLevel = troubleReport.Level;
-                            bool? isInsert = GetHealthVal(true, eqpInfos, configs, ref health, ref h1);
+                            bool? isInsert = GetHealthVal("troubleAdd", eqpInfos, configs, ref health, ref h1);
                             hh1.Val = h1.Val;
                             hh1.EqpType = h1.EqpType;
                             if (isInsert == false)
@@ -758,6 +763,18 @@ namespace MSS.API.Core.V1.Business
                 troubleDeal.UpdateTime = dt;
                 troubleDeal.UpdateBy = _userID;
                 int id = troubleDeal.Trouble;
+                int troubleDealID = troubleDeal.ID;
+                //根据处理人获取eqps
+                List<TroubleEqp> troubleEqp = await _troubleReportRepo.ListEqpIDByUser(troubleDeal.DealBy,id);
+                int? level = troubleEqp.FirstOrDefault().TroubleLevel;
+                List<int> eqpIDs = troubleEqp.Select(a => a.Eqp).ToList();
+                List<Equipment> eqps = await _healthConfigRepo.GetEqpTypeByEqps(eqpIDs);
+                List<int> eqpTypes = eqps.Select(a => a.Type).Distinct().ToList();
+                //获取故障衰减量和维修恢复率
+                List<HealthConfig> configs = await _healthConfigRepo.GetValByCon((int)HealthType.Trouble, eqpTypes);
+                List<HealthConfig> recover = await _healthConfigRepo.GetValByCon((int)HealthType.PM);
+                //获取实时健康度
+                List<Health> health = await _healthRepo.ListEqp(eqpIDs);
                 using (TransactionScope scope = new TransactionScope())
                 {
                     if (troubleDeal.ID > 0)
@@ -767,6 +784,7 @@ namespace MSS.API.Core.V1.Business
                     else
                     {
                         td = await _troubleReportRepo.SaveDeal(troubleDeal);
+                        troubleDealID = td.ID;
                     }
                     //目前只考虑一个公司，以后多个公司也只是改对应的状态，显示也显示多个状态，没有主状态的概念
                     //if (await isRepaired(id)>0)
@@ -782,6 +800,34 @@ namespace MSS.API.Core.V1.Business
                     th.CreatedBy = _userID;
                     th.CreatedTime = dt;
                     await _troubleReportRepo.SaveHistory(th);
+                    Health h = new Health();
+                    h.CorrelationID = troubleDealID;
+                    h.CreatedBy = _userID;
+                    h.CreatedTime = dt;
+                    h.UpdatedBy = _userID;
+                    h.UpdatedTime = dt;
+                    h.Type = (int)HealthType.PM;
+                    h.TroubleLevel = level;
+                    h.IsRepaired = 1;
+                    HealthHistory hh = new HealthHistory();
+                    hh.CorrelationID = troubleDealID;
+                    hh.CreatedBy = _userID;
+                    hh.CreatedTime = dt;
+                    hh.Type = (int)HealthType.PM;
+                    hh.TroubleLevel = level;
+                    foreach (var item in eqpIDs)
+                    {
+                        h.Eqp = item;
+                        hh.Eqp = h.Eqp;
+                        bool? isInsert = GetHealthVal("troubleRecover", eqps, configs, ref health, ref h,recover);
+                        hh.Val = h.Val;
+                        hh.EqpType = h.EqpType;
+                        if (isInsert == false)
+                        {
+                            await _healthRepo.Update(h);
+                            await _healthHistoryRepo.Save(hh);
+                        }
+                    }
                     scope.Complete();
                 }
                 ret.data = td;

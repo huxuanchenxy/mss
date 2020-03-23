@@ -19,10 +19,12 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IDeviceMaintainRegService, DeviceMaintainRegService>();
             services.AddTransient<ILifeTimeKeyMaintainService, LifeTimeKeyMaintainService>();
             services.AddTransient<IEqpHistoryService, EqpHistoryService>();
+            services.AddTransient<IEquipmentRepairHistoryService, EquipmentRepairHistoryService>();
             services.AddTransient<IWorkingApplicationService, WorkingApplicationService>();
             services.AddTransient<ITroubleReportService, TroubleReportService>();
             services.AddTransient<IEmergencyPlanService, EmergencyPlanService>();
             services.AddTransient<IHealthConfigService, HealthConfigService>();
+            services.AddTransient<IHealthService, HealthService>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
             return services;

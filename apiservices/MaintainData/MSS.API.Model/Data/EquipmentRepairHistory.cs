@@ -48,7 +48,8 @@ namespace MSS.API.Model.Data
 
     public class EquipmentRepairHistoryQueryParm : BaseQueryParm
     {
-        public int? Trouble { get; set; }
+        public int? PMType { get; set; }
+        public int? ReplaceType { get; set; }
         public int? Eqp { get; set; }
         public string Desc { get; set; }
     }

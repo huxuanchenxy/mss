@@ -87,5 +87,14 @@ namespace MSS.API.Dao.Implement
                 return await c.ExecuteAsync(sql, eqps);
             });
         }
+        public async Task<int> SaveEqpHistory(EqpHistory eh)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " insert into equipment_history " +
+                        " values (0,@EqpID,@Type,@WorkingOrder,@ShowName,@CreatedTime,@CreatedBy); ";
+                return await c.ExecuteAsync(sql, eh);
+            });
+        }
     }
 }         
