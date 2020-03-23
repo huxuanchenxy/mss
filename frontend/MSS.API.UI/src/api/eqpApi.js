@@ -1,7 +1,7 @@
 import axios from './interceptors'
-let api = 'http://localhost:3851/api/v1'
+// let api = 'http://localhost:3851/api/v1'
 // let api = 'http://localhost:8084/api/v1'
-// let api = 'http://10.89.36.154:5801/eqpapi'
+let api = 'http://10.89.36.154:5801/eqpapi'
 export default {
   getEqpType: parm => { return axios.get(`${api}/EquipmentType`, {params: parm}).then(res => res.data) },
   getEqpTypeByID: id => { return axios.get(`${api}/EquipmentType/${id}`).then(res => res.data) },
@@ -46,12 +46,6 @@ export default {
   downloadFile: id => { return axios({method: 'post', url: `${api}/Upload/Download/${id}`, responseType: 'blob'}).then(res => res) },
 
   getAllEqpCount: () => { return axios.get(`${api}/Equipment/count`).then(res => res.data) },
-
-  getEqpRepair: parm => { return axios.get(`${api}/EquipmentRepairHistory`, {params: parm}).then(res => res.data) },
-  getEqpRepairByID: id => { return axios.get(`${api}/EquipmentRepairHistory/${id}`).then(res => res.data) },
-  addEqpRepair: parm => { return axios.post(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
-  updateEqpRepair: parm => { return axios.put(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
-  delEqpRepair: ids => { return axios.delete(`${api}/EquipmentRepairHistory/${ids}`).then(res => res.data) },
 
   getImportExcelConfig: parm => { return axios.get(`${api}/ImportExcelConfig`, {params: parm}).then(res => res.data) },
   getImportExcelConfigByID: id => { return axios.get(`${api}/ImportExcelConfig/${id}`).then(res => res.data) },

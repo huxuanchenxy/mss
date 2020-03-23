@@ -69,7 +69,8 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
-        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <!-- 删除和履历健康度都有关联，暂时取消此功能；若需要，则需要修改后台代码，权限表中插入168 -->
+        <li class="list" @click="remove" v-show="false"><x-button :disabled="btn.delete">删除</x-button></li>
         <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
       </ul>
     </div>
@@ -164,8 +165,7 @@ import { btn } from '@/element/btn.js'
 // import { dictionary } from '@/common/js/dictionary.js'
 import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
-import apiMain from '@/api/DeviceMaintainRegApi.js'
-import api from '@/api/eqpApi'
+import api from '@/api/DeviceMaintainRegApi.js'
 export default {
   name: 'SeeEqpRepairList',
   components: {
@@ -231,11 +231,11 @@ export default {
         return item.actionID === btn.eqpRepairHistory.update
       })
     }
-    apiMain.getAllTroubleReport().then(res => {
-      this.troubleList = res.data
-    }).catch(err => console.log(err))
+    // api.getAllTroubleReport().then(res => {
+    //   this.troubleList = res.data
+    // }).catch(err => console.log(err))
     // 设备加载
-    apiMain.GetEqpByTypeAndLine(0).then(res => {
+    api.GetEqpByTypeAndLine(0).then(res => {
       this.eqpList = res.data
     }).catch(err => console.log(err))
     this.init()
@@ -312,7 +312,8 @@ export default {
         rows: 10,
         page: page,
         Desc: this.desc,
-        Trouble: this.trouble,
+        PMType: this.pmType,
+        ReplaceType: this.replaceType,
         Eqp: eqp
       }).then(res => {
         this.loading = false

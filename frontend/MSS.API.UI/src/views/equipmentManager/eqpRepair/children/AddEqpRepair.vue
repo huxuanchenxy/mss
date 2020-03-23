@@ -19,6 +19,7 @@
               <div class="inp">
                 <el-cascader class="cascader_width"
                   filterable
+                  :disabled="!isAdd"
                   :props="defaultParams"
                   :show-all-levels="false"
                   :options="eqpList"
@@ -32,7 +33,7 @@
             <div class="inp-wrap">
               <span class="text">维修类型<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="pmType.text" filterable placeholder="请选择维修类型" @change="validateSelect(pmType)">
+                <el-select v-model="pmType.text" filterable placeholder="请选择维修类型" :disabled="!isAdd" @change="validateSelect(pmType)">
                   <el-option label="中修" value="40"/>
                   <el-option label="大修" value="41"/>
                 </el-select>
@@ -44,7 +45,7 @@
             <div class="inp-wrap">
               <span class="text">更换类型<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="replaceType.text" filterable placeholder="请选择更换类型" @change="validateSelect(replaceType)">
+                <el-select v-model="replaceType.text" filterable placeholder="请选择更换类型" :disabled="!isAdd" @change="validateSelect(replaceType)">
                   <el-option label="无更换" value="0"/>
                   <el-option label="部分更换" value="157"/>
                   <el-option label="整件更换" value="205"/>
@@ -95,8 +96,7 @@ import { systemResource } from '@/common/js/dictionary.js'
 import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import MyUploadPDF from '@/components/UploadPDF'
 import XButton from '@/components/button'
-import apiMain from '@/api/DeviceMaintainRegApi.js'
-import api from '@/api/eqpApi'
+import api from '@/api/DeviceMaintainRegApi.js'
 export default {
   name: 'AddEqpRepair',
   components: {
@@ -106,13 +106,13 @@ export default {
   data () {
     return {
       loading: false,
+      isAdd: true,
       title: '| 添加维修过程记录',
       defaultParams: {
         label: 'name',
         value: 'id',
         children: 'children'
       },
-      isAllUpdate: '0',
       eqpRepairID: '',
       // 履历类型中提取这四种类型，由于部分更换比较重要，但健康度实在无法计算，所以只能分为维修类型和更换类型
       pmType: {text: '', tips: ''},
@@ -135,15 +135,16 @@ export default {
       this.fileIDsEdit = ids
     },
     init () {
-      this.eqpRepairID = this.$route.query.id
       // apiMain.getAllTroubleReport().then(res => {
       //   this.troubleList = res.data
       // }).catch(err => console.log(err))
       // 设备加载
-      apiMain.GetEqpByTypeAndLine(0).then(res => {
+      api.GetEqpByTypeAndLine(0).then(res => {
         this.eqpList = res.data
       }).catch(err => console.log(err))
       if (this.$route.query.type !== 'Add') {
+        this.isAdd = false
+        this.eqpRepairID = this.$route.query.id
         this.title = '| 修改维修过程记录'
         this.loading = true
         this.getEqpRepair()

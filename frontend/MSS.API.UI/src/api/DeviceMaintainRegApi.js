@@ -33,10 +33,18 @@ export default {
   saveTroubleDeal: parm => { return axios.post(`${api}/TroubleReport/SaveDeal`, parm).then(res => res.data) },
   getDealByID: (id, orgTop) => { return axios.get(`${api}/TroubleReport/GetDealByID/${id}/${orgTop}`).then(res => res.data) },
 
+  getEqpRepair: parm => { return axios.get(`${api}/EquipmentRepairHistory`, {params: parm}).then(res => res.data) },
+  getEqpRepairByID: id => { return axios.get(`${api}/EquipmentRepairHistory/${id}`).then(res => res.data) },
+  addEqpRepair: parm => { return axios.post(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
+  updateEqpRepair: parm => { return axios.put(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
+  delEqpRepair: ids => { return axios.delete(`${api}/EquipmentRepairHistory/${ids}`).then(res => res.data) },
+
   getHealthConfig: parm => { return axios.get(`${api}/HealthConfig`, {params: parm}).then(res => res.data) },
   getHealthConfigByTroubleLevel: troubleLevel => { return axios.get(`${api}/HealthConfig/${troubleLevel}`).then(res => res.data) },
   getHealthConfigByType: type => { return axios.get(`${api}/HealthConfig/GetByType/${type}`).then(res => res.data) },
   addHealthConfig: parm => { return axios.post(`${api}/HealthConfig`, parm).then(res => res.data) },
   updateHealthConfig: parm => { return axios.put(`${api}/HealthConfig`, parm).then(res => res.data) },
-  delHealthConfig: ids => { return axios.delete(`${api}/HealthConfig/${ids}`).then(res => res.data) }
+  delHealthConfig: ids => { return axios.delete(`${api}/HealthConfig/${ids}`).then(res => res.data) },
+
+  getHealth: parm => { return axios.get(`${api}/Health`, {params: parm}).then(res => res.data) }
 }

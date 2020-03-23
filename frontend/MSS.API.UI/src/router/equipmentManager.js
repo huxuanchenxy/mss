@@ -147,6 +147,20 @@ const routes = [
             component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/pidcount/children/DetailPidCount.vue')
           }
         ]
+      }, {
+        path: 'health',
+        name: 'Health',
+        component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/health/Index.vue'),
+        children: [
+          {
+            path: '/',
+            redirect: 'list'
+          }, {
+            path: 'list',
+            name: 'SeeHealth',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/health/children/SeeHealthList.vue')
+          }
+        ]
       }
     ]
   }
