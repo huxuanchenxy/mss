@@ -90,6 +90,7 @@ namespace MSS.API.Core.Job
                                 }
                                 TimeSpan ts = dt - oldHealth.UpdatedTime;
                                 h.Val = oldHealth.Val - standardSecond * ts.TotalSeconds;
+                                h.ID = oldHealth.ID;
                                 hh.Val = h.Val;
                                 await _healthRepo.Update(h);
                                 await _healthHistoryRepo.Save(hh);
@@ -110,7 +111,6 @@ namespace MSS.API.Core.Job
                                     await _healthHistoryRepo.Save(hh);
                                 }
                             }
-
                         }
                         await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 健康度每日执行成功" + msg);
                         scope.Complete();

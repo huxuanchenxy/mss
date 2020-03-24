@@ -7,7 +7,7 @@
       <h2>
         <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
       </h2>
-      <x-button class="active"><router-link :to="{ name: 'SeeEqpRepairList' }">返回</router-link></x-button>
+      <i @click="back('back')"><x-button class="active">返回</x-button></i>
     </div>
     <div class="scroll">
       <el-scrollbar>
@@ -19,7 +19,7 @@
               <div class="inp">
                 <el-cascader class="cascader_width"
                   filterable
-                  :disabled="!isAdd"
+                  :disabled="showType === 'Edit' || showType === 'Detail'"
                   :props="defaultParams"
                   :show-all-levels="false"
                   :options="eqpList"
@@ -33,7 +33,7 @@
             <div class="inp-wrap">
               <span class="text">维修类型<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="pmType.text" filterable placeholder="请选择维修类型" :disabled="!isAdd" @change="validateSelect(pmType)">
+                <el-select v-model="pmType.text" filterable placeholder="请选择维修类型" :disabled="showType === 'Edit' || showType === 'Detail'" @change="validateSelect(pmType)">
                   <el-option label="中修" value="40"/>
                   <el-option label="大修" value="41"/>
                 </el-select>
@@ -45,7 +45,7 @@
             <div class="inp-wrap">
               <span class="text">更换类型<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="replaceType.text" filterable placeholder="请选择更换类型" :disabled="!isAdd" @change="validateSelect(replaceType)">
+                <el-select v-model="replaceType.text" filterable placeholder="请选择更换类型" :disabled="showType === 'Edit' || showType === 'Detail'" @change="validateSelect(replaceType)">
                   <el-option label="无更换" value="0"/>
                   <el-option label="部分更换" value="157"/>
                   <el-option label="整件更换" value="205"/>
@@ -74,13 +74,13 @@
         </ul>
         <div class="con-padding-horizontal cause">
           <span class="lable">过程描述<em class="validate-mark">*(500字以内)</em></span>
-          <el-input type="textarea" :rows="4" v-model="desc.text" placeholder="请输入过程描述" @keyup.native="validateInputRange(desc)"></el-input>
+          <el-input type="textarea" :rows="4" v-model="desc.text" placeholder="请输入过程描述" :disabled="showType === 'Detail'" @keyup.native="validateInputRange(desc)"></el-input>
         </div>
         <div class="upload-list con-padding-horizontal">
-          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+          <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs" :readOnly="showType === 'Detail'"></upload-pdf>
         </div>
         <!-- 按钮 -->
-        <div class="btn-group">
+        <div class="btn-group" v-show="showType !== 'Detail'">
           <x-button class="close">
             <router-link :to="{name: 'SeeEqpRepairList'}">取消</router-link>
           </x-button>
@@ -106,7 +106,7 @@ export default {
   data () {
     return {
       loading: false,
-      isAdd: true,
+      showType: 'add',
       title: '| 添加维修过程记录',
       defaultParams: {
         label: 'name',
@@ -124,13 +124,45 @@ export default {
       eqpList: [],
       systemResource: systemResource.eqpRepair,
       fileIDs: '',
-      fileIDsEdit: []
+      fileIDsEdit: [],
+      eqpLifeHistory: {
+        eqpSelected: [],
+        eqpType: ''
+      },
+      sourceName: ''
     }
   },
   created () {
-    this.init()
+    if (this.$route.params.sourceName !== undefined) {
+      this.sourceName = this.$route.params.sourceName
+      this.eqpRepairID = this.$route.params.id
+      this.title = '维修过程记录明细'
+      this.showType = this.$route.params.type
+      this.getEqpRepair()
+    } else {
+      this.init()
+    }
+    if (this.sourceName === 'SeeHistory' && this.$route.params.eqpSelected !== undefined) {
+      this.eqpLifeHistory.eqpSelected = this.$route.params.eqpSelected
+      this.eqpLifeHistory.eqpType = this.$route.params.eqpType
+    }
   },
   methods: {
+    back () {
+      if (this.sourceName === 'SeeHistory') {
+        this.$router.push({
+          name: this.sourceName,
+          params: {
+            eqpSelected: this.eqpLifeHistory.eqpSelected,
+            eqpType: this.eqpLifeHistory.eqpType
+          }
+        })
+      } else {
+        this.$router.push({
+          name: 'SeeEqpRepairList'
+        })
+      }
+    },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
@@ -142,8 +174,8 @@ export default {
       api.GetEqpByTypeAndLine(0).then(res => {
         this.eqpList = res.data
       }).catch(err => console.log(err))
+      this.showType = this.$route.query.type
       if (this.$route.query.type !== 'Add') {
-        this.isAdd = false
         this.eqpRepairID = this.$route.query.id
         this.title = '| 修改维修过程记录'
         this.loading = true
