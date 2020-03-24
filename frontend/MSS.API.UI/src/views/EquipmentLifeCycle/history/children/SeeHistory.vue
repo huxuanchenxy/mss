@@ -66,9 +66,9 @@
               <el-collapse class='myContent' v-show="item.children">
                 <el-collapse-item :title="item.content">
                   <div v-for="data in item.children" :key="data.key">
-                    <div class="secondContent" v-show="item.detailType === 1" @click="detail(data.id, 1)">{{"施工申请单"+data.id}}</div>
-                    <div class="secondContent" v-show="item.detailType === 2" @click="detail(data.id, 2)">{{"故障报告单："+data.name}}</div>
-                    <div class="secondContent" v-show="item.detailType === 3" @click="detail(data.id, 3)">{{"检修单："+data.name}}</div>
+                    <div class="secondContent" v-show="item.detailType === 1" @click="detail(data, 1)">{{data.name === '' ? "施工申请单"+data.id : data.name}}</div>
+                    <div class="secondContent" v-show="item.detailType === 2" @click="detail(data, 2)">{{"故障报告单："+data.name}}</div>
+                    <div class="secondContent" v-show="item.detailType === 3" @click="detail(data, 3)">{{"检修单："+data.name}}</div>
                     <div class="secondContent" v-show="item.detailType === 0" @click="preview(data)">{{data.name}}</div>
                   </div>
                 </el-collapse-item>
@@ -188,15 +188,29 @@ export default {
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
     },
-    detail (id, detailType) {
+    detail (data, detailType) {
+      let id = data.id
       switch (detailType) {
         case 1:
-          this.$router.push({
-            name: 'DetailWorkingApplication',
-            params: {
-              id: id
-            }
-          })
+          if (data.name === '') {
+            this.$router.push({
+              name: 'DetailWorkingApplication',
+              params: {
+                id: id
+              }
+            })
+          } else {
+            this.$router.push({
+              name: 'AddEqpRepair',
+              params: {
+                id: id,
+                type: 'Detail',
+                sourceName: 'SeeHistory',
+                eqpSelected: this.eqpSelected,
+                eqpType: this.eqpType
+              }
+            })
+          }
           break
         case 2:
           this.$router.push({

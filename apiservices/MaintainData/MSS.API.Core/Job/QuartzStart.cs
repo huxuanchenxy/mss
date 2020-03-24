@@ -33,7 +33,7 @@ namespace MSS.API.Core.Job
                     .WithIdentity("HealthJob", "group1")
                     .Build();
                 ITrigger trigger = TriggerBuilder.Create()
-                    .WithCronSchedule("0 0 0 * * ?")
+                    .WithCronSchedule("0 0 0 * * ?")//每天0点执行一次
                     //.WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())//每秒执行一次
                     .WithIdentity("HealthTrigger", "group1") // 给任务一个名字 
                     .StartNow()

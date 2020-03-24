@@ -138,7 +138,17 @@ namespace MSS.API.Core.V1.Business
                 eh.CreatedBy = userID;
                 eh.CreatedTime = dt;
                 eh.EqpID = h.Eqp;
-                eh.ShowName = "维修过程记录"+ eh.CreatedTime.ToString("yyyyMMdd");
+                //eh.ShowName = "维修过程记录"+ eh.CreatedTime.ToString("yyyyMMdd");
+                string str;
+                if (equipmentRepairHistory.PMType==(int)EqpHistoryType.MajorPM)
+                {
+                    str = "(中修)";
+                }
+                else
+                {
+                    str = "(大修)";
+                }
+                eh.ShowName = "维修过程记录" + str;
                 if (equipmentRepairHistory.ReplaceType == 0) eh.Type = equipmentRepairHistory.PMType;
                 else eh.Type = equipmentRepairHistory.ReplaceType;
                 using (TransactionScope ts = new TransactionScope())

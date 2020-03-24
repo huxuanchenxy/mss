@@ -199,6 +199,7 @@ export default {
         this.loading = false
         res.data.rows.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
+          item.updatedByName = item.updatedBy === 0 ? '系统' : item.updatedByName
         })
         this.healthConfigList = res.data.rows
         this.total = res.data.total
