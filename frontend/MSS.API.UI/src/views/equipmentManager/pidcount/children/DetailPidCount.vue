@@ -69,8 +69,11 @@
                       </el-option>
                     </el-select>
         </li>
-        <li class="list"><el-input v-model.trim="changeCount" placeholder="请输入数字"></el-input></li>
+        <li class="list"><p class="validate-tips">{{ detailType.tips }}</p></li>
+        <li class="list"><el-input v-model.trim="changeCount.text" placeholder="请输入数字"></el-input></li>
+        <li class="list"><p class="validate-tips">{{ changeCount.tips }}</p></li>
         <li class="list"><el-input v-model.trim="detailContent.text" placeholder="请填写描述" style="width: 350px;"></el-input></li>
+        <li class="list"><p class="validate-tips">{{ detailContent.tips }}</p></li>
         <li class="list" @click="add"><x-button>提交</x-button></li>
       </ul>
     </div>
@@ -140,12 +143,11 @@
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
 // import { dictionary } from '@/common/js/dictionary.js'
 import PidCountEnum from './PidCountEnum'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
-// import apiAuth from '@/api/authApi'
+import { transformDate, validateInputCommon, validateNumberCommon } from '@/common/js/utils.js'
 import api from '@/api/eqpApi'
 import TitleModule from '@/components/TitleModule'
 export default {
@@ -175,7 +177,10 @@ export default {
       remindCount: '',
       EqpList: [],
       editObjID: [],
-      changeCount: '',
+      changeCount: {
+        text: '',
+        tips: ''
+      },
       detailType: {
         text: '',
         tips: ''
@@ -286,7 +291,7 @@ export default {
       }
       api.getPidCountDetail(parm).then(res => {
         this.loading = false
-        console.log(res)
+        // console.log(res)
         res.data.rows.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
           item.detailType = PidCountEnum.detailType[item.detailType]
@@ -312,15 +317,16 @@ export default {
     },
 
     add () {
-      // this.$router.push({
-      //   name: 'AddPidCountDetail',
-      //   params: {
-      //     mark: 'add'
-      //   }
-      // })
+      if (!this.validateAll()) {
+        this.$message({
+          message: '验证失败，请查看提示信息',
+          type: 'error'
+        })
+        return
+      }
       let obj = {
         pidCountId: this.pidCountId,
-        changeCount: this.changeCount,
+        changeCount: this.changeCount.text,
         detailType: this.detailType.text,
         detailContent: this.detailContent.text
       }
@@ -331,7 +337,7 @@ export default {
             type: 'success'
           })
           this.searchResult(1)
-          this.changeCount = ''
+          this.changeCount.text = ''
           this.detailContent.text = ''
         } else {
           this.$message({
@@ -458,6 +464,34 @@ export default {
       this.bCheckAll = false
       this.checkAll()
       this.currentPage = val
+    },
+    validateSelect (val) {
+      if (val.text === '') {
+        val.tips = '此项必选'
+        return false
+      } else {
+        val.tips = ''
+        return true
+      }
+    },
+    validateAll () {
+      if (!this.validateSelect(this.detailType)) return false
+      if (!this.validateNumber(this.changeCount)) return false
+      if (!this.validateInput(this.detailContent)) return false
+      return true
+    },
+    validateNumber (val) {
+      val.tips = ''
+      if (val.text === '') {
+        val.tips = '此项必选'
+        return false
+      } else {
+        return validateNumberCommon(val)
+      }
+    },
+    // 验证
+    validateInput (val) {
+      return validateInputCommon(val)
     }
   }
 }

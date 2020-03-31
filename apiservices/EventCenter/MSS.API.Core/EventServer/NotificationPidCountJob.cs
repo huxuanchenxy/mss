@@ -65,14 +65,14 @@ namespace MSS.API.Core.EventServer
                                 {
                                     foreach (var data in dataobj.rows)//理论上一个车站只会取到一条status=0的记录
                                     {
-                                        string curpidcount = data.PidCountId.ToString();
-                                        string status = _cache.GetString(prefix + curpidcount);//status 0或没有未发送 1已发送
+                                        string curid = data.ID.ToString();
+                                        string rediskey = prefix + curid;
+                                        string status = _cache.GetString(rediskey);//status 0或没有未发送 1已发送
                                         if (status != "1")
                                         {
-                                            _sendNotification(data.PidCountName + " 点位超过容量预设值",data.Content);
-                                            _cache.SetString(prefix + curpidcount, "1");
+                                            _sendNotification(data.PidCountName + " 点位超过容量预设值", data.Content);
+                                            _cache.SetString(rediskey, "1");
                                         }
-                                        
                                     }
                                     
                                 }

@@ -142,7 +142,7 @@ namespace MSS.API.Dao.Implement
                     status=@Status,
                     updated_by=@UpdatedBy,
                     updated_time=@UpdatedTime
-                 where pid_count_id=@PidCountId", obj);
+                 where pid_count_id=@PidCountId AND status = 0 ", obj);
                 return result;
             });
         }

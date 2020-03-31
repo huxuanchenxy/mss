@@ -10,6 +10,7 @@ export default {
   getAllNotification: () => { return axios.get(`${api}/eventcenter/notification`).then(res => res.data) },
   getAllNotificationPidcount: () => { return axios.get(`${eqpApi}/NotificationPidcount/GetPageList`).then(res => res.data) },
   deleteNotificationPidcount: (id) => { return axios.delete(`${eqpApi}/NotificationPidcount/${id}`).then(res => res.data) },
+  updateNotificationPidcount: parm => { return axios.put(`${eqpApi}/NotificationPidcount`, parm).then(res => res.data) },
   getAlarm: () => { return axios.get(`${api}/eventcenter/alarm/`).then(res => res.data) },
   // getAlarmEqp: (param) => { return axios.get(`${api}/eventcenter/alarm/eqps`, {params: param}).then(res => res.data) },
   getAlarmEqp: (param) => { return axios.post(`${eqpApi}/Equipment/ids`, param).then(res => res.data) },

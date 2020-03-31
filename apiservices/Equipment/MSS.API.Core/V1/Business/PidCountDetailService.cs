@@ -115,7 +115,7 @@ namespace MSS.API.Core.V1.Business
                             UpdatedBy = _userID,
                             Status = 0
                         };
-                        await _serviceNotice.UpdateOtherPidCount(nobj);//先把当前车站的之前的预警状态更新成系统处理
+                        await _serviceNotice.UpdateOtherPidCount(new NotificationPidcount() { PidCountId = et.ID});//先把当前车站的之前的预警状态更新成系统处理
                         await _serviceNotice.Save(nobj);//保证一个车站只有一条status=0
                     }
                 }

@@ -217,7 +217,7 @@ export default {
       troubleCount: 0, // 总故障数
       otherCount: 0, // 总报警数
       newMsg: null,
-
+      eqpCode: '',
       bCheckAll: false,
       total: 0,
       currentPage: 1,

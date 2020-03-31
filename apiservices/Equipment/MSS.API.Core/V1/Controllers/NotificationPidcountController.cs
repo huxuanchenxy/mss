@@ -37,12 +37,12 @@ namespace MSS.API.Core.V1.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<ApiResult>> Update(NotificationPidcount obj)
+        public async Task<ActionResult<ApiResult>> UpdateStatus(NotificationPidcount obj)
         {
             ApiResult ret = new ApiResult { code = Code.Failure };
             try
             {
-                ret = await _service.Update(obj);
+                ret = await _service.UpdateStatus(obj);
             }
             catch (System.Exception ex)
             {
