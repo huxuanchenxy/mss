@@ -366,9 +366,14 @@ export default {
         id: id,
         status: status
       }
+      // console.log('emit:')
+      // this.$nextTick(function () {
+      // Bus.$emit('monitorAlarm', '1122')
+      // })
       api.updateNotificationPidcount(obj).then(res => {
         if (res.code === ApiRESULT.Success) {
           this.getNotificationPidcount()
+          Bus.$emit('monitorAlarm', '1122')
         }
       }).catch(err => console.log(err))
     }
