@@ -18,6 +18,7 @@ namespace MSS.API.Model.Data
     {
         public int ID { get; set; }
         public int Eqp { get; set; }
+        public string EqpName { get; set; }
         public int Type { get; set; }
         public string TypeName { get; set; }
         public int EqpType { get; set; }
@@ -25,7 +26,8 @@ namespace MSS.API.Model.Data
         public int? TroubleLevel { get; set; }
         public string TroubleLevelName { get; set; }
         public double Val { get; set; }
-        public int CorrelationID { get; set; }
+        public int IsRepaired { get; set; }
+        public int? CorrelationID { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedByName { get; set; }
         public DateTime CreatedTime { get; set; }
@@ -43,10 +45,12 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.ID).ToColumn("id");
             Map(o => o.TypeName).ToColumn("name");
+            Map(o => o.EqpName).ToColumn("eqp_name");
             Map(o => o.EqpType).ToColumn("eqp_type");
             Map(o => o.EqpTypeName).ToColumn("type_name");
             Map(o => o.TroubleLevel).ToColumn("trouble_level");
             Map(o => o.TroubleLevelName).ToColumn("name");
+            Map(o => o.IsRepaired).ToColumn("is_repaired");
             Map(o => o.CorrelationID).ToColumn("correlation_id"); 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedByName).ToColumn("cname");

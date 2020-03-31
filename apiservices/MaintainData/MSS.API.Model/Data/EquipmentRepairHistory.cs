@@ -8,13 +8,16 @@ namespace MSS.API.Model.Data
     public class EquipmentRepairHistory : BaseEntity
     {
         public int Trouble { get; set; }
-        public string TroubleCode { get; set; }
+        //public string TroubleCode { get; set; }
         public int Eqp { get; set; }
         public string EqpCode { get; set; }
         public string EqpName { get; set; }
         public string EqpPath { get; set; }
         public string Desc { get; set; }
-        public int IsAllUpdate { get; set; }
+        public int PMType { get; set; }
+        public string PMTypeName { get; set; }
+        public int ReplaceType { get; set; }
+        public string ReplaceTypeName { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
         public int? Type { get; set; }
@@ -24,12 +27,15 @@ namespace MSS.API.Model.Data
     {
         public EquipmentRepairHistoryMap()
         {
-            Map(o => o.TroubleCode).ToColumn("code");
+            //Map(o => o.TroubleCode).ToColumn("code");
             Map(o => o.EqpCode).ToColumn("eqp_code");
             Map(o => o.EqpName).ToColumn("eqp_name");
             Map(o => o.EqpPath).ToColumn("eqp_path");
             Map(o => o.Desc).ToColumn("description");
-            Map(o => o.IsAllUpdate).ToColumn("is_all_update");
+            Map(o => o.PMType).ToColumn("pm_type");
+            Map(o => o.PMTypeName).ToColumn("pmName");
+            Map(o => o.ReplaceType).ToColumn("replace_type");
+            Map(o => o.ReplaceTypeName).ToColumn("rName");
 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedName).ToColumn("created_name");
@@ -42,7 +48,8 @@ namespace MSS.API.Model.Data
 
     public class EquipmentRepairHistoryQueryParm : BaseQueryParm
     {
-        public int? Trouble { get; set; }
+        public int? PMType { get; set; }
+        public int? ReplaceType { get; set; }
         public int? Eqp { get; set; }
         public string Desc { get; set; }
     }

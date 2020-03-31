@@ -455,6 +455,27 @@ namespace MSS.API.Dao.Implement
                 }
             });
         }
+
+        public async Task<List<TroubleEqp>> ListEqpIDByUser(int userID,int trouble)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = " select distinct a.eqp,tr.level from trouble_eqp a " +
+                " left join trouble_report tr on tr.id=a.trouble " +
+                " left join org_user ou on ou.org_node_id=a.org_node " +
+                " where ou.user_id=@userID and a.trouble=@trouble";
+                var ret = await c.QueryAsync<TroubleEqp>(sql, new { userID, trouble });
+                if (ret.Count() > 0)
+                {
+                    return ret.ToList();
+                }
+                else
+                {
+                    return new List<TroubleEqp>();
+                }
+            });
+        }
+
         public async Task<int> UpdateTroubleEqp(List<TroubleEqp> troubleEqp)
         {
             return await WithConnection(async c =>

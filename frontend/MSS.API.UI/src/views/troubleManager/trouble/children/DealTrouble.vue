@@ -17,7 +17,7 @@
             <div class="inp-wrap">
               <span class="text">处理人<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select v-model="dealBy.text" clearable filterable placeholder="请选择责任人" >
+                <el-select v-model="dealBy.text" clearable filterable placeholder="请选择处理人" >
                   <el-option
                     v-for="item in dealByList"
                     :key="item.key"

@@ -26,16 +26,16 @@
             </div>
           </div>
           <div class="input-group">
-            <label for="">设备类型</label>
+            <label for="">设备</label>
             <div class="inp">
-              <el-select v-model="eqpType" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="item in eqpTypeList"
-                  :key="item.key"
-                  :label="item.tName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-cascader
+                filterable
+                clearable
+                :props="defaultParams"
+                :show-all-levels="false"
+                :options="eqpList"
+                v-model="eqp">
+              </el-cascader>
             </div>
           </div>
         </div>
@@ -43,25 +43,21 @@
         <div @click="searchRes" style="display:inline-block;">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
-        <div @click="edit" style="display:inline-block;" v-show="!btn.update">
-          <x-button ><i class="iconfont icon-edit"></i> 修改</x-button>
-        </div>
         </div>
       </div>
     </div>
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
+        <li class="list number c-pointer" @click="changeOrder('eqp')">
+          设备
+          <i :class="[{ 'el-icon-d-caret': headOrder.eqp === 0 }, { 'el-icon-caret-top': headOrder.eqp === 1 }, { 'el-icon-caret-bottom': headOrder.eqp === 2 }]"></i>
+        </li>
         <li class="list number c-pointer" @click="changeOrder('type')">
           配置类型
           <i :class="[{ 'el-icon-d-caret': headOrder.type === 0 }, { 'el-icon-caret-top': headOrder.type === 1 }, { 'el-icon-caret-bottom': headOrder.type === 2 }]"></i>
         </li>
-        <li class="list number c-pointer" @click="changeOrder('eqp_type')">
-          设备类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.eqp_type === 0 }, { 'el-icon-caret-top': headOrder.eqp_type === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_type === 2 }]"></i>
-        </li>
-        <li class="list number">故障等级</li>
-        <li class="list number">配置值</li>
+        <li class="list number">健康度</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
@@ -76,9 +72,8 @@
           <ul class="list-wrap">
             <li class="list" v-for="(item) in healthConfigList" :key="item.key">
               <div class="list-content">
+                <div class="number">{{ item.eqpName }}</div>
                 <div class="number">{{ item.typeName }}</div>
-                <div class="number">{{ item.eqpTypeName }}</div>
-                <div class="number">{{ item.troubleLevelName }}</div>
                 <div class="number">{{ item.val }}</div>
                 <div class="last-update-time color-white">{{ item.updatedTime }}</div>
                 <div class="last-maintainer">{{ item.updatedByName }}</div>
@@ -105,27 +100,25 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
-import { dictionary, healthType } from '@/common/js/dictionary.js'
-import { btn } from '@/element/btn.js'
+import { dictionary } from '@/common/js/dictionary.js'
 import XButton from '@/components/button'
 import apiAuth from '@/api/authApi'
-import apiEqp from '@/api/eqpApi'
 import api from '@/api/DeviceMaintainRegApi.js'
 export default {
-  name: 'SeeHealthConfig',
+  name: 'SeeHealth',
   components: {
     XButton
   },
   data () {
     return {
-      btn: {
-        // save: false,
-        // delete: false,
-        update: false
+      title: ' | 健康度',
+      defaultParams: {
+        label: 'name',
+        value: 'id',
+        children: 'children'
       },
-      title: ' | 健康度配置',
-      eqpType: '',
-      eqpTypeList: [],
+      eqp: [],
+      eqpList: [],
       healthType: '',
       healthTypeList: [],
       healthConfigList: [],
@@ -137,30 +130,30 @@ export default {
         order: 'asc'
       },
       headOrder: {
+        eqp: 0,
         type: 1,
-        eqp_type: 0,
         updated_time: 0,
         updated_by: 0
       }
     }
   },
   created () {
-    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
-    if (!user.is_super) {
-      let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
-      this.btn.update = !actions.some((item, index) => {
-        return item.actionID === btn.actionGroup.update
-      })
-    }
+    // let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
+    // if (!user.is_super) {
+    //   let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
+    //   this.btn.update = !actions.some((item, index) => {
+    //     return item.actionID === btn.actionGroup.update
+    //   })
+    // }
+    // 设备加载
+    api.GetEqpByTypeAndLine(0).then(res => {
+      this.eqpList = res.data
+    }).catch(err => console.log(err))
     this.init()
 
     // 健康度配置类型列表
     apiAuth.getSubCode(dictionary.healthType).then(res => {
       this.healthTypeList = res.data
-    }).catch(err => console.log(err))
-    // 设备类型加载
-    apiEqp.getEqpTypeAll().then(res => {
-      this.eqpTypeList = res.data
     }).catch(err => console.log(err))
   },
   activated () {
@@ -175,7 +168,7 @@ export default {
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.type = 0
-        this.headOrder.eqp_type = 0
+        this.headOrder.eqp = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -199,38 +192,18 @@ export default {
         sort: this.currentSort.sort,
         rows: 10,
         page: page,
-        EqpType: this.eqpType,
+        Eqp: this.eqp[this.eqp.length - 1],
         Type: this.healthType
       }
-      api.getHealthConfig(parm).then(res => {
+      api.getHealth(parm).then(res => {
         this.loading = false
         res.data.rows.map(item => {
           item.updatedTime = transformDate(item.updatedTime)
-          if (item.type !== healthType.trouble && item.type !== healthType.eqpReplace) {
-            item.val += '%'
-          }
+          item.updatedByName = item.updatedBy === 0 ? '系统' : item.updatedByName
         })
         this.healthConfigList = res.data.rows
         this.total = res.data.total
       }).catch(err => console.log(err))
-    },
-
-    // 修改权限组
-    edit () {
-      if (this.healthType === null || this.healthType === '') {
-        this.$message({
-          message: '请选择健康度配置类型',
-          type: 'warning'
-        })
-      } else {
-        this.$router.push({
-          name: 'AddHealthConfig',
-          params: {
-            id: this.healthType,
-            mark: this.eqpType === '' ? 0 : this.eqpType
-          }
-        })
-      }
     },
 
     // 搜索功能

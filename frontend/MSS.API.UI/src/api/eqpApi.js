@@ -48,12 +48,6 @@ export default {
 
   getAllEqpCount: () => { return axios.get(`${api}/Equipment/count`).then(res => res.data) },
 
-  getEqpRepair: parm => { return axios.get(`${api}/EquipmentRepairHistory`, {params: parm}).then(res => res.data) },
-  getEqpRepairByID: id => { return axios.get(`${api}/EquipmentRepairHistory/${id}`).then(res => res.data) },
-  addEqpRepair: parm => { return axios.post(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
-  updateEqpRepair: parm => { return axios.put(`${api}/EquipmentRepairHistory`, parm).then(res => res.data) },
-  delEqpRepair: ids => { return axios.delete(`${api}/EquipmentRepairHistory/${ids}`).then(res => res.data) },
-
   getImportExcelConfig: parm => { return axios.get(`${api}/ImportExcelConfig`, {params: parm}).then(res => res.data) },
   getImportExcelConfigByID: id => { return axios.get(`${api}/ImportExcelConfig/${id}`).then(res => res.data) },
   addImportExcelConfig: parm => { return axios.post(`${api}/ImportExcelConfig`, parm).then(res => res.data) },

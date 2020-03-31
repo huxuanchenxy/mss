@@ -12,7 +12,7 @@
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
-          <div class="input-group">
+          <div class="input-group" v-show="false">
             <label for="name">故障编号</label>
             <div class="inp">
               <el-select v-model="trouble" clearable filterable placeholder="请选择故障编号">
@@ -38,6 +38,25 @@
             </div>
           </div>
           <div class="input-group">
+            <label for="">维修类型</label>
+            <div class="inp">
+              <el-select v-model="pmType" filterable placeholder="请选择维修类型">
+                <el-option label="中修" value="40"/>
+                <el-option label="大修" value="41"/>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="">更换类型</label>
+            <div class="inp">
+              <el-select v-model="replaceType" filterable placeholder="请选择更换类型">
+                <el-option label="无更换" value="0"/>
+                <el-option label="部分更换" value="157"/>
+                <el-option label="整件更换" value="205"/>
+              </el-select>
+            </div>
+          </div>
+          <div class="input-group">
             <label for="name">过程描述</label>
             <div class="inp">
               <el-input v-model.trim="desc" placeholder="请输入过程描述"></el-input>
@@ -50,7 +69,8 @@
       </div>
       <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="add"><x-button :disabled="btn.save">添加</x-button></li>
-        <li class="list" @click="remove"><x-button :disabled="btn.delete">删除</x-button></li>
+        <!-- 删除和履历健康度都有关联，暂时取消此功能；若需要，则需要修改后台代码，权限表中插入168 -->
+        <li class="list" @click="remove" v-show="false"><x-button :disabled="btn.delete">删除</x-button></li>
         <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
       </ul>
     </div>
@@ -58,14 +78,18 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list"><input type="checkbox" v-model="bCheckAll" @change="checkAll"></li>
-        <li class="list name c-pointer" @click="changeOrder('id')">
+        <li class="list name c-pointer" @click="changeOrder('eqp')">
           设备编码
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.eqp === 0 }, { 'el-icon-caret-top': headOrder.eqp === 1 }, { 'el-icon-caret-bottom': headOrder.eqp === 2 }]"></i>
         </li>
         <li class="list name">设备名称</li>
-        <li class="list name c-pointer" @click="changeOrder('trouble')">
-          故障编号
-          <i :class="[{ 'el-icon-d-caret': headOrder.trouble === 0 }, { 'el-icon-caret-top': headOrder.trouble === 1 }, { 'el-icon-caret-bottom': headOrder.trouble === 2 }]"></i>
+        <li class="list name c-pointer" @click="changeOrder('pm_type')">
+          维护类型
+          <i :class="[{ 'el-icon-d-caret': headOrder.pm_type === 0 }, { 'el-icon-caret-top': headOrder.pm_type === 1 }, { 'el-icon-caret-bottom': headOrder.pm_type === 2 }]"></i>
+        </li>
+        <li class="list name c-pointer" @click="changeOrder('replace_type')">
+          更换类型
+          <i :class="[{ 'el-icon-d-caret': headOrder.replace_type === 0 }, { 'el-icon-caret-top': headOrder.replace_type === 1 }, { 'el-icon-caret-bottom': headOrder.replace_type === 2 }]"></i>
         </li>
         <li class="list last-update-time">过程描述</li>
         <li class="list upload-cascader">附件</li>
@@ -88,7 +112,8 @@
                 </div>
                 <div class="name">{{ item.eqpCode }}</div>
                 <div class="name">{{ item.eqpName }}</div>
-                <div class="name word-break">{{ item.troubleCode }}</div>
+                <div class="name word-break">{{ item.pmTypeName }}</div>
+                <div class="name word-break">{{ item.replaceTypeName }}</div>
                 <div class="last-update-time color-white word-break">{{ item.desc }}</div>
                 <div class="upload-cascader">
                   <el-cascader clearable
@@ -140,8 +165,7 @@ import { btn } from '@/element/btn.js'
 // import { dictionary } from '@/common/js/dictionary.js'
 import { isPreview } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
-import apiMain from '@/api/DeviceMaintainRegApi.js'
-import api from '@/api/eqpApi'
+import api from '@/api/DeviceMaintainRegApi.js'
 export default {
   name: 'SeeEqpRepairList',
   components: {
@@ -162,6 +186,8 @@ export default {
       title: ' | 维修过程记录',
       trouble: '',
       troubleList: [],
+      replaceType: '',
+      pmType: '',
       eqpSelected: [],
       eqpList: [],
       desc: '',
@@ -182,8 +208,9 @@ export default {
         btn: true
       },
       headOrder: {
-        eqpCode: 0,
-        trouble: 0,
+        eqp: 0,
+        pm_type: 0,
+        replace_type: 0,
         updated_time: 0,
         updated_by: 0
       },
@@ -204,11 +231,11 @@ export default {
         return item.actionID === btn.eqpRepairHistory.update
       })
     }
-    apiMain.getAllTroubleReport().then(res => {
-      this.troubleList = res.data
-    }).catch(err => console.log(err))
+    // api.getAllTroubleReport().then(res => {
+    //   this.troubleList = res.data
+    // }).catch(err => console.log(err))
     // 设备加载
-    apiMain.GetEqpByTypeAndLine(0).then(res => {
+    api.GetEqpByTypeAndLine(0).then(res => {
       this.eqpList = res.data
     }).catch(err => console.log(err))
     this.init()
@@ -242,8 +269,9 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.eqpCode = 0
-        this.headOrder.trouble = 0
+        this.headOrder.eqp = 0
+        this.headOrder.pm_type = 0
+        this.headOrder.replace_type = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
         this.currentSort.order = 'asc'
@@ -284,7 +312,8 @@ export default {
         rows: 10,
         page: page,
         Desc: this.desc,
-        Trouble: this.trouble,
+        PMType: this.pmType,
+        ReplaceType: this.replaceType,
         Eqp: eqp
       }).then(res => {
         this.loading = false
@@ -293,12 +322,12 @@ export default {
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
+            item.replaceTypeName = item.replaceType === 0 ? '无变更' : item.replaceTypeName
             if (item.uploadFiles !== null) {
               item.uploadFileArr = JSON.parse(item.uploadFiles)
               item.uploadFileArr.map(val => {
                 val.children.map(item => {
                   this.uploadFile[item.value] = item
-                  console.log(this.uploadFile)
                 })
               })
             } else {

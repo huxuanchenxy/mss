@@ -218,9 +218,9 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">使用期限</span>
+                <span class="text">使用期限(年)<em class="validate-mark">*</em></span>
                 <div class="inp">
-                  <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateNumberNull(life)"></el-input>
+                  <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateNumber(life)"></el-input>
                 </div>
               </div>
               <p class="validate-tips">{{ life.tips }}</p>
@@ -643,7 +643,7 @@ export default {
     validateNumber (val) {
       val.tips = ''
       if (val.text === '') {
-        val.tips = '此项必选'
+        val.tips = '此项必填'
         return false
       } else {
         return validateNumberCommon(val)

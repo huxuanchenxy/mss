@@ -215,6 +215,7 @@ export default {
       loading: false,
       isShowDeals: false,
       title: '| 故障报告单明细',
+      sourceName: '',
       cardList: [],
       troubleReport: {
         id: this.$route.params.id

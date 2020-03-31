@@ -17,6 +17,10 @@ using Swashbuckle.AspNetCore.Swagger;
 using MSS.Common.Consul;
 using MSS.API.Common;
 using MSS.API.Common.Global;
+using Quartz;
+using Quartz.Impl;
+using MSS.API.Core.Job;
+using Quartz.Spi;
 
 namespace MSS.API.Core
 {
@@ -83,7 +87,12 @@ namespace MSS.API.Core
                 //var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
                 //var xmlPath = Path.Combine(basePath, "ExpertData.xml");//和项目名对应
                 //c.IncludeXmlComments(xmlPath);
-            }); 
+            });
+            //Quartz
+            services.AddSingleton<HealthJob>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();//注册ISchedulerFactory的实例。
+            services.AddSingleton<QuartzStart>();
+            services.AddSingleton<IJobFactory, IOCJobFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,6 +117,13 @@ namespace MSS.API.Core
             
             app.UseCors();
             app.UseMvc();
+            var quartz = app.ApplicationServices.GetRequiredService<QuartzStart>();
+            lifetime.ApplicationStarted.Register(()=> {
+                quartz.Start().Wait();
+            });
+            lifetime.ApplicationStopped.Register(() => {
+                quartz.Stop();
+            });
         }
 
         private void InitConst()

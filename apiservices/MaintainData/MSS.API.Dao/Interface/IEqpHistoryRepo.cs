@@ -13,5 +13,6 @@ namespace MSS.API.Dao.Interface
 
         Task<List<QueryItem>> ListAllLocations();
         Task<int> SaveEqpHistory(List<EqpHistory> eqps);
+        Task<int> SaveEqpHistory(EqpHistory eh);
     }
 }
