@@ -13,7 +13,7 @@
       <!-- 搜索框 -->
       <div class="con-padding-horizontal search-wrap">
         <div class="wrap">
-          <div class="input-group">
+          <div class="input-group" v-show="deviceSelect">
             <label for="name">设备类型</label>
             <div class="inp">
               <el-select v-model="eqpTypeID" placeholder="请选择">
@@ -200,6 +200,49 @@
             </el-scrollbar>
           </div>
         </el-tab-pane>
+        <el-tab-pane class="pane-height pane-notification" label="点位预警历史" name="notificationpidcount">
+          <ul class="content-header">
+            <li class="list content">
+              车站
+            </li>
+            <li class="list content">
+              内容
+            </li>
+            <li class="list content">
+              状态
+            </li>
+            <li class="list last-update-time c-pointer" @click="changeOrder('created_time')">
+              发生时间
+              <i :class="[{ 'el-icon-d-caret': headOrder.created_time === 0 }, { 'el-icon-caret-top': headOrder.created_time === 1 }, { 'el-icon-caret-bottom': headOrder.created_time === 2 }]"></i>
+            </li>
+          </ul>
+          <div class="scroll">
+            <el-scrollbar>
+              <ul class="list-wrap">
+                <li class="list" v-for="(item) in NotificationPidCountList" :key="item.key">
+                  <div class="list-content">
+                    <div class="content">{{ item.pidCountName }}</div>
+                    <div class="content">{{ item.content }}</div>
+                    <div class="content">{{ item.status }}</div>
+                    <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
+                  </div>
+                </li>
+              </ul>
+              <!-- 分页 -->
+              <el-pagination
+                :current-page.sync="currentPage"
+                @current-change="handleCurrentChange"
+                @prev-click="prevPage"
+                @next-click="nextPage"
+                layout="slot, jumper, prev, pager, next"
+                prev-text="上一页"
+                next-text="下一页"
+                :total="total">
+                <span>总共 {{ total }} 条记录</span>
+              </el-pagination>
+            </el-scrollbar>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -209,6 +252,7 @@ import { ApiRESULT, transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/eventCenterApi'
 import eqpApi from '@/api/eqpApi'
+import NotificationPidCountEnum from './NotificationPidCountEnum'
 export default {
   name: 'SeeUserList',
   components: {
@@ -224,6 +268,7 @@ export default {
       AlarmList: [],
       WarnList: [],
       NotificationList: [],
+      NotificationPidCountList: [],
       activeName: 'alarm',
       timer: null,
 
@@ -236,7 +281,8 @@ export default {
       headOrder: {
         id: 0,
         created_time: 2
-      }
+      },
+      deviceSelect: true
     }
   },
   created () {
@@ -249,6 +295,7 @@ export default {
     activeName () {
       this.eqpTypeID = ''
       this.time = ''
+      // console.log(this.activeName)
       this.search()
     }
   },
@@ -286,15 +333,23 @@ export default {
       this.search()
     },
     search () {
+      // console.log(this.activeName)
       switch (this.activeName) {
         case 'alarm':
+          this.deviceSelect = true
           this.getAlarm()
           break
         case 'warnning':
+          this.deviceSelect = true
           this.getWarnning()
           break
         case 'notification':
+          this.deviceSelect = true
           this.getNotification()
+          break
+        case 'notificationpidcount':
+          this.deviceSelect = false
+          this.getNotificationPidCount()
           break
       }
     },
@@ -332,6 +387,27 @@ export default {
         this.loading = false
         if (res.code === ApiRESULT.Success) {
           this.NotificationList = res.data.rows
+          this.total = res.data.total
+        }
+      }).catch(err => console.log(err))
+    },
+    getNotificationPidCount () {
+      let param = {
+        order: this.currentSort.order,
+        sort: this.currentSort.sort,
+        rows: 10,
+        page: this.currentPage,
+        startTime: this.time ? this.otherStyleDate(this.time[0]) + ' 00:00:00' : '',
+        endTime: this.time ? this.otherStyleDate(this.time[1]) + ' 23:59:59' : ''
+      }
+      this.loading = true
+      api.getAllNotificationPidcountHis(param).then(res => {
+        this.loading = false
+        if (res.code === ApiRESULT.Success) {
+          res.data.rows.map(item => {
+            item.status = NotificationPidCountEnum.status[item.status]
+          })
+          this.NotificationPidCountList = res.data.rows
           this.total = res.data.total
         }
       }).catch(err => console.log(err))

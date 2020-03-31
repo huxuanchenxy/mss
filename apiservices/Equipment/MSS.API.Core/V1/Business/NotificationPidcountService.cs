@@ -13,6 +13,7 @@ namespace MSS.API.Core.V1.Business
     public interface INotificationPidcountService
     {
         Task<ApiResult> GetPageList(NotificationPidcountParm parm);
+        Task<ApiResult> GetPageListHis(NotificationPidcountParm parm);
         Task<ApiResult> Save(NotificationPidcount obj);
         Task<ApiResult> Update(NotificationPidcount obj);
         Task<ApiResult> UpdateStatus(NotificationPidcount obj);
@@ -46,6 +47,27 @@ namespace MSS.API.Core.V1.Business
                 parm.sort = "id";
                 parm.order = "asc";
                 parm.status = 0;
+                var data = await _repo.GetPageList(parm);
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> GetPageListHis(NotificationPidcountParm parm)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                //parm.UserID = _userID;
+                //parm.UserID = 40;
+                parm.status = -1;
                 var data = await _repo.GetPageList(parm);
                 ret.code = Code.Success;
                 ret.data = data;
@@ -153,7 +175,7 @@ namespace MSS.API.Core.V1.Business
                 DateTime dt = DateTime.Now;
                 obj.UpdatedTime = dt;
                 obj.UpdatedBy = _userID;
-                obj.Status = 1;
+                obj.Status = 2;
                 ret.data = await _repo.UpdateOtherPidCount(obj);
                 ret.code = Code.Success;
                 return ret;

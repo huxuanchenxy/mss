@@ -47,6 +47,10 @@ namespace MSS.API.Dao.Implement
                 {
                     whereSql.Append(" and status = '" + parm.status + "'");
                 }
+                if (!string.IsNullOrEmpty(parm.startTime) && !string.IsNullOrEmpty(parm.endTime))
+                {
+                    whereSql.Append(" and ( created_time >= '" + parm.startTime + "' AND created_time <= '" + parm.endTime + "' )");
+                }
 
                 sql.Append(whereSql);
                 //验证是否有参与到流程中

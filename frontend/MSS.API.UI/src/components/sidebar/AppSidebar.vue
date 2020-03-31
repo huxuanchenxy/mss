@@ -273,8 +273,8 @@ export default {
       if (this.Conn) {
         this.Conn.close()
       }
-      // let ip = 'http://localhost:8087/eventHub'
-      let ip = hub
+      let ip = 'http://localhost:8087/eventHub'
+      // let ip = hub
       var connection = new signalR.HubConnectionBuilder().withUrl(ip,
         { accessTokenFactory: () => token }).build()
       // thisObj.startTimer()
