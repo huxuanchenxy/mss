@@ -94,6 +94,18 @@ namespace MSS.API.Core.V1.Business
                     }
 
                     et.RemainCount = et.CapacityCount - et.UsedCount;
+                    if (et.RemainCount < 0)
+                    {
+                        ret.code = Code.CheckDataRulesFail;
+                        ret.msg = "点位数量超过最大值!";
+                        return ret;
+                    }
+                    if (et.CapacityCount <= et.RemindCount)
+                    {
+                        ret.code = Code.CheckDataRulesFail;
+                        ret.msg = "预警值因小于点位总容量!";
+                        return ret;
+                    }
                     ret.data = await _repo.Save(obj);
                     et.UpdatedTime = dt;
                     et.UpdatedBy = _userID;

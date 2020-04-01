@@ -63,6 +63,12 @@ namespace MSS.API.Core.V1.Business
                 obj.UpdatedBy = _userID;
                 obj.CreatedBy = _userID;
                 obj.RemainCount = obj.CapacityCount - obj.UsedCount;
+                if (obj.RemainCount < 0)
+                {
+                    ret.code = Code.CheckDataRulesFail;
+                    ret.msg = "点位数量超过最大值!";
+                    return ret;
+                }
                 ret.data = await _repo.Save(obj);
                 ret.code = Code.Success;
                 return ret;
@@ -83,6 +89,12 @@ namespace MSS.API.Core.V1.Business
                 PidCount et = await _repo.GetByID(obj.ID);
                 if (et != null)
                 {
+                    if (obj.CapacityCount >0 && obj.CapacityCount <= obj.RemindCount)
+                    {
+                        ret.code = Code.CheckDataRulesFail;
+                        ret.msg = "预警值因小于点位总容量!";
+                        return ret;
+                    }
                     DateTime dt = DateTime.Now;
                     obj.UpdatedTime = dt;
                     obj.UpdatedBy = _userID;
