@@ -13,6 +13,9 @@ namespace MSS.API.Core.Common
         // 通知
         public const string Notification = "notification";
 
+        // 点位预警
+        public const string NotificationPidcount = "notificationpidcount";
+
         // 报警分析
         public const string AlarmStatistic = "alarm-statistic";
 

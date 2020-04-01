@@ -147,6 +147,15 @@ export default {
     this.getNotification()
     this.getNotificationpidcount()
   },
+  mounted () {
+    // Bus.$on('monitorAlarm', function (data) {
+    //   console.log(data)
+    // })
+    Bus.$on('monitorAlarm', data => {
+      // console.log(11)
+      this.getNotificationpidcount()
+    })
+  },
   methods: {
     refresh (type) {
       switch (type) {
@@ -358,10 +367,10 @@ export default {
       }
     }
   },
-  mounted () {
-    // test
-    // this.navHeight = this.$refs.nav[0].$el.offsetHeight * 4
-  },
+  // mounted () {
+  //   // test
+  //   // this.navHeight = this.$refs.nav[0].$el.offsetHeight * 4
+  // },
   destroyed () {
     if (this.Conn) {
       this.Conn.stop()

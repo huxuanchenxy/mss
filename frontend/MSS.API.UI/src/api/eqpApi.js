@@ -28,6 +28,7 @@ export default {
   updatePidCount: parm => { return axios.put(`${api}/PidCount`, parm).then(res => res.data) },
   getFirm: parm => { return axios.get(`${api}/Firm`, {params: parm}).then(res => res.data) },
   getPidCountDetail: parm => { return axios.get(`${api}/PidCountDetail/GetPageList`, {params: parm}).then(res => res.data) },
+  addPidCountDetail: parm => { return axios.post(`${api}/PidCountDetail`, parm).then(res => res.data) },
 
   getFirmByID: id => { return axios.get(`${api}/Firm/${id}`).then(res => res.data) },
   addFirm: parm => { return axios.post(`${api}/Firm`, parm).then(res => res.data) },

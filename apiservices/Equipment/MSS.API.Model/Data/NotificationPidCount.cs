@@ -8,6 +8,8 @@ namespace MSS.API.Model.Data
     public class NotificationPidcountParm : BaseQueryParm
     {
         public int status { get; set; }
+        public string startTime { get; set; }
+        public string endTime { get; set; }
     }
     public class NotificationPidcountPageView
     {
