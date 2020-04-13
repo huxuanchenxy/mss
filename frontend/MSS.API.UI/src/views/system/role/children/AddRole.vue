@@ -31,16 +31,16 @@
           <ul class="list-wrap">
             <li class="list" v-for="(item, index) in authority" :key="item.key">
               <div class="list-con" @click="shrinkChildren(index)">
-                <div class="left">{{ item.text }} <i class="el-icon-arrow-down c-pointer" :class="{ active: item.shrink }"></i></div>
+                <div :class="{'light': item.checked}">{{ item.text }} <i class="el-icon-arrow-down c-pointer" :class="{ active: item.shrink }"></i></div>
                 <!--<el-checkbox v-model="item.checked" @change="listCheckAll($event, item)"></el-checkbox>-->
               </div>
               <div class="list-sub-con" v-for="children in item.children" :key="children.key" v-show="item.shrink">
                 <el-checkbox-group v-model="roleActionInfo">
                   <div class="chk-col">
-                    <el-checkbox :label="children.id">{{ children.text }}</el-checkbox>
+                    <el-checkbox :label="children.id" @change="menuLight(children.id, $event)">{{ children.text }}</el-checkbox>
                     <div class="chk-list">
                       <el-checkbox-group v-model="roleActionInfo" v-for="operation in children.children" :key="operation.key">
-                        <el-checkbox  class="chk-con" :label="operation.id">{{ operation.text }}</el-checkbox>
+                        <el-checkbox  class="chk-con" :label="operation.id" @change="cascaderParent($event, operation.id)">{{ operation.text }}</el-checkbox>
                       </el-checkbox-group>
                     </div>
                   </div>
@@ -76,6 +76,7 @@ export default {
       },
       roleID: '',
       roleActionInfo: [],
+      actionIdChildren: [],
       authority: [],
       currentOpen: -1,
       // authorityIdList: [],
@@ -95,6 +96,37 @@ export default {
     }
   },
   methods: {
+    cascaderParent (isChecked, id) {
+      if (isChecked && this.actionIdChildren[id] !== undefined) {
+        // 子项被选中 父项级联
+        this.roleActionInfo.push(this.actionIdChildren[id])
+        this.menuLight(this.actionIdChildren[id], true)
+      }
+    },
+    menuLight (sub, isChecked) {
+      for (let index = 0; index < this.authority.length; index++) {
+        for (let i = 0; i < this.authority[index].children.length; i++) {
+          let element = this.authority[index].children[i]
+          if (isChecked) {
+            // 二级菜单选中时 一级菜单高亮
+            if (element.id === sub) {
+              this.authority[index].checked = true
+              break
+            }
+          } else {
+            // 二级菜单全没选中时 一级菜单不高亮
+            if (element.id === sub) {
+              for (let j = 0; j < this.authority[index].children.length; j++) {
+                let e = this.authority[index].children[j]
+                if (this.roleActionInfo.indexOf(e.id) > -1) break
+              }
+              this.authority[index].checked = false
+              break
+            }
+          }
+        }
+      }
+    },
     // 添加角色
     enter () {
       if (!validateInputCommon(this.roleName)) {
@@ -182,6 +214,27 @@ export default {
         this.roleID = _res.role.id
         this.roleName.text = _res.role.role_name
         this.roleActionInfo = _res.selectedAction
+        // 获取菜单列表
+        api.getActionTree().then(res => {
+          this.actionIdChildren.length = 0
+          res.data.map(item => {
+            item.shrink = false
+            item.checked = false
+            item.children.map(menu1 => {
+              if (this.roleActionInfo.indexOf(menu1.id) > -1) {
+                item.checked = true
+              }
+              if (menu1.children !== null) {
+                menu1.children.map(menu2 => {
+                  this.actionIdChildren[menu2.id] = menu1.id
+                })
+              }
+            })
+          })
+          this.authority = res.data
+          console.log(this.authority)
+          // this.authorityIdList = res.data.actions.split(',')
+        }).catch(err => console.log(err))
       }).catch(err => console.log(err))
     },
 
@@ -220,17 +273,6 @@ export default {
     validateInput (val) {
       return validateInputCommon(val)
     }
-  },
-  mounted () {
-    // 获取菜单列表
-    api.getActionTree().then(res => {
-      res.data.map(item => {
-        item.shrink = false
-        item.checked = false
-      })
-      this.authority = res.data
-      // this.authorityIdList = res.data.actions.split(',')
-    }).catch(err => console.log(err))
   }
 }
 </script>
@@ -368,5 +410,9 @@ $height: $content-height - 56;
 
 .el-checkbox{
   width: 120px;
+}
+
+.light{
+  color: #1b7ec9;
 }
 </style>
