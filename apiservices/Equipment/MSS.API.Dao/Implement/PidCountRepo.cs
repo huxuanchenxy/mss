@@ -147,8 +147,6 @@ namespace MSS.API.Dao.Implement
                     remain_count=@RemainCount,
                     used_count=@UsedCount,
                     remind_count=@RemindCount,
-                    created_time=@CreatedTime,
-                    created_by=@CreatedBy,
                     updated_time=@UpdatedTime,
                     updated_by=@UpdatedBy
                  where id=@Id", obj);

@@ -28,7 +28,6 @@ namespace MSS.API.Model.Data
         public long RemindCount { get; set; }
         public string UpdatedName { get; set; }
         public string CreatedName { get; set; }
-        public string DetailContent { get; set; }
         public int NodeKey { get; set; }
     }
 

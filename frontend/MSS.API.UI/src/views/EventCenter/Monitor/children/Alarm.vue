@@ -188,16 +188,16 @@
         </el-tab-pane>
         <el-tab-pane class="pane-height pane-notification" label="点位预警" name="notificationpidcount">
           <ul class="content-header">
-            <li class="list number">
+            <li class="list content">
               车站
             </li>
             <li class="list content">
               内容
             </li>
-            <li class="list last-update-time">
+            <li class="list content">
               发生时间
             </li>
-            <li class="list number">
+            <li class="list content">
               操作
             </li>
           </ul>
@@ -208,9 +208,15 @@
                   <div class="list-content">
                     <div class="content">{{ item.pidCountName }}</div>
                     <div class="content">{{ item.content }}</div>
-                    <div class="last-update-time">{{ transformDate(item.createdTime) }}</div>
-                    <div class="number">
-                      <li @click="confirmNotificationPidcount(item.id)"><x-button>确认</x-button></li>
+                    <div class="content">{{ transformDate(item.createdTime) }}</div>
+                    <div class="content">
+                      <ul>
+                      <!-- 1:人工处理 2:系统处理 3:人工确认 4:人工撤销 5:人工拒绝 -->
+                      <li class="liconfirm" @click="confirmNotificationPidcount(item.id,1)"><x-button>处理</x-button></li>
+                      <li class="liconfirm" @click="confirmNotificationPidcount(item.id,3)"><x-button>确认</x-button></li>
+                      <li class="liconfirm" @click="confirmNotificationPidcount(item.id,4)"><x-button>撤销</x-button></li>
+                      <li class="liconfirm" @click="confirmNotificationPidcount(item.id,5)"><x-button>拒绝</x-button></li>
+                      </ul>
                     </div>
                   </div>
                 </li>
@@ -355,10 +361,19 @@ export default {
         }
       }).catch(err => console.log(err))
     },
-    confirmNotificationPidcount (id) {
-      api.deleteNotificationPidcount(id).then(res => {
+    confirmNotificationPidcount (id, status) {
+      let obj = {
+        id: id,
+        status: status
+      }
+      // console.log('emit:')
+      // this.$nextTick(function () {
+      // Bus.$emit('monitorAlarm', '1122')
+      // })
+      api.updateNotificationPidcount(obj).then(res => {
         if (res.code === ApiRESULT.Success) {
           this.getNotificationPidcount()
+          Bus.$emit('monitorAlarm', '1122')
         }
       }).catch(err => console.log(err))
     }
@@ -499,5 +514,8 @@ $con-height: $content-height - 56;
 .headtip{
   float:left;
   color:red;
+}
+.liconfirm{
+  display:inline-block;
 }
 </style>

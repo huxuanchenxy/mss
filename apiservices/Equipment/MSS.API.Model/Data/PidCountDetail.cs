@@ -26,6 +26,7 @@ namespace MSS.API.Model.Data
 
         public string UpdatedName { get; set; }
         public string CreatedName { get; set; }
+        public long ChangeCount { get; set; }
     }
 
     public class PidCountDetailMap : EntityMap<PidCountDetail>

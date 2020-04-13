@@ -36,13 +36,30 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
 
-        [HttpPut]
-        public async Task<ActionResult<ApiResult>> Update(NotificationPidcount obj)
+        [HttpGet("GetPageListHis")]
+        public async Task<ActionResult<ApiResult>> GetPageListHis([FromQuery] NotificationPidcountParm parm)
         {
             ApiResult ret = new ApiResult { code = Code.Failure };
             try
             {
-                ret = await _service.Update(obj);
+                ret = await _service.GetPageListHis(parm);
+            }
+            catch (System.Exception ex)
+            {
+                ret.msg = string.Format(
+                    "获取分页数据NotificationPidcount历史失败, 异常信息:{0}",
+                    ex.Message);
+            }
+            return ret;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<ApiResult>> UpdateStatus(NotificationPidcount obj)
+        {
+            ApiResult ret = new ApiResult { code = Code.Failure };
+            try
+            {
+                ret = await _service.UpdateStatus(obj);
             }
             catch (System.Exception ex)
             {

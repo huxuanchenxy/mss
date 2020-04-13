@@ -57,12 +57,24 @@ namespace MSS.API.Core.EventServer
                         ApiResult objret = JsonConvert.DeserializeObject<ApiResult>(strRet.ToString());
                         if (objret != null && objret.data != null)
                         {
-                            try
+                            try 
                             {
                                 NotificationPidcountPageView dataobj = JsonConvert.DeserializeObject<NotificationPidcountPageView>(objret.data.ToString());
+                                string prefix = RedisKeyPrefix.NotificationPidcount;
                                 if (dataobj.total > 0)
                                 {
-                                    _sendNotification("点位超过容量预设值", dataobj.total);
+                                    foreach (var data in dataobj.rows)//理论上一个车站只会取到一条status=0的记录
+                                    {
+                                        string curid = data.ID.ToString();
+                                        string rediskey = prefix + curid;
+                                        string status = _cache.GetString(rediskey);//status 0或没有未发送 1已发送
+                                        if (status != "1")
+                                        {
+                                            _sendNotification(data.PidCountName + " 点位超过容量预设值", data.Content);
+                                            _cache.SetString(rediskey, "1");
+                                        }
+                                    }
+                                    
                                 }
                             }
                             catch (Exception ex) { }
@@ -82,10 +94,18 @@ namespace MSS.API.Core.EventServer
 
         public class NotificationPidcountPageView
         {
+            public List<NotificationPidcount> rows { get; set; }
             public int total { get; set; }
         }
+        public class NotificationPidcount : BaseEntity
+        {
+            public int PidCountId { get; set; }
+            public string PidCountName { get; set; }
+            public string Content { get; set; }
+            public int Status { get; set; }
+        }
 
-        private void _sendNotification(string content,int count)
+        private void _sendNotification(string content,string detail)
         {
             MssEventMsg msg = new MssEventMsg();
             msg.msg = content;
@@ -94,7 +114,7 @@ namespace MSS.API.Core.EventServer
             {
                 ID = -1
             };
-            msg.detail = count;
+            msg.detail = detail;
             _queues.AlarmQueue.Enqueue(msg);
         }
 
