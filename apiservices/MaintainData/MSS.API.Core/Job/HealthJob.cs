@@ -1,10 +1,13 @@
-﻿using MSS.API.Common;
+﻿using MathNet.Numerics.Statistics;
+using Microsoft.Extensions.Logging;
+using MSS.API.Common;
 using MSS.API.Common.Utility;
 using MSS.API.Dao.Implement;
 using MSS.API.Model.Data;
 using MSS.Common.Consul;
 using Newtonsoft.Json;
 using Quartz;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,24 +22,32 @@ namespace MSS.API.Core.Job
         private readonly IHealthConfigRepo<HealthConfig> _healthConfigRepo;
         private readonly IHealthRepo<Health> _healthRepo;
         private readonly IHealthHistoryRepo<HealthHistory> _healthHistoryRepo;
+        private readonly IHealthChartSubsystemRepo<HealthChartSubsystem> _healthChartSubsystemRepo;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
+        private readonly Microsoft.Extensions.Logging.ILogger _logger;
         public HealthJob(IHealthConfigRepo<HealthConfig> healthConfigRepo,
             IServiceDiscoveryProvider consulServiceProvider,
             IHealthRepo<Health> healthRepo,
-            IHealthHistoryRepo<HealthHistory> healthHistoryRepo)
+            IHealthHistoryRepo<HealthHistory> healthHistoryRepo,
+            IHealthChartSubsystemRepo<HealthChartSubsystem> healthChartSubsystemRepo,
+            ILogger<HealthJob> logger)
         {
             //_logger = logger;
             _healthConfigRepo = healthConfigRepo;
             _consulServiceProvider = consulServiceProvider;
             _healthRepo = healthRepo;
             _healthHistoryRepo = healthHistoryRepo;
+            _healthChartSubsystemRepo = healthChartSubsystemRepo;
+            _logger = logger;
         }
         public async Task Execute(IJobExecutionContext context)
         {
+            //await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 健康度每日执行开始...");
             //return Task.Run(() =>
             //{
             //    Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss"));
             //});
+            _logger.LogWarning("健康度开始LogInformation...");
             string msg = "";
             DateTime dt = DateTime.Now;
             double healthVal = HEATHFULLVAL;
@@ -63,6 +74,7 @@ namespace MSS.API.Core.Job
                     }
                     using (TransactionScope scope = new TransactionScope())
                     {
+                        List<HealthChartSubsystem> chart = new List<HealthChartSubsystem>();
                         foreach (Equipment e in allEqp)
                         {
                             Health h = new Health();
@@ -77,6 +89,9 @@ namespace MSS.API.Core.Job
                             hh.CreatedTime = dt;
                             hh.Eqp = e.ID;
                             hh.Type = (int)HealthType.Time;
+                            hh.CreatedYear = dt.Year;
+                            hh.CreatedMonth = dt.Month;
+                            hh.CreatedDay = dt.Day;
                             //当天健康度无变化，按天衰减，否则按秒衰减
                             double standardDay = HEATHFULLVAL / (double)e.Life / 365;
                             double standardSecond = standardDay / (24 * 60 * 60);
@@ -111,17 +126,50 @@ namespace MSS.API.Core.Job
                                     await _healthHistoryRepo.Save(hh);
                                 }
                             }
+                            HealthChartSubsystem curSub = chart.Where(c => c.SubSystemId == e.SubSystem).FirstOrDefault();
+                            if (curSub != null)
+                            {
+                                curSub.ValArr.Add(hh.Val);
+                            }
+                            else
+                            {
+                                List<double> valArr = new List<double>();
+                                valArr.Add(hh.Val);
+                                chart.Add(new HealthChartSubsystem() { SubSystemId = e.SubSystem, ValArr = valArr, Year = dt.Year, Month = dt.Month, Day = dt.Day, CreatedBy = SYSTEM, CreatedTime = dt, UpdatedBy = SYSTEM, UpdatedTime = dt });
+                            }
                         }
-                        await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 健康度每日执行成功" + msg);
+                        //计算子系统维度的平均数等
+                        foreach (var cc in chart)
+                        {
+                            double curAvg = cc.ValArr.Average();
+                            double curMax = cc.ValArr.Max();
+                            double curMin = cc.ValArr.Min();
+                            double curMiddle = MathHelper.Median(cc.ValArr.ToArray());
+                            cc.ValAvg = curAvg;
+                            cc.ValMax = curMax;
+                            cc.ValMin = curMin;
+                            cc.ValMiddle = curMiddle;
+                            await _healthChartSubsystemRepo.Delete2(cc);
+                            await _healthChartSubsystemRepo.Save(cc);
+                        }
+                        //await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 健康度每日执行成功" + msg);
+                        _logger.LogWarning(" 健康度每日执行成功LogInformation" + msg);
                         scope.Complete();
                     }
                 }
-                else await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 查询不到设备");
+                else 
+                { 
+                    //await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 查询不到设备");
+                    _logger.LogWarning("查询不到设备LogWarning");
+                    //_logger.LogInformation(" 查询不到设备");
+                }
             }
             catch (Exception ex)
             {
-                await Console.Out.WriteLineAsync(ex.Message);
-                await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 健康度每日执行失败");
+                //await Console.Out.WriteLineAsync(ex.Message);
+                //await Console.Out.WriteLineAsync(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + " 健康度每日执行失败");
+                _logger.LogError(" 健康度每日执行失败LogError:");
+                _logger.LogError(ex.Message);
             }
         }
 
