@@ -32,6 +32,7 @@ namespace MSS.API.Dao
             services.AddTransient<IHealthConfigRepo<HealthConfig>, HealthConfigRepo>();
             services.AddTransient<IHealthHistoryRepo<HealthHistory>, HealthHistoryRepo>();
             services.AddTransient<IHealthRepo<Health>, HealthRepo>();
+            services.AddTransient<IHealthChartSubsystemRepo<HealthChartSubsystem>, HealthChartSubsystemRepo>();
             // 配置列名映射
             FluentMapper.Initialize(config =>
             {
@@ -52,6 +53,7 @@ namespace MSS.API.Dao
                 config.AddMap(new HealthConfigMap());
                 config.AddMap(new HealthMap());
                 config.AddMap(new HealthHistoryMap());
+                config.AddMap(new HealthChartSubsystemMap());
             });
             return services;
         }

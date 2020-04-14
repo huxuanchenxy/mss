@@ -31,6 +31,10 @@ namespace MSS.API.Model.Data
         public int CreatedBy { get; set; }
         public string CreatedByName { get; set; }
         public DateTime CreatedTime { get; set; }
+        public int CreatedYear { get; set; }
+        public int CreatedMonth { get; set; }
+        public int CreatedDay { get; set; }
+
     }
 
     /// <summary>
@@ -50,6 +54,9 @@ namespace MSS.API.Model.Data
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedByName).ToColumn("cname");
             Map(o => o.CreatedTime).ToColumn("created_time");
+            Map(o => o.CreatedYear).ToColumn("created_year");
+            Map(o => o.CreatedMonth).ToColumn("created_month");
+            Map(o => o.CreatedDay).ToColumn("created_day");
         }
     }
 

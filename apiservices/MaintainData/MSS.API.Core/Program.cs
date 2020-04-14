@@ -12,6 +12,8 @@ using Quartz;
 using Quartz.Impl;
 using MSS.API.Core.Job;
 using Quartz.Spi;
+using Serilog;
+using Serilog.Events;
 
 namespace MSS.API.Core
 {
@@ -40,7 +42,6 @@ namespace MSS.API.Core
 
                 .UseContentRoot(Directory.GetCurrentDirectory())
                  .UseIISIntegration()
-
                 .UseKestrel(options =>
                 {
                     options.Listen(IPAddress.Any, port);
@@ -49,7 +50,17 @@ namespace MSS.API.Core
                     //    listenOptions.UseHttps("server.pfx", "password");
                     //});
                 })
-              .UseStartup<Startup>()
+              .UseStartup<Startup>().UseSerilog((context, configuration) => configuration
+                .Enrich.FromLogContext()
+                .MinimumLevel.Warning()
+                .WriteTo.Console()
+                //.WriteTo.File(Path.Combine("Logs", @"log.txt"), rollingInterval: RollingInterval.Day)
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.RollingFile(@"Logs/Information-{Date}.log"))
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.RollingFile(@"Logs/Warning-{Date}.log"))
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.RollingFile(@"Logs/Debug-{Date}.log"))
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.RollingFile(@"Logs/Error-{Date}.log")),
+
+                preserveStaticLogger: true)
                 .Build();
         }
     }
