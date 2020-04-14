@@ -207,7 +207,7 @@ var optionLine = {
     trigger: 'axis'
   },
   legend: {
-    data: ['通信', '信号', '供电'],
+    // data: ['通信', '信号', '供电'],
     textStyle: {
       fontSize: '13',
       color: '#fff'

@@ -305,13 +305,16 @@ export default {
         if (res.code === ApiRESULT.Success) {
           if (res.data != null) {
             indexchart.optionLine.xAxis[0].data = res.data.xAxisData
+            let legenddata = []
             res.data.seriesData.map(item => {
               let cur = {}
               cur.name = item.name
+              legenddata.push(cur.name)
               cur.type = 'line'
               cur.data = item.dataAvg
               indexchart.optionLine.series.push(cur)
             })
+            indexchart.optionLine.legend.data = legenddata
           }
         }
         this.dateChartLine.setOption(indexchart.optionLine)
