@@ -40,14 +40,7 @@
             <div class="inp-wrap">
               <span class="text">物资ID<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-select filterable allow-create placeholder="请输入物资ID" v-model="entity.text" ref="stockDetailID">
-                  <el-option
-                    v-for="item in entityList"
-                    :key="item.key"
-                    :label="item.entity"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
+                <el-input v-model.trim="entity.text" placeholder="请输入物资ID" @keyup.native="validateInput(entity)"></el-input>
               </div>
             </div>
             <p class="remark-tips">{{ entity.tips }}</p>
@@ -88,7 +81,7 @@
             <div class="inp-wrap">
               <span class="text">盘盈数量<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input v-model="profitNo.text" placeholder="请输入盘盈数量" @keyup.native="validateNumber(profitNo)"></el-input>
+                <el-input v-model.trim="profitNo.text" placeholder="请输入盘盈数量" @keyup.native="validateNumber(profitNo)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ profitNo.tips }}</p>
@@ -246,7 +239,7 @@ export default {
       sparePartsList: '',
       remark: {text: '', tips: ''},
       profitNo: {text: '', tips: ''},
-      entity: {text: '', tips: '注：只有手动输入的与下拉不一致才允许盘盈'},
+      entity: {text: '', tips: ''},
       entityList: [],
       currentPage: 1,
       total: 0,
@@ -266,7 +259,10 @@ export default {
     }).catch(err => console.log(err))
     // 物资ID加载getStockDetailByReason
     api.getStockDetailByReason(sparePartsOperationType.adjust).then(res => {
-      this.entityList = res.data
+      // this.entityList = res.data
+      res.data.map(item => {
+        this.entityList.push(item.entity)
+      })
     }).catch(err => console.log(err))
     // // 物资加载
     // api.getSparePartsAll().then(res => {
@@ -402,7 +398,7 @@ export default {
     },
     saveProfit () {
       if (!this.validateSelect(this.entity) || !this.validateSelect(this.warehouse) || !this.validateNumber(this.profitNo) || !this.validateSelect(this.storageLocation)) return
-      if (this.$refs.stockDetailID.selected.label !== undefined) {
+      if (this.entityList.indexOf(this.entity.text) > -1) {
         this.$message({
           message: '已存在的物资ID无需盘盈',
           type: 'error'
