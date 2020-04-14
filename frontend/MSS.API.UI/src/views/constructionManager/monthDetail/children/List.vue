@@ -237,7 +237,8 @@ export default {
         name: 'MonthList',
         params: {
           item: item,
-          type: type
+          type: type,
+          source: 'CommonList'
         }
       })
     },

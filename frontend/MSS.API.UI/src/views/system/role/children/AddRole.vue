@@ -78,8 +78,8 @@ export default {
       roleActionInfo: [],
       actionIdChildren: [],
       authority: [],
+      menu2AndBtn: [],
       currentOpen: -1,
-      // authorityIdList: [],
       listCheck: [],
       bCheckAll: false,
       isShow: ''
@@ -97,10 +97,11 @@ export default {
   },
   methods: {
     cascaderParent (isChecked, id) {
-      if (isChecked && this.actionIdChildren[id] !== undefined) {
+      let myId = this.actionIdChildren[id]
+      if (isChecked && myId !== undefined && this.roleActionInfo.indexOf(myId) === -1) {
         // 子项被选中 父项级联
-        this.roleActionInfo.push(this.actionIdChildren[id])
-        this.menuLight(this.actionIdChildren[id], true)
+        this.roleActionInfo.push(myId)
+        this.menuLight(myId, true)
       }
     },
     menuLight (sub, isChecked) {
@@ -114,17 +115,27 @@ export default {
               break
             }
           } else {
-            // 二级菜单全没选中时 一级菜单不高亮
             if (element.id === sub) {
+              // 二级菜单全没选中时 一级菜单不高亮
+              this.authority[index].checked = true
               for (let j = 0; j < this.authority[index].children.length; j++) {
                 let e = this.authority[index].children[j]
+                // if (e.id === sub) continue
                 if (this.roleActionInfo.indexOf(e.id) > -1) break
+                else if (e.id !== sub) this.authority[index].checked = false
               }
-              this.authority[index].checked = false
-              break
             }
           }
         }
+      }
+      if (!isChecked) {
+        // 按钮全不选中
+        this.menu2AndBtn[sub].map(item => {
+          let num = this.roleActionInfo.indexOf(item)
+          if (num > -1) {
+            this.roleActionInfo.splice(num, 1)
+          }
+        })
       }
     },
     // 添加角色
@@ -220,20 +231,21 @@ export default {
           res.data.map(item => {
             item.shrink = false
             item.checked = false
-            item.children.map(menu1 => {
-              if (this.roleActionInfo.indexOf(menu1.id) > -1) {
+            item.children.map(menu2 => {
+              if (this.roleActionInfo.indexOf(menu2.id) > -1) {
                 item.checked = true
               }
-              if (menu1.children !== null) {
-                menu1.children.map(menu2 => {
-                  this.actionIdChildren[menu2.id] = menu1.id
+              if (menu2.children !== null) {
+                let ids = []
+                menu2.children.map(btn => {
+                  ids.push(btn.id)
+                  this.actionIdChildren[btn.id] = menu2.id
                 })
+                this.menu2AndBtn[menu2.id] = ids
               }
             })
           })
           this.authority = res.data
-          console.log(this.authority)
-          // this.authorityIdList = res.data.actions.split(',')
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
     },

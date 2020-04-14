@@ -88,7 +88,7 @@
     </div>
     <div class="btn-enter">
       <x-button class="close">
-        <router-link :to="{ name: 'SeeActionGroupList' }">取消</router-link>
+        <router-link :to="{ name: 'SeeHealthConfig' }">取消</router-link>
       </x-button>
       <x-button class="active" @click.native="del">删除</x-button>
       <x-button class="active" @click.native="enter">修改</x-button>
@@ -319,13 +319,13 @@ export default {
         align-items: center;
       }
 
-      &:nth-of-type(3n+1){
-        // justify-content: flex-start;
-      }
+      // &:nth-of-type(3n+1){
+      //   // justify-content: flex-start;
+      // }
 
-      &:nth-of-type(3n){
-        // justify-content: flex-end;
-      }
+      // &:nth-of-type(3n){
+      //   // justify-content: flex-end;
+      // }
     }
   }
 }

@@ -15,7 +15,7 @@
           <div class="input-group">
             <label for="">健康度配置类型</label>
             <div class="inp">
-              <el-select v-model="healthType" clearable filterable placeholder="请选择">
+              <el-select v-model="healthType" clearable filterable placeholder="请选择" @change="healthTypeChange">
                 <el-option
                   v-for="item in healthTypeList"
                   :key="item.key"
@@ -28,7 +28,7 @@
           <div class="input-group">
             <label for="">设备类型</label>
             <div class="inp">
-              <el-select v-model="eqpType" clearable filterable placeholder="请选择">
+              <el-select v-model="eqpType" clearable filterable placeholder="请选择" :disabled=eqpTypeDisable>
                 <el-option
                   v-for="item in eqpTypeList"
                   :key="item.key"
@@ -44,7 +44,7 @@
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
         </div>
         <div @click="edit" style="display:inline-block;" v-show="!btn.update">
-          <x-button ><i class="iconfont icon-edit"></i> 修改</x-button>
+          <x-button ><i class="iconfont icon-edit"></i> 配置</x-button>
         </div>
         </div>
       </div>
@@ -124,6 +124,7 @@ export default {
         update: false
       },
       title: ' | 健康度配置',
+      eqpTypeDisable: false,
       eqpType: '',
       eqpTypeList: [],
       healthType: '',
@@ -167,6 +168,9 @@ export default {
     this.searchResult(this.currentPage)
   },
   methods: {
+    healthTypeChange (type) {
+      this.eqpTypeDisable = type !== healthType.trouble
+    },
     init () {
       this.currentPage = 1
       // this.searchResult(1)
