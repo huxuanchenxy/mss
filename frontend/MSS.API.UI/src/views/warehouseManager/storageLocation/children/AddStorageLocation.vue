@@ -42,7 +42,7 @@
             <div class="inp-wrap">
               <span class="text">行号</span>
               <div class="inp">
-                <el-input placeholder="请输入计量单位" v-model="row.text" @keyup.native="validateInputNull(row)"></el-input>
+                <el-input placeholder="请输入行号" v-model="row.text" @keyup.native="validateInputNull(row)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ row.tips }}</p>

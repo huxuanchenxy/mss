@@ -216,6 +216,13 @@ export default {
           this.monthList[i] = []
         }
       }
+      if (this.$route.params.source === 'CommonList') {
+        this.teamPath = []
+        this.team = ''
+        this.area = ''
+        this.areaPath = []
+        this.planDate = ''
+      }
     }
     this.searchResult(1)
   },

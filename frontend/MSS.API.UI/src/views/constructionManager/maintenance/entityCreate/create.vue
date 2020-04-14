@@ -139,7 +139,7 @@
                   <div class="inp">
                     <el-date-picker filterable
                       v-model="month.year"
-                      style="width:200px!important"
+                      style="width:130px!important"
                       type="year"
                       value-format="yyyy"
                       placeholder="请选择">
