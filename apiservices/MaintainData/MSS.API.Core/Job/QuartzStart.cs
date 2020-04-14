@@ -1,4 +1,5 @@
-﻿using Quartz;
+﻿using Microsoft.Extensions.Configuration;
+using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 using System;
@@ -12,9 +13,11 @@ namespace MSS.API.Core.Job
     public class QuartzStart
     {
         private readonly IOCContainer _iocContainer;
-        public QuartzStart(IOCContainer iocContainer)
+        private readonly IConfiguration _configuration;
+        public QuartzStart(IOCContainer iocContainer, IConfiguration configuration)
         {
             _iocContainer = iocContainer;
+            _configuration = configuration;
         }
         public async Task Start()
         {
@@ -33,7 +36,7 @@ namespace MSS.API.Core.Job
                     .WithIdentity("HealthJob", "group1")
                     .Build();
                 ITrigger trigger = TriggerBuilder.Create()
-                    .WithCronSchedule("0 0 0 * * ?")//每天0点执行一次
+                    .WithCronSchedule(_configuration["HealthJob"])//每天0点执行一次
                     //.WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())//每秒执行一次
                     .WithIdentity("HealthTrigger", "group1") // 给任务一个名字 
                     .StartNow()

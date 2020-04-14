@@ -21,6 +21,8 @@ using Quartz;
 using Quartz.Impl;
 using MSS.API.Core.Job;
 using Quartz.Spi;
+using Serilog;
+using Serilog.Events;
 
 namespace MSS.API.Core
 {
@@ -96,7 +98,7 @@ namespace MSS.API.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IOptions<ConsulServiceEntity> consulService, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -104,6 +106,7 @@ namespace MSS.API.Core
             }
             app.UseAuthentication();
             app.RegisterConsul(lifetime, consulService);
+
             // app.UseCors(AllowSpecificOrigins); 
             //启用中间件服务生成Swagger作为JSON终结点
             app.UseSwagger();

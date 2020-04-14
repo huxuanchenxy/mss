@@ -1,6 +1,6 @@
 import axios from './interceptors'
 let api = 'http://10.89.36.154:5801/maintainapi'
-// let api = 'http://localhost:3851/api/v1'
+// let api = 'http://localhost:8085/api/v1'
 export default {
   getAllUsers: () => { return {} },
   Save: data => { return axios.post(`${api}/ExpertData/Save`, data).then(res => res.data) },
@@ -19,5 +19,6 @@ export default {
   delEPlan: ids => { return axios.delete(`${api}/EmergencyPlan/${ids}`).then(res => res.data) },
   getEPlanAll: () => { return axios.get(`${api}/EmergencyPlan/All`).then(res => res.data) },
 
-  ListByType: type => { return axios.get(`${api}/ExpertData/ListByType/${type}`).then(res => res.data) }
+  ListByType: type => { return axios.get(`${api}/ExpertData/ListByType/${type}`).then(res => res.data) },
+  GetHealthChart: parm => { return axios.get(`${api}/HealthChartSubsystem/GetChart`, {params: parm}).then(res => res.data) }
 }

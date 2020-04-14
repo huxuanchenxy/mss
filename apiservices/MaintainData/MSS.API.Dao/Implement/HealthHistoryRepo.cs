@@ -29,9 +29,34 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = " insert into health_history " +
-                        " values (0,@Eqp,@Type,@EqpType,@TroubleLevel,@CorrelationID," +
-                        "@Val,@CreatedTime,@CreatedBy); ";
+                string sql = $@" INSERT INTO `health_history`(
+                    
+                    eqp,
+                    type,
+                    eqp_type,
+                    trouble_level,
+                    correlation_id,
+                    val,
+                    created_time,
+                    created_by,
+                    created_year,
+                    created_month,
+                    created_day
+                ) VALUES 
+                (
+                    @Eqp,
+                    @Type,
+                    @EqpType,
+                    @TroubleLevel,
+                    @CorrelationId,
+                    @Val,
+                    @CreatedTime,
+                    @CreatedBy,
+                    @CreatedYear,
+                    @CreatedMonth,
+                    @CreatedDay
+                    );
+                    ";
                 return await c.ExecuteAsync(sql, healthHistory);
             });
         }
