@@ -7,12 +7,36 @@ namespace MSS.API.Model.Data
 {
     public class HealthChartSubsystemParm : BaseQueryParm
     {
-
+        public string startTime { get; set; }
+        public string endTime { get; set; }
     }
     public class HealthChartSubsystemPageView
     {
         public List<HealthChartSubsystem> rows { get; set; }
         public int total { get; set; }
+    }
+
+    public class HealthChartView
+    {
+        public int extid { get; set; }
+        public string name { get; set; }
+        public double avg { get; set; }
+        public double max { get; set; }
+        public double min { get; set; }
+        public int year { get; set; }
+        public int month { get; set; }
+    }
+
+    public class HealthChartResult
+    {
+        public List<string> xAxisData { get; set; }
+        public List<HealthSeries> seriesData { get; set; }
+    }
+
+    public class HealthSeries
+    {
+        public string name { get; set; }
+        public List<double> dataAvg { get; set; }
     }
 
     public class HealthChartSubsystem : BaseEntity

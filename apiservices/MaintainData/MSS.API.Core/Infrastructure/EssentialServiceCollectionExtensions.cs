@@ -27,6 +27,7 @@ namespace MSS.API.Core.Infrastructure
             services.AddTransient<IHealthService, HealthService>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
+            services.AddTransient<IHealthChartSubsystemService, HealthChartSubsystemService>();
             return services;
         }
     }

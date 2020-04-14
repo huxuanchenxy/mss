@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MSS.API.Model.Data;
+using System.Collections.Generic;
 
 
 // Coded By admin 2020/4/7 14:56:10
@@ -17,6 +18,7 @@ namespace MSS.API.Dao.Implement
         Task<int> Update(HealthChartSubsystem obj);
         Task<int> Delete(string[] ids, int userID);
         Task<int> Delete2(HealthChartSubsystem obj);
+        Task<List<HealthChartView>> GetChart(HealthChartSubsystemParm parm);
     }
 
     public class HealthChartSubsystemRepo : BaseRepo, IHealthChartSubsystemRepo<HealthChartSubsystem>
@@ -73,6 +75,26 @@ namespace MSS.API.Dao.Implement
                 return ret;
             });
         }
+
+        public async Task<List<HealthChartView>> GetChart(HealthChartSubsystemParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+
+                StringBuilder sql = new StringBuilder();
+                sql.Append($@"  SELECT b.ext extid,c.name,(a.val_avg) avg,MAX(a.val_max) max,MIN(a.val_min) min,a.year,a.month
+                                FROM health_chart_subsystem a
+                                left join dictionary_tree b on a.sub_system_id = b.id
+                                left join dictionary_tree c on b.ext = c.id
+                                WHERE a.updated_time >= '{parm.startTime}' AND a.updated_time < '{parm.endTime}'
+                                GROUP BY b.ext,a.year,a.month
+                                ORDER BY b.ext,a.year,a.month ");
+
+                var data = await c.QueryAsync<HealthChartView>(sql.ToString());
+                return data.ToList();
+            });
+        }
+
 
         public async Task<HealthChartSubsystem> Save(HealthChartSubsystem obj)
         {

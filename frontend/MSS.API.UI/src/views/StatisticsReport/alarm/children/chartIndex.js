@@ -196,19 +196,23 @@ var optionBar = {
 
 var optionLine = {
   title: {
-    text: '',
-    subtext: ''
+    text: '设备健康度',
+    subtext: '',
+    textStyle: {
+      fontSize: '13',
+      color: 'white'
+    }
   },
   tooltip: {
     trigger: 'axis'
   },
   legend: {
-    data: ['设备健康度'],
+    data: ['通信', '信号', '供电'],
     textStyle: {
       fontSize: '13',
       color: '#fff'
     },
-    x: 'left'
+    x: 'right'
     // y: 'bottom',
   },
   grid: { // 直角坐标系内绘图网格
@@ -253,29 +257,29 @@ var optionLine = {
     {
       name: '理想健康度',
       type: 'line',
-      data: [80, 80, 80, 80, 80, 80, 80], // 标准线效果
+      data: [70, 70, 70, 70, 70, 70], // 标准线效果
       markLine: {
         data: [
           {type: 'average', name: '平均值'}
         ]
       }
 
-    },
-    {
-      name: '设备健康度',
-      type: 'line',
-      data: [99, 30, 50, 40, 33, 88, 66],
-      markPoint: {
-        data: [
-          {name: '最低', value: 30, xAxis: 1, yAxis: 30}
-        ]
-      },
-      markLine: {
-        data: [
-          {type: 'average', name: '平均值'}
-        ]
-      }
     }
+    // {
+    //   name: '设备健康度',
+    //   type: 'line',
+    //   data: [99, 30, 50, 40, 33, 88, 66],
+    //   markPoint: {
+    //     data: [
+    //       {name: '最低', value: 30, xAxis: 1, yAxis: 30}
+    //     ]
+    //   },
+    //   markLine: {
+    //     data: [
+    //       {type: 'average', name: '平均值'}
+    //     ]
+    //   }
+    // }
   ]
 }
 

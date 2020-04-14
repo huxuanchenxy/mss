@@ -109,12 +109,7 @@
             </el-col>
         </div>
         <div class="charts-wrap">
-            <!-- <el-col :span="12" id="barChart"
-                element-loading-text="加载中"
-                element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:260px;" ref="barChart"  class="echart"></div>
-            </el-col> -->
+            <!--设备健康度-->
             <el-col :span="12" id="lineChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
@@ -139,8 +134,8 @@
 // import mychart from './StatisticsReport/alarm/children/chart'
 import indexchart from './StatisticsReport/alarm/children/chartIndex'
 import staticsapi from '@/api/statisticsApi'
-import { getNowFormatDate, ApiRESULT, transformDate } from '@/common/js/utils.js'
-import workflowapi from '@/api/workflowApi'
+import { getNowFormatDate, ApiRESULT } from '@/common/js/utils.js'
+import expertapi from '@/api/ExpertApi'
 import ICountUp from 'vue-countup-v2'
 import AppFooter from '@/components/footer/AppFooter'
 export default {
@@ -304,9 +299,23 @@ export default {
       this.dateChartBar.setOption(indexchart.optionBar)
     },
     drawLine () {
-      this.dateChartLine = this.$echarts.init(this.$refs.lineChart)
-      this.dateChartLine.clear()
-      this.dateChartLine.setOption(indexchart.optionLine)
+      expertapi.GetHealthChart().then(res => {
+        this.dateChartLine = this.$echarts.init(this.$refs.lineChart)
+        this.dateChartLine.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            indexchart.optionLine.xAxis[0].data = res.data.xAxisData
+            res.data.seriesData.map(item => {
+              let cur = {}
+              cur.name = item.name
+              cur.type = 'line'
+              cur.data = item.dataAvg
+              indexchart.optionLine.series.push(cur)
+            })
+          }
+        }
+        this.dateChartLine.setOption(indexchart.optionLine)
+      }).catch(err => console.log(err))
     },
     drawHBar () {
       this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
@@ -319,20 +328,6 @@ export default {
       this.dateChartPie2.setOption(indexchart.pieOption2)
     },
     myMission () {
-      // let parm = {
-      //   order: 'asc',
-      //   sort: 'id',
-      //   rows: 4,
-      //   page: 1
-      // }
-      // workflowapi.getPage(parm).then(res => {
-      //   this.loading = false
-      //   res.data.rows.map(item => {
-      //     item.createdDateTime = transformDate(item.createdDateTime)
-      //   })
-      //   this.DataList = res.data.rows
-      //   this.total = res.data.total
-      // }).catch(err => console.log(err))
       this.DataList = [
         {key: 1, name: '习近平发表大力发展基建的重要讲话'},
         {key: 2, name: '应勇等市领导调研18号线江浦路站'},
@@ -342,38 +337,6 @@ export default {
         {key: 6, name: '“城市荣光—庆祝上海解放70周年”主题展览'},
         {key: 7, name: '中央环保督察组交办问题处理情况'}
       ]
-    },
-    myapply () {
-      let parm = {
-        order: 'asc',
-        sort: 'id',
-        rows: 4,
-        page: 1
-      }
-      workflowapi.getMyApplyPage(parm).then(res => {
-        this.loading = false
-        res.data.rows.map(item => {
-          item.createdDateTime = transformDate(item.createdDateTime)
-          if (item.processState === 0) {
-            item.processState = 'NotStart'
-          } else if (item.processState === 1) {
-            item.processState = 'Ready'
-          } else if (item.processState === 2) {
-            item.processState = 'Running'
-          } else if (item.processState === 4) {
-            item.processState = 'Completed'
-          } else if (item.processState === 5) {
-            item.processState = 'Suspended'
-          } else if (item.processState === 6) {
-            item.processState = 'Canceled'
-          } else if (item.processState === 7) {
-            item.processState = 'Discarded'
-          } else if (item.processState === 8) {
-            item.processState = 'Terminated'
-          }
-        })
-        this.DataList1 = res.data.rows
-      }).catch(err => console.log(err))
     },
     onResize (el) {
       if (this.dateChartCount && el.id === 'countChart') {
