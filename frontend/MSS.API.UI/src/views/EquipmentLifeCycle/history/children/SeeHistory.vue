@@ -407,7 +407,7 @@ $con-height: $content-height - 145 - 56 - 56;
 .last{
   background-color: red!important;
 }
-/deep/
+::v-deep
 .el-collapse .el-collapse-item__content{
   padding-bottom: 0px;
 }

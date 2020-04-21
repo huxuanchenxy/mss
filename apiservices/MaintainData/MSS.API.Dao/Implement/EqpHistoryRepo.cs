@@ -96,5 +96,16 @@ namespace MSS.API.Dao.Implement
                 return await c.ExecuteAsync(sql, eh);
             });
         }
+
+        public async Task<DateTime> OnLineByEqp(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<Equipment>(
+                    "select online_date from equipment where id=@id", new { id });
+                return result.FirstOrDefault().Online;
+            });
+        }
+
     }
 }         
