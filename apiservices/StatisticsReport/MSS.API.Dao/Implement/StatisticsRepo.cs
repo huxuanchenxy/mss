@@ -408,5 +408,19 @@ namespace MSS.API.Dao.Implement
                 return trouble;
             });
         }
+
+        public async Task<List<StatisticsTroubleRank>> GetStatisticsTroubleRank()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = $@"SELECT count(b.AreaName) troublecount,b.AreaName name
+                                FROM trouble_report a
+                                left join tb_config_bigarea b
+                                on a.start_location = b.id and b.ConfigType = 9
+                                GROUP BY b.AreaName" ;
+                var data = await c.QueryAsync<StatisticsTroubleRank>(sql);
+                return data.ToList().OrderByDescending(c1=>c1.troublecount).ToList();
+            });
+        }
     }    
 }

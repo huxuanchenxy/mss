@@ -17,5 +17,6 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> ListStatisticsAlarmGroupBySubSystem(StatisticsParam param, int dateType);
         Task<ApiResult> ListStatisticsAlarmGroupByLocation(StatisticsParam param, int dateType);
         Task<ApiResult> ListStatisticsAlarmGroupByOrg(StatisticsParam param, int dateType);
+        Task<ApiResult> GetStatisticsTroubleRank();
     }
 }

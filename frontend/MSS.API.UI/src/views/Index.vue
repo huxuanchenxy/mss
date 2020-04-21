@@ -279,9 +279,26 @@ export default {
       }).catch(err => console.log(err))
     },
     drawPie () {
-      this.dateChartPie = this.$echarts.init(this.$refs.pieChart)
-      this.dateChartPie.clear()
-      this.dateChartPie.setOption(indexchart.optionPie)
+      staticsapi.reportTroubleRankByStation().then(res => {
+        this.dateChartPie = this.$echarts.init(this.$refs.pieChart)
+        this.dateChartPie.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let seriesdata = []
+            let legenddata = []
+            res.data.map(item => {
+              let cur = {}
+              cur.value = item.troublecount
+              cur.name = item.name
+              seriesdata.push(cur)
+              legenddata.push(item.name)
+            })
+            indexchart.optionPie.series[0].data = seriesdata
+            indexchart.optionPie.legend.data = legenddata
+          }
+        }
+        this.dateChartPie.setOption(indexchart.optionPie)
+      }).catch(err => console.log(err))
     },
     drawRadar () {
       this.dateChartRadar = this.$echarts.init(this.$refs.radarChart)

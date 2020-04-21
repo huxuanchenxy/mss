@@ -289,5 +289,24 @@ namespace MSS.API.Core.V1.Business
             }
             return ret;
         }
+
+        public async Task<ApiResult> GetStatisticsTroubleRank()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var data = await _statisticsRepo.GetStatisticsTroubleRank();
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
     }
 }

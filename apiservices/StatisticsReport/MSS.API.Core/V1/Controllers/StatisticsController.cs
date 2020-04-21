@@ -223,5 +223,12 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _statisticsTroubleService.AddTrouble(trouble);
             return ret;
         }
+
+        [HttpGet("trouble/rankbystation")]
+        public async Task<ActionResult<ApiResult>> GetRankByStation()
+        {
+            var ret = await _statisticsService.GetStatisticsTroubleRank();
+            return ret;
+        }
     }
 }

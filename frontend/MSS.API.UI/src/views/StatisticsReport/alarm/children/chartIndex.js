@@ -2,7 +2,7 @@
 import Echarts from 'echarts'
 const optionPie = {
   title: {
-    text: '设备故障数量(前5)',
+    text: '设备故障数量统计',
     textStyle: {
       fontSize: '13',
       color: 'white'
