@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MSS.API.Dao.Interface;
 using MSS.API.Model.Data;
+using MSS.API.Model.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,5 +98,46 @@ namespace MSS.API.Dao.Implement
             });
         }
 
+        public async Task<EquipmntView> GetListByPage(LifeTimeKeyMaintainQurey parm)
+        {
+            return await WithConnection(async c =>
+            {
+                EquipmntView ret = new EquipmntView();
+                StringBuilder sql = new StringBuilder();
+                sql.Append("SELECT a.*,ot.name ")
+                .Append(" FROM equipment a ")
+                .Append(" left join org_tree ot on ot.id=a.team where 1=1 ");
+                StringBuilder whereSql = new StringBuilder();
+                //whereSql.Append(" WHERE a.is_del=" + (int)IsDeleted.no);
+                if (parm.device_type != null)
+                {
+                    whereSql.Append(" and a.eqp_type =" + parm.device_type);
+                }
+                if (parm.device_id != null)
+                {
+                    whereSql.Append(" and a.id =" + parm.device_id);
+                }
+                if (parm.StartDate != null)
+                {
+                    whereSql.Append(" and (a.next_medium_repair_date >=" + parm.StartDate)
+                    .Append(" or a.next_large_repair_date >=" + parm.StartDate+") ");
+                }
+                if (parm.EndDate != null)
+                {
+                    whereSql.Append(" and (a.next_medium_repair_date <=" + parm.EndDate)
+                    .Append(" or a.next_large_repair_date <=" + parm.EndDate + ") ");
+                }
+                sql.Append(whereSql)
+                .Append(" order by a." + parm.sort + " " + parm.order)
+                .Append(" limit " + (parm.page - 1) * parm.rows + "," + parm.rows);
+                ret.Total = await c.QueryFirstOrDefaultAsync<int>(
+                    "select count(*) from equipment a where 1=1 " + whereSql.ToString());
+                if (ret.Total > 0)
+                {
+                    ret.Rows = (await c.QueryAsync<Equipment>(sql.ToString())).ToList();
+                }
+                return ret;
+            });
+        }
     }
 }

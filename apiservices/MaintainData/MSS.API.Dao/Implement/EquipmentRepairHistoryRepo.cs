@@ -18,10 +18,14 @@ namespace MSS.API.Dao.Implement
     public interface IEquipmentRepairHistoryRepo<T> where T : BaseEntity
     {
         Task<EquipmentRepairHistory> Save(EquipmentRepairHistory equipmentRepairHistory);
-        Task<int> Update(EquipmentRepairHistory equipmentRepairHistory);
+        Task<int> Update(EquipmentRepairHistory equipmentRepairHistory, DateTime? medium, DateTime? large);
         Task<int> Delete(string[] ids);
         Task<EquipmentRepairHistoryView> GetPageByParm(EquipmentRepairHistoryQueryParm parm);
         Task<EquipmentRepairHistory> GetByID(int id);
+
+
+        Task<int> UpdateEqpRepairDate(DateTime? large, DateTime? medium, int eqpID);
+        Task<Equipment> GetRepairFrequencyByEqpID(int id);
     }
 
     public class EquipmentRepairHistoryRepo : BaseRepo, IEquipmentRepairHistoryRepo<EquipmentRepairHistory>
@@ -37,7 +41,7 @@ namespace MSS.API.Dao.Implement
                 //try
                 {
                     sql = " insert into equipment_repair_history " +
-                        " values (0,@Trouble,@Eqp,@EqpPath,@Desc,@PMType,@ReplaceType, " +
+                        " values (0,@Trouble,@Eqp,@EqpPath,@Desc,@PMType,@ReplaceType,@Charge,@PMDate, " +
                         " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy); ";
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, equipmentRepairHistory);
@@ -73,7 +77,7 @@ namespace MSS.API.Dao.Implement
             });
         }
 
-        public async Task<int> Update(EquipmentRepairHistory equipmentRepairHistory)
+        public async Task<int> Update(EquipmentRepairHistory equipmentRepairHistory, DateTime? medium, DateTime? large)
         {
             return await WithConnection(async c =>
             {
@@ -83,8 +87,21 @@ namespace MSS.API.Dao.Implement
                 {
                     sql = " update equipment_repair_history " +
                         " set trouble=@Trouble,eqp=@Eqp,eqp_path=@EqpPath,`desc`=@Desc,pm_type=@PMType, " +
-                        " replace_type=@ReplaceType,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id";
+                        " replace_type=@ReplaceType,charge=@Charge,pm_date=@PMDate," +
+                        " updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id";
                     int result = await c.ExecuteAsync(sql, equipmentRepairHistory,trans);
+                    sql = " update equipment ";
+                    if (medium != null)
+                    {
+                        sql += " set next_medium_repair_date=@medium ";
+                    }
+                    else
+                    {
+                        sql += " set next_large_repair_date=@large ";
+                    }
+                    sql += " where id=@eqpID";
+                    int eqpID = equipmentRepairHistory.ID;
+                    result = await c.ExecuteAsync(sql, new { large, medium, eqpID });
                     if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))
                     {
                         sql = "delete from upload_file_relation where entity_id=@id and system_resource=@sr";
@@ -136,13 +153,13 @@ namespace MSS.API.Dao.Implement
                 erhv.rows = new List<EquipmentRepairHistory>();
                 erhv.total = 0;
                 StringBuilder sql = new StringBuilder();
-                sql.Append("SELECT a.*,e.eqp_name,u1.user_name as created_name,")
+                sql.Append("SELECT a.*,e.eqp_name,u1.user_name as created_name,u.user_name as cName,")
                 .Append("e.eqp_code,u2.user_name as updated_name,dt.name as pmName,dt1.name as rName ")
                 .Append(" FROM equipment_repair_history a ")
                 .Append(" left join equipment e on a.eqp=e.id ")
                 .Append(" left join dictionary_tree dt on dt.id=a.pm_type ")
                 .Append(" left join dictionary_tree dt1 on dt1.id=a.replace_type ")
-                //.Append(" left join trouble_report t on a.trouble=t.id ")
+                .Append(" left join user u on a.charge=u.id ")
                 .Append(" left join user u1 on a.created_by=u1.id ")
                 .Append(" left join user u2 on a.updated_by=u2.id where 1=1 ");
                 StringBuilder whereSql = new StringBuilder();
@@ -182,6 +199,35 @@ namespace MSS.API.Dao.Implement
             {
                 var result = await c.QueryFirstOrDefaultAsync<EquipmentRepairHistory>(
                     "SELECT * FROM equipment_repair_history WHERE id = @id", new { id = id });
+                return result;
+            });
+        }
+
+        public async Task<int> UpdateEqpRepairDate(DateTime? large, DateTime? medium,int eqpID)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql;
+                sql = " update equipment ";
+                if (medium!=null)
+                {
+                    sql += " set next_medium_repair_date=@medium ";
+                }
+                else
+                {
+                    sql += " set next_large_repair_date=@large ";
+                }
+                sql += " where id=@eqpID";
+                int result = await c.ExecuteAsync(sql, new { large, medium, eqpID });
+                return result;
+            });
+        }
+        public async Task<Equipment> GetRepairFrequencyByEqpID(int id)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryFirstOrDefaultAsync<Equipment>(
+                    "SELECT medium_repair,large_repair FROM equipment WHERE id = @id", new { id = id });
                 return result;
             });
         }

@@ -1,4 +1,5 @@
 ﻿using MSS.API.Common;
+using MSS.API.Model.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,7 @@ namespace MSS.API.Core.V1.Business
 
         Task<ApiResult> GetdeviceList(string strWhere);
         Task<ApiResult> ListCascaderByEqpTypeAndLine(int eqpType, int line);
+
+        Task<ApiResult> GetListByPage(LifeTimeKeyMaintainQurey parm);
     }
 }

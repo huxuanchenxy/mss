@@ -33,7 +33,8 @@ namespace MSS.API.Dao.Implement
                         " @SerialNo,@RatedVoltage,@RatedCurrent,@RatedPower, " +
                         " @Location,@LocationBy,@LocationPath,@Online,@Life, " +
                         " @MediumRepair,@LargeRepair,@OnlineAgain, " +
-                        " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel); ";
+                        " @CreatedTime,@CreatedBy,@UpdatedTime,@UpdatedBy,@IsDel, " +
+                        " @NextMediumRepairDate,@NextLargeRepairDate); ";
                     sql += "SELECT LAST_INSERT_ID()";
                     int newid = await c.QueryFirstOrDefaultAsync<int>(sql, eqp,trans);
                     eqp.ID = newid;
@@ -82,6 +83,7 @@ namespace MSS.API.Dao.Implement
                         " rated_voltage=@RatedVoltage,rated_current=@RatedCurrent,team=@Team,rated_power=@RatedPower, " +
                         " location=@Location,location_by=@LocationBy,location_path=@LocationPath,top_org=@TopOrg,line=@Line, " +
                         " online_date=@Online,life=@Life,medium_repair=@MediumRepair,large_repair=@LargeRepair, " +
+                        " next_medium_repair_date=@NextMediumRepairDate,next_large_repair_date=@NextLargeRepairDate, " +
                         " online_again=@OnlineAgain,updated_time=@UpdatedTime,updated_by=@UpdatedBy where id=@id", eqp,trans);
                     if (!string.IsNullOrWhiteSpace(eqp.FileIDs))
                     {

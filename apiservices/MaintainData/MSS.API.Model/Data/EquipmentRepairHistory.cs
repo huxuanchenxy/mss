@@ -18,6 +18,9 @@ namespace MSS.API.Model.Data
         public string PMTypeName { get; set; }
         public int ReplaceType { get; set; }
         public string ReplaceTypeName { get; set; }
+        public int Charge { get; set; }
+        public string ChargeName { get; set; }
+        public DateTime PMDate { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
         public int? Type { get; set; }
@@ -36,6 +39,8 @@ namespace MSS.API.Model.Data
             Map(o => o.PMTypeName).ToColumn("pmName");
             Map(o => o.ReplaceType).ToColumn("replace_type");
             Map(o => o.ReplaceTypeName).ToColumn("rName");
+            Map(o => o.ChargeName).ToColumn("cName");
+            Map(o => o.PMDate).ToColumn("pm_date");
 
             Map(o => o.CreatedBy).ToColumn("created_by");
             Map(o => o.CreatedName).ToColumn("created_name");

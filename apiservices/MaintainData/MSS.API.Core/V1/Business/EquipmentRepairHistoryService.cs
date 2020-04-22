@@ -139,14 +139,21 @@ namespace MSS.API.Core.V1.Business
                 eh.CreatedTime = dt;
                 eh.EqpID = h.Eqp;
                 //eh.ShowName = "维修过程记录"+ eh.CreatedTime.ToString("yyyyMMdd");
+                //更新下一次的大修中修时间
+                DateTime? large = null;
+                DateTime? medium=null;
+                //从设备表中获取大中修频率
+                Equipment frequency =await _equipmentRepairHistoryRepo.GetRepairFrequencyByEqpID(eqpID);
                 string str;
-                if (equipmentRepairHistory.PMType==(int)EqpHistoryType.MajorPM)
+                if (equipmentRepairHistory.PMType == (int)EqpHistoryType.MajorPM)
                 {
-                    str = "(中修)";
+                    str = "(大修)";
+                    medium = equipmentRepairHistory.PMDate.AddDays(frequency.LargeRepair);
                 }
                 else
                 {
-                    str = "(大修)";
+                    str = "(中修)";
+                    large = equipmentRepairHistory.PMDate.AddDays(frequency.MediumRepair);
                 }
                 eh.ShowName = "维修过程记录" + str;
                 if (equipmentRepairHistory.ReplaceType == 0) eh.Type = equipmentRepairHistory.PMType;
@@ -178,6 +185,7 @@ namespace MSS.API.Core.V1.Business
                     else await _healthRepo.Update(h);
                     await _healthHistoryRepo.Save(hh);
                     await _eqpHistoryRepo.SaveEqpHistory(eh);
+                    await _equipmentRepairHistoryRepo.UpdateEqpRepairDate(large, medium, eqpID);
                     ts.Complete();
                 }
                 return ret;
@@ -201,7 +209,20 @@ namespace MSS.API.Core.V1.Business
                     DateTime dt = DateTime.Now;
                     equipmentRepairHistory.UpdatedTime = dt;
                     equipmentRepairHistory.UpdatedBy = userID;
-                    ret.data = await _equipmentRepairHistoryRepo.Update(equipmentRepairHistory);
+                    //更新下一次的大修中修时间
+                    DateTime? large = null;
+                    DateTime? medium = null;
+                    //从设备表中获取大中修频率
+                    Equipment frequency = await _equipmentRepairHistoryRepo.GetRepairFrequencyByEqpID(equipmentRepairHistory.ID);
+                    if (equipmentRepairHistory.PMType == (int)EqpHistoryType.MajorPM)
+                    {
+                        medium = equipmentRepairHistory.PMDate.AddDays(frequency.LargeRepair);
+                    }
+                    else
+                    {
+                        large = equipmentRepairHistory.PMDate.AddDays(frequency.MediumRepair);
+                    }
+                    ret.data = await _equipmentRepairHistoryRepo.Update(equipmentRepairHistory,medium,large);
                 }
                 else
                 {

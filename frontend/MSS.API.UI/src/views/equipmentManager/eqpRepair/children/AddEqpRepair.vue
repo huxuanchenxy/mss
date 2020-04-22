@@ -54,6 +54,39 @@
             </div>
             <p class="validate-tips">{{ replaceType.tips }}</p>
           </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">负责人<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-select v-model="charge.text" clearable filterable placeholder="请选择负责人"  @change="validateSelect(charge)" :disabled="showType === 'Detail'">
+                  <el-option
+                    v-for="item in chargeList"
+                    :key="item.key"
+                    :label="item.user_name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </div>
+            </div>
+            <p class="validate-tips">{{ charge.tips }}</p>
+          </li>
+          <li class="list">
+            <div class="inp-wrap">
+              <span class="text">维修日期<em class="validate-mark">*</em></span>
+              <div class="inp">
+                <el-date-picker
+                  v-model="pmDate.text"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  :clearable="false"
+                  :disabled="showType === 'Detail'"
+                  class="datetime-width"
+                  placeholder="请选择维修日期">
+                </el-date-picker>
+              </div>
+            </div>
+            <p class="validate-tips">{{ pmDate.tips }}</p>
+          </li>
           <li class="list"/>
           <!--<li class="list" v-show="false">
             <div class="inp-wrap">
@@ -97,6 +130,7 @@ import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import MyUploadPDF from '@/components/UploadPDF'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
+import apiAuth from '@/api/authApi'
 export default {
   name: 'AddEqpRepair',
   components: {
@@ -117,6 +151,9 @@ export default {
       // 履历类型中提取这四种类型，由于部分更换比较重要，但健康度实在无法计算，所以只能分为维修类型和更换类型
       pmType: {text: '', tips: ''},
       replaceType: {text: '', tips: ''},
+      chargeList: [],
+      charge: {text: '', tips: ''},
+      pmDate: {text: '', tips: ''},
       // trouble: {text: '', tips: ''},
       // troubleList: [],
       desc: {text: '', tips: ''},
@@ -133,6 +170,10 @@ export default {
     }
   },
   created () {
+    // 负责人加载
+    apiAuth.getUserAll().then(res => {
+      this.chargeList = res.data
+    }).catch(err => console.log(err))
     if (this.$route.params.sourceName !== undefined) {
       this.sourceName = this.$route.params.sourceName
       this.eqpRepairID = this.$route.params.id
@@ -191,6 +232,8 @@ export default {
           this.pmType.text = data.pmType + ''
           this.replaceType.text = data.replaceType + ''
           this.desc.text = nullToEmpty(data.desc)
+          this.charge.text = data.charge
+          this.pmDate.text = data.pmDate
           this.fileIDs = data.uploadFiles
         }
         this.loading = false
@@ -253,6 +296,8 @@ export default {
         pmType: this.pmType.text,
         replaceType: this.replaceType.text,
         Type: this.systemResource,
+        PMDate: this.pmDate.text,
+        Charge: this.charge.text,
         UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
@@ -507,5 +552,9 @@ export default {
     flex: 1;
     width: auto;
   }
+}
+/deep/
+.datetime-width{
+  width: 93%!important;
 }
 </style>

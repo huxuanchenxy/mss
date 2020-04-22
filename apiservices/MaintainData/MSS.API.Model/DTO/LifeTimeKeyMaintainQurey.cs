@@ -12,6 +12,7 @@ namespace MSS.API.Model.DTO
 
         public string device_type { get; set; }
 
-     
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }
