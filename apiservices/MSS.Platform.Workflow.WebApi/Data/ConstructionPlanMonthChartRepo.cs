@@ -194,6 +194,13 @@ namespace MSS.Platform.Workflow.WebApi.Data
                         whereSql.Append(" and ( a.month >= '" + parm.startMonth + "'AND a.month <= '" + parm.endMonth + "' ) ");
                     }
                 }
+                if (parm.xAxisType == 3)
+                {
+                    if (parm.startYear != 0 && parm.endYear != 0)
+                    {
+                        whereSql.Append(" and ( a.year >= '" + parm.startYear + "'AND a.year <= '" + parm.endYear + "' ) ");
+                    }
+                }
                 if (parm.team != 0)
                 {
                     whereSql.Append(" and a.team = '" + parm.team + "'");

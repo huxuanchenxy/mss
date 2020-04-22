@@ -28,6 +28,12 @@ namespace MSS.API.Model.Data
         public string name { get; set; }
     }
 
+    public class StatisticsResult
+    {
+        public int count { get; set; }
+        public string name { get; set; }
+    }
+
     public class StatisticsTroubleMap : EntityMap<StatisticsTrouble>
     {
         public StatisticsTroubleMap()

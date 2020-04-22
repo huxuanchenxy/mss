@@ -15,5 +15,7 @@ export default {
   reportTroubleByLocation: (param) => { return axios.get(`${api}/statistics/trouble/groupbylocation`, { params: param }).then(res => res.data) },
   reportTroubleByOrg: (param) => { return axios.get(`${api}/statistics/trouble/groupbyorg`, { params: param }).then(res => res.data) },
   getStockOperChart: (param) => { return axios.get(`${api}/StockOperationDetail/GetStockOperationChart`, { params: param }).then(res => res.data) },
-  reportTroubleRankByStation: (param) => { return axios.get(`${api}/statistics/trouble/rankbystation`, { params: param }).then(res => res.data) }
+  reportTroubleRankByStation: (param) => { return axios.get(`${api}/statistics/trouble/rankbystation`, { params: param }).then(res => res.data) },
+  reportRunningtime: (param) => { return axios.get(`${api}/statistics/trouble/runningtime`, { params: param }).then(res => res.data) },
+  reportPlanChart: (param) => { return axios.get(`${api}/statistics/trouble/planchart`, { params: param }).then(res => res.data) }
 }

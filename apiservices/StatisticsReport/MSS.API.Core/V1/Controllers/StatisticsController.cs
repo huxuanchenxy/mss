@@ -230,5 +230,19 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _statisticsService.GetStatisticsTroubleRank();
             return ret;
         }
+
+        [HttpGet("trouble/runningtime")]
+        public async Task<ActionResult<ApiResult>> GetRunningtime()
+        {
+            var ret = await _statisticsService.GetRunningtime();
+            return ret;
+        }
+
+        [HttpGet("trouble/planchart")]
+        public async Task<ActionResult<ApiResult>> GetIndexProcess()
+        {
+            var ret = await _statisticsService.GetIndexProcess();
+            return ret;
+        }
     }
 }

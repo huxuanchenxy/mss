@@ -214,6 +214,7 @@ export default {
     }
   },
   created () {
+    this.getRunningTime()
     var nowDate = getNowFormatDate()
     var d = new Date()
     d.setDate(d.getDate() - 60)
@@ -338,9 +339,23 @@ export default {
       }).catch(err => console.log(err))
     },
     drawHBar () {
-      this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
-      this.dateChartHBar.clear()
-      this.dateChartHBar.setOption(indexchart.optionHBar)
+      staticsapi.reportPlanChart().then(res => {
+        this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
+        this.dateChartHBar.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let yAxisData = []
+            let seriesData = []
+            res.data.map(item => {
+              seriesData.push(item.count)
+              yAxisData.push(item.name)
+            })
+            indexchart.optionHBar.yAxis.data = yAxisData
+            indexchart.optionHBar.series[0].data = seriesData
+          }
+        }
+        this.dateChartHBar.setOption(indexchart.optionHBar)
+      }).catch(err => console.log(err))
     },
     drawPie2 () {
       this.dateChartPie2 = this.$echarts.init(this.$refs.pie2Chart)
@@ -449,6 +464,15 @@ export default {
           this.activeIndex = 0
         }
       }, 1000)
+    },
+    getRunningTime () {
+      staticsapi.reportRunningtime().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            this.endVal = res.data
+          }
+        }
+      }).catch(err => console.log(err))
     }
   }
 }

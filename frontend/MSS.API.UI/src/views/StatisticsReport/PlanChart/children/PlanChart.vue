@@ -424,10 +424,14 @@ export default {
         this.monthOptions2.push({label: i + '月', value: i + ''})
       }
       this.monthValue1 = '1'
-      this.monthValue2 = '1'
-      this.yearOptions.push({label: '2019年', value: '2019'})
-      this.yearOptions.push({label: '2020年', value: '2020'})
-      this.yearValue = '2020'
+      var myDate = new Date()
+      var tMonth = myDate.getMonth() + 1
+      this.monthValue2 = tMonth + ''
+      var tYear = myDate.getFullYear()
+      var tLastYear = tYear - 1
+      this.yearOptions.push({label: tLastYear + '年', value: tLastYear + ''})
+      this.yearOptions.push({label: tYear + '年', value: tYear + ''})
+      this.yearValue = tYear + ''
     },
 
     search (param, callbacks) {
