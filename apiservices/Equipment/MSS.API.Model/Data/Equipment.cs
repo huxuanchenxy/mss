@@ -65,9 +65,9 @@ namespace MSS.API.Model.Data
         public DateTime Online { get; set; }
         [Info("使用期限", "life", 22)]
         public int? Life { get; set; }
-        [Info("中修次数", "medium_repair", 23)]
+        [Info("中修频率", "medium_repair", 23)]
         public int MediumRepair { get; set; }
-        [Info("大修次数", "large_repair", 24)]
+        [Info("大修频率", "large_repair", 24)]
         public int LargeRepair { get; set; }
         [Info("再次上线日期", "online_again", 25)]
         public DateTime? OnlineAgain { get; set; }
@@ -82,6 +82,10 @@ namespace MSS.API.Model.Data
         public DateTime UpdatedTime { get; set; }
         [Info("逻辑删除标志", "is_del", 30, false)]
         public int IsDel { get; set; }
+        [Info("下一个中修日期", "next_medium_repair_date", 31, false)]
+        public DateTime NextMediumRepairDate { get; set; }
+        [Info("下一个大修日期", "next_large_repair_date", 32, false)]
+        public DateTime NextLargeRepairDate { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
         /// <summary>
@@ -139,6 +143,9 @@ namespace MSS.API.Model.Data
             Map(o => o.UpdatedName).ToColumn("updated_name");
             Map(o => o.UpdatedTime).ToColumn("updated_time");
             Map(o => o.IsDel).ToColumn("is_del");
+
+            Map(o => o.NextMediumRepairDate).ToColumn("next_medium_repair_date");
+            Map(o => o.NextLargeRepairDate).ToColumn("next_large_repair_date");
         }
     }
 

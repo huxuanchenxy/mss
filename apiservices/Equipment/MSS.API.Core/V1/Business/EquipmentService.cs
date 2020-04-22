@@ -46,6 +46,7 @@ namespace MSS.API.Core.V1.Business
         public async Task<ApiResult> Import(IFormFile file)
         {
             ApiResult ret = new ApiResult();
+            ret.code = Code.ImportError;
             try
             {
                 string fileName = Path.GetFileNameWithoutExtension(file.FileName);
@@ -57,11 +58,34 @@ namespace MSS.API.Core.V1.Business
                 string errMsg = "";
                 ImportExcelLog log = new ImportExcelLog();
                 DataTable dt = importExcelHelper.GetData(file, config, required,userID, ref log, ref errMsg);
+                if (errMsg!="")
+                {
+                    ret.msg = errMsg;
+                    return ret;
+                }
                 DateTime now = DateTime.Now;
+                int i = 0;
                 foreach (DataRow row in dt.Rows)
                 {
+                    i++;
                     foreach (DataColumn col in dt.Columns)
                     {
+                        if (row["online_date"].ToString() == "") errMsg += "第" + i + "行上线时间必填";
+                        else if (row["medium_repair"].ToString() == "") errMsg += "第" + i + "行中修频率必填";
+                        else if (row["large_repair"].ToString() == "") errMsg += "第" + i + "行大修频率必填";
+                        if (errMsg != "")
+                        {
+                            ret.msg = errMsg;
+                            return ret;
+                        }
+                        else
+                        {
+                            DateTime onLine = Convert.ToDateTime(row["online_date"]);
+                            int mediumRepair = Convert.ToInt32(row["medium_repair"]);
+                            int largeRepair = Convert.ToInt32(row["large_repair"]);
+                            row["next_medium_repair_date"] = onLine.AddDays(mediumRepair);
+                            row["next_large_repair_date"] = onLine.AddDays(largeRepair);
+                        }
                         //没有导入的非字符串字段需要默认值
                         if (row[col].ToString() == "")
                         {
@@ -94,6 +118,7 @@ namespace MSS.API.Core.V1.Business
                     await _importExcelConfigRepo.SaveLog(log);
                     scope.Complete();
                 }
+                ret.code = Code.Success;
                 return ret;
             }
             catch (Exception ex)
@@ -119,6 +144,8 @@ namespace MSS.API.Core.V1.Business
                 eqp.CreatedTime = dt;
                 eqp.UpdatedBy = userID;
                 eqp.CreatedBy = userID;
+                eqp.NextLargeRepairDate = eqp.Online.AddDays(eqp.LargeRepair);
+                eqp.NextMediumRepairDate = eqp.Online.AddDays(eqp.MediumRepair);
                 ret.data = await _eqpRepo.Save(eqp);
                 return ret;
             }
@@ -146,6 +173,11 @@ namespace MSS.API.Core.V1.Business
                     DateTime dt = DateTime.Now;
                     eqp.UpdatedTime = dt;
                     eqp.UpdatedBy = userID;
+                    if (et.NextMediumRepairDate == DateTime.MinValue && et.NextLargeRepairDate == DateTime.MinValue)
+                    {
+                        eqp.NextLargeRepairDate = eqp.Online.AddDays(eqp.LargeRepair);
+                        eqp.NextMediumRepairDate = eqp.Online.AddDays(eqp.MediumRepair);
+                    }
                     ret.data = await _eqpRepo.Update(eqp);
                 }
                 else

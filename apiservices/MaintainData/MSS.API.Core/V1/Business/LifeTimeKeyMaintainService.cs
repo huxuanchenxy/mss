@@ -2,6 +2,7 @@
 using MSS.API.Common.Utility;
 using MSS.API.Dao.Interface;
 using MSS.API.Model.Data;
+using MSS.API.Model.DTO;
 using MSS.Common.Consul;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -261,6 +262,24 @@ namespace MSS.API.Core.V1.Business
                 return 0;
             }
         }
+
+
+        public async Task<ApiResult> GetListByPage(LifeTimeKeyMaintainQurey parm)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                ret.data=await _lifeTimeKeyMaintainRepo.GetListByPage(parm);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
 
     }
 }

@@ -24,23 +24,24 @@ namespace MSS.API.Core.V1.Controllers
 
         // 查询
         [HttpGet("GetLifeTimeKeyListByPage")]
-        public async Task<ActionResult<ApiResult>> GetListByPage([FromQuery] LifeTimeKeyMaintainQurey query)
+        public ActionResult<ApiResult> GetListByPage([FromQuery] LifeTimeKeyMaintainQurey query)
         {
-            string where = "  1=1 "; 
-            if (!string.IsNullOrEmpty(query.device_type))
-            {
-                where += " and  a.eqp_type= '" + query.device_type.Trim() + "'";
-            }
-            if (!string.IsNullOrEmpty(query.device_id))
-            {
-                where += " and  a.id= '" + query.device_id.Trim() + "'";
-            }
-            if (!string.IsNullOrEmpty(query.maintain_type))
-            {
-                where += " and   IsDaXiuOrZhongXiu(a.large_repair, a.medium_repair, a.online_date, a.online_again, a.life)= '" + query.maintain_type.Trim() + "'";
-            }
-            var ret = await _lifeTimeKeyMaintainService.GetListByPage(where, query.sort, query.order, query.page, query.rows);
-            return ret;
+            //string where = "  1=1 "; 
+            //if (!string.IsNullOrEmpty(query.device_type))
+            //{
+            //    where += " and  a.eqp_type= '" + query.device_type.Trim() + "'";
+            //}
+            //if (!string.IsNullOrEmpty(query.device_id))
+            //{
+            //    where += " and  a.id= '" + query.device_id.Trim() + "'";
+            //}
+            //if (!string.IsNullOrEmpty(query.maintain_type))
+            //{
+            //    where += " and   IsDaXiuOrZhongXiu(a.large_repair, a.medium_repair, a.online_date, a.online_again, a.life)= '" + query.maintain_type.Trim() + "'";
+            //}
+            //var ret = await _lifeTimeKeyMaintainService.GetListByPage(where, query.sort, query.order, query.page, query.rows);
+            var resp = _lifeTimeKeyMaintainService.GetListByPage(query);
+            return Ok(resp.Result);
         }
 
         // 查询

@@ -218,7 +218,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">使用期限(年)<em class="validate-mark">*</em></span>
+                <span class="text">使用年限<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-input placeholder="请输入使用期限" v-model="life.text" @keyup.native="validateNumber(life)"></el-input>
                 </div>
@@ -235,7 +235,7 @@
           <ul class="input-group">
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">中修频率<em class="validate-mark">*</em></span>
+                <span class="text">中修频率(日)<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-input placeholder="请输入中修频率" v-model="mediumRepair.text" @keyup.native="validateNumber(mediumRepair)"></el-input>
                 </div>
@@ -244,7 +244,7 @@
             </li>
             <li class="list">
               <div class="inp-wrap">
-                <span class="text">大修频率<em class="validate-mark">*</em></span>
+                <span class="text">大修频率(日)<em class="validate-mark">*</em></span>
                 <div class="inp">
                   <el-input placeholder="请输入大修频率" v-model="largeRepair.text" @keyup.native="validateNumber(largeRepair)"></el-input>
                 </div>

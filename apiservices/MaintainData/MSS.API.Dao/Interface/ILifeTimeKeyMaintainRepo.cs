@@ -1,4 +1,5 @@
 ﻿using MSS.API.Model.Data;
+using MSS.API.Model.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,5 +13,8 @@ namespace MSS.API.Dao.Interface
         Task<List<LocatioInfo>> GetdeviceList(int level ,int location, string strWhere);
         Task<List<LocationDeviceInfo>> GetlocationList();
         Task<List<Equipment>> ListEqpAllByCond(int? topOrg,int eqpType,int line);
+
+
+        Task<EquipmntView> GetListByPage(LifeTimeKeyMaintainQurey parm);
     }
 }

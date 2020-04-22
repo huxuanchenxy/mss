@@ -43,6 +43,8 @@ namespace MSS.API.Model.Data
         public DateTime? OnlineAgain { get; set; }
         public string CreatedName { get; set; }
         public string UpdatedName { get; set; }
+        public DateTime NextMediumRepairDate { get; set; }
+        public DateTime NextLargeRepairDate { get; set; }
     }
 
     public class EquipmentMap : EntityMap<Equipment>
@@ -93,6 +95,15 @@ namespace MSS.API.Model.Data
             Map(o => o.UpdatedName).ToColumn("updated_name");
             Map(o => o.UpdatedTime).ToColumn("updated_time");
             Map(o => o.IsDel).ToColumn("is_del");
+
+            Map(o => o.NextMediumRepairDate).ToColumn("next_medium_repair_date");
+            Map(o => o.NextLargeRepairDate).ToColumn("next_large_repair_date");
         }
+    }
+
+    public class EquipmntView
+    {
+        public int Total { get; set; }
+        public List<Equipment> Rows { get; set; }
     }
 }
