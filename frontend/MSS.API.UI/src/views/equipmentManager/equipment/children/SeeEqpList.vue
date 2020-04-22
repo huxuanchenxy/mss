@@ -67,6 +67,7 @@
         <li class="list" @click="edit"><x-button :disabled="btn.update">修改</x-button></li>
         <li class="list" @click="detail"><x-button>查看明细</x-button></li>
         <li class="list">
+          <!--excel表中的日期必须以纯文本yyyy-MM-dd的格式导入，否则系统无法识别-->
           <!--:headers="uploadHeaders"-->
           <!--http://10.89.36.154:5801/eqpapi/Equipment/Import-->
           <!--http://localhost:3851/api/v1/Equipment/Import-->

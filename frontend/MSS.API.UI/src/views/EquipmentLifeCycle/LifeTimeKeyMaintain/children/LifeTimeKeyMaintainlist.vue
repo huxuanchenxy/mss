@@ -50,23 +50,6 @@
                 </el-cascader>
             </div>
           </div>
-          <div class="input-group">
-            <label for="">维护类别</label>
-            <div class="inp">
-              <el-select v-model="maintain_type"
-                         clearable
-                         placeholder="请选择">
-                <option disabled
-                        value=""
-                        selected>请选择</option>
-                <el-option v-for="item in MaintainList"
-                           :key="item.key"
-                           :value="item.value"
-                           :label="item.label">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
         </div>
          <div class="search-btn" @click="searchRes">
           <x-button ><i class="iconfont icon-search"></i> 查询</x-button>
@@ -76,58 +59,40 @@
     <!-- 内容 -->
     <div class="content-wrap">
       <ul class="content-header">
-        <li class="list"><input type="checkbox"
-                 v-model="bCheckAll"
-                 @change="checkAll"></li>
         <li class="list number c-pointer"
-            @click="changeOrder('id')">
-          序号
-          <i :class="[{ 'el-icon-d-caret': headOrder.id === 0 }, { 'el-icon-caret-top': headOrder.id === 1 }, { 'el-icon-caret-bottom': headOrder.id === 2 }]"></i>
-        </li>
-        <!-- <li class="list name c-pointer"
-            @click="changeOrder('device_type_id')">
-          设备类别
-          <i :class="[{ 'el-icon-d-caret': headOrder.device_type_id === 0 }, { 'el-icon-caret-top': headOrder.device_type_id === 1 }, { 'el-icon-caret-bottom': headOrder.device_type_id === 2 }]"></i>
-        </li> -->
-        <li class="list number c-pointer"
-            @click="changeOrder('device_code')">
+            @click="changeOrder('eqp_code')">
           设备编码
-          <i :class="[{ 'el-icon-d-caret': headOrder.device_code === 0 }, { 'el-icon-caret-top': headOrder.device_code === 1 }, { 'el-icon-caret-bottom': headOrder.device_code === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.eqp_code === 0 }, { 'el-icon-caret-top': headOrder.eqp_code === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_code === 2 }]"></i>
         </li>
         <li class="list number c-pointer"
-            @click="changeOrder('device_name')">
+            @click="changeOrder('eqp_name')">
           设备名称
-          <i :class="[{ 'el-icon-d-caret': headOrder.device_name === 0 }, { 'el-icon-caret-top': headOrder.device_name === 1 }, { 'el-icon-caret-bottom': headOrder.device_name === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.eqp_name === 0 }, { 'el-icon-caret-top': headOrder.eqp_name === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_name === 2 }]"></i>
         </li>
         <li class="list number c-pointer"
-            @click="changeOrder('team_group_id')">
+            @click="changeOrder('team')">
           管辖班组
-          <i :class="[{ 'el-icon-d-caret': headOrder.team_group_id === 0 }, { 'el-icon-caret-top': headOrder.team_group_id === 1 }, { 'el-icon-caret-bottom': headOrder.team_group_id === 2 }]"></i>
+          <i :class="[{ 'el-icon-d-caret': headOrder.team === 0 }, { 'el-icon-caret-top': headOrder.team === 1 }, { 'el-icon-caret-bottom': headOrder.team === 2 }]"></i>
         </li>
         <li class="list number c-pointer"
-            @click="changeOrder('setup_date')">
-          安装时间
-          <i :class="[{ 'el-icon-d-caret': headOrder.setup_date === 0 }, { 'el-icon-caret-top': headOrder.setup_date === 1 }, { 'el-icon-caret-bottom': headOrder.setup_date === 2 }]"></i>
+            @click="changeOrder('online_date')">
+          上线时间
+          <i :class="[{ 'el-icon-d-caret': headOrder.online_date === 0 }, { 'el-icon-caret-top': headOrder.online_date === 1 }, { 'el-icon-caret-bottom': headOrder.online_date === 2 }]"></i>
         </li>
         <li class="list number c-pointer"
-            @click="changeOrder('life_time')">
-          寿命期限
-          <i :class="[{ 'el-icon-d-caret': headOrder.life_time === 0 }, { 'el-icon-caret-top': headOrder.life_time === 1 }, { 'el-icon-caret-bottom': headOrder.life_time === 2 }]"></i>
+            @click="changeOrder('life')">
+          使用年限
+          <i :class="[{ 'el-icon-d-caret': headOrder.life === 0 }, { 'el-icon-caret-top': headOrder.life === 1 }, { 'el-icon-caret-bottom': headOrder.life === 2 }]"></i>
         </li>
         <li class="list number c-pointer"
-            @click="changeOrder('cur_state')">
-          当前状态
-          <i :class="[{ 'el-icon-d-caret': headOrder.cur_state === 0 }, { 'el-icon-caret-top': headOrder.cur_state === 1 }, { 'el-icon-caret-bottom': headOrder.cur_state === 2 }]"></i>
+            @click="changeOrder('next_medium_repair_date')">
+          下次中修日期
+          <i :class="[{ 'el-icon-d-caret': headOrder.next_medium_repair_date === 0 }, { 'el-icon-caret-top': headOrder.next_medium_repair_date === 1 }, { 'el-icon-caret-bottom': headOrder.next_medium_repair_date === 2 }]"></i>
         </li>
         <li class="list number c-pointer"
-            @click="changeOrder('next_maintain_type')">
-          下一维保类型
-          <i :class="[{ 'el-icon-d-caret': headOrder.next_maintain_type === 0 }, { 'el-icon-caret-top': headOrder.next_maintain_type === 1 }, { 'el-icon-caret-bottom': headOrder.next_maintain_type === 2 }]"></i>
-        </li>
-        <li class="list number c-pointer"
-            @click="changeOrder('next_maintain_date')">
-          下一维保日期
-          <i :class="[{ 'el-icon-d-caret': headOrder.next_maintain_date === 0 }, { 'el-icon-caret-top': headOrder.next_maintain_date === 1 }, { 'el-icon-caret-bottom': headOrder.next_maintain_date === 2 }]"></i>
+            @click="changeOrder('next_large_repair_date')">
+          下次大修日期
+          <i :class="[{ 'el-icon-d-caret': headOrder.next_large_repair_date === 0 }, { 'el-icon-caret-top': headOrder.next_large_repair_date === 1 }, { 'el-icon-caret-bottom': headOrder.next_large_repair_date === 2 }]"></i>
         </li>
         <!-- <li class="list last-update-time c-pointer"
             @click="changeOrder('updated_time')">
@@ -144,24 +109,16 @@
         <el-scrollbar>
           <ul class="list-wrap">
             <li class="list"
-                v-for="(item,index) in LifeTimeKeyMaintainlist"
+                v-for="(item) in LifeTimeKeyMaintainlist"
                 :key="item.key">
               <div class="list-content">
-                <div class="checkbox">
-                  <input type="checkbox"
-                         v-model="editLifeTimeKeyMaintainIDList"
-                         :value="item.id"
-                         @change="emitEditID">
-                </div>
-                <div class="number">{{index+1}}</div>
-                <div class="number">{{ item.device_code }}</div>
-                <div class="number">{{ item.device_name }}</div>
-                <div class="number">{{ item.team_group_name }}</div>
-                <div class="number">{{ item.setup_date }}</div>
-                <div class="last-update-time color-white">{{ item.life_time }}</div>
-                 <div class="number">{{ item.cur_state }}</div>
-                <div class="number">{{ item.next_maintain_type }}</div>
-                <div class="name">{{ item.next_maintain_date }}</div>
+                <div class="number">{{ item.code }}</div>
+                <div class="number">{{ item.name }}</div>
+                <div class="number">{{ item.teamName }}</div>
+                <div class="number">{{ item.online }}</div>
+                <div class="number">{{ item.life }}</div>
+                <div class="number">{{ item.nextMediumRepairDate }}</div>
+                <div class="name">{{ item.nextLargeRepairDate }}</div>
                 <!-- <div class="last-update-time color-white">{{ item.updatedTime }}</div>
                 <div class="last-maintainer">{{ item.updated_name }}</div> -->
               </div>
@@ -181,33 +138,9 @@
         </el-scrollbar>
       </div>
     </div>
-    <!-- dialog对话框 -->
-    <el-dialog :visible.sync="dialogVisible.isShow"
-               :modal-append-to-body="false"
-               :show-close="false">
-      {{ dialogVisible.text }}
-      <template slot="footer"
-                class="dialog-footer">
-        <template v-if="dialogVisible.btn">
-          <el-button @click="dialogVisible.isShow = false">否</el-button>
-          <el-button @click="dialogEnter">是</el-button>
-        </template>
-        <el-button v-else
-                   @click="dialogVisible.isShow = false"
-                   :class="{ on: !dialogVisible.btn }">知道了</el-button>
-      </template>
-    </el-dialog>
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :modal-append-to-body="false"
-      custom-class="show-list-wrap"
-      center>
-      <iframe :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
-    </el-dialog>
   </div>
 </template>
 <script>
-import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api from '@/api/DeviceMaintainRegApi.js'
 import eqpApi from '@/api/eqpApi.js'
@@ -224,7 +157,7 @@ export default {
       devicelist: null,
       deviceType: '',
       deviceTypeList: [],
-      MaintainList: [{ label: '中修', value: '中修' }, { label: '大修', value: '大修' }],
+      MaintainList: [{ label: '中修', value: 40 }, { label: '大修', value: 41 }],
       LifeTimeKeyMaintainlist: [],
       editLifeTimeKeyMaintainIDList: [],
       bCheckAll: false,
@@ -252,13 +185,13 @@ export default {
         btn: true
       },
       headOrder: {
-        id: 1,
-        device_type_id: 0,
-        device_id: 0,
-        maintain_type: 0,
-        Sort: 0,
-        updatedTime: 0,
-        updatedBy: 0
+        eqp_code: 0,
+        eqp_name: 0,
+        team: 0,
+        online_date: 0,
+        life: 0,
+        nextMediumRepairDate: 0,
+        nextLargeRepairDate: 0
       }
     }
   },
@@ -280,10 +213,13 @@ export default {
     // 改变排序
     changeOrder (sort) {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
-        this.headOrder.id = 0
-        this.headOrder.Sort = 0
-        this.headOrder.updated_by = 0
-        this.headOrder.updated_time = 0
+        this.headOrder.eqp_code = 0
+        this.headOrder.eqp_name = 0
+        this.headOrder.team = 0
+        this.headOrder.online_date = 0
+        this.headOrder.life = 0
+        this.headOrder.nextMediumRepairDate = 0
+        this.headOrder.nextLargeRepairDate = 0
         this.currentSort.order = 'asc'
         this.headOrder[sort] = 1
       } else if (this.headOrder[sort] === 2) { // 同一字段降序变升序
@@ -294,8 +230,6 @@ export default {
         this.headOrder[sort] = 2
       }
       this.currentSort.sort = sort
-      this.bCheckAll = false
-      this.checkAll()
       this.searchResult(this.currentPage)
     },
     // 搜索
@@ -309,16 +243,18 @@ export default {
         rows: 10,
         page: page,
         device_type: this.deviceType,
-        device_id: this.deviceName[this.deviceName.length - 1],
-        maintain_type: this.maintain_type
+        device_id: this.deviceName[this.deviceName.length - 1]
       }
       api.GetLifeTimeKeyListByPage(parm).then(res => {
+        console.log(res.data)
         this.loading = false
         if (res.code === 0) {
-          res.data.list.map(item => {
-            item.updatedTime = transformDate(item.updatedTime)
+          res.data.rows.map(item => {
+            item.online = item.online.slice(0, 10)
+            item.nextMediumRepairDate = item.nextMediumRepairDate.slice(0, 10)
+            item.nextLargeRepairDate = item.nextLargeRepairDate.slice(0, 10)
           })
-          this.LifeTimeKeyMaintainlist = res.data.list
+          this.LifeTimeKeyMaintainlist = res.data.rows
           this.total = res.data.total
         }
       }).catch(err => console.log(err))
@@ -354,26 +290,18 @@ export default {
     },
     // 序号、指定页翻页
     handleCurrentChange (val) {
-      this.bCheckAll = false
-      this.checkAll()
       this.currentPage = val
       this.searchResult(val)
     },
 
     // 上一页
     prevPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
     },
 
     // 下一页
     nextPage (val) {
-      this.bCheckAll = false
-      this.checkAll()
       this.currentPage = val
-      this.searchResult(val)
     }
   }
 }

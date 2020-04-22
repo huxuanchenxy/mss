@@ -91,13 +91,21 @@
           更换类型
           <i :class="[{ 'el-icon-d-caret': headOrder.replace_type === 0 }, { 'el-icon-caret-top': headOrder.replace_type === 1 }, { 'el-icon-caret-bottom': headOrder.replace_type === 2 }]"></i>
         </li>
-        <li class="list last-update-time">过程描述</li>
+        <li class="list desc">过程描述</li>
+        <li class="list name c-pointer" @click="changeOrder('pm_date')">
+          维修日期
+          <i :class="[{ 'el-icon-d-caret': headOrder.pm_date === 0 }, { 'el-icon-caret-top': headOrder.pm_date === 1 }, { 'el-icon-caret-bottom': headOrder.pm_date === 2 }]"></i>
+        </li>
+        <li class="list name c-pointer" @click="changeOrder('charge')">
+          维修负责人
+          <i :class="[{ 'el-icon-d-caret': headOrder.charge === 0 }, { 'el-icon-caret-top': headOrder.charge === 1 }, { 'el-icon-caret-bottom': headOrder.charge === 2 }]"></i>
+        </li>
         <li class="list upload-cascader">附件</li>
         <li class="list last-update-time c-pointer" @click="changeOrder('updated_time')">
           最后更新时间
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_time === 0 }, { 'el-icon-caret-top': headOrder.updated_time === 1 }, { 'el-icon-caret-bottom': headOrder.updated_time === 2 }]"></i>
         </li>
-        <li class="list last-update-time c-pointer" @click="changeOrder('updated_by')">
+        <li class="list name c-pointer" @click="changeOrder('updated_by')">
           最后更新人
           <i :class="[{ 'el-icon-d-caret': headOrder.updated_by === 0 }, { 'el-icon-caret-top': headOrder.updated_by === 1 }, { 'el-icon-caret-bottom': headOrder.updated_by === 2 }]"></i>
         </li>
@@ -114,7 +122,9 @@
                 <div class="name">{{ item.eqpName }}</div>
                 <div class="name word-break">{{ item.pmTypeName }}</div>
                 <div class="name word-break">{{ item.replaceTypeName }}</div>
-                <div class="last-update-time color-white word-break">{{ item.desc }}</div>
+                <div class="desc color-white word-break">{{ item.desc }}</div>
+                <div class="name color-white word-break">{{ item.pmDate }}</div>
+                <div class="name color-white word-break">{{ item.chargeName }}</div>
                 <div class="upload-cascader">
                   <el-cascader clearable
                     v-show="item.uploadFileArr.length != 0"
@@ -124,7 +134,7 @@
                   </el-cascader>
                 </div>
                 <div class="last-update-time color-white word-break">{{ item.updatedTime }}</div>
-                <div class="last-update-time color-white word-break">{{ item.updatedName }}</div>
+                <div class="name color-white word-break">{{ item.updatedName }}</div>
               </div>
             </li>
           </ul>
@@ -211,6 +221,8 @@ export default {
         eqp: 0,
         pm_type: 0,
         replace_type: 0,
+        pm_date: 0,
+        charge: 0,
         updated_time: 0,
         updated_by: 0
       },
@@ -271,6 +283,8 @@ export default {
       if (this.headOrder[sort] === 0) { // 不同字段切换时默认升序
         this.headOrder.eqp = 0
         this.headOrder.pm_type = 0
+        this.headOrder.pm_date = 0
+        this.headOrder.charge = 0
         this.headOrder.replace_type = 0
         this.headOrder.updated_by = 0
         this.headOrder.updated_time = 0
@@ -322,6 +336,7 @@ export default {
         } else {
           res.data.rows.map(item => {
             item.updatedTime = transformDate(item.updatedTime)
+            item.pmDate = item.pmDate.slice(0, 10)
             item.replaceTypeName = item.replaceType === 0 ? '无变更' : item.replaceTypeName
             if (item.uploadFiles !== null) {
               item.uploadFileArr = JSON.parse(item.uploadFiles)
@@ -532,7 +547,7 @@ $con-height: $content-height - 145 - 56;
   }
 
   .last-update-time{
-    width: 15%;
+    width: 12%;
     color: $color-content-text;
   }
 
@@ -544,7 +559,7 @@ $con-height: $content-height - 145 - 56;
     width: 13%;
   }
 
-  .url{
+  .desc{
     width: 15%;
   }
 
