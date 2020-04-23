@@ -3,9 +3,7 @@
       element-loading-text="加载中"
       element-loading-spinner="el-icon-loading">
     <div ref="header" class="header con-padding-horizontal">
-      <h2>
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
-      </h2>
+      <title-module></title-module>
     </div>
     <!-- 搜索 -->
     <div class="middle">
@@ -232,11 +230,12 @@ import apiEqp from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
 import resize from 'vue-resize-directive'
 import apiOrg from '@/api/orgApi'
-
+import TitleModule from '@/components/TitleModule'
 export default {
   name: 'InspectionManagementList',
   components: {
-    XButton
+    XButton,
+    'title-module': TitleModule
   },
   directives: {
     resize

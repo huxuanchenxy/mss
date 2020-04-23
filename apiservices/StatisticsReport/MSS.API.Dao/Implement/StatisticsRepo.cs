@@ -33,9 +33,11 @@ namespace MSS.API.Dao.Implement
                 // {
                 //     sql.Append(", b." + item);
                 // }
-                sql.Append(", 'split', b.*");
+                sql.Append(", 'split', b.*,d.id major_id,d.name major_name ");
                 sql.Append(" FROM statistics_alarm a");
-                sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id");
+                sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id ");
+                sql.Append(" left join dictionary_tree c on c.id = b.sub_system_id ");
+                sql.Append(" left join dictionary_tree d on c.ext = d.id ");
                 sql.Append(" WHERE 1=1");
                 if (param.StartTime != null)
                 {
