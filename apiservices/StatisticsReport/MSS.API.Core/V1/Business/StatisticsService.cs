@@ -328,9 +328,40 @@ namespace MSS.API.Core.V1.Business
                 ret.code = Code.Failure;
                 ret.msg = ex.Message;
             }
-
             return ret;
         }
+
+        public async Task<ApiResult> GetNow()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                RangeTime rt = new RangeTime();
+                string d = _config["statisticsNow"];
+                if (string.IsNullOrEmpty(d))
+                {
+                    d = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
+                }
+                else
+                {
+                    d = d + " 23:59:59";
+                }
+
+                string startdate = Convert.ToDateTime(d).AddMonths(-6).ToString("yyyy-MM-01");
+                rt.startTime = startdate;
+                rt.endTime = d;
+                ret.code = Code.Success;
+                ret.data = rt;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+
 
         public async Task<ApiResult> GetIndexProcess()
         {

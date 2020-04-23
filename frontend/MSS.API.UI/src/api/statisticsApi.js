@@ -17,5 +17,6 @@ export default {
   getStockOperChart: (param) => { return axios.get(`${api}/StockOperationDetail/GetStockOperationChart`, { params: param }).then(res => res.data) },
   reportTroubleRankByStation: (param) => { return axios.get(`${api}/statistics/trouble/rankbystation`, { params: param }).then(res => res.data) },
   reportRunningtime: (param) => { return axios.get(`${api}/statistics/trouble/runningtime`, { params: param }).then(res => res.data) },
-  reportPlanChart: (param) => { return axios.get(`${api}/statistics/trouble/planchart`, { params: param }).then(res => res.data) }
+  reportPlanChart: (param) => { return axios.get(`${api}/statistics/trouble/planchart`, { params: param }).then(res => res.data) },
+  getNow: (param) => { return axios.get(`${api}/statistics/trouble/getnow`, { params: param }).then(res => res.data) }
 }

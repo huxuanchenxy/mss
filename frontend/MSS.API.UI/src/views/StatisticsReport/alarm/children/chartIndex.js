@@ -385,10 +385,10 @@ var middleOption1 = {
   },
   /* 四周边距(单位默认px，可以使用百分比) */
   grid: {
-    left: 40,
-    top: 30,
-    right: 50,
-    bottom: 30
+    left: '10%',
+    top: '15%',
+    right: '5%',
+    bottom: '10%'
   },
   /* 鼠标悬浮显示数据 */
   tooltip: {
@@ -519,10 +519,10 @@ var middleOption2 = {
   },
   /* 四周边距(单位默认px，可以使用百分比) */
   grid: {
-    left: 40,
-    top: 30,
-    right: 50,
-    bottom: 50
+    left: '10%',
+    top: '15%',
+    right: '5%',
+    bottom: '10%'
   },
   /* 鼠标悬浮显示数据 */
   tooltip: {
@@ -578,7 +578,7 @@ var middleOption2 = {
         show: true,
         lineStyle: {
           // 使用深浅的间隔色
-          color: ['#132a6e']
+          color: ['#fff']
         }
       },
       // 设置轴线的属性
@@ -586,7 +586,11 @@ var middleOption2 = {
         lineStyle: {
           color: '#6ab2ec'
         }
-      }
+      },
+      nameTextStyle: {
+        width: 30,
+        color: '#333'
+      },
     }
   ],
   series: [
@@ -675,6 +679,82 @@ var pieOption2 = {
   ]
 }
 
+function prepareChartData (data, groupModel, cursor) {
+  let legendData = {}
+  let xAxisData = {}
+  console.log('data')
+  console.log(data)
+  console.log('groupModel')
+  console.log(groupModel)
+  if (data) {
+    for (let i = 0; i < data.length; ++i) {
+      let obj = data[i]
+      let groupID = obj.dimension[groupModel.modelID]
+      if (!legendData[groupID]) {
+        let groupName = obj.dimension[groupModel.modelName]
+        legendData[groupID] = groupName || '其他'
+      }
+      if (!xAxisData[obj.date]) {
+        xAxisData[obj.date] = []
+      }
+      xAxisData[obj.date].push(obj)
+    }
+    console.log('legendData:')
+    console.log(legendData)
+    let seariescount = []
+    let seariesavg = []
+    for (let key in legendData) {
+      let objcount = {
+        id: key,
+        name: legendData[key],
+        type: 'bar',
+        // stack: 'test',
+        // barMinHeight: 1,
+        // barCategoryGap: 10,
+        // barGap: 1,
+        // barWidth: 20,
+        barMaxWidth: '12%',
+        cursor: cursor,
+        data: []
+      }
+      let objavg = {
+        id: key,
+        name: legendData[key],
+        type: 'line',
+        cursor: cursor,
+        data: []
+      }
+      console.log('xAxisData')
+      console.log(xAxisData)
+      for (let x in xAxisData) {
+        let count = 0
+        let avg = 0
+        for (let i = 0; i < xAxisData[x].length; ++i) {
+          if (xAxisData[x][i].dimension[groupModel.modelID] === +key) {
+            count = xAxisData[x][i].num
+            avg = (xAxisData[x][i].avgtime / (1000)).toFixed(1)
+            break
+          }
+        }
+        objcount.data.push(count)
+        objavg.data.push(avg)
+      }
+      seariescount.push(objcount)
+      seariesavg.push(objavg)
+    }
+    middleOption1.legend.data = Object.values(legendData)
+    middleOption1.xAxis[0].data = Object.keys(xAxisData)
+    middleOption1.series = seariescount
+    middleOption2.legend.data = Object.values(legendData)
+    middleOption2.xAxis[0].data = Object.keys(xAxisData)
+    middleOption2.series = seariesavg
+    if (middleOption1.xAxis[0].data.length === 0) {
+      middleOption1.xAxis[0].data.push('无数据')
+      middleOption2.xAxis[0].data.push('无数据')
+    }
+  }
+}
+
 export default {
   optionPie: optionPie,
   optionRadar: optionRadar,
@@ -684,5 +764,6 @@ export default {
   optionHBar: optionHBar,
   middleOption1: middleOption1,
   middleOption2: middleOption2,
-  pieOption2: pieOption2
+  pieOption2: pieOption2,
+  prepareChartData: prepareChartData
 }

@@ -238,6 +238,13 @@ namespace MSS.API.Core.V1.Controllers
             return ret;
         }
 
+        [HttpGet("trouble/getnow")]
+        public async Task<ActionResult<ApiResult>> GetNow()
+        {
+            var ret = await _statisticsService.GetNow();
+            return ret;
+        }
+
         [HttpGet("trouble/planchart")]
         public async Task<ActionResult<ApiResult>> GetIndexProcess()
         {

@@ -167,7 +167,7 @@ export default {
       },
       DataList: [],
       DataList1: [],
-      dateType: 0,
+      dateType: 1,
       dateChartCount: null,
       dateChartAvg: null,
       dateChartPie: null,
@@ -178,8 +178,9 @@ export default {
       dateChartHBar: null,
       dateChartPie2: null,
       loading_count: false,
-      groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
+      groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id', 'major_id'],
       groupidxForCount: 0,
+      groupidxForAvg: 0,
       groups: {
         sub_system_id: {
           modelID: 'subSystemID',
@@ -220,7 +221,7 @@ export default {
     d.setDate(d.getDate() - 60)
     var startDate = getNowFormatDate(d)
     this.time.text = [startDate, nowDate]
-    // this.searchResult()
+    this.searchResult()
     this.ScrollUp()
   },
   mounted () {
@@ -232,8 +233,8 @@ export default {
     // this.drawBar()
     this.drawLine()
     this.drawHBar()
-    this.drawCountChart()
-    this.drawAvgChart()
+    // this.drawCountChart()
+    // this.drawAvgChart()
     this.drawPie2()
   },
   computed: {
@@ -242,9 +243,12 @@ export default {
     }
   },
   methods: {
-    drawCountChart () {
+    drawCountChart (param, data) {
       this.dateChartCount = this.$echarts.init(this.$refs.countChart)
       this.dateChartCount.clear()
+      let groupModel = this.groups[this.groupby[this.groupidxForCount]]
+      let cursor = 'default'
+      indexchart.prepareChartData(data, groupModel, cursor)
       this.dateChartCount.setOption(indexchart.middleOption1)
     },
     drawAvgChart () {
@@ -419,31 +423,29 @@ export default {
     },
     // 搜索
     searchResult () {
-      var sTime = ''
-      var eTime = ''
-      if (this.time.text) {
-        sTime = this.time.text[0]
-        eTime = this.time.text[1] + ' 23:59:59'
-      }
-      var param = {
-        // SubSystemIDs: this.subSystem.join(','),
-        // EqpTypeIDs: this.eqpType.join(','),
-        // LocationPath: this.area.join(','),
-        // SupplierIDs: this.supplier.join(','),
-        // ManufacturerIDs: this.manufacturer.join(','),
-        // OrgPath: this.teamPath.text.join(','),
-        startTime: sTime,
-        endTime: eTime,
-        dateType: this.dateType,
-        groupby: this.groupby.slice(0, 1).join(',')
-      }
-      this.groupidxForCount = 0
-      this.groupidxForAvg = 0
-      this.resultCountHistory = []
-      this.resultAvgHistory = []
-      this.subTitleCount = []
-      this.subTitleAvg = []
-      this.search(param, [this.drawCountChart, this.drawAvgChart])
+      staticsapi.getNow().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            var sTime = res.data.startTime
+            var eTime = res.data.endTime
+            var param = {
+              // SubSystemIDs: this.subSystem.join(','),
+              // EqpTypeIDs: this.eqpType.join(','),
+              // LocationPath: this.area.join(','),
+              // SupplierIDs: this.supplier.join(','),
+              // ManufacturerIDs: this.manufacturer.join(','),
+              // OrgPath: this.teamPath.text.join(','),
+              startTime: sTime,
+              endTime: eTime,
+              dateType: this.dateType,
+              groupby: this.groupby.slice(0, 1).join(',')
+            }
+            this.groupidxForCount = 0
+            this.groupidxForAvg = 0
+            this.search(param, [this.drawCountChart, this.drawAvgChart])
+          }
+        }
+      }).catch(err => console.log(err))
     },
     onReady: function (instance, CountUp) {
       const that = this

@@ -26,4 +26,10 @@ namespace MSS.API.Model.Data
             Map(o => o.IsDel).ToColumn("is_del");
         }
     }
+
+    public class RangeTime
+    {
+        public string startTime { get; set; }
+        public string endTime { get; set; }
+    }
 }
