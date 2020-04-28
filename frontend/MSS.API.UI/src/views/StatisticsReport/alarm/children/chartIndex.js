@@ -61,17 +61,18 @@ const optionPie = {
 // 指定图表的配置项和数据
 var optionRadar = {
   title: {
-    text: '',
-    subtext: ''
+    text: '年度成本分摊',
+    textStyle: {
+      fontSize: '13',
+      color: 'white'
+    }
   },
-  tooltip: {
-    trigger: 'axis'
-  },
+  tooltip: {},
   legend: {
     orient: 'vertical',
-    x: 'left',
+    x: 'right',
     y: 'top',
-    data: ['今年成本分摊', '去年成本分摊'],
+    data: ['lastyear', 'thisyear'],
     textStyle: {
       fontSize: '13',
       color: 'white'
@@ -81,17 +82,17 @@ var optionRadar = {
     {
       indicator: [
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '运营', max: 6000},
+        { text: '运营', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '人力', max: 16000},
+        { text: '人力', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '故障', max: 30000},
+        { text: '故障', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '物料', max: 38000},
+        { text: '物料', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '检修', max: 52000},
+        { text: '检修', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '管理', max: 25000}
+        { text: '管理', max: 1000}
       ],
       splitArea: {
         show: true,

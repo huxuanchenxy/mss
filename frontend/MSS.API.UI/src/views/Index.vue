@@ -301,9 +301,54 @@ export default {
       }).catch(err => console.log(err))
     },
     drawRadar () {
-      this.dateChartRadar = this.$echarts.init(this.$refs.radarChart)
-      this.dateChartRadar.clear()
-      this.dateChartRadar.setOption(indexchart.optionRadar)
+      staticsapi.getCostChart().then(res => {
+        this.dateChartRadar = this.$echarts.init(this.$refs.radarChart)
+        this.dateChartRadar.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let seriesData = {}
+            let polar = {}
+            res.data.map(item => {
+              if (!seriesData[item.year]) {
+                seriesData[item.year] = []
+              }
+              let obj = {}
+              obj.value = item.value
+              obj.name = item.costName
+              seriesData[item.year].push(obj)
+              if (!polar[item.costName]) {
+                polar[item.costName] = []
+              }
+              polar[item.costName].push(1000)
+            })
+            // console.log(polar)
+            let optionseriesdata = []
+            for (let i in seriesData) {
+              let tmp = {}
+              tmp.name = i
+              let tmparr = []
+              for (let k in seriesData[i]) {
+                tmparr.push(seriesData[i][k].value)
+              }
+              tmp.value = tmparr
+              optionseriesdata.push(tmp)
+            }
+            let polorarr = []
+            for (let i in polar) {
+              let tmp = {}
+              tmp.text = i
+              tmp.max = polar[i][0]
+              polorarr.push(tmp)
+            }
+            // console.log(polorarr)
+            // console.log(optionseriesdata)
+            indexchart.optionRadar.polar[0].indicator = polorarr
+            indexchart.optionRadar.legend.data = Object.keys(seriesData)
+            indexchart.optionRadar.series[0].data = optionseriesdata
+          }
+        }
+        this.dateChartRadar.setOption(indexchart.optionRadar)
+      }).catch(err => console.log(err))
     },
     drawGauge () {
       staticsapi.getRunningCost().then(res => {
@@ -381,7 +426,7 @@ export default {
                 seriesData[item.year].push(obj)
               }
             })
-            console.log(seriesData)
+            // console.log(seriesData)
             indexchart.pieOption2.series[0].name = Object.keys(seriesData)[0]
             indexchart.pieOption2.series[0].data = Object.values(seriesData)[0]
             indexchart.pieOption2.series[1].name = Object.keys(seriesData)[1]
