@@ -415,5 +415,70 @@ namespace MSS.API.Core.V1.Business
             return ret;
         }
 
+        public async Task<ApiResult> GetRunningCost()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                float d1 = (float)DateTime.Now.Month / (float)12;
+                int _count = (int)(Math.Round(d1, 2) * 100);
+                ret.code = Code.Success;
+                ret.data = _count;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+        public async Task<ApiResult> GetPidChart()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var services = await _consulServiceProvider.GetServiceAsync("EqpService");
+                ApiResult r1 = HttpClientHelper.GetResponse<ApiResult>(services
+                    + "/api/v1/PidCount/GetPageList?order=asc&sort=id&rows=100&page=1&nodeId=&nodeName=&nodeTip=");
+                if (r1.code == Code.Success && r1.data != null)
+                {
+                    ret.code = Code.Success;
+                    ret.data = r1.data;
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+
+        public async Task<ApiResult> GetCostChart()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                DateTime now = DateTime.Now;
+                DateTime lastyear = now.AddYears(-1);
+                var data = await _statisticsRepo.GetCostChart(new CostChartParm() { startYear = lastyear.Year, endYear = now.Year });
+                //IEnumerable<IGrouping<int, CostChart>> groups = data.GroupBy(c => c.Year);
+                //foreach (var g in groups)
+                //{
+                   
+                //}
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
     }
 }

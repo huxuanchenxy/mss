@@ -27,19 +27,12 @@
             </el-col>
         </div>
         <div class="charts-wrap">
-                <span style="font-size: 16px;font-family: cursive;">重要通知</span>
-                      <!-- <li class="list" v-for="(item) in DataList" :key="item.key">
-              <div class="list-content">
-                <div class="name"><a href="#">{{ item.appName }}</a></div>
-                <div class="name">{{ item.activityName }}</div>
-                <div class="name">{{ item.createdDateTime }}</div>
-              </div>
-            </li> -->
-            <div class="scroll-wrap">
-              <div class="scroll-content" :style="{ top }" @mouseenter="Stop()" @mouseleave="Up()">
-                <p v-for="(item) in DataList" :key="item.name"><a>{{item.name}}</a></p>
-              </div>
-            </div>
+            <el-col :span="12" id="leftBottomChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:240px;" ref="leftBottomChart"  class="echart"></div>
+            </el-col>
         </div>
       </div>
       <div class="right1">
@@ -177,6 +170,7 @@ export default {
       dateChartLine: null,
       dateChartHBar: null,
       dateChartPie2: null,
+      dateChartLeftBottom: null,
       loading_count: false,
       groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id', 'major_id'],
       groupidxForCount: 0,
@@ -236,6 +230,7 @@ export default {
     // this.drawCountChart()
     // this.drawAvgChart()
     this.drawPie2()
+    this.drawleftbottom()
   },
   computed: {
     top () {
@@ -311,9 +306,16 @@ export default {
       this.dateChartRadar.setOption(indexchart.optionRadar)
     },
     drawGauge () {
-      this.dateChartGauge = this.$echarts.init(this.$refs.gaugeChart)
-      this.dateChartGauge.clear()
-      this.dateChartGauge.setOption(indexchart.optionGauge)
+      staticsapi.getRunningCost().then(res => {
+        this.dateChartGauge = this.$echarts.init(this.$refs.gaugeChart)
+        this.dateChartGauge.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            indexchart.optionGauge.series[0].data[0].value = res.data
+          }
+        }
+        this.dateChartGauge.setOption(indexchart.optionGauge)
+      }).catch(err => console.log(err))
     },
     drawBar () {
       this.dateChartBar = this.$echarts.init(this.$refs.barChart)
@@ -362,9 +364,51 @@ export default {
       }).catch(err => console.log(err))
     },
     drawPie2 () {
-      this.dateChartPie2 = this.$echarts.init(this.$refs.pie2Chart)
-      this.dateChartPie2.clear()
-      this.dateChartPie2.setOption(indexchart.pieOption2)
+      staticsapi.getCostChart().then(res => {
+        this.dateChartPie2 = this.$echarts.init(this.$refs.pie2Chart)
+        this.dateChartPie2.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let seriesData = {}
+            res.data.map(item => {
+              if (item.costType === 210 || item.costType === 212) {
+                if (!seriesData[item.year]) {
+                  seriesData[item.year] = []
+                }
+                let obj = {}
+                obj.value = item.value
+                obj.name = item.costName
+                seriesData[item.year].push(obj)
+              }
+            })
+            console.log(seriesData)
+            indexchart.pieOption2.series[0].name = Object.keys(seriesData)[0]
+            indexchart.pieOption2.series[0].data = Object.values(seriesData)[0]
+            indexchart.pieOption2.series[1].name = Object.keys(seriesData)[1]
+            indexchart.pieOption2.series[1].data = Object.values(seriesData)[1]
+          }
+        }
+        this.dateChartPie2.setOption(indexchart.pieOption2)
+      }).catch(err => console.log(err))
+    },
+    drawleftbottom () {
+      staticsapi.getPidChart().then(res => {
+        this.dateChartLeftBottom = this.$echarts.init(this.$refs.leftBottomChart)
+        this.dateChartLeftBottom.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data.rows != null) {
+            let seriesData = []
+            res.data.rows.map(item => {
+              let curobj = {}
+              curobj.name = item.nodeName
+              curobj.value = item.capacityCount
+              seriesData.push(curobj)
+            })
+            indexchart.LeftBottomOption.series[0].data = seriesData
+          }
+        }
+        this.dateChartLeftBottom.setOption(indexchart.LeftBottomOption)
+      }).catch(err => console.log(err))
     },
     myMission () {
       this.DataList = [

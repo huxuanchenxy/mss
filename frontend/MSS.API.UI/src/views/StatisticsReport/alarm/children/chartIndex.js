@@ -511,7 +511,7 @@ var middleOption2 = {
   /* 柱状图颜色 */
   color: ['#06a45f', '#078ed6', '#e3982f'],
   title: {
-    text: '平均恢复时间(分钟)',
+    text: '平均恢复时间',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -586,11 +586,7 @@ var middleOption2 = {
         lineStyle: {
           color: '#6ab2ec'
         }
-      },
-      nameTextStyle: {
-        width: 30,
-        color: '#333'
-      },
+      }
     }
   ],
   series: [
@@ -679,13 +675,62 @@ var pieOption2 = {
   ]
 }
 
+var LeftBottomOption = {
+  title: {
+    text: '点位分布',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: '{b}: {c}'
+  },
+  calculable: true,
+  series: [
+    {
+      name: '',
+      type: 'treemap',
+      breadcrumb: {
+        show: false
+      },
+      itemStyle: {
+        normal: {
+          label: {
+            show: true,
+            formatter: '{b}'
+          }
+        },
+        emphasis: {
+          label: {
+            show: true
+          }
+        }
+      },
+      data: [
+        {
+          name: '航头站',
+          value: 6
+        },
+        {
+          name: '江埔站',
+          value: 4
+        }
+      ],
+      upperLabel: {
+        show: false
+      }
+    }
+  ]
+}
 function prepareChartData (data, groupModel, cursor) {
   let legendData = {}
   let xAxisData = {}
-  console.log('data')
-  console.log(data)
-  console.log('groupModel')
-  console.log(groupModel)
+  // console.log('data')
+  // console.log(data)
+  // console.log('groupModel')
+  // console.log(groupModel)
   if (data) {
     for (let i = 0; i < data.length; ++i) {
       let obj = data[i]
@@ -699,8 +744,8 @@ function prepareChartData (data, groupModel, cursor) {
       }
       xAxisData[obj.date].push(obj)
     }
-    console.log('legendData:')
-    console.log(legendData)
+    // console.log('legendData:')
+    // console.log(legendData)
     let seariescount = []
     let seariesavg = []
     for (let key in legendData) {
@@ -724,8 +769,8 @@ function prepareChartData (data, groupModel, cursor) {
         cursor: cursor,
         data: []
       }
-      console.log('xAxisData')
-      console.log(xAxisData)
+      // console.log('xAxisData')
+      // console.log(xAxisData)
       for (let x in xAxisData) {
         let count = 0
         let avg = 0
@@ -765,5 +810,6 @@ export default {
   middleOption1: middleOption1,
   middleOption2: middleOption2,
   pieOption2: pieOption2,
+  LeftBottomOption: LeftBottomOption,
   prepareChartData: prepareChartData
 }

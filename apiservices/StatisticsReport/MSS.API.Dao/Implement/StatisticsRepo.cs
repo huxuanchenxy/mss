@@ -424,5 +424,18 @@ namespace MSS.API.Dao.Implement
                 return data.ToList().OrderByDescending(c1=>c1.troublecount).ToList();
             });
         }
+
+        public async Task<List<CostChart>> GetCostChart(CostChartParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = $@" SELECT cost_name cost_name,cost_type cost_type,sum(value) value,year
+                                    FROM `cost_chart`
+                                    WHERE year >= '{parm.startYear}' and year <= '{parm.endYear}'
+                                    GROUP BY year,cost_type,cost_name ";
+                var data = await c.QueryAsync<CostChart>(sql);
+                return data.ToList().OrderBy(c1 => c1.Year).ToList();
+            });
+        }
     }    
 }

@@ -21,5 +21,8 @@ namespace MSS.API.Core.V1.Business
         Task<ApiResult> GetRunningtime();
         Task<ApiResult> GetIndexProcess();
         Task<ApiResult> GetNow();
+        Task<ApiResult> GetRunningCost();
+        Task<ApiResult> GetPidChart();
+        Task<ApiResult> GetCostChart();
     }
 }

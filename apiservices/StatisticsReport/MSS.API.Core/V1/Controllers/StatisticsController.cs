@@ -251,5 +251,26 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _statisticsService.GetIndexProcess();
             return ret;
         }
+
+        [HttpGet("trouble/runningcost")]
+        public async Task<ActionResult<ApiResult>> GetRunningCost()
+        {
+            var ret = await _statisticsService.GetRunningCost();
+            return ret;
+        }
+
+        [HttpGet("trouble/pidchart")]
+        public async Task<ActionResult<ApiResult>> GetPidChart()
+        {
+            var ret = await _statisticsService.GetPidChart();
+            return ret;
+        }
+
+        [HttpGet("trouble/costchart")]
+        public async Task<ActionResult<ApiResult>> GetCostChart()
+        {
+            var ret = await _statisticsService.GetCostChart();
+            return ret;
+        }
     }
 }

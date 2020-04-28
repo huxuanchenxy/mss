@@ -1149,10 +1149,10 @@ function getDataZoom (size) {
 function prepareChartData (data, groupModel, cursor) {
   let legendData = {}
   let xAxisData = {}
-  console.log('data')
-  console.log(data)
-  console.log('groupModel')
-  console.log(groupModel)
+  // console.log('data')
+  // console.log(data)
+  // console.log('groupModel')
+  // console.log(groupModel)
   if (data) {
     for (let i = 0; i < data.length; ++i) {
       let obj = data[i]
@@ -1166,8 +1166,8 @@ function prepareChartData (data, groupModel, cursor) {
       }
       xAxisData[obj.date].push(obj)
     }
-    console.log('legendData:')
-    console.log(legendData)
+    // console.log('legendData:')
+    // console.log(legendData)
     let seariescount = []
     let seariesavg = []
     for (let key in legendData) {
@@ -1191,8 +1191,8 @@ function prepareChartData (data, groupModel, cursor) {
         cursor: cursor,
         data: []
       }
-      console.log('xAxisData')
-      console.log(xAxisData)
+      // console.log('xAxisData')
+      // console.log(xAxisData)
       for (let x in xAxisData) {
         let count = 0
         let avg = 0

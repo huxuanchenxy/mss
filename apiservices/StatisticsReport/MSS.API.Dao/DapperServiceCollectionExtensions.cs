@@ -30,6 +30,7 @@ namespace MSS.API.Dao
                 config.AddMap(new StatisticsDimensionMap());
                 config.AddMap(new StatisticsAlarmMap());
                 config.AddMap(new StatisticsTroubleMap());
+                config.AddMap(new CostChartMap());
             });
             return services;
         }
