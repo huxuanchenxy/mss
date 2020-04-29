@@ -364,7 +364,13 @@ export default {
     var d = new Date()
     d.setDate(d.getDate() - 70)
     var startDate = getNowFormatDate(d)
-    this.time.text = [startDate, nowDate]
+    api.getNow().then(res => {
+      if (res.data != null) {
+        startDate = res.data.startTime
+        nowDate = res.data.endTime
+        this.time.text = [startDate, nowDate]
+      }
+    }).catch(err => console.log(err))
   },
   activated () {
     // this.searchResult(this.currentPage)
@@ -631,6 +637,7 @@ export default {
       // 子系统加载
       apiAuth.getSubCode(dictionary.subSystem).then(res => {
         this.subSystemList = res.data
+        this.subSystem = [18, 19, 20, 21]
         this.searchResult()
       }).catch(err => console.log(err))
 
@@ -760,7 +767,8 @@ export default {
       var eTime = ''
       if (this.time.text) {
         sTime = this.time.text[0]
-        eTime = this.time.text[1] + ' 23:59:59'
+        // eTime = this.time.text[1] + ' 23:59:59'
+        eTime = this.time.text[1]
       }
       var param = {
         SubSystemIDs: this.subSystem.join(','),

@@ -1191,8 +1191,6 @@ function prepareChartData (data, groupModel, cursor) {
         cursor: cursor,
         data: []
       }
-      // console.log('xAxisData')
-      // console.log(xAxisData)
       for (let x in xAxisData) {
         let count = 0
         let avg = 0
