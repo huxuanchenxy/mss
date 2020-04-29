@@ -29,6 +29,8 @@ export default {
         let rc = r.children
         this.titlepic = this.$router.navList[this.$route.matched[0].path].iconClsActive
         let thisroutepath = this.$route.path
+        // console.log(thisroutepath)
+        // console.log(rc)
         let t2 = ''
         for (let index in rc) {
           let comp = thisroutepath.indexOf(rc[index].path)
@@ -37,7 +39,7 @@ export default {
             break
           }
         }
-        console.log(t2)
+        // console.log(t2)
         this.title = this.$router.navList[this.$route.matched[0].path].name + ' | ' + t2
         window.sessionStorage.setItem('title', this.title)
         window.sessionStorage.setItem('titlepic', this.titlepic)
