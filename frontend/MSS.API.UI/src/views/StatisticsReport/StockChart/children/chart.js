@@ -182,6 +182,9 @@ function prepareChartData (data, groupModel, cursor) {
     // seariescount = data.series
     // console.log('seariescount:' + JSON.stringify(seariescount))
     optionCount.series = seariescount
+    for (let x in optionCount.series) {
+      optionCount.series[x].barMaxWidth = '8%'
+    }
     if (optionCount.xAxis[0].data.length === 0) {
       optionCount.xAxis[0].data.push('无数据')
     }
