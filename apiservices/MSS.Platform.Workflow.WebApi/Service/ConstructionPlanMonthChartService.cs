@@ -212,6 +212,69 @@ namespace MSS.Platform.Workflow.WebApi.Service
                     //catagory.Add("实际完成");
                     chartobj.Legend = catagory;
                 }
+
+                if (parm.xAxisType == 3)
+                {
+                    parm.month = 0;
+                    var data = await _repo.GetByParm(parm);
+                    //DateTime dt = new DateTime(parm.year, parm.month, 1);
+                    //int days = DateTime.DaysInMonth(dt.Year, dt.Month);
+
+
+                    List<ConstructionPlanMonthChartSeries> legend = new List<ConstructionPlanMonthChartSeries>();
+                    List<int> legend1 = new List<int>();
+                    List<string> d = new List<string>();
+                    for (int i = parm.startYear; i <= parm.endYear; i++)
+                    {
+                        string curd = i.ToString();
+                        d.Add(curd);
+                        var curYear = data.Where(c => c.Year == i).ToList();
+                        float curyearCount = 0;
+                        foreach (var d0 in curYear)
+                        {
+                            curyearCount += d0.PmFrequency;
+                        }
+                        //fake
+                        //int fake = new Random().Next(-2, 2);
+                        //float curmonthFinish = curmonthCount + fake;
+                        float curyearFinish = 0;
+                        var curyearFinishdata = curYear.Where(c => c.status == 179);
+                        foreach (var cc in curyearFinishdata)
+                        {
+                            curyearFinish += cc.PmFrequency;
+                        }
+                        int curpercent = 0;
+                        if (curyearFinish > 0)
+                        {
+                            curpercent = (int)(Math.Round((curyearFinish / curyearCount), 2) * 100);
+                        }
+                        else
+                        {
+                            curpercent = 0;//写死假的
+                        }
+                        legend1.Add(curpercent);
+
+                    }
+                    ConstructionPlanMonthChartSeries legendobj1 = new ConstructionPlanMonthChartSeries();
+                    legendobj1.Name = "计划完成率";
+                    legendobj1.Data = legend1;
+                    legendobj1.Type = "bar";
+
+                    //ConstructionPlanMonthChartSeries legendobj2 = new ConstructionPlanMonthChartSeries();
+                    //legendobj2.Name = "实际完成";
+                    //legendobj2.Data = legend2;
+                    //legendobj2.Type = "bar";
+
+                    legend.Add(legendobj1);
+                    //legend.Add(legendobj2);
+                    chartobj.Series = legend;
+                    chartobj.Dimension = d;
+
+                    List<string> catagory = new List<string>();
+                    catagory.Add("计划完成率");
+                    //catagory.Add("实际完成");
+                    chartobj.Legend = catagory;
+                }
                 ret.code = Code.Success;
                 ret.data = chartobj;
             }

@@ -27,19 +27,12 @@
             </el-col>
         </div>
         <div class="charts-wrap">
-                <span style="font-size: 16px;font-family: cursive;">重要通知</span>
-                      <!-- <li class="list" v-for="(item) in DataList" :key="item.key">
-              <div class="list-content">
-                <div class="name"><a href="#">{{ item.appName }}</a></div>
-                <div class="name">{{ item.activityName }}</div>
-                <div class="name">{{ item.createdDateTime }}</div>
-              </div>
-            </li> -->
-            <div class="scroll-wrap">
-              <div class="scroll-content" :style="{ top }" @mouseenter="Stop()" @mouseleave="Up()">
-                <p v-for="(item) in DataList" :key="item.name"><a>{{item.name}}</a></p>
-              </div>
-            </div>
+            <el-col :span="12" id="leftBottomChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:240px;" ref="leftBottomChart"  class="echart"></div>
+            </el-col>
         </div>
       </div>
       <div class="right1">
@@ -167,7 +160,7 @@ export default {
       },
       DataList: [],
       DataList1: [],
-      dateType: 0,
+      dateType: 1,
       dateChartCount: null,
       dateChartAvg: null,
       dateChartPie: null,
@@ -177,9 +170,11 @@ export default {
       dateChartLine: null,
       dateChartHBar: null,
       dateChartPie2: null,
+      dateChartLeftBottom: null,
       loading_count: false,
-      groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id'],
+      groupby: ['sub_system_id', 'eqp_type_id', 'manufacturer_id', 'team_id', 'major_id'],
       groupidxForCount: 0,
+      groupidxForAvg: 0,
       groups: {
         sub_system_id: {
           modelID: 'subSystemID',
@@ -214,12 +209,13 @@ export default {
     }
   },
   created () {
+    this.getRunningTime()
     var nowDate = getNowFormatDate()
     var d = new Date()
     d.setDate(d.getDate() - 60)
     var startDate = getNowFormatDate(d)
     this.time.text = [startDate, nowDate]
-    // this.searchResult()
+    this.searchResult()
     this.ScrollUp()
   },
   mounted () {
@@ -231,9 +227,10 @@ export default {
     // this.drawBar()
     this.drawLine()
     this.drawHBar()
-    this.drawCountChart()
-    this.drawAvgChart()
+    // this.drawCountChart()
+    // this.drawAvgChart()
     this.drawPie2()
+    this.drawleftbottom()
   },
   computed: {
     top () {
@@ -241,9 +238,12 @@ export default {
     }
   },
   methods: {
-    drawCountChart () {
+    drawCountChart (param, data) {
       this.dateChartCount = this.$echarts.init(this.$refs.countChart)
       this.dateChartCount.clear()
+      let groupModel = this.groups[this.groupby[this.groupidxForCount]]
+      let cursor = 'default'
+      indexchart.prepareChartData(data, groupModel, cursor)
       this.dateChartCount.setOption(indexchart.middleOption1)
     },
     drawAvgChart () {
@@ -279,19 +279,88 @@ export default {
       }).catch(err => console.log(err))
     },
     drawPie () {
-      this.dateChartPie = this.$echarts.init(this.$refs.pieChart)
-      this.dateChartPie.clear()
-      this.dateChartPie.setOption(indexchart.optionPie)
+      staticsapi.reportTroubleRankByStation().then(res => {
+        this.dateChartPie = this.$echarts.init(this.$refs.pieChart)
+        this.dateChartPie.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let seriesdata = []
+            let legenddata = []
+            res.data.map(item => {
+              let cur = {}
+              cur.value = item.troublecount
+              cur.name = item.name
+              seriesdata.push(cur)
+              legenddata.push(item.name)
+            })
+            indexchart.optionPie.series[0].data = seriesdata
+            indexchart.optionPie.legend.data = legenddata
+          }
+        }
+        this.dateChartPie.setOption(indexchart.optionPie)
+      }).catch(err => console.log(err))
     },
     drawRadar () {
-      this.dateChartRadar = this.$echarts.init(this.$refs.radarChart)
-      this.dateChartRadar.clear()
-      this.dateChartRadar.setOption(indexchart.optionRadar)
+      staticsapi.getCostChart().then(res => {
+        this.dateChartRadar = this.$echarts.init(this.$refs.radarChart)
+        this.dateChartRadar.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let seriesData = {}
+            let polar = {}
+            res.data.map(item => {
+              if (!seriesData[item.year]) {
+                seriesData[item.year] = []
+              }
+              let obj = {}
+              obj.value = item.value
+              obj.name = item.costName
+              seriesData[item.year].push(obj)
+              if (!polar[item.costName]) {
+                polar[item.costName] = []
+              }
+              polar[item.costName].push(1000)
+            })
+            // console.log(polar)
+            let optionseriesdata = []
+            for (let i in seriesData) {
+              let tmp = {}
+              tmp.name = i
+              let tmparr = []
+              for (let k in seriesData[i]) {
+                tmparr.push(seriesData[i][k].value)
+              }
+              tmp.value = tmparr
+              optionseriesdata.push(tmp)
+            }
+            let polorarr = []
+            for (let i in polar) {
+              let tmp = {}
+              tmp.text = i
+              tmp.max = polar[i][0]
+              polorarr.push(tmp)
+            }
+            // console.log(polorarr)
+            // console.log(optionseriesdata)
+            indexchart.optionRadar.polar[0].indicator = polorarr
+            indexchart.optionRadar.legend.data = Object.keys(seriesData)
+            indexchart.optionRadar.series[0].data = optionseriesdata
+          }
+        }
+        this.dateChartRadar.setOption(indexchart.optionRadar)
+      }).catch(err => console.log(err))
     },
     drawGauge () {
-      this.dateChartGauge = this.$echarts.init(this.$refs.gaugeChart)
-      this.dateChartGauge.clear()
-      this.dateChartGauge.setOption(indexchart.optionGauge)
+      staticsapi.getRunningCost().then(res => {
+        this.dateChartGauge = this.$echarts.init(this.$refs.gaugeChart)
+        this.dateChartGauge.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            indexchart.optionGauge.series[0].data[0].value = res.data
+          }
+        }
+        this.dateChartGauge.setOption(indexchart.optionGauge)
+      }).catch(err => console.log(err))
     },
     drawBar () {
       this.dateChartBar = this.$echarts.init(this.$refs.barChart)
@@ -321,14 +390,70 @@ export default {
       }).catch(err => console.log(err))
     },
     drawHBar () {
-      this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
-      this.dateChartHBar.clear()
-      this.dateChartHBar.setOption(indexchart.optionHBar)
+      staticsapi.reportPlanChart().then(res => {
+        this.dateChartHBar = this.$echarts.init(this.$refs.hbarChart)
+        this.dateChartHBar.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let yAxisData = []
+            let seriesData = []
+            res.data.map(item => {
+              seriesData.push(item.count)
+              yAxisData.push(item.name)
+            })
+            indexchart.optionHBar.yAxis.data = yAxisData
+            indexchart.optionHBar.series[0].data = seriesData
+          }
+        }
+        this.dateChartHBar.setOption(indexchart.optionHBar)
+      }).catch(err => console.log(err))
     },
     drawPie2 () {
-      this.dateChartPie2 = this.$echarts.init(this.$refs.pie2Chart)
-      this.dateChartPie2.clear()
-      this.dateChartPie2.setOption(indexchart.pieOption2)
+      staticsapi.getCostChart().then(res => {
+        this.dateChartPie2 = this.$echarts.init(this.$refs.pie2Chart)
+        this.dateChartPie2.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            let seriesData = {}
+            res.data.map(item => {
+              if (item.costType === 210 || item.costType === 212) {
+                if (!seriesData[item.year]) {
+                  seriesData[item.year] = []
+                }
+                let obj = {}
+                obj.value = item.value
+                obj.name = item.costName
+                seriesData[item.year].push(obj)
+              }
+            })
+            // console.log(seriesData)
+            indexchart.pieOption2.series[0].name = Object.keys(seriesData)[0]
+            indexchart.pieOption2.series[0].data = Object.values(seriesData)[0]
+            indexchart.pieOption2.series[1].name = Object.keys(seriesData)[1]
+            indexchart.pieOption2.series[1].data = Object.values(seriesData)[1]
+          }
+        }
+        this.dateChartPie2.setOption(indexchart.pieOption2)
+      }).catch(err => console.log(err))
+    },
+    drawleftbottom () {
+      staticsapi.getPidChart().then(res => {
+        this.dateChartLeftBottom = this.$echarts.init(this.$refs.leftBottomChart)
+        this.dateChartLeftBottom.clear()
+        if (res.code === ApiRESULT.Success) {
+          if (res.data.rows != null) {
+            let seriesData = []
+            res.data.rows.map(item => {
+              let curobj = {}
+              curobj.name = item.nodeName
+              curobj.value = item.capacityCount
+              seriesData.push(curobj)
+            })
+            indexchart.LeftBottomOption.series[0].data = seriesData
+          }
+        }
+        this.dateChartLeftBottom.setOption(indexchart.LeftBottomOption)
+      }).catch(err => console.log(err))
     },
     myMission () {
       this.DataList = [
@@ -387,31 +512,29 @@ export default {
     },
     // 搜索
     searchResult () {
-      var sTime = ''
-      var eTime = ''
-      if (this.time.text) {
-        sTime = this.time.text[0]
-        eTime = this.time.text[1] + ' 23:59:59'
-      }
-      var param = {
-        // SubSystemIDs: this.subSystem.join(','),
-        // EqpTypeIDs: this.eqpType.join(','),
-        // LocationPath: this.area.join(','),
-        // SupplierIDs: this.supplier.join(','),
-        // ManufacturerIDs: this.manufacturer.join(','),
-        // OrgPath: this.teamPath.text.join(','),
-        startTime: sTime,
-        endTime: eTime,
-        dateType: this.dateType,
-        groupby: this.groupby.slice(0, 1).join(',')
-      }
-      this.groupidxForCount = 0
-      this.groupidxForAvg = 0
-      this.resultCountHistory = []
-      this.resultAvgHistory = []
-      this.subTitleCount = []
-      this.subTitleAvg = []
-      this.search(param, [this.drawCountChart, this.drawAvgChart])
+      staticsapi.getNow().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            var sTime = res.data.startTime
+            var eTime = res.data.endTime
+            var param = {
+              // SubSystemIDs: this.subSystem.join(','),
+              // EqpTypeIDs: this.eqpType.join(','),
+              // LocationPath: this.area.join(','),
+              // SupplierIDs: this.supplier.join(','),
+              // ManufacturerIDs: this.manufacturer.join(','),
+              // OrgPath: this.teamPath.text.join(','),
+              startTime: sTime,
+              endTime: eTime,
+              dateType: this.dateType,
+              groupby: this.groupby.slice(0, 1).join(',')
+            }
+            this.groupidxForCount = 0
+            this.groupidxForAvg = 0
+            this.search(param, [this.drawCountChart, this.drawAvgChart])
+          }
+        }
+      }).catch(err => console.log(err))
     },
     onReady: function (instance, CountUp) {
       const that = this
@@ -432,6 +555,15 @@ export default {
           this.activeIndex = 0
         }
       }, 1000)
+    },
+    getRunningTime () {
+      staticsapi.reportRunningtime().then(res => {
+        if (res.code === ApiRESULT.Success) {
+          if (res.data != null) {
+            this.endVal = res.data
+          }
+        }
+      }).catch(err => console.log(err))
     }
   }
 }

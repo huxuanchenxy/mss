@@ -33,9 +33,11 @@ namespace MSS.API.Dao.Implement
                 // {
                 //     sql.Append(", b." + item);
                 // }
-                sql.Append(", 'split', b.*");
+                sql.Append(", 'split', b.*,d.id major_id,d.name major_name ");
                 sql.Append(" FROM statistics_alarm a");
-                sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id");
+                sql.Append(" JOIN statistics_dimension b ON a.eqp_id = b.eqp_id ");
+                sql.Append(" left join dictionary_tree c on c.id = b.sub_system_id ");
+                sql.Append(" left join dictionary_tree d on c.ext = d.id ");
                 sql.Append(" WHERE 1=1");
                 if (param.StartTime != null)
                 {
@@ -406,6 +408,33 @@ namespace MSS.API.Dao.Implement
                 int newid = await c.QueryFirstOrDefaultAsync<int>(sql, trouble);
                 trouble.ID = newid;
                 return trouble;
+            });
+        }
+
+        public async Task<List<StatisticsTroubleRank>> GetStatisticsTroubleRank()
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = $@"SELECT count(b.AreaName) troublecount,b.AreaName name
+                                FROM trouble_report a
+                                left join tb_config_bigarea b
+                                on a.start_location = b.id and b.ConfigType = 9
+                                GROUP BY b.AreaName" ;
+                var data = await c.QueryAsync<StatisticsTroubleRank>(sql);
+                return data.ToList().OrderByDescending(c1=>c1.troublecount).ToList();
+            });
+        }
+
+        public async Task<List<CostChart>> GetCostChart(CostChartParm parm)
+        {
+            return await WithConnection(async c =>
+            {
+                string sql = $@" SELECT cost_name cost_name,cost_type cost_type,sum(value) value,year
+                                    FROM `cost_chart`
+                                    WHERE year >= '{parm.startYear}' and year <= '{parm.endYear}'
+                                    GROUP BY year,cost_type,cost_name ";
+                var data = await c.QueryAsync<CostChart>(sql);
+                return data.ToList().OrderBy(c1 => c1.Year).ToList();
             });
         }
     }    

@@ -16,6 +16,8 @@ namespace MSS.Platform.Workflow.WebApi.Model
         public int startMonth { get; set; }
         public int endMonth { get; set; }
         public int team { get; set; }
+        public int startYear { get; set; }
+        public int endYear { get; set; }
     }
     public class ConstructionPlanMonthChartPageView
     {

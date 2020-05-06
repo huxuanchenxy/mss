@@ -2,7 +2,7 @@
 import Echarts from 'echarts'
 const optionPie = {
   title: {
-    text: '设备故障数量(前5)',
+    text: '设备故障数量统计',
     textStyle: {
       fontSize: '13',
       color: 'white'
@@ -61,17 +61,18 @@ const optionPie = {
 // 指定图表的配置项和数据
 var optionRadar = {
   title: {
-    text: '',
-    subtext: ''
+    text: '年度成本分摊',
+    textStyle: {
+      fontSize: '13',
+      color: 'white'
+    }
   },
-  tooltip: {
-    trigger: 'axis'
-  },
+  tooltip: {},
   legend: {
     orient: 'vertical',
-    x: 'left',
+    x: 'right',
     y: 'top',
-    data: ['今年成本分摊', '去年成本分摊'],
+    data: ['lastyear', 'thisyear'],
     textStyle: {
       fontSize: '13',
       color: 'white'
@@ -81,17 +82,17 @@ var optionRadar = {
     {
       indicator: [
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '运营', max: 6000},
+        { text: '运营', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '人力', max: 16000},
+        { text: '人力', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '故障', max: 30000},
+        { text: '故障', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '物料', max: 38000},
+        { text: '物料', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '检修', max: 52000},
+        { text: '检修', max: 1000},
         // eslint-disable-next-line standard/object-curly-even-spacing
-        { text: '管理', max: 25000}
+        { text: '管理', max: 1000}
       ],
       splitArea: {
         show: true,
@@ -385,10 +386,10 @@ var middleOption1 = {
   },
   /* 四周边距(单位默认px，可以使用百分比) */
   grid: {
-    left: 40,
-    top: 30,
-    right: 50,
-    bottom: 30
+    left: '10%',
+    top: '15%',
+    right: '5%',
+    bottom: '10%'
   },
   /* 鼠标悬浮显示数据 */
   tooltip: {
@@ -511,7 +512,7 @@ var middleOption2 = {
   /* 柱状图颜色 */
   color: ['#06a45f', '#078ed6', '#e3982f'],
   title: {
-    text: '平均恢复时间(分钟)',
+    text: '平均恢复时间',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -519,10 +520,10 @@ var middleOption2 = {
   },
   /* 四周边距(单位默认px，可以使用百分比) */
   grid: {
-    left: 40,
-    top: 30,
-    right: 50,
-    bottom: 50
+    left: '10%',
+    top: '15%',
+    right: '5%',
+    bottom: '10%'
   },
   /* 鼠标悬浮显示数据 */
   tooltip: {
@@ -578,7 +579,7 @@ var middleOption2 = {
         show: true,
         lineStyle: {
           // 使用深浅的间隔色
-          color: ['#132a6e']
+          color: ['#fff']
         }
       },
       // 设置轴线的属性
@@ -675,6 +676,131 @@ var pieOption2 = {
   ]
 }
 
+var LeftBottomOption = {
+  title: {
+    text: '点位分布',
+    textStyle: {
+      color: '#fff',
+      fontSize: 12
+    }
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: '{b}: {c}'
+  },
+  calculable: true,
+  series: [
+    {
+      name: '',
+      type: 'treemap',
+      breadcrumb: {
+        show: false
+      },
+      itemStyle: {
+        normal: {
+          label: {
+            show: true,
+            formatter: '{b}'
+          }
+        },
+        emphasis: {
+          label: {
+            show: true
+          }
+        }
+      },
+      data: [
+        {
+          name: '航头站',
+          value: 6
+        },
+        {
+          name: '江埔站',
+          value: 4
+        }
+      ],
+      upperLabel: {
+        show: false
+      }
+    }
+  ]
+}
+function prepareChartData (data, groupModel, cursor) {
+  let legendData = {}
+  let xAxisData = {}
+  // console.log('data')
+  // console.log(data)
+  // console.log('groupModel')
+  // console.log(groupModel)
+  if (data) {
+    for (let i = 0; i < data.length; ++i) {
+      let obj = data[i]
+      let groupID = obj.dimension[groupModel.modelID]
+      if (!legendData[groupID]) {
+        let groupName = obj.dimension[groupModel.modelName]
+        legendData[groupID] = groupName || '其他'
+      }
+      if (!xAxisData[obj.date]) {
+        xAxisData[obj.date] = []
+      }
+      xAxisData[obj.date].push(obj)
+    }
+    // console.log('legendData:')
+    // console.log(legendData)
+    let seariescount = []
+    let seariesavg = []
+    for (let key in legendData) {
+      let objcount = {
+        id: key,
+        name: legendData[key],
+        type: 'bar',
+        // stack: 'test',
+        // barMinHeight: 1,
+        // barCategoryGap: 10,
+        // barGap: 1,
+        // barWidth: 20,
+        barMaxWidth: '12%',
+        cursor: cursor,
+        data: []
+      }
+      let objavg = {
+        id: key,
+        name: legendData[key],
+        type: 'line',
+        cursor: cursor,
+        data: []
+      }
+      // console.log('xAxisData')
+      // console.log(xAxisData)
+      for (let x in xAxisData) {
+        let count = 0
+        let avg = 0
+        for (let i = 0; i < xAxisData[x].length; ++i) {
+          if (xAxisData[x][i].dimension[groupModel.modelID] === +key) {
+            count = xAxisData[x][i].num
+            avg = (xAxisData[x][i].avgtime / (1000)).toFixed(1)
+            break
+          }
+        }
+        objcount.data.push(count)
+        objavg.data.push(avg)
+      }
+      seariescount.push(objcount)
+      seariesavg.push(objavg)
+    }
+    middleOption1.legend.data = Object.values(legendData)
+    middleOption1.xAxis[0].data = Object.keys(xAxisData)
+    middleOption1.series = seariescount
+    middleOption2.legend.data = Object.values(legendData)
+    middleOption2.xAxis[0].data = Object.keys(xAxisData)
+    middleOption2.series = seariesavg
+    if (middleOption1.xAxis[0].data.length === 0) {
+      middleOption1.xAxis[0].data.push('无数据')
+      middleOption2.xAxis[0].data.push('无数据')
+    }
+  }
+}
+
 export default {
   optionPie: optionPie,
   optionRadar: optionRadar,
@@ -684,5 +810,7 @@ export default {
   optionHBar: optionHBar,
   middleOption1: middleOption1,
   middleOption2: middleOption2,
-  pieOption2: pieOption2
+  pieOption2: pieOption2,
+  LeftBottomOption: LeftBottomOption,
+  prepareChartData: prepareChartData
 }

@@ -191,6 +191,7 @@ function prepareChartData (data, groupModel, cursor) {
     // console.log('seariescount:' + JSON.stringify(seariescount))
     seariescount.push({'name': '基准线', markLine: {'lineStyle': {'normal': {'color': '#fff'}}, 'label': {'normal': {formatter: '90%'}}, 'data': [{yAxis: '90'}]}, 'type': 'line', 'data': []})
     optionCount.series = seariescount
+    optionCount.series[0].barMaxWidth = 40
     if (optionCount.xAxis[0].data.length === 0) {
       optionCount.xAxis[0].data.push('无数据')
     }

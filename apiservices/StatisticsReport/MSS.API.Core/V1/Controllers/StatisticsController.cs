@@ -223,5 +223,54 @@ namespace MSS.API.Core.V1.Controllers
             var ret = await _statisticsTroubleService.AddTrouble(trouble);
             return ret;
         }
+
+        [HttpGet("trouble/rankbystation")]
+        public async Task<ActionResult<ApiResult>> GetRankByStation()
+        {
+            var ret = await _statisticsService.GetStatisticsTroubleRank();
+            return ret;
+        }
+
+        [HttpGet("trouble/runningtime")]
+        public async Task<ActionResult<ApiResult>> GetRunningtime()
+        {
+            var ret = await _statisticsService.GetRunningtime();
+            return ret;
+        }
+
+        [HttpGet("trouble/getnow")]
+        public async Task<ActionResult<ApiResult>> GetNow()
+        {
+            var ret = await _statisticsService.GetNow();
+            return ret;
+        }
+
+        [HttpGet("trouble/planchart")]
+        public async Task<ActionResult<ApiResult>> GetIndexProcess()
+        {
+            var ret = await _statisticsService.GetIndexProcess();
+            return ret;
+        }
+
+        [HttpGet("trouble/runningcost")]
+        public async Task<ActionResult<ApiResult>> GetRunningCost()
+        {
+            var ret = await _statisticsService.GetRunningCost();
+            return ret;
+        }
+
+        [HttpGet("trouble/pidchart")]
+        public async Task<ActionResult<ApiResult>> GetPidChart()
+        {
+            var ret = await _statisticsService.GetPidChart();
+            return ret;
+        }
+
+        [HttpGet("trouble/costchart")]
+        public async Task<ActionResult<ApiResult>> GetCostChart()
+        {
+            var ret = await _statisticsService.GetCostChart();
+            return ret;
+        }
     }
 }

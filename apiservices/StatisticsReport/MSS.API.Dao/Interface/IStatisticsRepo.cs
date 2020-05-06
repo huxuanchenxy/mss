@@ -24,5 +24,9 @@ namespace MSS.API.Dao.Interface
 
         // 添加故障
         Task<StatisticsTrouble> AddTrouble(StatisticsTrouble trouble);
+        //主页故障排名
+        Task<List<StatisticsTroubleRank>> GetStatisticsTroubleRank();
+        //主页成本分摊
+        Task<List<CostChart>> GetCostChart(CostChartParm parm);
     }
 }

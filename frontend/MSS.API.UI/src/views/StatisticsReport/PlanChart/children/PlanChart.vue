@@ -3,9 +3,7 @@
       element-loading-text="加载中"
       element-loading-spinner="el-icon-loading">
     <div ref="header" class="header con-padding-horizontal">
-      <h2>
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
-      </h2>
+      <title-module></title-module>
     </div>
     <!-- 搜索 -->
     <div class="middle">
@@ -97,11 +95,11 @@
               <x-button class="active" @click.native="searchResult()"><i class="iconfont icon-search"></i> 查询</x-button>
             </div>
           </div>
-          <div class="more-btn" @click="editHideMoreHeight">
+          <!-- <div class="more-btn" @click="editHideMoreHeight">
             <div class="text">
               {{ shrinkText }}<i class="el-icon-caret-bottom" :class="{ active: searchHideMore }"></i>
             </div>
-          </div>
+          </div> -->
 
           <!-- 隐藏部分 -->
           <div class="hide-more" v-show="searchHideMore">
@@ -182,11 +180,12 @@ import apiArea from '@/api/AreaApi.js'
 import resize from 'vue-resize-directive'
 import apiOrg from '@/api/orgApi'
 import apiplan from '@/api/workflowApi'
-
+import TitleModule from '@/components/TitleModule'
 export default {
   name: 'PlanChart',
   components: {
-    XButton
+    XButton,
+    'title-module': TitleModule
   },
   directives: {
     resize
@@ -424,10 +423,14 @@ export default {
         this.monthOptions2.push({label: i + '月', value: i + ''})
       }
       this.monthValue1 = '1'
-      this.monthValue2 = '1'
-      this.yearOptions.push({label: '2019年', value: '2019'})
-      this.yearOptions.push({label: '2020年', value: '2020'})
-      this.yearValue = '2020'
+      var myDate = new Date()
+      var tMonth = myDate.getMonth() + 1
+      this.monthValue2 = tMonth + ''
+      var tYear = myDate.getFullYear()
+      var tLastYear = tYear - 1
+      this.yearOptions.push({label: tLastYear + '年', value: tLastYear + ''})
+      this.yearOptions.push({label: tYear + '年', value: tYear + ''})
+      this.yearValue = tYear + ''
     },
 
     search (param, callbacks) {

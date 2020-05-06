@@ -28,6 +28,8 @@ namespace MSS.API.Model.Data
         public int TeamID { get; set; }
         public string TeamName { get; set; }
         public string TeamPath { get; set; }
+        public string MajorID { get; set; }
+        public string MajorName { get; set; }
 
     }
 
@@ -56,6 +58,8 @@ namespace MSS.API.Model.Data
             Map(o => o.TeamID).ToColumn("team_id");
             Map(o => o.TeamName).ToColumn("team_name");
             Map(o => o.TeamPath).ToColumn("team_path");
+            Map(o => o.MajorID).ToColumn("major_id");
+            Map(o => o.MajorName).ToColumn("major_name");
         }
     }
 

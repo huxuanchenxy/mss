@@ -3,9 +3,7 @@
       element-loading-text="加载中"
       element-loading-spinner="el-icon-loading">
     <div ref="header" class="header con-padding-horizontal">
-      <h2>
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
-      </h2>
+      <title-module></title-module>
     </div>
     <!-- 搜索 -->
     <div class="middle">
@@ -257,11 +255,12 @@ import apiEqp from '@/api/eqpApi'
 import apiArea from '@/api/AreaApi.js'
 import resize from 'vue-resize-directive'
 import apiOrg from '@/api/orgApi'
-
+import TitleModule from '@/components/TitleModule'
 export default {
   name: 'InspectionManagementList',
   components: {
-    XButton
+    XButton,
+    'title-module': TitleModule
   },
   directives: {
     resize
@@ -397,7 +396,13 @@ export default {
     var d = new Date()
     d.setDate(d.getDate() - 30)
     var startDate = getNowFormatDate(d)
-    this.time.text = [startDate, nowDate]
+    api.getNow().then(res => {
+      if (res.data != null) {
+        startDate = res.data.startTime
+        nowDate = res.data.endTime
+        this.time.text = [startDate, nowDate]
+      }
+    }).catch(err => console.log(err))
   },
   activated () {
     // this.searchResult(this.currentPage)
@@ -679,6 +684,7 @@ export default {
       // 子系统加载
       apiAuth.getSubCode(dictionary.subSystem).then(res => {
         this.subSystemList = res.data
+        this.subSystem = [18, 19, 20, 21]
         this.searchResult()
       }).catch(err => console.log(err))
 
@@ -810,7 +816,7 @@ export default {
       var eTime = ''
       if (this.time.text) {
         sTime = this.time.text[0]
-        eTime = this.time.text[1] + ' 23:59:59'
+        eTime = this.time.text[1]
       }
       var param = {
         SubSystemIDs: this.subSystem.join(','),

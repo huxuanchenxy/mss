@@ -14,6 +14,8 @@ using MSS.API.Core.Common;
 using Microsoft.Extensions.Caching.Distributed;
 using MSS.Common.Consul;
 using MSS.API.Common.Utility;
+using Microsoft.Extensions.Configuration;
+
 namespace MSS.API.Core.V1.Business
 {
     public class StatisticsService : IStatisticsService
@@ -21,11 +23,13 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<UserService> _logger;
         private readonly IStatisticsRepo _statisticsRepo;
         private readonly IServiceDiscoveryProvider _consulServiceProvider;
+        private readonly IConfiguration _config;
 
-        public StatisticsService(IStatisticsRepo statisticsRepo, IServiceDiscoveryProvider consulServiceProvider)
+        public StatisticsService(IStatisticsRepo statisticsRepo, IServiceDiscoveryProvider consulServiceProvider, IConfiguration config)
         {
             _statisticsRepo = statisticsRepo;
             _consulServiceProvider = consulServiceProvider;
+            _config = config;
         }
 
         public async Task<ApiResult> ListStatisticsAlarm(StatisticsParam param,
@@ -289,5 +293,192 @@ namespace MSS.API.Core.V1.Business
             }
             return ret;
         }
+
+        public async Task<ApiResult> GetStatisticsTroubleRank()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var data = await _statisticsRepo.GetStatisticsTroubleRank();
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> GetRunningtime()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                string starttime = _config["statisticsStartTime"];
+                double rettime = (DateTime.Now - Convert.ToDateTime(starttime)).TotalMinutes;
+                var data = Math.Round(rettime,0);
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+        public async Task<ApiResult> GetNow()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                RangeTime rt = new RangeTime();
+                string d = _config["statisticsNow"];
+                if (string.IsNullOrEmpty(d))
+                {
+                    d = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
+                }
+                else
+                {
+                    d = d + " 23:59:59";
+                }
+
+                string startdate = Convert.ToDateTime(d).AddMonths(-6).ToString("yyyy-MM-01");
+                rt.startTime = startdate;
+                rt.endTime = d;
+                ret.code = Code.Success;
+                ret.data = rt;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+
+
+        public async Task<ApiResult> GetIndexProcess()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<StatisticsResult> result = new List<StatisticsResult>();
+                float d1 =  (float)DateTime.Now.Month / (float)12;
+                int _count = (int)(Math.Round(d1, 2) * 100);
+                result.Add(new StatisticsResult() { count = _count, name = "本年时间进度" });
+                //年进度
+                int _countyear = 0;
+                var services = await _consulServiceProvider.GetServiceAsync("WorkflowWebApiService");
+                ApiResult r1 = HttpClientHelper.GetResponse<ApiResult>(services
+                    + "/api/v1/ConstructionPlanMonthChart/GetMonthChart?xAxisType=3&startYear=" + DateTime.Now.Year + "&endYear=" + DateTime.Now.Year);
+                if (r1.code == Code.Success && r1.data != null)
+                {
+                    dynamic dd = r1.data;
+                    try
+                    {
+                        dynamic series = dd.series[0];
+                        _countyear = series.data[0];
+                    }
+                    catch (Exception ex) { }
+                    result.Add(new StatisticsResult() { count = _countyear, name = "年计划完成率" });
+                }
+                //月进度
+                int _countmonth = 0;
+                ApiResult r2 = HttpClientHelper.GetResponse<ApiResult>(services
+                    + "/api/v1/ConstructionPlanMonthChart/GetMonthChart?xAxisType=2&year=" + DateTime.Now.Year+"&startMonth="+ DateTime.Now.Month + "&endMonth="+ DateTime.Now.Month);
+                if (r2.code == Code.Success && r2.data != null)
+                {
+                    dynamic dd = r2.data;
+                    try
+                    {
+                        dynamic series = dd.series[0];
+                        _countmonth = series.data[0];
+                    }
+                    catch (Exception ex) { }
+                    result.Add(new StatisticsResult() { count = _countmonth, name = "月计划完成率" });
+                }
+                ret.code = Code.Success;
+                ret.data = result;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+
+            return ret;
+        }
+
+        public async Task<ApiResult> GetRunningCost()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                float d1 = (float)DateTime.Now.Month / (float)12;
+                int _count = (int)(Math.Round(d1, 2) * 100);
+                ret.code = Code.Success;
+                ret.data = _count;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+        public async Task<ApiResult> GetPidChart()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                var services = await _consulServiceProvider.GetServiceAsync("EqpService");
+                ApiResult r1 = HttpClientHelper.GetResponse<ApiResult>(services
+                    + "/api/v1/PidCount/GetPageList?order=asc&sort=id&rows=100&page=1&nodeId=&nodeName=&nodeTip=");
+                if (r1.code == Code.Success && r1.data != null)
+                {
+                    ret.code = Code.Success;
+                    ret.data = r1.data;
+                }
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
+
+        public async Task<ApiResult> GetCostChart()
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                DateTime now = DateTime.Now;
+                DateTime lastyear = now.AddYears(-1);
+                var data = await _statisticsRepo.GetCostChart(new CostChartParm() { startYear = lastyear.Year, endYear = now.Year });
+                //IEnumerable<IGrouping<int, CostChart>> groups = data.GroupBy(c => c.Year);
+                //foreach (var g in groups)
+                //{
+                   
+                //}
+                ret.code = Code.Success;
+                ret.data = data;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+            }
+            return ret;
+        }
+
     }
 }

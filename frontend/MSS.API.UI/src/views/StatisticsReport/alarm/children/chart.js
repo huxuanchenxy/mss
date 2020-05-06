@@ -1149,6 +1149,10 @@ function getDataZoom (size) {
 function prepareChartData (data, groupModel, cursor) {
   let legendData = {}
   let xAxisData = {}
+  // console.log('data')
+  // console.log(data)
+  // console.log('groupModel')
+  // console.log(groupModel)
   if (data) {
     for (let i = 0; i < data.length; ++i) {
       let obj = data[i]
@@ -1162,6 +1166,8 @@ function prepareChartData (data, groupModel, cursor) {
       }
       xAxisData[obj.date].push(obj)
     }
+    // console.log('legendData:')
+    // console.log(legendData)
     let seariescount = []
     let seariesavg = []
     for (let key in legendData) {
@@ -1213,39 +1219,39 @@ function prepareChartData (data, groupModel, cursor) {
     }
 
     // 补数据
-    for (let i = 0; i < groupModel.legend.length; ++i) {
-      let needadd = true
-      for (let j = 0; j < optionCount.legend.data.length; ++j) {
-        if (optionCount.legend.data[j] === groupModel.legend[i]) {
-          needadd = false
-          break
-        }
-      }
-      if (needadd) {
-        optionCount.legend.data.push(groupModel.legend[i])
-        optionAvg.legend.data.push(groupModel.legend[i])
-        let dataAvg = {
-          name: groupModel.legend[i],
-          type: 'line',
-          cursor: cursor,
-          data: []
-        }
-        let dataCount = {
-          name: groupModel.legend[i],
-          type: 'bar',
-          stack: 'test',
-          barWidth: 20,
-          cursor: cursor,
-          data: []
-        }
-        for (let i = 0; i < optionCount.xAxis[0].data.length; ++i) {
-          dataCount.data.push('0')
-          dataAvg.data.push('0')
-        }
-        optionCount.series.push(dataCount)
-        optionAvg.series.push(dataAvg)
-      }
-    }
+    // for (let i = 0; i < groupModel.legend.length; ++i) {
+    //   let needadd = true
+    //   for (let j = 0; j < optionCount.legend.data.length; ++j) {
+    //     if (optionCount.legend.data[j] === groupModel.legend[i]) {
+    //       needadd = false
+    //       break
+    //     }
+    //   }
+    //   if (needadd) {
+    //     optionCount.legend.data.push(groupModel.legend[i])
+    //     optionAvg.legend.data.push(groupModel.legend[i])
+    //     let dataAvg = {
+    //       name: groupModel.legend[i],
+    //       type: 'line',
+    //       cursor: cursor,
+    //       data: []
+    //     }
+    //     let dataCount = {
+    //       name: groupModel.legend[i],
+    //       type: 'bar',
+    //       stack: 'test',
+    //       barWidth: 20,
+    //       cursor: cursor,
+    //       data: []
+    //     }
+    //     for (let i = 0; i < optionCount.xAxis[0].data.length; ++i) {
+    //       dataCount.data.push('0')
+    //       dataAvg.data.push('0')
+    //     }
+    //     optionCount.series.push(dataCount)
+    //     optionAvg.series.push(dataAvg)
+    //   }
+    // }
     // datazoom
     var size = optionCount.legend.data.length * optionCount.xAxis[0].data.length
     if (size > 40) {
