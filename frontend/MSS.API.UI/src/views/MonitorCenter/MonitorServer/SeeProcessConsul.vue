@@ -4,9 +4,7 @@
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
-      <h2 class="title">
-        <img :src="{ titlepic }" alt="" class="icon">{{ title }}
-      </h2>
+      <title-module></title-module>
     </div>
     <div class="boxSeeProcessConsul">
       <!-- 搜索框 -->
@@ -108,11 +106,12 @@
 import { transformDate } from '@/common/js/utils.js'
 import XButton from '@/components/button'
 import api1 from '@/api/processConsul1Api'
-import api2 from '@/api/processConsul2Api'
+import TitleModule from '@/components/TitleModule'
 export default {
   name: 'SeeProcessConsul',
   components: {
-    XButton
+    XButton,
+    'title-module': TitleModule
   },
   data () {
     return {
@@ -156,7 +155,6 @@ export default {
   created () {
     // this.$emit('title', '| 服务监控')
     this.init()
-    this.InitTitle()
   },
   activated () {
     this.searchResult(this.currentPage)
@@ -258,81 +256,29 @@ export default {
       this.loading = true
       this.searchResult(1)
     },
-    InitTitle () {
-      let navlist = this.$router.navList
-      // console.log('navlist:')
-      // console.log(navlist)
-      if (navlist !== undefined) {
-        let r = this.$router.navList[this.$route.matched[0].path]
-        let rc = r.children
-        this.titlepic = this.$router.navList[this.$route.matched[0].path].iconClsActive
-        this.title = this.$router.navList[this.$route.matched[0].path].name + ' | ' + rc.filter(item => item.path === this.$route.path)[0].name
-        window.sessionStorage.setItem('title', this.title)
-        window.sessionStorage.setItem('titlepic', this.titlepic)
-      } else {
-        this.title = window.sessionStorage.getItem('title')
-        this.titlepic = window.sessionStorage.getItem('titlepic')
-      }
-    },
     changeStatus: function ($event, item) {
-      // alert($event)
-      // alert(item.serviceAddr)
-      if (item.serviceAddr === '10.89.36.103') {
-        if ($event) {
-          api1.startProcess(item.id).then(res => {
-            this.loading = false
-            this.$message({
-              message: '启动成功,请耐心等待服务器启动',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeProcessConsul'
-                })
-              }
-            })
-          }).catch(err => console.log(err))
-        } else {
-          api1.stopProcess(item.id).then(res => {
-            this.loading = false
-            this.$message({
-              message: '停止成功,请耐心等待服务器停止',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeProcessConsul'
-                })
-              }
-            })
-          }).catch(err => console.log(err))
-        }
-      } else if (item.serviceAddr === '10.89.36.160') {
-        if ($event) {
-          api2.startProcess(item.id).then(res => {
-            this.loading = false
-            this.$message({
-              message: '启动成功,请耐心等待服务器启动',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeProcessConsul'
-                })
-              }
-            })
-          }).catch(err => console.log(err))
-        } else {
-          api2.stopProcess(item.id).then(res => {
-            this.loading = false
-            this.$message({
-              message: '停止成功,请耐心等待服务器停止',
-              type: 'success',
-              onClose: () => {
-                this.$router.push({
-                  name: 'SeeProcessConsul'
-                })
-              }
-            })
-          }).catch(err => console.log(err))
-        }
+      if ($event) {
+        api1.startProcess(item.id).then(res => {
+          this.loading = false
+          this.$message({
+            message: '启动成功,请耐心等待服务器启动',
+            type: 'success',
+            onClose: () => {
+              this.searchResult(1)
+            }
+          })
+        }).catch(err => console.log(err))
+      } else {
+        api1.stopProcess(item.id).then(res => {
+          this.loading = false
+          this.$message({
+            message: '停止成功,请耐心等待服务器停止',
+            type: 'success',
+            onClose: () => {
+              this.searchResult(1)
+            }
+          })
+        }).catch(err => console.log(err))
       }
     }
   }
