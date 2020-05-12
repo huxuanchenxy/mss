@@ -24,12 +24,12 @@ namespace MSS.API.Core
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, IConfiguration configuration)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -59,7 +59,7 @@ namespace MSS.API.Core
                 options.AddDefaultPolicy(
                 builder =>
                 {
-                    string[] origins = Configuration["crossOrigin"].Split(',');
+                    string[] origins = this.Configuration["crossOrigin"].Split(',');
                     builder.WithOrigins(origins)
                                         .AllowAnyHeader()
                                         .AllowAnyMethod()

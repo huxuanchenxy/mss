@@ -20,13 +20,12 @@
     },
     "MSS.API.Core": {
       "commandName": "Project",
-      "commandLineArgs": "3851",
-      "launchBrowser": true,
+      "commandLineArgs": "8082",
       "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:3851"
+      "applicationUrl": "http://localhost:8082"
     }
   }
 }
