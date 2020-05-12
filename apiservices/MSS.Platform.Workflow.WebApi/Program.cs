@@ -23,9 +23,9 @@ namespace MSS.Platform.Workflow.WebApi
             int port = int.Parse(args[0]);//3861
             return WebHost.CreateDefaultBuilder(args)
 
-                .UseContentRoot(Directory.GetCurrentDirectory())
+                //.UseContentRoot(Directory.GetCurrentDirectory())
                  //.UseIISIntegration()
-
+                 .UseContentRoot(Path.GetDirectoryName(typeof(Program).Assembly.Location))
                 .UseKestrel(options =>
                 {
                     options.Listen(IPAddress.Any, port);

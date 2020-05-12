@@ -23,9 +23,8 @@ namespace MSS.API.Core
             int port = int.Parse(args[0]);//3861
             return WebHost.CreateDefaultBuilder(args)
 
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                 .UseIISIntegration()
-
+                //.UseContentRoot(Directory.GetCurrentDirectory())
+                .UseContentRoot(Path.GetDirectoryName(typeof(Program).Assembly.Location))
                 .UseKestrel(options =>
                 {
                     //options.Limits.MaxRequestBodySize = 524288000;
