@@ -24,7 +24,8 @@ namespace MSS.API.Core
             return WebHost.CreateDefaultBuilder(args)
 
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                 .UseIISIntegration()
+                //.UseContentRoot(Path.GetDirectoryName(typeof(Program).Assembly.Location))
+                //.UseIISIntegration()
 
                 .UseKestrel(options =>
                 {
