@@ -375,7 +375,7 @@ export default {
           name: 'AddEqpRepair',
           query: {
             id: this.editEqpRepairID[0],
-            type: 'edit'
+            type: 'Edit'
           }
         })
       }

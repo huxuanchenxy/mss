@@ -299,7 +299,7 @@ export default {
       this.searchResult(this.currentPage)
     },
     search () {
-      if (!this.isMatch) return
+      // if (!this.isMatch) return
       this.searchResult(1)
     },
     isMatch () {
@@ -314,6 +314,7 @@ export default {
     },
     // 搜索
     searchResult (page) {
+      if (!this.isMatch()) return
       this.currentPage = page
       this.loading = true
       api.getImportPage({

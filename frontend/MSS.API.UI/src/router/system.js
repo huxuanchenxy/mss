@@ -236,27 +236,6 @@ const routes = [
         ]
       },
       {
-        path: 'MaintainConfig',
-        component: () => import('@/views/system/operlog/index.vue'),
-        children: [
-          {
-            path: '/',
-            name: 'MaintainConfig',
-            redirect: 'list'
-          },
-          {
-            path: 'list',
-            name: 'SeeMaintainConfig',
-            component: () => import(/* webpackChunkName: "system" */ '@/views/system/operlog/children/SeeMaintainConfig.vue')
-          },
-          {
-            path: 'addMaintainConfig/:mark?/:id?',
-            name: 'addMaintainConfig',
-            component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
-          }
-        ]
-      },
-      {
         path: 'metroline',
         component: () => import(/* webpackChunkName: "system" */ '@/views/system/metroline/Index.vue'),
         children: [

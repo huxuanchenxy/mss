@@ -84,6 +84,16 @@ namespace MSS.API.Core.V1.Business
                 ImportExcelConfig et = await _importExcelConfigRepo.GetByID(obj.ID);
                 if (et!=null)
                 {
+                    if (et.FileName!=obj.FileName)
+                    {
+                        ImportExcelConfig has = await _importExcelConfigRepo.GetByFileName(obj.FileName);
+                        if (has != null)
+                        {
+                            ret.code = Code.DataIsExist;
+                            ret.msg = "已存在相同的导入文件名，不允许重复添加";
+                            return ret;
+                        }
+                    }
                     DateTime dt = DateTime.Now;
                     obj.UpdatedTime = dt;
                     obj.UpdatedBy = _userID;
