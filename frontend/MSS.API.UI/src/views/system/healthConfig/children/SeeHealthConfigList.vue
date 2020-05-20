@@ -170,6 +170,7 @@ export default {
   methods: {
     healthTypeChange (type) {
       this.eqpTypeDisable = type !== healthType.trouble
+      this.eqpType = ''
     },
     init () {
       this.currentPage = 1

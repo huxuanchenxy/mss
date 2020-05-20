@@ -183,6 +183,7 @@ export default {
     } else {
       this.init()
     }
+    console.log(this.showType)
     if (this.sourceName === 'SeeHistory' && this.$route.params.eqpSelected !== undefined) {
       this.eqpLifeHistory.eqpSelected = this.$route.params.eqpSelected
       this.eqpLifeHistory.eqpType = this.$route.params.eqpType

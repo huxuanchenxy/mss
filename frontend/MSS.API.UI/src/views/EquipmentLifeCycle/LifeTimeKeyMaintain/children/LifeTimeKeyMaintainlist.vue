@@ -19,7 +19,6 @@
             <label for="">设备类别</label>
             <div class="inp">
              <el-select v-model="deviceType" clearable filterable placeholder="请选择" @change="validatedeviceTypeSelect(deviceType)">
-                <option disabled value="" selected>请选择</option>
                 <el-option
                   v-for="item in deviceTypeList"
                   :key="item.key"
@@ -153,14 +152,14 @@ export default {
     return {
       title: ' | 寿命与重点维保',
       maintain_type: '',
-      deviceName: '',
-      devicelist: null,
+      deviceName: [],
+      devicelist: [],
       deviceType: '',
       deviceTypeList: [],
       MaintainList: [{ label: '中修', value: 40 }, { label: '大修', value: 41 }],
       LifeTimeKeyMaintainlist: [],
       editLifeTimeKeyMaintainIDList: [],
-      bCheckAll: false,
+      // bCheckAll: false,
       defaultParams: {
         label: 'label',
         value: 'id',
@@ -206,7 +205,7 @@ export default {
   },
   methods: {
     init () {
-      this.bCheckAll = false
+      // this.bCheckAll = false
       // this.checkAll()
       this.currentPage = 1
     },
@@ -246,7 +245,6 @@ export default {
         device_id: this.deviceName[this.deviceName.length - 1]
       }
       api.GetLifeTimeKeyListByPage(parm).then(res => {
-        console.log(res.data)
         this.loading = false
         if (res.code === 0) {
           res.data.rows.map(item => {
@@ -272,21 +270,16 @@ export default {
     //   this.emitEditID()
     // },
     validatedeviceTypeSelect (val) {
-      if (val === '') {
-        this.devicelist = []
-        this.deviceType.text = ''
+      this.devicelist = []
+      if (val !== '' && val !== null) {
+        api.GetEqpByTypeAndLine(val).then(res => {
+          if (res.data.length > 0) {
+            this.devicelist = res.data
+          }
+        }).catch(err => {
+          console.log(err)
+        })
       }
-      api.GetEqpByTypeAndLine(val).then(res => {
-        if (res.data.length > 0) {
-          this.devicelist = res.data
-          this.deviceType.id = ''
-        } else {
-          this.devicelist = null
-          this.deviceType.id = ''
-        }
-      }).catch(err => {
-        console.log(err)
-      })
     },
     // 序号、指定页翻页
     handleCurrentChange (val) {
