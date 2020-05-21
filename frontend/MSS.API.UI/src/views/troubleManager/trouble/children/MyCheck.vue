@@ -468,6 +468,12 @@ $con-height: $content-height - 145 - 56;
     background: $color-main-btn!important;
   }
 }
+.btn1.is-disabled{
+  &:hover{
+    border-color: #979797!important;
+    background-color: transparent!important;
+  }
+}
 .el-button--text:hover{
   color: #4998d4;
   border-color: transparent;
