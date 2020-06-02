@@ -125,17 +125,27 @@ namespace MSS.API.Core.V1.Controllers
         private List<UploadFileRelation> ObjectToList(FilesByEntity fe)
         {
             List<UploadFileRelation> ret = new List<UploadFileRelation>();
-            JArray arr= JsonConvert.DeserializeObject<JArray>(fe.files);
-            foreach (var item in arr)
+            if (fe.files == "[]")
             {
-                foreach (var id in item["ids"].ToString().Split(','))
+                UploadFileRelation ufr = new UploadFileRelation();
+                ufr.Entity = fe.entity;
+                ufr.SystemResource = fe.systemResource;
+                ret.Add(ufr);
+            }
+            else
+            {
+                JArray arr = JsonConvert.DeserializeObject<JArray>(fe.files);
+                foreach (var item in arr)
                 {
-                    UploadFileRelation ufr = new UploadFileRelation();
-                    ufr.Entity = fe.entity;
-                    ufr.SystemResource = fe.systemResource;
-                    ufr.Type = Convert.ToInt32(item["type"]);
-                    ufr.File = Convert.ToInt32(id);
-                    ret.Add(ufr);
+                    foreach (var id in item["ids"].ToString().Split(','))
+                    {
+                        UploadFileRelation ufr = new UploadFileRelation();
+                        ufr.Entity = fe.entity;
+                        ufr.SystemResource = fe.systemResource;
+                        ufr.Type = Convert.ToInt32(item["type"]);
+                        ufr.File = Convert.ToInt32(id);
+                        ret.Add(ufr);
+                    }
                 }
             }
             return ret;

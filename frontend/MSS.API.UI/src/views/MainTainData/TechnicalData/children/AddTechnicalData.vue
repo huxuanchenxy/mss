@@ -277,13 +277,14 @@ export default {
       }).catch(err => console.log(err))
     },
     validateAll (fileIDsEdit) {
-      if (fileIDsEdit.length === 0) {
-        this.$message({
-          message: '请修改后进行保存操作',
-          type: 'warning'
-        })
-        return false
-      } else if (fileIDsEdit.length !== 0 && !isUploadFinished(fileIDsEdit)) {
+      // if (fileIDsEdit.length === 0) {
+      //   this.$message({
+      //     message: '请修改后进行保存操作',
+      //     type: 'warning'
+      //   })
+      //   return false
+      // } else
+      if (fileIDsEdit.length !== 0 && !isUploadFinished(fileIDsEdit)) {
         this.$message({
           message: '文件正在上传中，请耐心等待',
           type: 'warning'
