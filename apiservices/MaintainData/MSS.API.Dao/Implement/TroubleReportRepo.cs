@@ -173,23 +173,26 @@ namespace MSS.API.Dao.Implement
                     {
                         sql = "delete from upload_file_relation where entity_id=@id and system_resource=@sr";
                         ret = await c.ExecuteAsync(sql, new { id = troubleReport.ID, sr = SystemResource.TroubleReport }, trans);
-                        List<object> objs = new List<object>();
-                        JArray jobj = JsonConvert.DeserializeObject<JArray>(troubleReport.UploadFiles);
-                        foreach (var obj in jobj)
+                        if (troubleReport.UploadFiles != "[]")
                         {
-                            foreach (var item in obj["ids"].ToString().Split(','))
+                            List<object> objs = new List<object>();
+                            JArray jobj = JsonConvert.DeserializeObject<JArray>(troubleReport.UploadFiles);
+                            foreach (var obj in jobj)
                             {
-                                objs.Add(new
+                                foreach (var item in obj["ids"].ToString().Split(','))
                                 {
-                                    ePlanID = troubleReport.ID,
-                                    fileID = Convert.ToInt32(item),
-                                    type = Convert.ToInt32(obj["type"]),
-                                    systemResource = (int)SystemResource.TroubleReport
-                                });
+                                    objs.Add(new
+                                    {
+                                        ePlanID = troubleReport.ID,
+                                        fileID = Convert.ToInt32(item),
+                                        type = Convert.ToInt32(obj["type"]),
+                                        systemResource = (int)SystemResource.TroubleReport
+                                    });
+                                }
                             }
+                            sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
+                            ret = await c.ExecuteAsync(sql, objs, trans);
                         }
-                        sql = "insert into upload_file_relation values (0,@ePlanID,@fileID,@type,@systemResource)";
-                        ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     sql = "insert into trouble_history " +
                     " values (0,@Trouble,@OrgTop,@Operation,@Content,@CreatedBy,@CreatedTime)";

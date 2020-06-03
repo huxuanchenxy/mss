@@ -193,6 +193,7 @@ export default {
       }).catch(err => console.log(err))
     },
     eqpChange () {
+      this.fileIDs = ''
       this.eqp = this.eqpSelected[this.eqpSelected.length - 1]
       this.loading = true
       api.getEqpByID(this.eqp).then(res => {
@@ -238,6 +239,8 @@ export default {
     },
 
     eqpTypeOnlyChange () {
+      // 为了刷新上传列表
+      this.eqpTypeFileIDs = ''
       this.loading = true
       api.getEqpTypeByID(this.eqpTypeOnly).then(res => {
         this.loading = false
@@ -247,6 +250,7 @@ export default {
         } else {
           this.eqpTypeFileIDs = null
         }
+        console.log(this.eqpTypeFileIDs)
         this.unSelectedEqpType = 0
       }).catch(err => console.log(err))
     },

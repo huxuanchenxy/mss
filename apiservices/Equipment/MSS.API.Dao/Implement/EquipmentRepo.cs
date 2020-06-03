@@ -89,23 +89,26 @@ namespace MSS.API.Dao.Implement
                     {
                         string sql = "delete from upload_file_relation where entity_id=@id";
                         int ret = await c.ExecuteAsync(sql, new { id = eqp.ID }, trans);
-                        List<object> objs = new List<object>();
-                        JArray jobj = JsonConvert.DeserializeObject<JArray>(eqp.FileIDs);
-                        foreach (var obj in jobj)
+                        if (eqp.FileIDs != "[]")
                         {
-                            foreach (var item in obj["ids"].ToString().Split(','))
+                            List<object> objs = new List<object>();
+                            JArray jobj = JsonConvert.DeserializeObject<JArray>(eqp.FileIDs);
+                            foreach (var obj in jobj)
                             {
-                                objs.Add(new
+                                foreach (var item in obj["ids"].ToString().Split(','))
                                 {
-                                    eqpID = eqp.ID,
-                                    fileID = Convert.ToInt32(item),
-                                    subType = Convert.ToInt32(obj["type"]),
-                                    systemResource = (int)SystemResource.Eqp
-                                });
+                                    objs.Add(new
+                                    {
+                                        eqpID = eqp.ID,
+                                        fileID = Convert.ToInt32(item),
+                                        subType = Convert.ToInt32(obj["type"]),
+                                        systemResource = (int)SystemResource.Eqp
+                                    });
+                                }
                             }
+                            sql = "insert into upload_file_relation values (0,@eqpID,@fileID,@subType,@systemResource)";
+                            ret = await c.ExecuteAsync(sql, objs, trans);
                         }
-                        sql = "insert into upload_file_relation values (0,@eqpID,@fileID,@subType,@systemResource)";
-                        ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     trans.Commit();
                     return result;

@@ -270,6 +270,7 @@ export default {
       reportBy: {text: '', tips: ''},
       reportByList: [],
       repairDesc: {text: '', tips: ''},
+      isEditFile: false,
       fileIDs: '',
       fileIDsEdit: [],
       editID: ''
@@ -442,6 +443,9 @@ export default {
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
+      if (this.$route.params.type !== 'Add') {
+        this.isEditFile = true
+      }
     },
     // 验证非法字符串，但允许为空
     validateInputNull (val) {
@@ -542,7 +546,7 @@ export default {
         Desc: this.repairDesc.text,
         ChartType: this.troubleType.text[1],
         ChartTypePath: this.troubleType.text.join(','),
-        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+        UploadFiles: this.fileIDsEdit.length === 0 && !this.isEditFile ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.params.type === 'Add') {
         api.SaveTroubleReport(troubleReport).then(res => {

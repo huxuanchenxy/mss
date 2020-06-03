@@ -303,23 +303,26 @@ namespace MSS.Platform.Workflow.WebApi.Data
                     {
                         string delsql = $@" DELETE FROM upload_file_relation WHERE entity_id = '{obj.Id}' AND system_resource = '{(int)SystemResource.ConstructionPlan}' ";
                         await c.ExecuteAsync(delsql, trans);
-                        List<object> objs = new List<object>();
-                        JArray jobj = JsonConvert.DeserializeObject<JArray>(obj.FileIDs);
-                        foreach (var o in jobj)
+                        if (obj.FileIDs != "[]")
                         {
-                            foreach (var item in o["ids"].ToString().Split(','))
+                            List<object> objs = new List<object>();
+                            JArray jobj = JsonConvert.DeserializeObject<JArray>(obj.FileIDs);
+                            foreach (var o in jobj)
                             {
-                                objs.Add(new
+                                foreach (var item in o["ids"].ToString().Split(','))
                                 {
-                                    entityID = obj.Id,
-                                    fileID = Convert.ToInt32(item),
-                                    type = Convert.ToInt32(o["type"]),
-                                    systemResource = (int)SystemResource.ConstructionPlan
-                                });
+                                    objs.Add(new
+                                    {
+                                        entityID = obj.Id,
+                                        fileID = Convert.ToInt32(item),
+                                        type = Convert.ToInt32(o["type"]),
+                                        systemResource = (int)SystemResource.ConstructionPlan
+                                    });
+                                }
                             }
+                            string sql = "insert into upload_file_relation values (0,@entityID,@fileID,@type,@systemResource)";
+                            int ret = await c.ExecuteAsync(sql, objs, trans);
                         }
-                        string sql = "insert into upload_file_relation values (0,@entityID,@fileID,@type,@systemResource)";
-                        int ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     trans.Commit();
                     return result;

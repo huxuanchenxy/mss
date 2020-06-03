@@ -93,6 +93,7 @@ export default {
       dept: '',
       deptList: [],
       deptPath: {text: [], tips: ''},
+      isEditFile: false,
       fileIDs: '',
       fileIDsEdit: []
     }
@@ -119,6 +120,9 @@ export default {
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
+      if (this.$route.query.type !== 'Add') {
+        this.isEditFile = true
+      }
     },
     cascader_change (val) {
       let selectedDept = val[val.length - 1]
@@ -210,7 +214,7 @@ export default {
         DeptPath: this.deptPath.text.join(','),
         Keyword: this.keyword.text,
         Type: this.systemResource,
-        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+        UploadFiles: this.fileIDsEdit.length === 0 && !this.isEditFile ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
         api.addEPlan(ePlan).then(res => {

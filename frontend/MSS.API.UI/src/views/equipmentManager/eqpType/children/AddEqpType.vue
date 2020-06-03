@@ -81,6 +81,7 @@ export default {
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
+      isEditFile: false,
       fileIDs: '',
       fileIDsEdit: []
     }
@@ -98,6 +99,9 @@ export default {
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
+      if (this.$route.query.type !== 'Add') {
+        this.isEditFile = true
+      }
     },
     getEqpType () {
       api.getEqpTypeByID(this.$route.query.id).then(res => {
@@ -152,7 +156,7 @@ export default {
         TName: this.eqpTypeName.text,
         Desc: this.eqpTypeDesc.text,
         Model: this.model.text,
-        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+        UploadFiles: this.fileIDsEdit.length === 0 && !this.isEditFile ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
         api.addEqpType(eqpType).then(res => {
