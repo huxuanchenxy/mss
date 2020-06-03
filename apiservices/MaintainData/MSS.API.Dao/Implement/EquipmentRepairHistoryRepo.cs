@@ -105,24 +105,27 @@ namespace MSS.API.Dao.Implement
                     if (!string.IsNullOrWhiteSpace(equipmentRepairHistory.UploadFiles))
                     {
                         sql = "delete from upload_file_relation where entity_id=@id and system_resource=@sr";
-                        int ret = await c.ExecuteAsync(sql, new { id = equipmentRepairHistory.ID, sr = SystemResource.EmergencyPlan }, trans);
-                        List<object> objs = new List<object>();
-                        JArray jobj = JsonConvert.DeserializeObject<JArray>(equipmentRepairHistory.UploadFiles);
-                        foreach (var obj in jobj)
+                        int ret = await c.ExecuteAsync(sql, new { id = equipmentRepairHistory.ID, sr = SystemResource.EqpRepair }, trans);
+                        if (equipmentRepairHistory.UploadFiles != "[]")
                         {
-                            foreach (var item in obj["ids"].ToString().Split(','))
+                            List<object> objs = new List<object>();
+                            JArray jobj = JsonConvert.DeserializeObject<JArray>(equipmentRepairHistory.UploadFiles);
+                            foreach (var obj in jobj)
                             {
-                                objs.Add(new
+                                foreach (var item in obj["ids"].ToString().Split(','))
                                 {
-                                    eqpRepairID = equipmentRepairHistory.ID,
-                                    fileID = Convert.ToInt32(item),
-                                    type = Convert.ToInt32(obj["type"]),
-                                    systemResource = (int)SystemResource.EqpRepair
-                                });
+                                    objs.Add(new
+                                    {
+                                        eqpRepairID = equipmentRepairHistory.ID,
+                                        fileID = Convert.ToInt32(item),
+                                        type = Convert.ToInt32(obj["type"]),
+                                        systemResource = (int)SystemResource.EqpRepair
+                                    });
+                                }
                             }
+                            sql = "insert into upload_file_relation values (0,@eqpRepairID,@fileID,@type,@systemResource)";
+                            ret = await c.ExecuteAsync(sql, objs, trans);
                         }
-                        sql = "insert into upload_file_relation values (0,@eqpRepairID,@fileID,@type,@systemResource)";
-                        ret = await c.ExecuteAsync(sql, objs, trans);
                     }
                     trans.Commit();
                     return result;

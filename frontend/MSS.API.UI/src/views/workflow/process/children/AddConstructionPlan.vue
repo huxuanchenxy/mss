@@ -318,6 +318,7 @@ export default {
       effectArea: {text: '', tips: ''},
       effectExplain: {text: '', tips: ''},
       safeMeasure: {text: '', tips: ''},
+      isEditFile: false,
       fileIDs: '',
       fileIDsEdit: [],
       planType: {text: '', tips: ''},
@@ -401,6 +402,9 @@ export default {
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
+      if (this.$route.query.type !== 'Add') {
+        this.isEditFile = true
+      }
     },
     getObjByID () {
       constructionapi.getConstructionPlanByID(this.ID).then(res => {
@@ -551,7 +555,7 @@ export default {
         effectArea: this.effectArea.text,
         effectExplain: this.effectExplain.text,
         safeMeasure: this.safeMeasure.text,
-        FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit),
+        FileIDs: this.fileIDsEdit.length === 0 && !this.isEditFile ? '' : JSON.stringify(this.fileIDsEdit),
         ConPlanType: this.conPlanType
       }
       if (this.$route.query.type === 'Add') {

@@ -177,6 +177,7 @@
                 <div class="number">{{ item.deptname }}</div>
                 <div class="upload-cascader">
                   <el-cascader clearable
+                              v-show="item.uploadFileArr.length != 0"
                                @change="preview"
                                :show-all-levels="false"
                                :options="item.uploadFileArr">
@@ -422,7 +423,7 @@ export default {
                 })
               })
             } else {
-              item.uploadFileArr = null // []
+              item.uploadFileArr = []
             }
             this.ExpertdataList = res.data.list
           })

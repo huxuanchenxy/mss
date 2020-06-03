@@ -160,6 +160,7 @@ export default {
       eqpSelected: {text: [], tips: ''},
       eqpList: [],
       systemResource: systemResource.eqpRepair,
+      isEditFile: false,
       fileIDs: '',
       fileIDsEdit: [],
       eqpLifeHistory: {
@@ -183,7 +184,6 @@ export default {
     } else {
       this.init()
     }
-    console.log(this.showType)
     if (this.sourceName === 'SeeHistory' && this.$route.params.eqpSelected !== undefined) {
       this.eqpLifeHistory.eqpSelected = this.$route.params.eqpSelected
       this.eqpLifeHistory.eqpType = this.$route.params.eqpType
@@ -207,6 +207,9 @@ export default {
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
+      if (this.$route.query.type !== 'Add') {
+        this.isEditFile = true
+      }
     },
     init () {
       // apiMain.getAllTroubleReport().then(res => {
@@ -299,7 +302,7 @@ export default {
         Type: this.systemResource,
         PMDate: this.pmDate.text,
         Charge: this.charge.text,
-        UploadFiles: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+        UploadFiles: this.fileIDsEdit.length === 0 && !this.isEditFile ? '' : JSON.stringify(this.fileIDsEdit)
       }
       if (this.$route.query.type === 'Add') {
         api.addEqpRepair(eqpRepair).then(res => {

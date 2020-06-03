@@ -212,22 +212,25 @@ namespace MSS.API.Dao.Implement
                     {
                         int newid = model.ID;
                         await c.ExecuteAsync(sql, model);
-                        await c.ExecuteAsync("delete from upload_file_relation where entity_id=@entity_id ", new { entity_id = newid });
                         if (!string.IsNullOrEmpty(model.attch_file.Trim()))
                         {
-                            list = ((IEnumerable<string>)model.attch_file.Split(new char[] { '$' }, StringSplitOptions.RemoveEmptyEntries)).ToList<string>();
-                            foreach (var v in list)
+                            await c.ExecuteAsync("delete from upload_file_relation where entity_id=@entity_id ", new { entity_id = newid });
+                            if (model.attch_file.Trim() != "[]")
                             {
-                                string[] strs = v.ToString().Split(':');
-                                string[] arr = strs[1].Split(',');
-                                foreach (var u in arr)
+                                list = ((IEnumerable<string>)model.attch_file.Split(new char[] { '$' }, StringSplitOptions.RemoveEmptyEntries)).ToList<string>();
+                                foreach (var v in list)
                                 {
-                                    sqlBuild.AppendFormat("insert into upload_file_relation(entity_id, file_id, type, system_resource) values({0},{1},{2},{3})", newid, u, strs[0], 27);
-                                    sqlBuild.AppendLine(";");
-                                }
+                                    string[] strs = v.ToString().Split(':');
+                                    string[] arr = strs[1].Split(',');
+                                    foreach (var u in arr)
+                                    {
+                                        sqlBuild.AppendFormat("insert into upload_file_relation(entity_id, file_id, type, system_resource) values({0},{1},{2},{3})", newid, u, strs[0], 27);
+                                        sqlBuild.AppendLine(";");
+                                    }
 
+                                }
+                                ret = await c.QueryFirstOrDefaultAsync<int>(sqlBuild.ToString());
                             }
-                            ret = await c.QueryFirstOrDefaultAsync<int>(sqlBuild.ToString());
                         }
                         scope.Complete();
                     }
