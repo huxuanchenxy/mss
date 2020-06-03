@@ -297,6 +297,7 @@ export default {
   data () {
     return {
       systemResource: systemResource.eqp,
+      isEditFile: false,
       fileIDs: '',
       fileIDsEdit: [],
       // fileType: FileType.Eqp_Drawings,
@@ -455,6 +456,9 @@ export default {
     },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
+      if (this.isShow === 'edit') {
+        this.isEditFile = true
+      }
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
@@ -507,7 +511,7 @@ export default {
         MediumRepair: this.mediumRepair.text,
         LargeRepair: this.largeRepair.text,
         OnlineAgain: this.timeAgain.text,
-        FileIDs: this.fileIDsEdit.length === 0 ? '' : JSON.stringify(this.fileIDsEdit)
+        FileIDs: this.fileIDsEdit.length === 0 && !this.isEditFile ? '' : JSON.stringify(this.fileIDsEdit)
       }
       // if (this.ratedVoltage.text !== '') {
       //   eqp.RatedVoltage = this.ratedVoltage.text
