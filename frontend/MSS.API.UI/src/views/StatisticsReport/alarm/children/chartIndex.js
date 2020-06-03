@@ -688,7 +688,7 @@ var LeftBottomOption = {
     trigger: 'item',
     formatter: '{b}: {c}'
   },
-  calculable: true,
+  calculable: false,
   series: [
     {
       name: '',
@@ -696,6 +696,8 @@ var LeftBottomOption = {
       breadcrumb: {
         show: false
       },
+      roam: false,
+      nodeClick: false,
       itemStyle: {
         normal: {
           label: {
