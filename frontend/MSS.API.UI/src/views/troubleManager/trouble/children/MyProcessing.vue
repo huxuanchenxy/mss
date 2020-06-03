@@ -43,7 +43,7 @@
         <li class="list" @click="operation('wait')" :disabled="btn.wait"><x-button>延迟处理</x-button></li>
         <li class="list" @click="operation('reassign')" :disabled="btn.reassign" v-show="false"><x-button>重新分配</x-button></li>
         <li class="list" @click="operation('detail')" ><x-button>查看明细</x-button></li>
-        <li class="list" :disabled="btn.reject">
+        <li class="list">
         <el-popover
             popper-class="my-pop"
             placement="bottom"
@@ -53,7 +53,7 @@
             <div style="text-align: right;">
                 <el-button size="mini" type="text" @click="operation('reject')">驳回</el-button>
             </div>
-            <el-button class="btn1" slot="reference">驳回</el-button>
+            <el-button class="btn1" slot="reference" :disabled="btn.reject">驳回</el-button>
         </el-popover>
         </li>
         <li class="list" @click="operation('history')" ><x-button>操作历史</x-button></li>
@@ -498,6 +498,12 @@ $con-height: $content-height - 145 - 56;
   &:hover{
     border-color: $color-main-btn!important;
     background: $color-main-btn!important;
+  }
+}
+.btn1.is-disabled{
+  &:hover{
+    border-color: #979797!important;
+    background-color: transparent!important;
   }
 }
 .el-button--text:hover{

@@ -40,11 +40,14 @@ namespace MSS.API.Dao.Implement
                 try
                 {
                     sql = " delete from upload_file_relation " +
-                        " where system_resource=@SystemResource and type=@Type and entity_id=@Entity";
+                        " where system_resource=@SystemResource and entity_id=@Entity";
                     ret = await c.ExecuteAsync(sql, uploadFileRelations, trans);
-                    sql = " insert into upload_file_relation " +
-                        " values (0,@Entity,@File,@Type,@SystemResource) ";
-                    ret = await c.ExecuteAsync(sql, uploadFileRelations, trans);
+                    if (uploadFileRelations.Count > 1 || uploadFileRelations[0].File != 0)
+                    {
+                        sql = " insert into upload_file_relation " +
+                            " values (0,@Entity,@File,@Type,@SystemResource) ";
+                        ret = await c.ExecuteAsync(sql, uploadFileRelations, trans);
+                    }
                     trans.Commit();
                     return ret;
                 }

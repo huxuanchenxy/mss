@@ -123,8 +123,9 @@ export default {
       unSelectedEqp: systemResource.eqp,
       saveEqpLoading: false,
       systemResource: systemResource.eqpType,
-      fileIDs: '',
+      fileIDs: null,
       fileIDsEdit: [],
+      isEditEqp: false,
       eqpType: '',
       eqpTypeList: [],
       eqp: '',
@@ -134,7 +135,8 @@ export default {
 
       unSelectedEqpType: systemResource.eqpType,
       saveEqpTypeLoading: false,
-      eqpTypeFileIDs: '',
+      isEditEqpType: false,
+      eqpTypeFileIDs: null,
       eqpTypeFileIDsEdit: [],
       eqpTypeOnly: '',
 
@@ -176,8 +178,10 @@ export default {
   methods: {
     getFileIDs (ids) {
       if (this.activeName === 'eqp') {
+        this.isEditEqp = true
         this.fileIDsEdit = ids
       } else {
+        this.isEditEqpType = true
         this.eqpTypeFileIDsEdit = ids
       }
     },
@@ -197,7 +201,7 @@ export default {
         if (_res !== null) {
           this.fileIDs = _res.fileIDs
         } else {
-          this.fileIDs = ''
+          this.fileIDs = null
         }
         this.unSelectedEqp = 0
       }).catch(err => console.log(err))
@@ -210,7 +214,7 @@ export default {
         })
         return
       }
-      if (!this.validateAll(this.fileIDsEdit)) return
+      if (!this.validateAll(this.fileIDsEdit, this.fileIDs, this.isEditEqp)) return
       this.saveEqpLoading = true
       let obj = {
         entity: this.eqp,
@@ -241,7 +245,7 @@ export default {
         if (_res !== null) {
           this.eqpTypeFileIDs = _res.uploadFiles
         } else {
-          this.eqpTypeFileIDs = ''
+          this.eqpTypeFileIDs = null
         }
         this.unSelectedEqpType = 0
       }).catch(err => console.log(err))
@@ -254,8 +258,8 @@ export default {
         })
         return
       }
-      if (!this.validateAll(this.eqpTypeFileIDsEdit)) return
-      this.saveEqpTypeLoading = true
+      if (!this.validateAll(this.eqpTypeFileIDsEdit, this.eqpTypeFileIDs, this.isEditEqpType)) return
+      // this.saveEqpTypeLoading = true
       let obj = {
         entity: this.eqpTypeOnly,
         systemResource: systemResource.eqpType,
@@ -276,8 +280,8 @@ export default {
         }
       }).catch(err => console.log(err))
     },
-    validateAll (fileIDsEdit) {
-      if (fileIDsEdit.length === 0) {
+    validateAll (fileIDsEdit, fileIDsOld, isEdit) {
+      if (fileIDsEdit.length === 0 && fileIDsOld !== null && !isEdit) {
         this.$message({
           message: '请修改后进行保存操作',
           type: 'warning'
@@ -447,10 +451,12 @@ $con-height: $content-height - 56;
   height: percent(65, 145);
   /deep/
   .btn{
-    &:hover{
-      border-color: $color-main-btn!important;
-      background: $color-main-btn!important;
-    }
+    border-color: $color-main-btn!important;
+    background-color: $color-main-btn!important;
+    // &:hover{
+    //   border-color: $color-main-btn!important;
+    //   background-color: $color-main-btn!important;
+    // }
   }
 }
 </style>
