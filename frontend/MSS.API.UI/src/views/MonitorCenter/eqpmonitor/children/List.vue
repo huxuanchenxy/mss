@@ -186,6 +186,7 @@ import XButton from '@/components/button'
 import eqpApi from '@/api/eqpApi'
 import apiEvent from '@/api/eventCenterApi'
 import areaApi from '@/api/AreaApi'
+import api from '@/api/loginApi'
 export default {
   name: 'monitorCenter',
   components: {
@@ -252,22 +253,53 @@ export default {
     }
   },
   created () {
-    let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
-    // 没有设备监控权限且不是管理员的直接调转到第一个有权限的菜单默认界面
-    if (!this.$router.navList.hasOwnProperty('/monitorCenter') && user.is_super !== 1) {
-      this.$router.push('/troubleManager')
-      return
-    }
-    this.getAllAreaList()
-    this.init()
-    this.getAlarm()
-    this.getTotalEqp()
-    Bus.$on('eqp_monitor', data => (this.newMsg = data))
+    this.getUserInfo()
+    // let user = JSON.parse(window.sessionStorage.getItem('UserInfo'))
   },
   activated () {
     this.search()
   },
   methods: {
+    getUserInfo () {
+      api.getUserInfo().then((res) => {
+        if (res.code === ApiRESULT.Success) {
+          this.userName = res.data.user_name
+          this.getUserAction(res.data)
+        }
+      })
+    },
+    getUserAction (user) {
+      api.getUserAction().then((res) => {
+        if (res.code === ApiRESULT.Success) {
+          // 是否有设备监控（id=75）的权限
+          let hasAction = res.data.some((item, index) => {
+            return item.actionID === 75
+          })
+          // 没有设备监控权限且不是管理员的直接调转到第一个有权限的菜单默认界面
+          if (!hasAction && user.is_super !== 1) {
+            let tmp = res.data.filter(item => {
+              return item.groupOrder !== 0
+            })
+            let min = 1000
+            let url
+            for (let index = 0; index < tmp.length; index++) {
+              const element = tmp[index]
+              if (element.groupOrder === tmp[0].groupOrder && element.actionOrder < min) {
+                min = element.actionOrder
+                url = element.actionURL
+              } else if (element.groupOrder !== tmp[0].groupOrder) break
+            }
+            this.$router.push(url)
+          } else {
+            this.getAllAreaList()
+            this.init()
+            this.getAlarm()
+            this.getTotalEqp()
+            Bus.$on('eqp_monitor', data => (this.newMsg = data))
+          }
+        }
+      })
+    },
     detail (id) {
       this.$router.push({
         name: 'DetailEqp',

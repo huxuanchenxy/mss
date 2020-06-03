@@ -117,7 +117,7 @@ export default {
   },
   data () {
     return {
-      title: ' | 设备配置列表',
+      title: ' | 到检提醒',
       time: '',
       userName: '',
       actionName: '',

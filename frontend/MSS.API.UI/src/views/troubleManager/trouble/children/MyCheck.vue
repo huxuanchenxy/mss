@@ -41,7 +41,7 @@
       <ul class="con-padding-horizontal btn-group">
         <li class="list" @click="operation('pass')" :disabled="btn.pass"><x-button>审核通过</x-button></li>
         <li class="list" @click="operation('detail')" ><x-button>查看明细</x-button></li>
-        <li class="list" :disabled="btn.pass">
+        <li class="list">
         <el-popover
             popper-class="my-pop"
             placement="bottom"
@@ -51,7 +51,7 @@
             <div style="text-align: right;">
                 <el-button size="mini" type="text" @click="operation('unPass')">驳回</el-button>
             </div>
-            <el-button class="btn1" slot="reference">驳回</el-button>
+            <el-button class="btn1" slot="reference" :disabled="btn.reject">驳回</el-button>
         </el-popover>
         </li>
         <li class="list" @click="operation('history')" ><x-button>操作历史</x-button></li>
@@ -134,7 +134,8 @@ export default {
   data () {
     return {
       btn: {
-        pass: false
+        pass: false,
+        reject: false
       },
       title: ' | 我的审核',
       popVisiable: false,
@@ -172,6 +173,9 @@ export default {
       let actions = JSON.parse(window.sessionStorage.getItem('UserAction'))
       this.btn.pass = !actions.some((item, index) => {
         return item.actionID === btn.myCheck.pass
+      })
+      this.btn.reject = !actions.some((item, index) => {
+        return item.actionID === btn.myCheck.reject
       })
     }
     this.init()
@@ -462,6 +466,12 @@ $con-height: $content-height - 145 - 56;
   &:hover{
     border-color: $color-main-btn!important;
     background: $color-main-btn!important;
+  }
+}
+.btn1.is-disabled{
+  &:hover{
+    border-color: #979797!important;
+    background-color: transparent!important;
   }
 }
 .el-button--text:hover{

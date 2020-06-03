@@ -165,6 +165,26 @@ const routes = [
             component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/equipmentManager/health/children/SeeHealthList.vue')
           }
         ]
+      }, {
+        path: 'MaintainConfig',
+        component: () => import('@/views/system/operlog/index.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'MaintainConfig',
+            redirect: 'list'
+          },
+          {
+            path: 'list',
+            name: 'SeeMaintainConfig',
+            component: () => import(/* webpackChunkName: "equipmentManager" */ '@/views/system/operlog/children/SeeMaintainConfig.vue')
+          },
+          {
+            path: 'addMaintainConfig/:mark?/:id?',
+            name: 'addMaintainConfig',
+            component: () => import('@/views/system/operlog/children/addMaintainConfig.vue')
+          }
+        ]
       }
     ]
   }
