@@ -64,6 +64,7 @@
           设备设施
           <i :class="[{ 'el-icon-d-caret': headOrder.device_name === 0 }, { 'el-icon-caret-top': headOrder.device_name === 1 }, { 'el-icon-caret-bottom': headOrder.device_name === 2 }]"></i>
         </li>
+        <li class="list number">关键字</li>
         <li class="list number">上传部门</li>
         <li class="list number c-pointer" @click="changeOrder('death_year')">
           有效年限
@@ -92,6 +93,7 @@
                 <div class="name word-break">{{ item.name }}</div>
                 <div class="name word-break">{{ item.fileName }}</div>
                 <div class="name word-break">{{ item.deviceName }}</div>
+                <div class="name word-break">{{ item.keyWord }}</div>
                 <div class="name word-break">{{ item.department }}</div>
                 <div class="name word-break">{{ item.deathYear }}</div>
                 <div class="name word-break">{{ item.levelName }}</div>
