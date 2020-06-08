@@ -265,7 +265,7 @@ export default {
       })
     },
     detail (type) {
-      if (this.editEntity.length > 1) {
+      if (this.editEntity.length > 1 && type !== 'reject') {
         this.$message({
           message: '所要操作的检修单不能超过1个',
           type: 'warning'
@@ -288,8 +288,12 @@ export default {
           }
         })
       } else if (type === 'reject') {
+        let ids = []
+        this.editEntity.map(val => {
+          ids.push(val.id)
+        })
         // 状态改回编辑
-        api.updatePMEntityStatus(this.editEntity[0].id, pmStatus.editing).then(res => {
+        api.updatePMEntityStatus(ids.join(','), pmStatus.editing).then(res => {
           if (res.code === 0) {
             this.searchResult(1)
             this.$message({

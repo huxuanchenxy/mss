@@ -116,10 +116,10 @@ namespace MSS.Platform.Workflow.WebApi.Controllers
             return Ok(ret.Result);
             //return Ok("");
         }
-        [HttpPut("UpdatePMEntityStatus/{id}/{status}")]
-        public ActionResult UpdatePMEntityStatus(int id,int status)
+        [HttpPut("UpdatePMEntityStatus/{ids}/{status}")]
+        public ActionResult UpdatePMEntityStatus(string ids,int status)
         {
-            var ret = _service.UpdatePMEntityStatus(id,status);
+            var ret = _service.UpdatePMEntityStatus(ids.Split(','),status);
             return Ok(ret.Result);
             //return Ok("");
         }

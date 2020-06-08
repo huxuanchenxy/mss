@@ -1,4 +1,5 @@
 import axios from './interceptors'
+// let api = 'http://localhost:3851/api/v1'
 // let api = 'http://localhost:8443/api/v1'
 let api = 'http://10.89.36.154:5801/workflowapi'
 export default {
@@ -40,5 +41,5 @@ export default {
   delEntity: ids => { return axios.delete(`${api}/Maintenance/${ids}`).then(res => res.data) },
   getEntityByID: (id, isUpdate) => { return axios.get(`${api}/Maintenance/GetEntityByID/${id}/${isUpdate}`).then(res => res.data) },
   updatePMEntity: parm => { return axios.put(`${api}/Maintenance/UpdatePMEntity`, parm).then(res => res.data) },
-  updatePMEntityStatus: (id, status) => { return axios.put(`${api}/Maintenance/UpdatePMEntityStatus/${id}/${status}`).then(res => res.data) }
+  updatePMEntityStatus: (ids, status) => { return axios.put(`${api}/Maintenance/UpdatePMEntityStatus/${ids}/${status}`).then(res => res.data) }
 }
