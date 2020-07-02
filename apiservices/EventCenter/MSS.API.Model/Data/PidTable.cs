@@ -17,7 +17,10 @@ namespace MSS.API.Model.Data
         public double? DDW { get; set; }
         public int PidType { get; set; }
         
-        
+        public string DeviceCode { get; set; }//rdb对应的设备编号
+        public string DeviceType { get; set; }//rdb对应的设备类型
+        public string StationId { get; set; }//rdb对应的站台编号
+        public string ExpertId { get; set; }//rdb对应的专业编号
         // ex
         public string EqpCode { get; set; }
         public string EqpName { get; set; }
@@ -47,6 +50,11 @@ namespace MSS.API.Model.Data
             Map(o => o.EqpTypeID).ToColumn("eqp_type");
             Map(o => o.EqpTypeName).ToColumn("type_name");
             Map(o => o.TopOrg).ToColumn("top_org");
+
+            Map(o => o.DeviceCode).ToColumn("device_code");
+            Map(o => o.DeviceType).ToColumn("device_type");
+            Map(o => o.StationId).ToColumn("station_id");
+            Map(o => o.ExpertId).ToColumn("expert_id");
         }
     }
 }

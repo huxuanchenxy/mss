@@ -81,8 +81,8 @@ namespace MSS.API.Dao.Implement
         {
             return await WithConnection(async c =>
             {
-                string sql = "INSERT INTO pid_table (PID, eqp_id, prop, Des, pid_type, UT, UP, DW, UUP, DDW)"
-                            + " Values (@pid, @EqpID, @prop, @Des, @PidType, @UT, @UP, @DW, @UUP, @DDW);";
+                string sql = "INSERT INTO pid_table (PID, eqp_id,station_id,expert_id,device_code,device_type, prop, Des, pid_type, UT, UP, DW, UUP, DDW)"
+                            + " Values (@pid, @EqpID,@StationId,@ExpertId,@DeviceCode,@DeviceType, @prop, @Des, @PidType, @UT, @UP, @DW, @UUP, @DDW);";
                 int affectedRows = await c.ExecuteAsync(sql, data);
                 return affectedRows;
             });
