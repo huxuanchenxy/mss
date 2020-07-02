@@ -42,7 +42,7 @@ namespace MSS.Platform.Workflow.WebApi.Service
         Task<ApiResult> GetModuleByID(int id);
         Task<ApiResult> SavePMEntity(PMEntity pmEntity);
         Task<ApiResult> UpdatePMEntity(PMEntity pmEntity);
-        Task<ApiResult> UpdatePMEntityStatus(int id, int status);
+        Task<ApiResult> UpdatePMEntityStatus(string[] ids, int status);
         Task<ApiResult> DelPMEntity(string[] ids);
         Task<ApiResult> ListEntityPage(PMEntityParm parm);
         Task<ApiResult> GetEntityByID(int id,bool isUpdate);
@@ -599,12 +599,12 @@ namespace MSS.Platform.Workflow.WebApi.Service
                 return ret;
             }
         }
-        public async Task<ApiResult> UpdatePMEntityStatus(int id,int status)
+        public async Task<ApiResult> UpdatePMEntityStatus(string[] ids, int status)
         {
             ApiResult ret = new ApiResult();
             try
             {
-                ret.data = await _repo.UpdatePMEntityStatus(id,status,_userID);
+                ret.data = await _repo.UpdatePMEntityStatus(ids,status,_userID);
             }
             catch (Exception ex)
             {

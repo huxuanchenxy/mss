@@ -250,7 +250,6 @@ export default {
         } else {
           this.eqpTypeFileIDs = null
         }
-        console.log(this.eqpTypeFileIDs)
         this.unSelectedEqpType = 0
       }).catch(err => console.log(err))
     },

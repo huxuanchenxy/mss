@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\commons\MSS.API.Common\MSS.API.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -48,7 +48,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
 
         Task<int> SavePMEntityMonthDetail(List<PMEntityMonthDetail> pmEntityMonthDetails);
         Task<int> UpdatePMEntity(PMEntity pmEntity);
-        Task<int> UpdatePMEntityStatus(int id, int status, int userID);
+        Task<int> UpdatePMEntityStatus(string[] ids, int status, int userID);
         Task<int> DelPMEntityMonthDetail(string[] ids);
         Task<List<int>> ListMonthDetail(int id);
 
@@ -181,7 +181,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 var tmp = await c.QueryAsync<MaintenanceList>(sql);
                 if (tmp.Count() > 0)
                 {
-                    sql = "select count(*) FROM maintenance_list ml " + sqlwhere;
+                    sql = "select count(*) FROM maintenance_list ml where 1=1 " + sqlwhere;
                     ret.total = await c.QueryFirstOrDefaultAsync<int>(sql);
                     ret.rows = tmp.ToList();
                 }
@@ -315,7 +315,7 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 var tmp = await c.QueryAsync<PMModule>(sql);
                 if (tmp.Count() > 0)
                 {
-                    sql = "select count(*) FROM pm_module m " + sqlwhere;
+                    sql = "select count(*) FROM pm_module m where 1=1 " + sqlwhere;
                     ret= new { total = await c.QueryFirstOrDefaultAsync<int>(sql), rows = tmp.ToList() };
                 }
                 return ret;
@@ -371,13 +371,13 @@ namespace MSS.Platform.Workflow.WebApi.Data
                 return await c.ExecuteAsync(sql, pmEntity);
             });
         }
-        public async Task<int> UpdatePMEntityStatus(int id,int status,int userID)
+        public async Task<int> UpdatePMEntityStatus(string[] ids,int status,int userID)
         {
             return await WithConnection(async c =>
             {
                 string sql = " update pm_entity " +
-                        " set status=@status,updated_by=@userID,updated_time=@UpdatedTime where id=@id ";
-                return await c.ExecuteAsync(sql, new { id, status, userID, UpdatedTime=DateTime.Now });
+                        " set status=@status,updated_by=@userID,updated_time=@UpdatedTime where id in @ids ";
+                return await c.ExecuteAsync(sql, new { ids, status, userID, UpdatedTime=DateTime.Now });
             });
         }
 
