@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using Serilog;
+using Serilog.Events;
 
 namespace MSS.API.Core
 {
@@ -34,6 +36,16 @@ namespace MSS.API.Core
                     //});
                 })
                 .UseStartup<Startup>()
+                .UseSerilog((context, configuration) => configuration
+                .Enrich.FromLogContext()
+                .MinimumLevel.Information() //这个根据level来，比如到error那information级别的就不出来了
+                //.WriteTo.Console()
+                //.WriteTo.File(Path.Combine("Logs", @"log.txt"), rollingInterval: RollingInterval.Day)
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.RollingFile(@"EventServiceLog/Information-{Date}.log"))
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.RollingFile(@"EventServiceLog/Warning-{Date}.log"))
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.RollingFile(@"EventServiceLog/Debug-{Date}.log"))
+                .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.RollingFile(@"EventServiceLog/Error-{Date}.log")),
+                preserveStaticLogger: true)
                 .Build();
         }
     }

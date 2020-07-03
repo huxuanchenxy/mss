@@ -4,9 +4,7 @@
     element-loading-text="加载中"
     element-loading-spinner="el-icon-loading">
     <div class="con-padding-horizontal header">
-      <h2 class="title">
-        <img :src="$router.navList[$route.matched[0].path].iconClsActive" alt="" class="icon"> {{ $router.navList[$route.matched[0].path].name }} {{ title }}
-      </h2>
+      <title-module></title-module>
     </div>
     <div class="box">
       <!-- 搜索框 -->
@@ -85,9 +83,9 @@
           </div>
           <div class="input-group">
             <!--<el-radio v-model="position" label="6" style="padding-right:5px;"></el-radio>-->
-            <label for="">图纸编号</label>
+            <label for="">设备编号</label>
             <div class="inp">
-              <el-input v-model.trim="eqpCode" placeholder="请输入设备图纸编号"></el-input>
+              <el-input v-model.trim="eqpCode" placeholder="请输入设备编号"></el-input>
             </div>
           </div>
         </div>
@@ -116,7 +114,7 @@
     <div class="content-wrap">
       <ul class="content-header">
         <li class="list number c-pointer" @click="changeOrder('eqp_code')">
-          图纸编号
+          设备编号
           <i :class="[{ 'el-icon-d-caret': headOrder.eqp_code === 0 }, { 'el-icon-caret-top': headOrder.eqp_code === 1 }, { 'el-icon-caret-bottom': headOrder.eqp_code === 2 }]"></i>
         </li>
         <li class="list name c-pointer" @click="changeOrder('eqp_name')">
@@ -187,10 +185,12 @@ import eqpApi from '@/api/eqpApi'
 import apiEvent from '@/api/eventCenterApi'
 import areaApi from '@/api/AreaApi'
 import api from '@/api/loginApi'
+import TitleModule from '@/components/TitleModule'
 export default {
   name: 'monitorCenter',
   components: {
-    XButton
+    XButton,
+    'title-module': TitleModule
   },
   data () {
     return {
@@ -244,6 +244,8 @@ export default {
   },
   watch: {
     newMsg () {
+      console.log('收到alarm')
+      console.log(this.newMsg)
       if (this.newMsg.type === 0) {
         this.getAlarm()
       }
@@ -412,6 +414,9 @@ export default {
           this.alarmList = this.groupBy(res.data, function (item) {
             return item.eqpID
           })
+          console.log('this.alarmList')
+          console.log(new Date())
+          console.log(this.alarmList)
           this.calcTrouble()
           this.updateEqpStatus()
           if (this.position === '5') {
