@@ -512,7 +512,7 @@ var middleOption2 = {
   /* 柱状图颜色 */
   color: ['#06a45f', '#078ed6', '#e3982f'],
   title: {
-    text: '平均恢复时间',
+    text: '平均恢复时间 (分)',
     textStyle: {
       color: '#fff',
       fontSize: 12
@@ -780,7 +780,8 @@ function prepareChartData (data, groupModel, cursor) {
         for (let i = 0; i < xAxisData[x].length; ++i) {
           if (xAxisData[x][i].dimension[groupModel.modelID] === +key) {
             count = xAxisData[x][i].num
-            avg = (xAxisData[x][i].avgtime / (1000)).toFixed(1)
+            // avg = (xAxisData[x][i].avgtime / (1000)).toFixed(1)
+            avg = xAxisData[x][i].avgtime
             break
           }
         }

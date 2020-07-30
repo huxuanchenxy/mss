@@ -12,18 +12,32 @@
     <div class="con-padding-horizontal content">
       <div class="right">
         <div class="charts-wrap">
-              <el-col :span="12" id="gaugeChart"
+              <!-- <el-col :span="12" id="gaugeChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
               <div style="width:100%; height:270px;" ref="gaugeChart"  class="echart"></div>
-              </el-col>
+              </el-col> -->
+                      <el-col :span="12" id="pieChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:260px;" ref="pieChart"  class="echart"></div>
+            </el-col>
         </div>
-        <div class="charts-wrap"><el-col :span="12" id="radarChart"
+        <div class="charts-wrap">
+          <!-- <el-col :span="12" id="radarChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
               <div style="width:100%; height:240px;" ref="radarChart"  class="echart"></div>
+            </el-col> -->
+                        <!--设备健康度-->
+            <el-col :span="12" id="lineChart"
+                element-loading-text="加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.7)">
+              <div style="width:100%; height:240px;" ref="lineChart"  class="echart"></div>
             </el-col>
         </div>
         <div class="charts-wrap">
@@ -36,43 +50,12 @@
         </div>
       </div>
       <div class="right1">
-        <div class="charts-wrap1">
-          <div class="innerwrap">
-            <div class="innerdiv1">
-            <span class="innerspan1">累计无故障运营时间(min)</span>
-            <div>
-              <svg t="1572317585470" class="iconarrowup" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="32" height="32"><path d="M703.280488 365.511671c-4.329609 10.697643-13.921058 17.040095-25.236777 17.040095L544.234145 382.551766 544.234145 835.109955c0 17.838274-14.398942 32.296567-32.232099 32.296567-17.838274 0-32.236192-14.458293-32.236192-32.296567L479.765855 382.551766l-134.206608 0c-11.314697 0-20.906146-6.342452-25.234731-17.040095-4.330632-10.69969-2.081405-22.148439 5.92085-30.334889l166.241208-170.104189c5.333472-5.459339 11.773138-8.1711 19.315928-8.1711 7.543813 0 13.982456 2.742461 19.316951 8.201799l166.241208 170.068374C705.358823 343.358115 707.610096 354.813005 703.280488 365.511671z" p-id="1561" fill="#d4237a"></path></svg>
-              <span class="spantongbi">同比增加</span>
-              <span class="spantongbi1"><ICountUp
-      :delay="delay"
-      :endVal="endVal1"
-      :options="options"
-    />%</span>
-            </div>
-            </div>
-            <div class="innerdiv2">
-            <span class="innerspan2">    <ICountUp
-      :delay="delay"
-      :endVal="endVal"
-      :options="options"
-    /></span>
-            </div>
-          </div>
-          <div class="innerwrap">
-                                      <el-col :span="12" id="hbarChart"
-                element-loading-text="加载中"
-                element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:200px;" ref="hbarChart"  class="echart"></div>
-            </el-col>
-          </div>
-        </div>
         <div class="charts-wrap">
                           <el-col :span="12" id="countChart"
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:290px;" ref="countChart"  class="echart"></div>
+              <div style="width:100%; height:360px;" ref="countChart"  class="echart"></div>
             </el-col>
         </div>
         <div class="charts-wrap">
@@ -80,43 +63,8 @@
                 element-loading-text="加载中"
                 element-loading-spinner="el-icon-loading"
                 element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:300px;" ref="avgTimeChart"  class="echart"></div>
+              <div style="width:100%; height:360px;" ref="avgTimeChart"  class="echart"></div>
               </el-col>
-                   <!-- <span>我的申请</span>
-            <li class="list" v-for="(item) in DataList1" :key="item.key">
-              <div class="list-content">
-                <div class="name">{{ item.appName }}</div>
-                <div class="name">{{ item.processState }}</div>
-                <div class="name">{{ item.createdDateTime }}</div>
-              </div>
-            </li> -->
-        </div>
-      </div>
-            <div class="right">
-        <div class="charts-wrap">
-                      <el-col :span="12" id="pieChart"
-                element-loading-text="加载中"
-                element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:260px;" ref="pieChart"  class="echart"></div>
-            </el-col>
-        </div>
-        <div class="charts-wrap">
-            <!--设备健康度-->
-            <el-col :span="12" id="lineChart"
-                element-loading-text="加载中"
-                element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:240px;" ref="lineChart"  class="echart"></div>
-            </el-col>
-        </div>
-        <div class="charts-wrap">
-          <el-col :span="12" id="pie2Chart"
-                element-loading-text="加载中"
-                element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.7)">
-              <div style="width:100%; height:280px;" ref="pie2Chart"  class="echart"></div>
-            </el-col>
         </div>
       </div>
     </div>
@@ -219,7 +167,6 @@ export default {
     this.ScrollUp()
   },
   mounted () {
-    this.myMission()
     // this.myapply()
     this.drawPie()
     this.drawRadar()
@@ -455,17 +402,6 @@ export default {
         this.dateChartLeftBottom.setOption(indexchart.LeftBottomOption)
       }).catch(err => console.log(err))
     },
-    myMission () {
-      this.DataList = [
-        {key: 1, name: '习近平发表大力发展基建的重要讲话'},
-        {key: 2, name: '应勇等市领导调研18号线江浦路站'},
-        {key: 3, name: '18号线11月29日起工作日早高峰增能'},
-        {key: 4, name: '18号线正式进入轨道工程施工阶段'},
-        {key: 5, name: '“不忘初心、牢记使命”主题教育全面启动'},
-        {key: 6, name: '“城市荣光—庆祝上海解放70周年”主题展览'},
-        {key: 7, name: '中央环保督察组交办问题处理情况'}
-      ]
-    },
     onResize (el) {
       if (this.dateChartCount && el.id === 'countChart') {
         this.dateChartCount.resize()
@@ -646,12 +582,12 @@ export default {
     display: flex;
     flex-wrap: wrap;
     // width: percent(325, $content-width - 48);
-    width: 50%;
-
+    width: 75%;
+    height: 100%;
     .charts-wrap{
       box-sizing: border-box;
       width: 100%;
-      height: 54%;
+      height: 71%;
       padding: 0px;
       // background: #28272E;
       border-radius: $border-radius;
