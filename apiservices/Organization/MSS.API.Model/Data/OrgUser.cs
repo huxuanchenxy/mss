@@ -9,6 +9,8 @@ namespace MSS.API.Model.Data
         public int NodeID { get; set; }
         public int UserID { get; set; }
         public string UserName { get; set; }
+        public string Email { get; set; }
+        public string Mobile { get; set; }
     }
 
     public class OrgUserMap : EntityMap<OrgUser>

@@ -15,6 +15,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using MSS.API.Core.Common;
 using System.Threading;
 using MSS.API.Common;
+using Microsoft.Extensions.Configuration;
+using System.Net.Mail;
 namespace MSS.API.Core.EventServer
 {
     public class NotificationJob : IJob
@@ -25,9 +27,12 @@ namespace MSS.API.Core.EventServer
         private readonly IWarnningRepo<EarlyWarnning> _warnSetting;
         private readonly IDistributedCache _cache;
         private readonly EventQueues _queues;
+        private readonly IConfiguration _config;
+        private readonly IOrgRepo<OrgTree> _orgRepo;
         public NotificationJob(ILogger<WarningJob> logger, GlobalDataManager globalDataManager,
             IServiceDiscoveryProvider consulServiceProvider, IDistributedCache cache,
-            IWarnningRepo<EarlyWarnning> warnSetting, EventQueues queues)
+            IWarnningRepo<EarlyWarnning> warnSetting, EventQueues queues, IConfiguration config,
+            IOrgRepo<OrgTree> orgRepo)
         {
             _logger = logger;
             _globalDataManager = globalDataManager;
@@ -35,6 +40,8 @@ namespace MSS.API.Core.EventServer
             _cache = cache;
             _warnSetting = warnSetting;
             _queues = queues;
+            _config = config;
+            _orgRepo = orgRepo;
         }
         public async Task Execute(IJobExecutionContext context)
         {
@@ -61,9 +68,9 @@ namespace MSS.API.Core.EventServer
                     foreach (Equipment eqp in allEqp)
                     {
                         // 寿命
-                        _checkLifeCycle(eqp, eqpConfig);
-                        _checkMediumMaintenance(eqp, eqpConfig, eqpHistory);
-                        _checkMajorMaintenance(eqp, eqpConfig, eqpHistory);
+                        await _checkLifeCycle(eqp, eqpConfig);
+                        await _checkMediumMaintenance(eqp, eqpConfig, eqpHistory);
+                        await _checkMajorMaintenance(eqp, eqpConfig, eqpHistory);
                     }
                     Thread.Sleep(30000);
                 }
@@ -74,10 +81,10 @@ namespace MSS.API.Core.EventServer
             }
         }
 
-        private void _checkMediumMaintenance(Equipment eqp, EquipmentConfig eqpConfig, List<EqpHistory> eqpHistory)
+        private async Task _checkMediumMaintenance(Equipment eqp, EquipmentConfig eqpConfig, List<EqpHistory> eqpHistory)
         {
             DateTime? start = null;
-            EqpHistory his_medium = eqpHistory.Where(c => c.Type == 
+            EqpHistory his_medium = eqpHistory.Where(c => c.Type ==
                 MyDictionary.EqpHistoryType.MediumMaintenance && c.EqpID == eqp.ID).FirstOrDefault();
             if (his_medium != null)
             {
@@ -107,12 +114,13 @@ namespace MSS.API.Core.EventServer
                             (remain > 0) ? "还有" : "超过", Math.Abs(remain));
                         
                         _addNotification(eqp, msg, 2, "中修");
+                        await _sendMailOrSMS(eqp, eqpConfig, msg);
                     }
                 }
             }
         }
 
-        private void _checkMajorMaintenance(Equipment eqp, EquipmentConfig eqpConfig, List<EqpHistory> eqpHistory)
+        private async Task _checkMajorMaintenance(Equipment eqp, EquipmentConfig eqpConfig, List<EqpHistory> eqpHistory)
         {
             DateTime? start = null;
             EqpHistory his_major = eqpHistory.Where(c => c.Type ==
@@ -144,12 +152,13 @@ namespace MSS.API.Core.EventServer
                         string msg = String.Format("设备大修时间{0}{1}天",
                             (remain > 0) ? "还有" : "超过", Math.Abs(remain));
                         _addNotification(eqp, msg, 1, "大修");
+                        await _sendMailOrSMS(eqp, eqpConfig, msg);
                     }
                 }
             }
         }
 
-        private void _checkLifeCycle(Equipment eqp, EquipmentConfig eqpConfig)
+        private async Task _checkLifeCycle(Equipment eqp, EquipmentConfig eqpConfig)
         {
             DateTime? start = null;
             if (eqp.OnlineAgain != null && eqp.OnlineAgain > eqp.OnlineDate)
@@ -173,8 +182,94 @@ namespace MSS.API.Core.EventServer
                         string msg = String.Format("寿命{0}{1}天",
                             (remain > 0) ? "还有" : "超过", Math.Abs(remain));
                         _addNotification(eqp, msg, 0, "寿命");
+                        await _sendMailOrSMS(eqp, eqpConfig, msg);
                     }
                 }
+            }
+        }
+
+        private async Task _sendMailOrSMS(Equipment eqp, EquipmentConfig eqpConfig, string content)
+        {
+            // 发送邮件及短信, 1短信、2邮件、3 同时
+            // 获取此设备所属班组人员
+            if (eqp.Team != null)
+            {
+                List<OrgUser> users = await _orgRepo.ListOrgNodeUsers((int)eqp.Team);
+                List<string> mailto = new List<string>();
+                foreach (OrgUser user in users)
+                {
+                    if (!string.IsNullOrEmpty(user.Email))
+                    {
+                        mailto.Add(user.Email);
+                    }
+                }
+
+                if (eqpConfig.reminder == 1)
+                {
+
+                }
+                else if (eqpConfig.reminder == 2)
+                {
+                    if (mailto.Count > 0)
+                    {
+                        _sendMail(mailto, content);
+                    }
+                    
+                }
+                else if (eqpConfig.reminder == 3)
+                {
+                    if (mailto.Count > 0)
+                    {
+                        _sendMail(mailto, content);
+                    }
+                }
+            }
+        }
+
+        private void _sendMail(List<string> mailto, string content)
+        {
+            
+            string host = _config.GetValue<string>("message:mail:host");
+            string username = _config.GetValue<string>("message:mail:username");
+            string password = _config.GetValue<string>("message:mail:password");
+            // string host = "smtp.163.com";
+            // string username = "niefei1979815@163.com";
+            // string password = "19861120";
+
+            SmtpClient client = new SmtpClient();
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式    
+            client.Host = host;//邮件服务器
+            client.UseDefaultCredentials = true;
+            client.Credentials = new System.Net.NetworkCredential(username, password);//用户名、密码
+
+            //////////////////////////////////////
+            string strfrom = username;
+            // string strto = "nief@seari.com";
+            // string strcc = "2605625733@qq.com";//抄送
+
+
+            System.Net.Mail.MailMessage msg = new System.Net.Mail.MailMessage();
+            msg.From = new MailAddress(strfrom, "mss系统");
+            foreach (string addr in mailto)
+            {
+                msg.To.Add(addr);
+            }
+            
+            // msg.CC.Add(strcc);
+
+            msg.Subject = "设备通知";//邮件标题
+            msg.Body = content;//邮件内容
+            msg.BodyEncoding = System.Text.Encoding.UTF8;//邮件内容编码
+            msg.IsBodyHtml = true;//是否是HTML邮件
+            msg.Priority = MailPriority.High;//邮件优先级
+
+            try
+            {
+                client.Send(msg);
+            }
+            catch (System.Net.Mail.SmtpException ex)
+            {
+                _logger.LogError("邮件发送失败:" + ex.Message);
             }
         }
 

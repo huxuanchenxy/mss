@@ -104,6 +104,7 @@ namespace MSS.API.Dao.Implement
                 {
                     sql += " WHERE b.top_org = " + orgID;
                 }
+                sql += " order by a.created_time desc";
                 var data = await c.QueryAsync<EarlyWarnning>(sql);
                 return data.ToList();
             });
@@ -121,6 +122,7 @@ namespace MSS.API.Dao.Implement
                 {
                     sql += " WHERE b.top_org = " + orgID;
                 }
+                sql += " order by a.created_time desc";
                 var data = await c.QueryAsync<Notification>(sql);
                 return data.ToList();
             });

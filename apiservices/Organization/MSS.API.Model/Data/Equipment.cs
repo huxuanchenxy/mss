@@ -10,7 +10,8 @@ namespace MSS.API.Model.Data
         public string EqpCode { get; set; }
         public string EqpName { get; set; }
         public int EqpType { get; set; }
-        public int TopOrg { get; set;}
+        public int TopOrg { get; set; }
+        public int? Team { get; set; }
         public DateTime? OnlineDate { get; set; }
         public DateTime? OnlineAgain { get; set; }
         public int LifeCycle { get; set; }
@@ -27,6 +28,7 @@ namespace MSS.API.Model.Data
             Map(o => o.EqpName).ToColumn("eqp_name");
             Map(o => o.EqpType).ToColumn("eqp_type");
             Map(o => o.TopOrg).ToColumn("top_org");
+            Map(o => o.Team).ToColumn("team");
             Map(o => o.OnlineDate).ToColumn("online_date");
             Map(o => o.OnlineAgain).ToColumn("online_again");
             Map(o => o.LifeCycle).ToColumn("life");
