@@ -118,7 +118,7 @@ export default {
     }
   },
   created () {
-    this.loading = true
+    // this.loading = true
     // 设备类型加载
     apiEqp.getEqpTypeAll().then(res => {
       this.eqpTypeList = res.data
@@ -126,14 +126,19 @@ export default {
       // 设备加载
       api.GetDeviceListByTypeId(this.eqpType).then(res => {
         this.eqpList = res.data
-        this.eqpSelected.push(this.eqpList[0].id)
-        this.eqp = this.getDefaultEqp(this.eqpList[0])
-        this.searchRes()
+        // this.eqpSelected.push(this.eqpList[0].id)
+        // this.eqp = this.getDefaultEqp(this.eqpList[0])
+        // this.searchRes()
       }).catch(err => console.log(err))
     }).catch(err => console.log(err))
   },
   activated () {
-    this.searchRes()
+    debugger
+    if ('eqpSelected' in this.$route.params) {
+      this.eqpSelected = this.$route.params.eqpSelected
+      this.eqpType = this.$route.params.eqpType
+      this.searchRes()
+    }
   },
   methods: {
     eqpTypeChange () {
@@ -203,6 +208,7 @@ export default {
           name: 'DetailEqp',
           params: {
             id: this.eqp,
+            eqpSelected: this.eqpSelected,
             sourceName: 'SeeHistory'
           }
         })
