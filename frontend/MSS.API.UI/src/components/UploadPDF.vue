@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="http://10.89.36.154:5801/eqpapi/Upload"
+      action="http://10.89.34.154:5801/eqpapi/Upload"
       :disabled="isDisabled"
       :headers="uploadHeaders"
       :multiple="true"
@@ -25,7 +25,7 @@
     </el-upload>
     <div v-for="(item) in fileList" :key="item.key">
       <el-upload
-        action="http://10.89.36.154:5801/eqpapi/Upload"
+        action="http://10.89.34.154:5801/eqpapi/Upload"
         :disabled="isDisabled"
         :file-list="item.list"
         :on-remove="onRemove"

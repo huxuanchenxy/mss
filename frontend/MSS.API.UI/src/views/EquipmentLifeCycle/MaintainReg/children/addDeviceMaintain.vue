@@ -420,7 +420,7 @@ export default {
       let pmObj = new Promise((resolve, reject) => {
         axios(
           {
-            url: `http://10.89.36.154:5801/orgapi/org/node/${id}`,
+            url: `http://10.89.34.154:5801/orgapi/org/node/${id}`,
             method: 'get'
           })
           .then(res => {

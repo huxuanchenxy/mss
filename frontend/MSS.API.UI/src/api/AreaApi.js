@@ -1,5 +1,5 @@
 import axios from './interceptors'
-let api = 'http://10.89.36.154:5801/areaapi' // 'http://localhost:52227/api'
+let api = 'http://10.89.34.154:5801/areaapi' // 'http://localhost:52227/api'
 // let api = 'http://localhost:8083/api'
 // let api = 'http://localhost:3851/api'
 export default {

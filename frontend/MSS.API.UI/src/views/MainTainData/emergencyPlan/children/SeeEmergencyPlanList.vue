@@ -220,7 +220,7 @@ export default {
           this.centerDialogVisible = true
         }
       }
-      // 'http://10.89.36.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
+      // 'http://10.89.34.103:8090' + '/Compoment/pdfViewer/web/viewer.html?file=/' + item
     },
     // 改变排序
     changeOrder (sort) {

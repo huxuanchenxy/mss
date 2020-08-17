@@ -118,10 +118,10 @@
     </div>
     <div class="btn-enter">
       <!--:headers="uploadHeaders"-->
-      <!--http://10.89.36.154:5801/workflowApi/Maintenance/Import-->
+      <!--http://10.89.34.154:5801/workflowApi/Maintenance/Import-->
       <!--http://localhost:3851/api/v1/Maintenance/Import-->
       <el-upload
-        action="http://10.89.36.154:5801/workflowApi/Maintenance/Import"
+        action="http://10.89.34.154:5801/workflowApi/Maintenance/Import"
         :headers="uploadHeaders"
         :multiple="false"
         :data="pmModule"

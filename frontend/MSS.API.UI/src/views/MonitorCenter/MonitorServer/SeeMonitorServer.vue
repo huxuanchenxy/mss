@@ -237,10 +237,10 @@ export default {
     },
     ShowVisNetWork (res) {
       // create an array with nodes
-      let n2 = res.filter(c => c.ip === '10.89.36.103')[0]
-      let n3 = res.filter(c => c.ip === '10.89.36.154')[0]
-      let n4 = res.filter(c => c.ip === '10.89.36.153')[0]
-      let n5 = res.filter(c => c.ip === '10.89.36.152')[0]
+      let n2 = res.filter(c => c.ip === '10.89.34.103')[0]
+      let n3 = res.filter(c => c.ip === '10.89.34.154')[0]
+      let n4 = res.filter(c => c.ip === '10.89.34.153')[0]
+      let n5 = res.filter(c => c.ip === '10.89.34.152')[0]
       let retarr = []
       retarr.push({ id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false })
       retarr.push({ id: 2, label: 'Web服务器(' + n2.ip + ')\n(cpu:' + n2.cpuLoad + '%)(mem:' + n2.percentMemoryUsed + '%)(network:' + n2.prettyTotalNetwork + ')(disk:' + n2.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false, font: {color: '#fff'} })
@@ -249,9 +249,9 @@ export default {
       retarr.push({ id: 5, label: '后台服务(' + n5.ip + ')\n(cpu:' + n5.cpuLoad + '%)(mem:' + n5.percentMemoryUsed + '%)(network:' + n5.prettyTotalNetwork + ')(disk:' + n5.diskText + '%)', shape: 'image', image: pcimg, fixed: true, x: 300, y: 0, physics: false, font: {color: '#fff'} })
       // var nodes = new vis.DataSet([
       //   { id: 1, label: 'MBN', fixed: true, x: 0, y: 300, physics: false },
-      //   { id: 2, label: 'Web服务器(10.89.36.103)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false, font: {color: '#fff'} },
-      //   { id: 3, label: '网关(10.89.36.154)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false, font: {color: '#fff'} },
-      //   { id: 4, label: '后台服务(10.89.36.153)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 0, physics: false, font: {color: '#fff'} }
+      //   { id: 2, label: 'Web服务器(10.89.34.103)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 200, physics: false, font: {color: '#fff'} },
+      //   { id: 3, label: '网关(10.89.34.154)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 100, physics: false, font: {color: '#fff'} },
+      //   { id: 4, label: '后台服务(10.89.34.153)', shape: 'image', image: pcimg, fixed: true, x: 0, y: 0, physics: false, font: {color: '#fff'} }
       //   // { id: 5, label: 'MBN' }
       // ])
       var nodes = new vis.DataSet(retarr)
