@@ -26,7 +26,7 @@ export default {
   data () {
     return {
       title: ' | 流程设计',
-      src: 'http://10.89.34.153:8441/#',
+      src: 'http://127.0.0.1:8441/#',
       time: '',
       serviceName: '',
       startTime: '',

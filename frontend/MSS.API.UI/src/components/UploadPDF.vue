@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="http://10.89.34.154:5801/eqpapi/Upload"
+      action="http://127.0.0.1:8081/api/v1/Upload"
       :disabled="isDisabled"
       :headers="uploadHeaders"
       :multiple="true"
@@ -25,7 +25,7 @@
     </el-upload>
     <div v-for="(item) in fileList" :key="item.key">
       <el-upload
-        action="http://10.89.34.154:5801/eqpapi/Upload"
+        action="http://127.0.0.1:8081/api/v1/Upload"
         :disabled="isDisabled"
         :file-list="item.list"
         :on-remove="onRemove"
@@ -49,7 +49,7 @@
 </template>
 <script>
 import { PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, FILE_SERVER_PATH } from '@/common/js/utils.js'
-import api from '@/api/eqpApi'
+import api from '@/api/uploadApi'
 import apiAuth from '@/api/authApi'
 import XButton from '@/components/button'
 import { downloadFile } from '@/common/js/UpDownloadFileHelper.js'
@@ -60,7 +60,6 @@ export default {
     XButton
   },
   props: {
-    // label: String,
     systemResource: Number,
     // fileType: Number,
     fileIDs: String,
@@ -238,6 +237,7 @@ export default {
       this.returnFileIDs(fileList, file.type)
     },
     preview (item) {
+      // console.log(item)
       let arr = item.name.split('.')
       let extTmp = arr[arr.length - 1].toLowerCase()
       if (arr[arr.length - 1] === 'pdf') {
@@ -336,8 +336,10 @@ export default {
       let retif = false
       //  && this.uploadIsFinished(fileList)
       if (list.length !== 0 && this.uploadIsFinished(fileList)) {
+        console.log(list)
         list.map(val => {
           if (val.status === 'success' && val.url.indexOf('blob:') !== -1) {
+          // if (val.status === 'success') {
             val.type = type
             val.id = val.response.data.id
           }

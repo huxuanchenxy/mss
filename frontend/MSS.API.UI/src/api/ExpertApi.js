@@ -1,5 +1,5 @@
 import axios from './interceptors'
-let api = 'http://10.89.34.154:5801/maintainapi'
+let api = 'http://127.0.0.1:5801/maintainapi'
 // let api = 'http://localhost:8085/api/v1'
 export default {
   getAllUsers: () => { return {} },

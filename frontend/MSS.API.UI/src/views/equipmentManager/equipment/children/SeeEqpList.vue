@@ -69,10 +69,10 @@
         <li class="list">
           <!--excel表中的日期必须以纯文本yyyy-MM-dd的格式导入，否则系统无法识别-->
           <!--:headers="uploadHeaders"-->
-          <!--http://10.89.34.154:5801/eqpapi/Equipment/Import-->
+          <!--http://127.0.0.1:5801/eqpapi/Equipment/Import-->
           <!--http://localhost:3851/api/v1/Equipment/Import-->
           <el-upload
-            action="http://10.89.34.154:5801/eqpapi/Equipment/Import"
+            action="http://127.0.0.1:5801/eqpapi/Equipment/Import"
             :headers="uploadHeaders"
             :multiple="false"
             accept=".xls,.xlsx"

@@ -1,7 +1,8 @@
-import api from '@/api/eqpApi'
+import api from '@/api/uploadApi'
 import { Message } from 'element-ui'
 export const downloadFile = (id, fileName) => {
   api.downloadFile(id).then(res => {
+    console.log(res)
     if (res.data.size !== 0) {
       let aTag = document.createElement('a')
       let blob = new Blob([res.data])

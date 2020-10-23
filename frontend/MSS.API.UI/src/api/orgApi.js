@@ -1,7 +1,7 @@
 import axios from './interceptors'
 // let api = 'http://127.0.0.1:3851/api/v1'
-let api = 'http://10.89.34.154:5801/orgapi'
-let serviceAuth = 'http://10.89.34.154:5801/authapi'
+let api = 'http://127.0.0.1:5801/orgapi'
+let serviceAuth = 'http://127.0.0.1:5801/authapi'
 export default {
   // getOrgAll: () => { return axios.get(`${api}/org/all`).then(res => res.data) },
   getOrgAll: () => { return axios.get(`${api}/org/curorg`).then(res => res.data) },
