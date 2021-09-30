@@ -19,7 +19,7 @@
     "countup.js": "^2.0.4",
     "echarts": "^4.1.0",
     "element-ui": "^2.3.7",
-    "handsontable": "^6.2.2",
+    "handsontable": "^10.0.0",
     "qs": "^6.5.2",
     "vis-network": "^6.5.2",
     "vue": "^2.5.2",
