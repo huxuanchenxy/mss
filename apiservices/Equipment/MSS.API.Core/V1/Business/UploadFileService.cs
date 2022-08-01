@@ -29,14 +29,14 @@ namespace MSS.API.Core.V1.Business
             _uploadFileRepo = uploadFileRepo;
         }
 
-        public async Task<ApiResult> Save(int type, List<IFormFile> file)
+        public async Task<ApiResult> Save(int type,int systemResource, List<IFormFile> file)
         {
             ApiResult ret = new ApiResult();
             UploadFile uf = new UploadFile();
             try
             {
                 PDFHelper pdf = new PDFHelper();
-                uf.FilePath = pdf.GetSavePDFPath(file, type);
+                uf.FilePath = pdf.GetSavePDFPath(file, type, systemResource);
                 uf.FileName = file.FirstOrDefault().FileName;
                 ret.data = await _uploadFileRepo.Save(uf);
                 // 当数据库插入不成功时，则不上传文件
@@ -105,17 +105,41 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 List<UploadFile> ufs = await _uploadFileRepo.ListByIDs(ids);
-                List<object> objs = new List<object>();
-                foreach (var item in ufs)
-                {
-                    objs.Add(new {
-                        id=item.ID,
-                        name=item.FileName,
-                        url=item.FilePath,
-                        status="success"
-                    });
-                }
-                ret.data = objs;
+                ret.data = UploadFileHelper.ListShow(ufs);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
+        public async Task<ApiResult> CascaderByIDs(string ids)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<UploadFile> ufs = await _uploadFileRepo.ListByIDs(ids);
+                ret.data = UploadFileHelper.CascaderShow(ufs);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ret.code = Code.Failure;
+                ret.msg = ex.Message;
+                return ret;
+            }
+        }
+
+        public async Task<ApiResult> ListByEqp(int id)
+        {
+            ApiResult ret = new ApiResult();
+            try
+            {
+                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(new int[] { id},MyDictionary.SystemResource.Eqp);
+                ret.data = UploadFileHelper.TimeLineShow(ufs);
                 return ret;
             }
             catch (Exception ex)

@@ -247,13 +247,13 @@ namespace MSS.API.Core.V1.Business
                     //    mRet.relatedData = ui;
                     //    return mRet;
                     //}
+                    mRet.data = ui.id;
                 }
                 else
                 {
                     mRet.code = Code.DataIsnotExist;
                     mRet.msg = "账号错误";
                 }
-                mRet.data = ui.id;
                 return mRet;
             }
             catch (Exception ex)

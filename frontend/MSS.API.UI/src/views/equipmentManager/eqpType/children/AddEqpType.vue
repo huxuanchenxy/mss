@@ -25,7 +25,7 @@
             <div class="inp-wrap">
               <span class="text">设备类型名称<em class="validate-mark">*</em></span>
               <div class="inp">
-                <el-input v-model="eqpTypeName.text"></el-input>
+                <el-input placeholder="请输入设备类型名称" v-model="eqpTypeName.text" @keyup.native="validateInput()"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ eqpTypeName.tips }}</p>
@@ -34,49 +34,20 @@
             <div class="inp-wrap">
               <span class="text">型号</span>
               <div class="inp">
-                <el-input v-model="model.text"></el-input>
+                <el-input v-model="model.text" placeholder="请输入设备类型型号" @keyup.native="validateInputNull(model)"></el-input>
               </div>
             </div>
             <p class="validate-tips">{{ model.tips }}</p>
           </li>
-          <li class="list">
-            <upload-pdf ext="pdf" :fileType="fileType.EqpType_Working_Instruction" label="作业指导" :fileIDs="fileIDs.working" @getFileIDs="getWorkingFileIDs"></upload-pdf>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Technical_Drawings" label="技术图纸" :fileIDs="fileIDs.drawings" @getFileIDs="getDrawingsFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Installation_Manual" label="安装手册" :fileIDs="fileIDs.install" @getFileIDs="getInstallFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_User_Guide" label="使用手册" :fileIDs="fileIDs.user" @getFileIDs="getUserFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list">
-            <div class="inp-wrap">
-              <div class="inp">
-                <upload-pdf ext="pdf" :fileType="fileType.EqpType_Regulations" label="维护规程" :fileIDs="fileIDs.regulations" @getFileIDs="getRegulationsFileIDs"></upload-pdf>
-              </div>
-            </div>
-          </li>
-          <li class="list"/>
+          <div class="upload-list">
+            <upload-pdf :systemResource="systemResource" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
+          </div>
         </ul>
         <div class="con-padding-horizontal cause">
-          <span class="lable">设备类型描述：</span>
-          <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述"></el-input>
-          <p class="validate-tips">{{ eqpTypeDesc.tips }}</p>
+            <span class="lable">设备类型描述：</span>
+            <el-input type="textarea" v-model="eqpTypeDesc.text" placeholder="请输入设备类型描述" @keyup.native="validateInputNull(eqpTypeDesc)"></el-input>
         </div>
+        <div class="validate-tips left">{{ eqpTypeDesc.tips }}</div>
         <!-- 按钮 -->
         <div class="btn-group">
           <x-button class="close">
@@ -89,7 +60,9 @@
   </div>
 </template>
 <script>
-import { validateInputCommon, vInput, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { validateInputCommon, vInput, nullToEmpty } from '@/common/js/utils.js'
+import { systemResource } from '@/common/js/dictionary.js'
+import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
 import api from '@/api/eqpApi'
 import MyUploadPDF from '@/components/UploadPDF'
@@ -101,43 +74,18 @@ export default {
   },
   data () {
     return {
+      systemResource: systemResource.eqpType,
       loading: false,
       title: '| 添加设备类型',
       eqpTypeID: '',
       eqpTypeName: {text: '', tips: ''},
       model: {text: '', tips: ''},
       eqpTypeDesc: {text: '', tips: ''},
-      fileIDs: {
-        working: '',
-        drawings: '',
-        install: '',
-        user: '',
-        regulations: ''
-      },
-      fileIDsEdit: [{
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }, {
-        Type: '',
-        FileIDs: ''
-      }],
-      fileType: FileType,
-      previewUrl: '',
-      pageType: ''
+      fileIDs: '',
+      fileIDsEdit: []
     }
   },
   created () {
-    // this.pageType = this.$route.query.type
-    // this.title = this.pageType === 'Add' ? '| 添加设备类型' : '| 修改设备类型'
     this.init()
   },
   methods: {
@@ -148,25 +96,8 @@ export default {
         this.getEqpType()
       }
     },
-    getWorkingFileIDs (val) {
-      this.fileIDsEdit[0].Type = FileType.EqpType_Working_Instruction
-      this.fileIDsEdit[0].FileIDs = val
-    },
-    getDrawingsFileIDs (val) {
-      this.fileIDsEdit[1].Type = FileType.EqpType_Technical_Drawings
-      this.fileIDsEdit[1].FileIDs = val
-    },
-    getInstallFileIDs (val) {
-      this.fileIDsEdit[2].Type = FileType.EqpType_Installation_Manual
-      this.fileIDsEdit[2].FileIDs = val
-    },
-    getUserFileIDs (val) {
-      this.fileIDsEdit[3].Type = FileType.EqpType_User_Guide
-      this.fileIDsEdit[3].FileIDs = val
-    },
-    getRegulationsFileIDs (val) {
-      this.fileIDsEdit[4].Type = FileType.EqpType_Regulations
-      this.fileIDsEdit[4].FileIDs = val
+    getFileIDs (ids) {
+      this.fileIDsEdit = ids
     },
     getEqpType () {
       api.getEqpTypeByID(this.$route.query.id).then(res => {
@@ -176,73 +107,46 @@ export default {
           this.eqpTypeName.text = data.tName
           this.model.text = nullToEmpty(data.model)
           this.eqpTypeDesc.text = data.desc
-          if (data.uploadFiles !== null) {
-            let obj = JSON.parse(data.uploadFiles)
-            let tmp = {
-              working: [],
-              drawings: [],
-              install: [],
-              user: [],
-              regulations: []
-            }
-            obj.map(val => {
-              if (val.type === FileType.EqpType_Working_Instruction) {
-                tmp.working.push(val.file_id)
-              } else if (val.type === FileType.EqpType_Technical_Drawings) {
-                tmp.drawings.push(val.file_id)
-              } else if (val.type === FileType.EqpType_Installation_Manual) {
-                tmp.install.push(val.file_id)
-              } else if (val.type === FileType.EqpType_User_Guide) {
-                tmp.user.push(val.file_id)
-              } else if (val.type === FileType.EqpType_Regulations) {
-                tmp.regulations.push(val.file_id)
-              }
-            })
-            this.fileIDs.working = tmp.working.join(',')
-            this.fileIDs.drawings = tmp.drawings.join(',')
-            this.fileIDs.install = tmp.install.join(',')
-            this.fileIDs.user = tmp.user.join(',')
-            this.fileIDs.regulations = tmp.regulations.join(',')
-          }
+          this.fileIDs = data.uploadFiles
         }
         this.loading = false
       }).catch(err => console.log(err))
+    },
+    validateInputNull (val) {
+      if (!vInput(val.text)) {
+        val.tips = '此项含有非法字符'
+        return false
+      } else {
+        val.tips = ''
+        return true
+      }
     },
     validateInput () {
       if (!validateInputCommon(this.eqpTypeName)) {
         return false
       }
-      if (!vInput(this.model.text)) {
-        this.model.tips = '此项含有非法字符'
+      return true
+    },
+    validateInputAll () {
+      if (!this.validateInput() || !this.validateInputNull(this.model) || !this.validateInputNull(this.eqpTypeDesc)) {
         return false
-      } else {
-        this.model.tips = ''
-      }
-      if (!vInput(this.eqpTypeDesc.text)) {
-        this.eqpTypeDesc.tips = '此项含有非法字符'
-        return false
-      } else {
-        this.eqpTypeDesc.tips = ''
       }
       return true
     },
     save () {
       if (!this.validateInput()) {
+        this.$message({
+          message: '验证失败，请查看提示信息',
+          type: 'error'
+        })
         return
       }
-      for (let j = 0; j < this.fileIDsEdit.length; j++) {
-        if (this.fileIDsEdit[j].FileIDs !== '') {
-          let arr = this.fileIDsEdit[j].FileIDs.split(',')
-          for (let i = 0; i < arr.length; i++) {
-            if (arr[i] === '') {
-              this.$message({
-                message: '文件还未上传完成，请耐心等待',
-                type: 'warning'
-              })
-              return
-            }
-          }
-        }
+      if (this.fileIDsEdit.length !== 0 && !isUploadFinished(this.fileIDsEdit)) {
+        this.$message({
+          message: '文件正在上传中，请耐心等待',
+          type: 'warning'
+        })
+        return
       }
       let eqpType = {
         TName: this.eqpTypeName.text,
@@ -254,10 +158,10 @@ export default {
         api.addEqpType(eqpType).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
-            // this.$message({
-            //   message: '保存成功',
-            //   type: 'success'
-            // })
+            this.$message({
+              message: '保存成功',
+              type: 'success'
+            })
           } else {
             this.$message({
               message: '保存失败',
@@ -270,10 +174,10 @@ export default {
         api.updateEqpType(eqpType).then(res => {
           if (res.code === 0) {
             this.$router.push({name: 'SeeEqpTypeList'})
-            // this.$message({
-            //   message: '保存成功',
-            //   type: 'success'
-            // })
+            this.$message({
+              message: '保存成功',
+              type: 'success'
+            })
           } else {
             this.$message({
               message: '保存失败',
@@ -483,5 +387,14 @@ export default {
 
 .disabled{
   background: #8c939d;
+}
+
+.upload-list{
+  margin-top: PXtoEm(25);
+  margin-bottom: PXtoEm(25);
+  width: -webkit-fill-available;
+}
+.left{
+  text-indent: 9.5%
 }
 </style>

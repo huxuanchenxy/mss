@@ -42,8 +42,8 @@
                     <el-option
                       v-for="item in subSystemList"
                       :key="item.key"
-                      :label="item.sub_code_name"
-                      :value="item.sub_code">
+                      :label="item.name"
+                      :value="item.id">
                     </el-option>
                   </el-select>
                 </div>
@@ -88,9 +88,11 @@
               <div class="inp-wrap">
                 <span class="text">管辖班组<em class="validate-mark">*</em></span>
                 <div class="inp">
-                  <el-cascader class="cascader_width" clearable
-                    :props="defaultParams"
+                  <el-cascader class="cascader_width" clearable ref='team'
+                    expand-trigger="hover"
                     change-on-select
+                    popper-class="pop-team"
+                    :props="defaultParams"
                     @change="cascader_change"
                     :show-all-levels="true"
                     :options="teamList"
@@ -222,11 +224,9 @@
               </div>
               <p class="validate-tips">{{ life.tips }}</p>
             </li>
-            <li class="list upload-list">
-              <div>
-                <upload-pdf ext="pdf" :fileType="fileType" label="设备图纸" :fileIDs="fileIDs" @getFileIDs="getFileIDs"></upload-pdf>
-              </div>
-            </li>
+            <div class="upload-list">
+              <upload-pdf :fileIDs="fileIDs" :systemResource="systemResource" @getFileIDs="getFileIDs"></upload-pdf>
+            </div>
           </ul>
         </div>
         <div class="con-padding-horizontal header"/>
@@ -278,7 +278,9 @@
 </template>
 <script>
 // import { validateInputCommon, validateNumberCommon, vInput, vdouble3, PDF_BLOB_VIEW_URL, PDF_UPLOADED_VIEW_URL, nullToEmpty, FileType } from '@/common/js/utils.js'
-import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty, FileType } from '@/common/js/utils.js'
+import { validateInputCommon, validateNumberCommon, vInput, vdouble3, nullToEmpty } from '@/common/js/utils.js'
+import { dictionary, firmType, systemResource } from '@/common/js/dictionary.js'
+import { isUploadFinished } from '@/common/js/UpDownloadFileHelper.js'
 import XButton from '@/components/button'
 import MyUploadPDF from '@/components/UploadPDF'
 import apiAuth from '@/api/authApi'
@@ -293,9 +295,10 @@ export default {
   },
   data () {
     return {
+      systemResource: systemResource.eqp,
       fileIDs: '',
-      fileIDsEdit: '',
-      fileType: FileType.Eqp_Drawings,
+      fileIDsEdit: [],
+      // fileType: FileType.Eqp_Drawings,
       areaParams: {
         label: 'areaName',
         value: 'id',
@@ -400,16 +403,8 @@ export default {
     }
   },
   created () {
-    if (this.isShow === 'add') {
-      this.loading = false
-      this.title = '| 添加设备'
-    } else if (this.isShow === 'edit') {
-      this.loading = true
-      this.title = '| 修改设备'
-      this.getEqp()
-    }
     // 子系统加载
-    apiAuth.getSubCode('sub_system').then(res => {
+    apiAuth.getSubCode(dictionary.subSystem).then(res => {
       this.subSystemList = res.data
     }).catch(err => console.log(err))
 
@@ -425,27 +420,43 @@ export default {
 
     // 供应商/制造商加载
     api.getFirmAll().then(res => {
-      this.supplierList = res.data.filter((item) => { return item.type === 0 })
-      this.manufacturerList = res.data.filter((item) => { return item.type === 1 })
+      this.supplierList = res.data.filter((item) => { return item.type === firmType.supplier })
+      this.manufacturerList = res.data.filter((item) => { return item.type === firmType.manufacturer })
     }).catch(err => console.log(err))
 
     // 安装位置加载
     apiArea.SelectConfigAreaData().then(res => {
       this.areaList = res.data.dicAreaList
     }).catch(err => console.log(err))
+
+    if (this.isShow === 'add') {
+      this.loading = false
+      this.title = '| 添加设备'
+    } else if (this.isShow === 'edit') {
+      this.loading = true
+      this.title = '| 修改设备'
+      this.getEqp()
+    }
   },
   methods: {
+    // visibleChange (parm) {
+    //   console.log(parm)
+    // },
     getFileIDs (ids) {
       this.fileIDsEdit = ids
     },
     // 班组下拉选中，过滤非班组
     cascader_change (val) {
-      this.teamPath.tips = ''
+      // console.log(val)
       let selectedTeam = val[val.length - 1]
       let obj = this.getCascaderObj(selectedTeam, this.teamList)
       if (obj.node_type === 3) {
         this.team = val[val.length - 1]
+      } else {
+        // this.teamPath.tips = '您选择的不是班组'
       }
+      // let el = document.querySelector('.pop-team')
+      // el.style.display = 'none'
     },
     getCascaderObj (val, opt) {
       for (let i = 0; i < opt.length; ++i) {
@@ -471,18 +482,7 @@ export default {
         })
         return
       }
-      if (this.fileIDsEdit !== '') {
-        let arr = this.fileIDsEdit.split(',')
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i] === '') {
-            this.$message({
-              message: '文件还未上传完成，请耐心等待',
-              type: 'warning'
-            })
-            return
-          }
-        }
-      }
+      if (!isUploadFinished(this.fileIDsEdit)) return
       let eqp = {
         Code: this.eqpCode.text,
         Name: this.eqpName.text,
@@ -503,7 +503,7 @@ export default {
         MediumRepair: this.mediumRepair.text,
         LargeRepair: this.largeRepair.text,
         OnlineAgain: this.timeAgain.text,
-        FileIDs: this.fileIDsEdit
+        FileIDs: JSON.stringify(this.fileIDsEdit)
       }
       if (this.ratedVoltage.text !== '') {
         eqp.RatedVoltage = this.ratedVoltage.text
@@ -573,6 +573,8 @@ export default {
         this.eqpType.text = _res.type
         this.subSystem.text = _res.subSystem
         this.team = _res.team
+        this.supplier = _res.supplier
+        this.manufacturer = _res.manufacturer
         this.teamPath.text = this.strToIntArr(_res.teamPath)
         this.assetNo.text = nullToEmpty(_res.assetNo)
         this.model.text = nullToEmpty(_res.model)
@@ -661,24 +663,34 @@ export default {
       } else if (this.team === '') {
         this.teamPath.tips = '您选的并非是班组，请选择班组'
         return false
-      }
+      } else this.teamPath.tips = ''
       if (this.area.text.length === 0) {
         this.area.tips = '此项必选'
         return false
-      }
+      } else this.area.tips = ''
       if (this.time.text === '') {
         this.time.tips = '此项必选'
         return false
-      }
+      } else this.time.tips = ''
       if (!this.validateInputNull(this.life)) return false
       if (!validateNumberCommon(this.mediumRepair)) return false
       if (!validateNumberCommon(this.largeRepair)) return false
       return true
     }
+  },
+  mounted () {
+    // console.log(this.$refs.team.id)
+    // let el = document.querySelector('.pop-display')
+    // console.log(el)
+    // el.style.display = 'block'
   }
+
 }
 </script>
 <style lang="scss" scoped>
+.pop-display{
+  display: block!important;
+}
 // 功能区
 .operation{
   .input-group{
@@ -713,7 +725,9 @@ export default {
       }
     }
     .upload-list{
+      margin-top: PXtoEm(25);
       margin-bottom: PXtoEm(25);
+      width: -webkit-fill-available;
     }
   }
 }

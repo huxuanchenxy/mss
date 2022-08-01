@@ -1,6 +1,5 @@
 import axios from './interceptors'
-// 'http://10.89.36.204:5801/authapi'
-// 'http://localhost:3851/api/v1'
+// let api = 'http://localhost:3851/api/v1'
 let api = 'http://10.89.36.204:5801/authapi'
 export default {
   login: (acc, pwd) => { return axios.get(`${api}/User/Login/${acc}/${pwd}`).then(res => res.data) },
@@ -16,11 +15,12 @@ export default {
   getActionByUser: () => { return axios.get(`${api}/User/GetAction`).then(res => res.data) },
 
   getSubCode: code => { return axios.get(`${api}/Dictionary/SubCode/${code}`).then(res => res.data) },
-  getDictionary: parm => { return axios.get(`${api}/Dictionary/QueryList`, {params: parm}).then(res => res.data) },
-  getDictionaryByID: id => { return axios.get(`${api}/Dictionary/${id}`).then(res => res.data) },
-  addDictionary: parm => { return axios.post(`${api}/Dictionary/Add`, parm).then(res => res.data) },
-  updateDictionary: parm => { return axios.put(`${api}/Dictionary/Update`, parm).then(res => res.data) },
-  delDictionary: ids => { return axios.delete(`${api}/Dictionary/${ids}`).then(res => res.data) },
+  getBusinessType: code => { return axios.get(`${api}/Dictionary/BusinessType/${code}`).then(res => res.data) },
+  // getDictionary: parm => { return axios.get(`${api}/Dictionary/QueryList`, {params: parm}).then(res => res.data) },
+  // getDictionaryByID: id => { return axios.get(`${api}/Dictionary/${id}`).then(res => res.data) },
+  // addDictionary: parm => { return axios.post(`${api}/Dictionary/Add`, parm).then(res => res.data) },
+  // updateDictionary: parm => { return axios.put(`${api}/Dictionary/Update`, parm).then(res => res.data) },
+  // delDictionary: ids => { return axios.delete(`${api}/Dictionary/${ids}`).then(res => res.data) },
 
   getActionGroup: parm => { return axios.get(`${api}/ActionGroup/QueryList`, {params: parm}).then(res => res.data) },
   getActionGroupByID: id => { return axios.get(`${api}/ActionGroup/${id}`).then(res => res.data) },

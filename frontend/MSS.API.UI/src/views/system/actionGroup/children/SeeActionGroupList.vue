@@ -25,8 +25,8 @@
                 <el-option
                   v-for="item in actionTypeList"
                   :key="item.key"
-                  :label="item.sub_code_name"
-                  :value="item.sub_code">
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
@@ -133,6 +133,7 @@
 </template>
 <script>
 import { transformDate } from '@/common/js/utils.js'
+import { dictionary } from '@/common/js/dictionary.js'
 import { btn } from '@/element/btn.js'
 import XButton from '@/components/button'
 import api from '@/api/authApi'
@@ -196,7 +197,7 @@ export default {
     this.init()
 
     // 权限组类型列表
-    api.getSubCode('group_type').then(res => {
+    api.getSubCode(dictionary.actionGroupType).then(res => {
       this.actionTypeList = res.data
     }).catch(err => console.log(err))
   },

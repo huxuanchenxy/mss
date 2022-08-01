@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
 using MSS.API.Common;
+using static MSS.API.Common.MyDictionary;
 
 namespace MSS.API.Dao.Implement
 {
@@ -42,7 +43,10 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryFirstOrDefaultAsync<UploadFile>(
-                    "SELECT * FROM upload_file WHERE id = @id", new { id = id });
+                    //"SELECT uf.*,ufr.system_resource,ufr.type FROM upload_file uf " +
+                    //"left join upload_file_relation ufr on ufr.file_id=uf.id " +
+                    "SELECT * FROM upload_file " +
+                    "WHERE id = @id", new { id = id });
                 return result;
             });
         }
@@ -52,8 +56,34 @@ namespace MSS.API.Dao.Implement
             return await WithConnection(async c =>
             {
                 var result = await c.QueryAsync<UploadFile>(
-                    "SELECT * FROM upload_file WHERE id in @ids", new { ids = ids.Split(',') });
+                    "SELECT uf.*,ufr.type,dt.name as TypeName,dt1.name as SystemResourceName,ufr.system_resource FROM upload_file uf " +
+                    "left join upload_file_relation ufr on ufr.file_id=uf.id " +
+                    "left join dictionary_tree dt on ufr.type=dt.id " +
+                    "left join dictionary_tree dt1 on ufr.system_resource=dt1.id " +
+                    "WHERE uf.id in @ids", new { ids = ids.Split(',') });
                 if (result!=null && result.Count()>0)
+                {
+                    return result.ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
+        public async Task<List<UploadFile>> ListByEntity(int[] ids, SystemResource systemResource)
+        {
+            return await WithConnection(async c =>
+            {
+                var result = await c.QueryAsync<UploadFile>(
+                    "SELECT uf.*,ufr.type,dt.name as TypeName,dt1.name as SystemResourceName," +
+                    "ufr.system_resource,ufr.entity_id FROM upload_file uf " +
+                    "left join upload_file_relation ufr on ufr.file_id=uf.id " +
+                    "left join dictionary_tree dt on ufr.type=dt.id " +
+                    "left join dictionary_tree dt1 on ufr.system_resource=dt1.id " +
+                    "WHERE ufr.system_resource=@systemResource and ufr.entity_id in @ids", 
+                    new { systemResource=(int)systemResource,ids });
+                if (result != null && result.Count() > 0)
                 {
                     return result.ToList();
                 }

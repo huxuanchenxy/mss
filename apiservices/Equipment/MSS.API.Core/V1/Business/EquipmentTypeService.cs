@@ -17,14 +17,16 @@ namespace MSS.API.Core.V1.Business
         //private readonly ILogger<UserService> _logger;
         private readonly IEquipmentTypeRepo<EquipmentType> _eqpTypeRepo;
         private readonly IEquipmentRepo<Equipment> _eqpRepo;
+        private readonly IUploadFileRepo<UploadFile> _uploadFileRepo;
         private readonly int userID;
 
         public EquipmentTypeService(IEquipmentTypeRepo<EquipmentType> eqpTypeRepo,
-            IEquipmentRepo<Equipment> eqpRepo, IAuthHelper auth)
+            IEquipmentRepo<Equipment> eqpRepo, IAuthHelper auth, IUploadFileRepo<UploadFile> uploadFileRepo)
         {
             //_logger = logger;
             _eqpTypeRepo = eqpTypeRepo;
             _eqpRepo = eqpRepo;
+            _uploadFileRepo = uploadFileRepo;
             userID = auth.GetUserId();
         }
 
@@ -109,13 +111,17 @@ namespace MSS.API.Core.V1.Business
                 parm.sort = string.IsNullOrWhiteSpace(parm.sort) ? "id" : parm.sort;
                 parm.order = parm.order.ToLower() == "desc" ? "desc" : "asc";
                 EqpTypeView etv = await _eqpTypeRepo.GetPageByParm(parm);
-                List<UploadFileEqpType> ufets= await _eqpTypeRepo.UploadFileListByEqpType((etv.rows.Select(a => a.ID)).ToArray());
-                foreach (var item in etv.rows)
+                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(
+                    etv.rows.Select(a=>a.ID).ToArray(),MyDictionary.SystemResource.EqpType);
+                if (ufs!=null && ufs.Count()>0)
                 {
-                    var tmp = ufets.Where(a => a.EqpTypeID == item.ID);
-                    if (tmp!=null)
+                    foreach (var item in etv.rows)
                     {
-                        item.UploadFiles = ListToTreeJson(tmp.ToList());
+                        var tmp = ufs.Where(a => a.Entity == item.ID);
+                        if (tmp != null)
+                        {
+                            item.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.CascaderShow(tmp.ToList()));
+                        }
                     }
                 }
                 ret.data = etv;
@@ -135,10 +141,10 @@ namespace MSS.API.Core.V1.Business
             try
             {
                 EquipmentType et = await _eqpTypeRepo.GetByID(id);
-                List<object> list = await _eqpTypeRepo.RelationListByEqpType(id);
-                if (list!=null)
+                List<UploadFile> ufs = await _uploadFileRepo.ListByEntity(new int[] { id}, MyDictionary.SystemResource.EqpType);
+                if (ufs != null && ufs.Count()>0)
                 {
-                    et.UploadFiles = JsonConvert.SerializeObject(list);
+                    et.UploadFiles = JsonConvert.SerializeObject(UploadFileHelper.ListShow(ufs));
                 }
                 ret.data = et;
                 return ret;
@@ -165,31 +171,6 @@ namespace MSS.API.Core.V1.Business
                 ret.msg = ex.Message;
                 return ret;
             }
-        }
-
-        private string ListToTreeJson(List<UploadFileEqpType> ufets)
-        {
-            List<object> objs = new List<object>();
-            IEnumerable<IGrouping<int, UploadFileEqpType>> groups = ufets.GroupBy(a => a.Type);
-            foreach (var group in groups.OrderBy(a=>a.Key))
-            {
-                string label="";
-                List<object> children = new List<object>();
-                foreach (var item in group)
-                {
-                    label = item.TName;
-                    children.Add(new {
-                        value=item.FilePath,
-                        label=item.FileName
-                    });
-                }
-                objs.Add(new {
-                    value=group.Key,
-                    label=label,
-                    children=children
-                });
-            }
-            return JsonConvert.SerializeObject(objs);
         }
     }
 }

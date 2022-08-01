@@ -36,7 +36,7 @@
             </li>
             <li class="list" >
               <div class="inp-wrap">
-                <span class="text">上传部门</span>
+                <span class="text">录入部门</span>
                 <div class="inp">{{ExpertData.deptName}}</div>
               </div>
             </li>

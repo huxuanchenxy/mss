@@ -12,6 +12,12 @@ namespace MSS.API.Model.Data
         public int ID { get; set; }
         public string FileName { get; set; }
         public string FilePath { get; set; }
+        public int Type { get; set; }
+        public string TypeName { get; set; }
+        public int SystemResource { get; set; }
+        public string SystemResourceName { get; set; }
+        public int Entity { get; set; }
+
     }
 
     public class UploadFileMap : EntityMap<UploadFile>
@@ -20,6 +26,11 @@ namespace MSS.API.Model.Data
         {
             Map(o => o.FileName).ToColumn("file_name");
             Map(o => o.FilePath).ToColumn("file_path");
+            Map(o => o.SystemResource).ToColumn("system_resource");
+            Map(o => o.SystemResourceName).ToColumn("resourceName");
+            Map(o => o.Type).ToColumn("type");
+            Map(o => o.TypeName).ToColumn("name");
+            Map(o => o.Entity).ToColumn("entity_id");
         }
     }
 }
