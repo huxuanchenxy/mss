@@ -331,17 +331,5 @@ namespace MSS.API.Dao.Implement
                 return affectedRows;
             });
         }
-
-        // 获取所有设备信息
-        public async Task<List<Equipment>> ListAllEquipment()
-        {
-            return await WithConnection(async c =>
-            {
-                string sql = "SELECT id, eqp_code, eqp_name, eqp_type, top_org from equipment"
-                    + " WHERE is_del != 1";
-                List<Equipment> eqps = (await c.QueryAsync<Equipment>(sql)).ToList();
-                return eqps;
-            });
-        }
     }
 }
