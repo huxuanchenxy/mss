@@ -29,7 +29,7 @@
     "muse-ui": "^2.0.2",
     "node-sass": "^4.9.0",
     "pdfjs-dist": "^2.2.228",
-    "qs": "^6.5.2",
+    "qs": "^6.5.3",
     "sass-loader": "^7.0.1",
     "timeago.js": "^3.0.1",
     "vconsole": "^3.3.4",
