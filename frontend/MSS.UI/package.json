@@ -19,7 +19,7 @@
     "echarts": "^4.2.1",
     "element-ui": "^2.6.1",
     "mockjs": "^1.0.1-beta3",
-    "qs": "^6.7.0",
+    "qs": "^6.5.3",
     "vue": "^2.5.2",
     "vue-draggable": "^2.0.0",
     "vue-resize-directive": "^1.2.0",
